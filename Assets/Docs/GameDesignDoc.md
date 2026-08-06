@@ -66,6 +66,7 @@ I want to make an incremental game similar to motherload
 		- every 100 blocks in depth, the layer changes. 
 			- The dirt changes color, becoming darker, and mining becomes slower. 
 			- a new random generation table for minerals is chosen with weights towards more valuable minerals
+
 # Block types
 The value and weight scales as you go down the tiers. Value scales faster than weight.
 - Wood
