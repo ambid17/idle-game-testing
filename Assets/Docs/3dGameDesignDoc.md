@@ -1,0 +1,53 @@
+3d GameDesign Doc
+
+
+# Core mechanic options
+- 3d generated terrain, dig from top down
+- Different maps you play on
+- Prestige currency is a certain block with a low spawn chance
+- A game about digging a hole, but turned idle game
+
+- you get a timer to mine as much as you can before you’re out. Return to home base to spend
+- If you mine the whole map, you unlock a new map. You can choose which one to play
+	- Or maybe you just unlock new depths?
+- Mining similar to Astroneer
+- Movement from jumping jax
+- Teleporter gun upgrade in prestige store? Lets you move around if the map is large
+- You have to collect the minerals and bring them back to the depot to sell
+	- Unlocks automation for picking up items
+- Claude dangerous mode
+- Claude blender mcp
+- Tree cutting section cut off by invisible wall that you have to pay to unlock. The wood currency allows buildings? Like the auto miner huts maybe?
+	- Let you cut up logs into smaller pieces like fruit ninja
+	- Let you turn the logs into things to sell for money so it can also be a currency if you like doing it 
+	- Make you plant the trees?
+- Maybe this is more idle focused and all you have to do is plant trees, and you buy some machine to harvest them
+- Maybe an organizing mechanic that gain currency?
+- Need a way to let you do any of the activities to progress. Want you to do at least some of each, but not force one of them for the entire play through
+	- Maybe first prestige lets you get the most annoying one automated?
+- How does prestige currency get acquired?
+- Chance to drop on any action?
+- Based on how much money you have but haven’t spent?
+- Automated people to pick up ores, then Flight to get out of holes, then teleport later on
+- Maybe you start with a shitty jetpack? Or grappling gun?
+- Something to limit your mining and make you take a breather. Either oxygen, or hunger, or max ore weight.
+- Upgrade ore selling depot to next tier with wood before you can sell the next tier of ore? Or maybe it sells faster, or is worth more?
+- Story is a corporate overlord and you are just a peon. Narrator is an angry boss picture with voice lines. And the person helping you unlock things is an old timer that just sits around
+- Multiplayer?
+- Only one or two mining speed/radius upgrades available at start. Once you reach a certain depth it gets slower, and forces you to go cut logs
+- Manually lay out the map and terrain but generate trees and ores
+- Guarantee X number of prestige currency ores per depth tier
+	- Need things to keep mining fresh. Monuments, puzzles, mini games, buried treasure. Maybe an archaeology component that unlocks permanent buffs?
+- Maybe start with a very small plot of land that’s yours and pay to unlock a bigger place to dig, getting exponentially more expensive
+- If you strand yourself at the bottom of the hole, lose half your payday to return home
+	- Or let you add terrain?
+	- auto add ladders to the edge of your quarry, but make them slow
+- Ore delivery is a pneumatic tube you stuff all the ores in to
+- Temporary ore sight potion
+- tiered prestiges where you unlock new Mechanics
+	- logging
+		- make houses to automate mining
+	- processing
+		- make your materials into good that are worth more
+	- trucking
+		- deliver the raw and processed materials so you dont take a pay cut
