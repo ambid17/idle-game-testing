@@ -14,3 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockTypeDatabase
   BlockTypes:
   - {fileID: 11400000, guid: d01a2d5a6d7e9a046a0c6c2866259c1f, type: 2}
+  - {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
+  - {fileID: 11400000, guid: db0846b8ec2f6884aa974ff0b1172348, type: 2}
+  - {fileID: 11400000, guid: d529a29641331c448ac6f8f4d4209047, type: 2}
+  - {fileID: 11400000, guid: 6ff86b5bdf2db464eb95a3b610508372, type: 2}

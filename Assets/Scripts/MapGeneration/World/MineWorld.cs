@@ -12,7 +12,7 @@ namespace MapGeneration
 
         private readonly LayerConfigProvider configProvider;
         private readonly BlockTypeDatabase blockTypes;
-        private readonly Dictionary<int, ChunkData> chunks = new();
+        private readonly Dictionary<int, ChunkData> chunksByLayer = new();
 
         public MineWorld(int seed, int gridWidth, LayerConfigProvider configProvider, BlockTypeDatabase blockTypes)
         {
@@ -24,15 +24,15 @@ namespace MapGeneration
 
         public ChunkData GetOrGenerateChunk(int layerIndex)
         {
-            if (chunks.TryGetValue(layerIndex, out var chunk)) return chunk;
+            if (chunksByLayer.TryGetValue(layerIndex, out var chunk)) return chunk;
 
             var config = configProvider != null ? configProvider.GetConfig(layerIndex) : null;
             chunk = ChunkGenerator.Generate(Seed, layerIndex, GridWidth, config);
-            chunks[layerIndex] = chunk;
+            chunksByLayer[layerIndex] = chunk;
             return chunk;
         }
 
-        public IEnumerable<ChunkData> GetLoadedChunks() => chunks.Values;
+        public IEnumerable<ChunkData> GetLoadedChunks() => chunksByLayer.Values;
 
         public bool TryMineCell(int layerIndex, int x, int y, out BlockType minedBlock, out bool artifactFound)
         {
@@ -84,7 +84,7 @@ namespace MapGeneration
             return revealed;
         }
 
-        public void UnloadChunk(int layerIndex) => chunks.Remove(layerIndex);
+        public void UnloadChunk(int layerIndex) => chunksByLayer.Remove(layerIndex);
 
         // Grid-width prestige upgrade: set independently of ResetForPrestige so it survives resets.
         public void SetGridWidth(int newWidth) => GridWidth = newWidth;
@@ -92,7 +92,7 @@ namespace MapGeneration
         public void ResetForPrestige(int newSeed)
         {
             Seed = newSeed;
-            chunks.Clear();
+            chunksByLayer.Clear();
         }
     }
 }

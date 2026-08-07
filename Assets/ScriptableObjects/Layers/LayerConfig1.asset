@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c845b9a9e35dd1d4894d69b46a0196cb, type: 3}
   m_Name: LayerConfig1
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
-  LayerIndex: 0
-  DirtTint: {r: 0.7924528, g: 0.4332225, b: 0.12335351, a: 1}
+  LayerIndex: 1
+  DirtTint: {r: 1, g: 1, b: 1, a: 1}
   MiningSpeedModifier: 1
   OreTable:
   - BlockType: {fileID: 11400000, guid: d01a2d5a6d7e9a046a0c6c2866259c1f, type: 2}

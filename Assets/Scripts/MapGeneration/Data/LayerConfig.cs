@@ -19,8 +19,9 @@ namespace MapGeneration
         [Tooltip("depth / 100, 0-based.")]
         public int LayerIndex;
 
-        public Color DirtTint = Color.white;
-        [Range(0f, 3f)] public float MiningSpeedModifier = 1f;
+        [Tooltip("Tint applied to all dirt blocks in this layer, based on depth")]
+        public Color LayerDirtTint = Color.white;
+        [Range(0f, 3f)] public float BlockHealth = 1f;
 
         public List<WeightedBlockEntry> OreTable = new();
         public List<WeightedBlockEntry> HazardTable = new();

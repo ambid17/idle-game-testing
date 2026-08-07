@@ -105,7 +105,11 @@ namespace MapGeneration
         {
             float total = 0f;
             for (int i = 0; i < table.Count; i++) total += table[i].Weight;
-            if (total <= 0f) return null;
+            if (total <= 0f)
+            {
+                Debug.LogWarning("Weighted table has no weight, returning null");
+                return null;
+            }
 
             float target = roll01 * total;
             float cumulative = 0f;

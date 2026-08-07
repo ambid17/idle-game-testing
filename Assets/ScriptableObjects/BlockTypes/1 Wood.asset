@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: 1 Wood
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
   Id: 0
-  DisplayName: Dirt
-  Category: 0
+  DisplayName: Wood
+  Category: 1
   HazardBehavior: 0
   Tile: {fileID: 0}
   Value: 0

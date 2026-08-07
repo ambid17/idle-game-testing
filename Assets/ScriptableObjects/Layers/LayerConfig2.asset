@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c845b9a9e35dd1d4894d69b46a0196cb, type: 3}
   m_Name: LayerConfig2
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
-  LayerIndex: 0
+  LayerIndex: 2
   DirtTint: {r: 0.7924528, g: 0.4332225, b: 0.12335351, a: 1}
-  MiningSpeedModifier: 1
+  MiningSpeedModifier: 2
   OreTable: []
   HazardTable: []
   HazardChancePerCell: 0.01
