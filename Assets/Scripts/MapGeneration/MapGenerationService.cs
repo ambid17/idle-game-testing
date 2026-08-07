@@ -47,6 +47,48 @@ namespace MapGeneration
 
         public void SetFocusDepth(float depthInBlocks) => streamingManager.SetFocusDepth(depthInBlocks);
 
+        // Inverts ChunkTilemapView's cell->world placement (pos = (x, -y) within a chunk root
+        // positioned at -layerOffset*cellSize) so player-facing systems can resolve which cell
+        // a world position falls in.
+        public bool WorldToCell(Vector3 worldPos, out int layerIndex, out int x, out int y)
+        {
+            float cellSize = streamingManager.CellSize;
+            int depthInBlocks = Mathf.FloorToInt(-worldPos.y / cellSize);
+            layerIndex = streamingManager.GetLayerIndexAtDepth(depthInBlocks);
+            x = Mathf.FloorToInt(worldPos.x / cellSize);
+            y = depthInBlocks - streamingManager.GetLayerOffset(layerIndex);
+
+            var chunk = World.GetOrGenerateChunk(layerIndex);
+            return x >= 0 && x < chunk.Width && y >= 0 && y < chunk.Height;
+        }
+
+        public Vector3 CellToWorldCenter(int layerIndex, int x, int y)
+        {
+            float cellSize = streamingManager.CellSize;
+            int depthInBlocks = streamingManager.GetLayerOffset(layerIndex) + y;
+            return new Vector3((x + 0.5f) * cellSize, -(depthInBlocks + 0.5f) * cellSize, 0f);
+        }
+
+        public float CellSize => streamingManager.CellSize;
+
+        // Null if out of bounds or already mined - both mean "nothing here to mine".
+        public BlockType GetBlockTypeAt(int layerIndex, int x, int y)
+        {
+            var chunk = World.GetOrGenerateChunk(layerIndex);
+            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) return null;
+
+            var cell = chunk.Cells[chunk.Index(x, y)];
+            if (cell.Mined) return null;
+
+            return blockTypeDatabase != null ? blockTypeDatabase.Get(cell.BlockTypeId) : null;
+        }
+
+        public float GetBlockHealthMultiplier(int layerIndex)
+        {
+            var config = layerConfigProvider != null ? layerConfigProvider.GetConfig(layerIndex) : null;
+            return config != null ? config.BlockHealth : 1f;
+        }
+
         // New seed, all tunnels wiped; grid width upgrade level is left untouched so it carries over.
         public void PrestigeReset(int newSeed)
         {

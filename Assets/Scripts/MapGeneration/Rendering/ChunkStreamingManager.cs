@@ -18,6 +18,8 @@ namespace MapGeneration
         private readonly Queue<ChunkTilemapView> pool = new();
         private int currentFocusLayer = int.MinValue;
 
+        public float CellSize => cellSize;
+
         public void Initialize(MineWorld mineWorld)
         {
             world = mineWorld;
@@ -26,7 +28,7 @@ namespace MapGeneration
 
         public void SetFocusDepth(float depthInBlocks)
         {
-            int layerIndexAtDepth = CalculateLayerFromDepth((int)depthInBlocks);
+            int layerIndexAtDepth = GetLayerIndexAtDepth((int)depthInBlocks);
             if (layerIndexAtDepth == currentFocusLayer) return;
 
             currentFocusLayer = layerIndexAtDepth;
@@ -60,12 +62,14 @@ namespace MapGeneration
 
             view.gameObject.name = $"ChunkTilemapView_Layer{layerIndex}";
             view.gameObject.SetActive(true);
-            view.transform.position = new Vector3(0f, -CalculateLayerOffset(layerIndex) * cellSize, 0f);
+            view.transform.position = new Vector3(0f, -GetLayerOffset(layerIndex) * cellSize, 0f);
             view.Bind(chunk, layerIndex);
             activeViews[layerIndex] = view;
         }
 
-        private int CalculateLayerOffset(int layerIndex)
+        // Depth (in blocks) at which this layer starts - inverse of GetLayerIndexAtDepth.
+        // Public so player-facing systems (e.g. PlayerMining) can convert world position <-> grid cell.
+        public int GetLayerOffset(int layerIndex)
         {
             var yOffset = 0;
             for(int i = 0; i < layerIndex; i++)
@@ -75,7 +79,7 @@ namespace MapGeneration
             return yOffset;
         }
 
-        private int CalculateLayerFromDepth(int depthInBlocks)
+        public int GetLayerIndexAtDepth(int depthInBlocks)
         {
             var currentTotalDepth = 0;
             for (int i = 0; i < layerConfigProvider.AuthoredLayers.Count; i++)
