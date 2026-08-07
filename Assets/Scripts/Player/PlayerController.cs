@@ -38,6 +38,7 @@ namespace Player
         public bool IsFlying { get; private set; }
         public float Fuel { get; private set; }
         public float FuelFraction => fuelMax > 0f ? Fuel / fuelMax : 0f;
+        private Vector2 movementInput;
 
         private void Awake()
         {
@@ -51,7 +52,7 @@ namespace Player
             groundCheckSize = new Vector2(capsuleCollider.size.x * 0.5f, 0.1f);
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
             var keyboard = Keyboard.current;
             if (keyboard == null)
@@ -59,21 +60,25 @@ namespace Player
                 Debug.LogError("no keyboard found");
                 return;
             }
-            IsGrounded = CheckGrounded();
 
             bool wHeld = keyboard.wKey.isPressed;
             bool aHeld = keyboard.aKey.isPressed;
             bool dHeld = keyboard.dKey.isPressed;
 
-            IsFlying = wHeld && Fuel > 0f;
+            float horizontalInput = 0f;
+            if (aHeld) horizontalInput -= 1f;
+            if (dHeld) horizontalInput += 1f;
+            movementInput = new Vector2(horizontalInput, wHeld ? 1f : 0f);
+        }
 
-            float moveInput = 0f;
-            if (aHeld) moveInput -= 1f;
-            if (dHeld) moveInput += 1f;
+        private void FixedUpdate()
+        {
+            IsGrounded = CheckGrounded();
+            IsFlying = movementInput.y > 0 && Fuel > 0f;
 
             float horizontalSpeed = IsFlying ? flySpeed : groundSpeed;
             float verticalVelocity = IsFlying ? jetpackLiftSpeed : rb.linearVelocity.y;
-            rb.linearVelocity = new Vector2(moveInput * horizontalSpeed, verticalVelocity);
+            rb.linearVelocity = new Vector2(movementInput.x * horizontalSpeed, verticalVelocity);
 
             UpdateFuel(Time.fixedDeltaTime);
             TrackFallDamage();
