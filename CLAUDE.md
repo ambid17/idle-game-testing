@@ -29,6 +29,13 @@ In general, when a non-instantiated MonoBehaviour script needs to be accessed fr
 ## Null checks
 - when performing null checks to return early, include a `Debug.LogError()`
 
+# UI
+## Panels
+- when building UI panels, ensure:
+	- the UI controller is attached to the Panel GameObject and is enabled/active.
+	- the Panel GameObject has a child GameObject "renderer" containing all UI elements.
+	- the UI controller code only toggles on and off the "renderer" so the monobehaviour stays active on the parent
+
 ## Events
 Whenever one would use an event or action, use the EventService. This keeps the code easier to maintain.
 

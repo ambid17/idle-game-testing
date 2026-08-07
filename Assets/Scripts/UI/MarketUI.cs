@@ -24,7 +24,7 @@ namespace UI
         [SerializeField] private GameObject otherPanelToClose;
 
         private readonly List<UpgradeNodeUI> nodes = new();
-        private UpgradeDatabase upgradeDatabase = GameManager.UpgradeDatabase;
+        private UpgradeDatabase upgradeDatabase => GameManager.UpgradeDatabase;
         
 
         private void Start()

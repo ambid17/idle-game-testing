@@ -24,7 +24,7 @@ namespace UI
 
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
         private bool isOpen;
-        private BlockTypeDatabase blockTypeDatabase = GameManager.BlockTypeDatabase;
+        private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
 
         public bool IsOpen => isOpen;
         public void Close() => SetOpen(false);

@@ -26,7 +26,7 @@ namespace UI
 
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
         private PlayerInventory playerInventory;
-        private BlockTypeDatabase blockTypeDatabase = GameManager.BlockTypeDatabase;
+        private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
 
         private void Start()
         {
