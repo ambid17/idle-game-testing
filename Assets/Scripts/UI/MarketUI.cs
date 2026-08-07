@@ -16,16 +16,20 @@ namespace UI
     {
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private BuildingInteractable marketBuilding;
-        [SerializeField] private Transform miningContainer;
-        [SerializeField] private Transform economyContainer;
+        [SerializeField] private Transform scrollViewContent;
         [SerializeField] private UpgradeNodeUI nodePrefab;
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private Button closeButton;
         [SerializeField] private GameObject otherPanelToClose;
+        [SerializeField] private Button miningButton;
+        [SerializeField] private Button economyButton;
+        [SerializeField] private Button automationButton;
+        [SerializeField] private Button progressionButton;
 
         private readonly List<UpgradeNodeUI> nodes = new();
         private UpgradeDatabase upgradeDatabase => GameManager.UpgradeDatabase;
-        
+        private UpgradeBranch activeTab = UpgradeBranch.Mining;
+
 
         private void Start()
         {
@@ -33,6 +37,11 @@ namespace UI
             if (marketBuilding != null) marketBuilding.Interacted += Open;
             if (closeButton != null) closeButton.onClick.AddListener(Close);
             if (panelRoot != null) panelRoot.SetActive(false);
+
+            miningButton.onClick.AddListener(() => SetTab(UpgradeBranch.Mining));
+            economyButton.onClick.AddListener(() => SetTab(UpgradeBranch.Economy));
+            automationButton.onClick.AddListener(() => SetTab(UpgradeBranch.Automation));
+            progressionButton.onClick.AddListener(() => SetTab(UpgradeBranch.Progression));
         }
 
         private void OnEnable()
@@ -59,10 +68,8 @@ namespace UI
             {
                 if (def == null) continue;
 
-                var container = def.Branch == UpgradeBranch.Economy ? economyContainer : miningContainer;
-                if (container == null) continue;
 
-                var node = Instantiate(nodePrefab, container);
+                var node = Instantiate(nodePrefab, scrollViewContent);
                 node.Bind(def);
                 node.PurchaseRequested += OnPurchaseRequested;
                 nodes.Add(node);
@@ -73,6 +80,17 @@ namespace UI
         {
             if (otherPanelToClose != null) otherPanelToClose.SetActive(false);
             if (panelRoot != null) panelRoot.SetActive(true);
+            RefreshAll();
+        }
+
+        private void SetTab(UpgradeBranch branch)
+        {
+            activeTab = branch;
+            foreach (var node in nodes)
+            {
+                node.gameObject.SetActive(node.Definition.Branch == branch);
+            }
+
             RefreshAll();
         }
 
