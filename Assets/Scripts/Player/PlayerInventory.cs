@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using Economy;
+using Events;
 using MapGeneration;
 using UnityEngine;
 
@@ -15,8 +15,6 @@ namespace Player
         [SerializeField] private float baseMaxWeight = 100f;
 
         private readonly Dictionary<BlockTypeId, int> oreCounts = new();
-
-        public event Action InventoryChanged;
 
         // GameDesignDoc "Market Upgrades > Economy > Inventory": each level adds carrying capacity.
         public float MaxWeight => baseMaxWeight + UpgradeManager.Instance.InventoryCapacityBonus;
@@ -33,14 +31,14 @@ namespace Player
             oreCounts[blockType.Id] = current + amount;
             CurrentWeight += blockType.Weight * amount;
 
-            InventoryChanged?.Invoke();
+            GameManager.EventService.Dispatch<InventoryChangedEvent>();
             return true;
         }
 
         public void AddArtifact()
         {
             ArtifactCount++;
-            InventoryChanged?.Invoke();
+            GameManager.EventService.Dispatch<InventoryChangedEvent>();
         }
 
         // Snapshots and clears carried ore (not artifacts) - called when depositing at the Depot.
@@ -49,7 +47,7 @@ namespace Player
             var snapshot = new Dictionary<BlockTypeId, int>(oreCounts);
             oreCounts.Clear();
             CurrentWeight = 0f;
-            InventoryChanged?.Invoke();
+            GameManager.EventService.Dispatch<InventoryChangedEvent>();
             return snapshot;
         }
     }

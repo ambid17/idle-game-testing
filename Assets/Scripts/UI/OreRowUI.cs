@@ -1,4 +1,4 @@
-using System;
+using Events;
 using MapGeneration;
 using TMPro;
 using UnityEngine;
@@ -21,15 +21,12 @@ namespace UI
 
         public BlockTypeId BlockTypeId { get; private set; }
 
-        // (id, fraction 0-1)
-        public event Action<BlockTypeId, float> SellRequested;
-
         public void Bind(BlockTypeId id, string displayName)
         {
             BlockTypeId = id;
             if (nameLabel != null) nameLabel.text = displayName;
-            if (sellHalfButton != null) sellHalfButton.onClick.AddListener(() => SellRequested?.Invoke(BlockTypeId, 0.5f));
-            if (sellAllButton != null) sellAllButton.onClick.AddListener(() => SellRequested?.Invoke(BlockTypeId, 1f));
+            if (sellHalfButton != null) sellHalfButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellRequestedEvent(BlockTypeId, 0.5f)));
+            if (sellAllButton != null) sellAllButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellRequestedEvent(BlockTypeId, 1f)));
         }
 
         public void SetCount(int count)

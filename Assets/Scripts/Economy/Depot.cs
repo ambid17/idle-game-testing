@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Events;
 using MapGeneration;
 using UnityEngine;
 
@@ -15,8 +15,6 @@ namespace Economy
 
         private readonly Dictionary<BlockTypeId, int> storedOres = new();
 
-        public event Action DepotChanged;
-
         public IReadOnlyDictionary<BlockTypeId, int> StoredOres => storedOres;
 
         public void Deposit(IReadOnlyDictionary<BlockTypeId, int> ores)
@@ -29,7 +27,7 @@ namespace Economy
                 storedOres[kvp.Key] = current + kvp.Value;
             }
 
-            DepotChanged?.Invoke();
+            GameManager.EventService.Dispatch<DepotChangedEvent>();
         }
 
         public void Deposit(BlockTypeId id, int amount)
@@ -37,7 +35,7 @@ namespace Economy
             if (amount <= 0) return;
             storedOres.TryGetValue(id, out var current);
             storedOres[id] = current + amount;
-            DepotChanged?.Invoke();
+            GameManager.EventService.Dispatch<DepotChangedEvent>();
         }
 
         // Sells `fraction` (0-1] of the stored amount for this ore type, crediting the Wallet.
@@ -62,7 +60,7 @@ namespace Economy
             storedOres[id] = Mathf.Max(0, remaining);
 
             if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
-            DepotChanged?.Invoke();
+            GameManager.EventService.Dispatch<DepotChangedEvent>();
             return value;
         }
 

@@ -1,4 +1,4 @@
-using System;
+using Events;
 using UnityEngine;
 
 namespace Economy
@@ -11,20 +11,18 @@ namespace Economy
 
         public double Dollars => dollars;
 
-        public event Action DollarsChanged;
-
         public void Add(double amount)
         {
             if (amount <= 0) return;
             dollars += amount;
-            DollarsChanged?.Invoke();
+            GameManager.EventService.Dispatch<DollarsChangedEvent>();
         }
 
         public bool TrySpend(double amount)
         {
             if (amount <= 0 || amount > dollars) return false;
             dollars -= amount;
-            DollarsChanged?.Invoke();
+            GameManager.EventService.Dispatch<DollarsChangedEvent>();
             return true;
         }
     }

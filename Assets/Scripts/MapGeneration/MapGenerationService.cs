@@ -1,5 +1,5 @@
-using System;
 using Economy;
+using Events;
 using UnityEngine;
 
 namespace MapGeneration
@@ -20,9 +20,6 @@ namespace MapGeneration
 
         public MineWorld World { get; private set; }
 
-        public event Action<int, int, int, BlockType, bool> CellMined;
-        public event Action<int, int, int, HazardBehavior> HazardTriggered;
-
         private void Awake()
         {
             World = new MineWorld(worldSeed, gridWidth);
@@ -39,10 +36,10 @@ namespace MapGeneration
 
             if (block != null && block.Category == BlockCategory.Hazard)
             {
-                HazardTriggered?.Invoke(layerIndex, x, y, block.HazardBehavior);
+                GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.HazardBehavior));
             }
 
-            CellMined?.Invoke(layerIndex, x, y, block, artifactFound);
+            GameManager.EventService.Dispatch(new CellMinedEvent(layerIndex, x, y, block, artifactFound));
             return true;
         }
 

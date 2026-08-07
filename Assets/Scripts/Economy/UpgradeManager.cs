@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Events;
 using UnityEngine;
 
 namespace Economy
@@ -15,9 +15,6 @@ namespace Economy
         private static UpgradeDatabase database => GameManager.UpgradeDatabase;
 
         private readonly Dictionary<string, int> levelsByUpgradeId = new();
-
-        // (definition, new level)
-        public event Action<UpgradeDefinition, int> UpgradePurchased;
 
         public int GetLevel(UpgradeDefinition def) => def != null && levelsByUpgradeId.TryGetValue(def.Id, out var lvl) ? lvl : 0;
 
@@ -50,7 +47,7 @@ namespace Economy
 
             int newLevel = GetLevel(def) + 1;
             levelsByUpgradeId[def.Id] = newLevel;
-            UpgradePurchased?.Invoke(def, newLevel);
+            GameManager.EventService.Dispatch(new UpgradePurchasedEvent(def, newLevel));
             return true;
         }
 

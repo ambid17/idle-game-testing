@@ -1,12 +1,12 @@
-using System;
+using Events;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Interaction
 {
     // Building-specific UIs (depot, market, museum, ...) subscribe to onInteract (Inspector-wired)
-    // or the Interacted C# event (code-wired, e.g. so a UI script can find its building by Type
-    // without any scene wiring) rather than requiring changes here.
+    // or the BuildingInteractedEvent (code-wired via EventService, filtered by Type, so a UI
+    // script can find its building without any scene wiring) rather than requiring changes here.
     public enum InteractableType
     {
         Depot,
@@ -23,12 +23,10 @@ namespace Interaction
         public string PromptText => promptText;
         public InteractableType Type => interactableType;
 
-        public event Action Interacted;
-
         public void Interact()
         {
             onInteract?.Invoke();
-            Interacted?.Invoke();
+            GameManager.EventService.Dispatch(new BuildingInteractedEvent(interactableType));
         }
     }
 }

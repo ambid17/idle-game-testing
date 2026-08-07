@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Economy;
+using Events;
 using Interaction;
 using TMPro;
 using UnityEngine;
@@ -34,7 +35,6 @@ namespace UI
         private void Start()
         {
             BuildNodes();
-            if (marketBuilding != null) marketBuilding.Interacted += Open;
             if (closeButton != null) closeButton.onClick.AddListener(Close);
             if (panelRoot != null) panelRoot.SetActive(false);
 
@@ -46,14 +46,24 @@ namespace UI
 
         private void OnEnable()
         {
-            if (UpgradeManager.Instance != null) UpgradeManager.Instance.UpgradePurchased += OnUpgradePurchased;
-            if (Wallet.Instance != null) Wallet.Instance.DollarsChanged += OnDollarsChanged;
+            GameManager.EventService.Add<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
+            GameManager.EventService.Add<PurchaseRequestedEvent>(OnPurchaseRequested);
         }
 
         private void OnDisable()
         {
-            if (UpgradeManager.Instance != null) UpgradeManager.Instance.UpgradePurchased -= OnUpgradePurchased;
-            if (Wallet.Instance != null) Wallet.Instance.DollarsChanged -= OnDollarsChanged;
+            GameManager.EventService.Remove<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
+            GameManager.EventService.Remove<PurchaseRequestedEvent>(OnPurchaseRequested);
+        }
+
+        private void OnBuildingInteracted(BuildingInteractedEvent evt)
+        {
+            if (marketBuilding == null || evt.Type != marketBuilding.Type) return;
+            Open();
         }
 
         private void BuildNodes()
@@ -71,7 +81,6 @@ namespace UI
 
                 var node = Instantiate(nodePrefab, scrollViewContent);
                 node.Bind(def);
-                node.PurchaseRequested += OnPurchaseRequested;
                 nodes.Add(node);
             }
         }
@@ -99,9 +108,9 @@ namespace UI
             if (panelRoot != null) panelRoot.SetActive(false);
         }
 
-        private void OnPurchaseRequested(UpgradeDefinition def) => UpgradeManager.Instance.TryPurchase(def);
+        private void OnPurchaseRequested(PurchaseRequestedEvent evt) => UpgradeManager.Instance.TryPurchase(evt.Definition);
 
-        private void OnUpgradePurchased(UpgradeDefinition def, int level) => RefreshAll();
+        private void OnUpgradePurchased(UpgradePurchasedEvent evt) => RefreshAll();
         private void OnDollarsChanged() => RefreshAll();
 
         private void RefreshAll()

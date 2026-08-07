@@ -1,5 +1,5 @@
-using System;
 using Economy;
+using Events;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,14 +20,12 @@ namespace UI
 
         public UpgradeDefinition Definition { get; private set; }
 
-        public event Action<UpgradeDefinition> PurchaseRequested;
-
         public void Bind(UpgradeDefinition definition)
         {
             Definition = definition;
             if (nameLabel != null) nameLabel.text = definition.DisplayName;
             if (descriptionLabel != null) descriptionLabel.text = definition.Description;
-            if (purchaseButton != null) purchaseButton.onClick.AddListener(() => PurchaseRequested?.Invoke(Definition));
+            if (purchaseButton != null) purchaseButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new PurchaseRequestedEvent(Definition)));
         }
 
         public void Refresh(UpgradeManager manager)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Economy;
+using Events;
 using Interaction;
 using MapGeneration;
 using Player;
@@ -10,7 +11,7 @@ using UnityEngine.UI;
 namespace UI
 {
     // Storage depot panel per GameDesignDoc "Map Layout > buildings > storage depot": opening it
-    // (via BuildingInteractable.Interacted on the Depot building) deposits everything the player is
+    // (via BuildingInteractedEvent from the Depot building) deposits everything the player is
     // carrying, then shows the depot's accrued minerals with per-type sell (any percentage, or all)
     // plus a sell-everything button.
     public class DepotUI : MonoBehaviour
@@ -33,7 +34,6 @@ namespace UI
             playerInventory = FindAnyObjectByType<PlayerInventory>();
 
             BuildRows();
-            if (depotBuilding != null) depotBuilding.Interacted += Open;
             if (sellAllButton != null) sellAllButton.onClick.AddListener(() => Depot.Instance.SellAll());
             if (closeButton != null) closeButton.onClick.AddListener(Close);
 
@@ -42,14 +42,24 @@ namespace UI
 
         private void OnEnable()
         {
-            Depot.Instance.DepotChanged += Refresh;
-            Wallet.Instance.DollarsChanged += OnDollarsChanged;
+            GameManager.EventService.Add<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Add<DepotChangedEvent>(Refresh);
+            GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
+            GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
         }
 
         private void OnDisable()
         {
-            Depot.Instance.DepotChanged -= Refresh;
-            Wallet.Instance.DollarsChanged -= OnDollarsChanged;
+            GameManager.EventService.Remove<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Remove<DepotChangedEvent>(Refresh);
+            GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
+            GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
+        }
+
+        private void OnBuildingInteracted(BuildingInteractedEvent evt)
+        {
+            if (depotBuilding == null || evt.Type != depotBuilding.Type) return;
+            Open();
         }
 
         private void BuildRows()
@@ -67,7 +77,6 @@ namespace UI
                 var row = Instantiate(rowPrefab, rowContainer);
                 string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
                 row.Bind(blockType.Id, displayName);
-                row.SellRequested += OnSellRequested;
                 rows[blockType.Id] = row;
             }
         }
@@ -86,7 +95,7 @@ namespace UI
             if (panelRoot != null) panelRoot.SetActive(false);
         }
 
-        private void OnSellRequested(BlockTypeId id, float fraction) => Depot.Instance.Sell(id, fraction);
+        private void OnSellRequested(SellRequestedEvent evt) => Depot.Instance.Sell(evt.Id, evt.Fraction);
 
         private void Refresh()
         {

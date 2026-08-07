@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Events;
 using MapGeneration;
 using Player;
 using TMPro;
@@ -38,12 +39,12 @@ namespace UI
 
         private void OnEnable()
         {
-            if (playerInventory != null) playerInventory.InventoryChanged += Refresh;
+            GameManager.EventService.Add<InventoryChangedEvent>(Refresh);
         }
 
         private void OnDisable()
         {
-            if (playerInventory != null) playerInventory.InventoryChanged -= Refresh;
+            GameManager.EventService.Remove<InventoryChangedEvent>(Refresh);
         }
 
         private void Update()
