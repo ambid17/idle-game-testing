@@ -21,6 +21,10 @@ Script filename must exactly match the public class name — Unity requires this
 
 ## Singleton rule
 In general, when a non-instantiated MonoBehaviour script needs to be accessed from multiple places, it is preferred to have singleton access to prevent setup in the Unity Editor.
+- Add commonly used services/classes to the GameManager
+	- Access the services/classes via `GameManager.<VariableName>`
+	- Do not check for null during access.
+	- Do check for null in the game manager, and log an error if the value isn't set.
 
 ## Events
 Whenever one would use an event or action, use the EventService. This keeps the code easier to maintain.
