@@ -51,11 +51,15 @@ namespace Economy
             int amountToSell = fraction >= 1f ? current : Mathf.Clamp(Mathf.RoundToInt(current * fraction), 1, current);
 
             var blockType = blockTypeDatabase != null ? blockTypeDatabase.Get((byte)id) : null;
-            double value = (blockType != null ? blockType.Value : 0f) * amountToSell;
+            if (blockType == null)
+            {
+                Debug.LogError($"Depot.Sell: BlockTypeDatabase missing or BlockTypeId {id} not found. Cannot sell.");
+                return 0;
+            }
+            double value = blockType.Value * UpgradeManager.Instance.SellValueMultiplier * amountToSell;
 
             int remaining = current - amountToSell;
-            if (remaining <= 0) storedOres.Remove(id);
-            else storedOres[id] = remaining;
+            storedOres[id] = Mathf.Max(0, remaining);
 
             if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
             DepotChanged?.Invoke();
