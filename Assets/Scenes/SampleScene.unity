@@ -372,8 +372,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 521.0708, y: -289.60522}
-  m_SizeDelta: {x: 1042.1416, y: 193.07016}
+  m_AnchoredPosition: {x: 266.51273, y: -200.17499}
+  m_SizeDelta: {x: 533.02545, y: 133.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &83590421
 MonoBehaviour:
@@ -651,7 +651,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.InventoryUI
   panelRoot: {fileID: 1978703737}
-  playerInventory: {fileID: 0}
+  playerInventory: {fileID: 2055974197}
   weightFillBar: {fileID: 1478005017}
   weightLabel: {fileID: 423642722}
   artifactLabel: {fileID: 83590421}
@@ -1193,8 +1193,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1206.5847, y: -756.221}
-  m_SizeDelta: {x: 328.88617, y: 1512.442}
+  m_AnchoredPosition: {x: 712.0127, y: -438.5}
+  m_SizeDelta: {x: 277.97455, y: 797}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &418891573
 MonoBehaviour:
@@ -1414,8 +1414,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 164.44308, y: -1319.5552}
-  m_SizeDelta: {x: 248.88617, y: 305.77368}
+  m_AnchoredPosition: {x: 138.98727, y: -663.73334}
+  m_SizeDelta: {x: 197.97455, y: 186.53333}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &423642722
 MonoBehaviour:
@@ -1711,8 +1711,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 521.0708, y: -756.221}
-  m_SizeDelta: {x: 1042.1416, y: 1512.442}
+  m_AnchoredPosition: {x: 306.51273, y: -438.5}
+  m_SizeDelta: {x: 533.02545, y: 797}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &451887481
 MonoBehaviour:
@@ -1794,8 +1794,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 521.0708, y: -949.29114}
-  m_SizeDelta: {x: 1042.1416, y: 1126.3016}
+  m_AnchoredPosition: {x: 266.51273, y: -531.94995}
+  m_SizeDelta: {x: 533.02545, y: 530.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &485816528
 MonoBehaviour:
@@ -4359,11 +4359,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
+  m_FillMethod: 1
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
@@ -4826,8 +4826,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 521.0708, y: -96.53508}
-  m_SizeDelta: {x: 1042.1416, y: 193.07016}
+  m_AnchoredPosition: {x: 266.51273, y: -66.725}
+  m_SizeDelta: {x: 533.02545, y: 133.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1721701250
 MonoBehaviour:
@@ -4965,8 +4965,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 164.44308, y: -603.33417}
-  m_SizeDelta: {x: 248.88617, y: 1126.6683}
+  m_AnchoredPosition: {x: 138.98727, y: -305.23334}
+  m_SizeDelta: {x: 197.97455, y: 530.4667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1749113078
 MonoBehaviour:
@@ -4981,7 +4981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.09433961, g: 0.091224626, b: 0.091224626, a: 0.7372549}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

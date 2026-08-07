@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Economy;
 using Events;
 using MapGeneration;
@@ -22,6 +23,12 @@ namespace Player
         public bool IsFull => CurrentWeight >= MaxWeight;
         public int ArtifactCount { get; private set; }
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreCounts;
+        private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
+
+        private void Start()
+        {
+            PopulateOreCounts();
+        }
 
         public bool AddOre(BlockType blockType, int amount = 1)
         {
@@ -45,10 +52,29 @@ namespace Player
         public Dictionary<BlockTypeId, int> WithdrawAllOre()
         {
             var snapshot = new Dictionary<BlockTypeId, int>(oreCounts);
-            oreCounts.Clear();
+            ClearOreCounts();
             CurrentWeight = 0f;
             GameManager.EventService.Dispatch<InventoryChangedEvent>();
             return snapshot;
+        }
+
+        private void PopulateOreCounts()
+        {
+            foreach (var blockType in blockTypeDatabase.BlockTypes)
+            {
+                if (blockType.Category == BlockCategory.Ore)
+                {
+                    oreCounts[blockType.Id] = 0;
+                }
+            }
+        }
+
+        private void ClearOreCounts()
+        {
+            foreach(var key in oreCounts.Keys.ToList())
+            {
+                oreCounts[key] = 0;
+            }
         }
     }
 }

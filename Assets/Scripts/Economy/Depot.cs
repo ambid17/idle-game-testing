@@ -48,7 +48,7 @@ namespace Economy
 
             int amountToSell = fraction >= 1f ? current : Mathf.Clamp(Mathf.RoundToInt(current * fraction), 1, current);
 
-            var blockType = blockTypeDatabase != null ? blockTypeDatabase.Get((byte)id) : null;
+            var blockType = blockTypeDatabase.Get((byte)id);
             if (blockType == null)
             {
                 Debug.LogError($"Depot.Sell: BlockTypeDatabase missing or BlockTypeId {id} not found. Cannot sell.");

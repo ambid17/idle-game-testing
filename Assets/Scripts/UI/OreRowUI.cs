@@ -1,3 +1,4 @@
+using Economy;
 using Events;
 using MapGeneration;
 using TMPro;
@@ -19,19 +20,25 @@ namespace UI
         [SerializeField] private Button sellHalfButton;
         [SerializeField] private Button sellAllButton;
 
+        private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
+
         public BlockTypeId BlockTypeId { get; private set; }
 
         public void Bind(BlockTypeId id, string displayName)
         {
             BlockTypeId = id;
-            if (nameLabel != null) nameLabel.text = displayName;
-            if (sellHalfButton != null) sellHalfButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellRequestedEvent(BlockTypeId, 0.5f)));
-            if (sellAllButton != null) sellAllButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellRequestedEvent(BlockTypeId, 1f)));
+            nameLabel.text = displayName;
+            if (sellHalfButton!= null) sellHalfButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellRequestedEvent(BlockTypeId, 0.5f)));
+            if (sellHalfButton != null) sellAllButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellRequestedEvent(BlockTypeId, 1f)));
         }
 
         public void SetCount(int count)
         {
-            if (countLabel != null) countLabel.text = count.ToString();
+            countLabel.text = count.ToString();
+
+            var blockValue = blockTypeDatabase.Get((byte)BlockTypeId)?.Value ?? 0;
+            var totalValue = blockValue * count;
+            valueLabel.text = $"${totalValue:0.##}";
         }
 
         public void SetValue(float value)

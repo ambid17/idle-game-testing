@@ -22,7 +22,7 @@ namespace UI
         [SerializeField] private Transform rowContainer;
         [SerializeField] private OreRowUI rowPrefab;
 
-        private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
+        private readonly Dictionary<BlockTypeId, OreRowUI> uiRowsByType = new();
         private bool isOpen;
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
 
@@ -70,7 +70,7 @@ namespace UI
                 var row = Instantiate(rowPrefab, rowContainer);
                 string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.Id.ToString() : blockType.DisplayName;
                 row.Bind(blockType.Id, displayName);
-                rows[blockType.Id] = row;
+                uiRowsByType[blockType.Id] = row;
             }
         }
 
@@ -79,31 +79,21 @@ namespace UI
             GameManager.EventService.Dispatch<InventoryOpenedEvent>();
             isOpen = open;
             panelRoot.SetActive(open);
-            if (open)
-            {
-                Refresh();
-            }
         }
 
         private void Refresh()
         {
-            if (playerInventory == null) return;
-
-            foreach (var kvp in rows)
+            foreach (var kvp in uiRowsByType)
             {
                 playerInventory.OreCounts.TryGetValue(kvp.Key, out var count);
                 kvp.Value.SetCount(count);
             }
 
-            if (weightFillBar != null)
-            {
-                weightFillBar.fillAmount = playerInventory.MaxWeight > 0f
-                    ? Mathf.Clamp01(playerInventory.CurrentWeight / playerInventory.MaxWeight)
-                    : 0f;
-            }
-
-            if (weightLabel != null) weightLabel.text = $"{playerInventory.CurrentWeight:0}/{playerInventory.MaxWeight:0}";
-            if (artifactLabel != null) artifactLabel.text = $"Artifacts: {playerInventory.ArtifactCount}";
+            weightFillBar.fillAmount = playerInventory.MaxWeight > 0f
+                ? Mathf.Clamp01(playerInventory.CurrentWeight / playerInventory.MaxWeight)
+                : 0f;
+            weightLabel.text = $"{playerInventory.CurrentWeight:0}/{playerInventory.MaxWeight:0}";
+            artifactLabel.text = $"Artifacts: {playerInventory.ArtifactCount}";
         }
     }
 }
