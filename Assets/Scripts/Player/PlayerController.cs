@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Player
 {
@@ -46,12 +47,23 @@ namespace Player
 
         private void FixedUpdate()
         {
+            var keyboard = Keyboard.current;
+            if (keyboard == null)
+            {
+                Debug.LogError("no keyboard found");
+                return;
+            }
             IsGrounded = CheckGrounded();
-            IsFlying = Input.GetKey(KeyCode.W) && Fuel > 0f;
+
+            bool wHeld = keyboard.wKey.isPressed;
+            bool aHeld = keyboard.aKey.isPressed;
+            bool dHeld = keyboard.dKey.isPressed;
+
+            IsFlying = wHeld && Fuel > 0f;
 
             float moveInput = 0f;
-            if (Input.GetKey(KeyCode.A)) moveInput -= 1f;
-            if (Input.GetKey(KeyCode.D)) moveInput += 1f;
+            if (aHeld) moveInput -= 1f;
+            if (dHeld) moveInput += 1f;
 
             float horizontalSpeed = IsFlying ? flySpeed : groundSpeed;
             float verticalVelocity = IsFlying ? jetpackLiftSpeed : rb.linearVelocity.y;
@@ -97,6 +109,7 @@ namespace Player
             return Physics2D.OverlapBox(origin, groundCheckSize, 0f, groundLayer);
         }
 
+        // Draw ground check
         private void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.yellow;

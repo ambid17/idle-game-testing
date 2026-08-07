@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Interaction
 {
@@ -6,48 +7,39 @@ namespace Interaction
     // pops up interaction text, pressing E interacts.
     public class PlayerInteractionDetector : MonoBehaviour
     {
-        [SerializeField] private float interactionRadius = 2f;
         [SerializeField] private LayerMask interactableLayer;
         [SerializeField] private InteractionPromptUI promptUI;
 
-        private IInteractable current;
+        private BuildingInteractable current;
+        Keyboard keyboard = Keyboard.current;
 
         private void Update()
         {
-            var found = FindNearestInteractable();
-
-            if (found != current)
-            {
-                current = found;
-                if (current != null) promptUI.Show(current.PromptText);
-                else promptUI.Hide();
-            }
-
-            if (current != null && Input.GetKeyDown(KeyCode.E))
+            if (current != null && keyboard != null && keyboard.eKey.wasPressedThisFrame)
             {
                 current.Interact();
             }
         }
 
-        private IInteractable FindNearestInteractable()
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            var hits = Physics2D.OverlapCircleAll(transform.position, interactionRadius, interactableLayer);
-            IInteractable nearest = null;
-            float nearestDistSq = float.MaxValue;
-
-            foreach (var hit in hits)
+            if (!interactableLayer.Contains(collision.gameObject.layer))
             {
-                if (!hit.TryGetComponent<IInteractable>(out var interactable)) continue;
-
-                float distSq = ((Vector2)hit.transform.position - (Vector2)transform.position).sqrMagnitude;
-                if (distSq < nearestDistSq)
-                {
-                    nearestDistSq = distSq;
-                    nearest = interactable;
-                }
+                return;
             }
+            var other = collision.GetComponent<BuildingInteractable>();
+            current = other;
+            promptUI.Show(current.PromptText);
+        }
 
-            return nearest;
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (!interactableLayer.Contains(collision.gameObject.layer))
+            {
+                return;
+            }
+            current = null;
+            promptUI.Hide();
         }
     }
 }

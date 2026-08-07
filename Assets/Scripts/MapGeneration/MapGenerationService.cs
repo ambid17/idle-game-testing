@@ -54,6 +54,7 @@ namespace MapGeneration
         {
             float cellSize = streamingManager.CellSize;
             int depthInBlocks = Mathf.FloorToInt(-worldPos.y / cellSize);
+            depthInBlocks++; // Convert to 1-based depth for layer offset calculations.
             layerIndex = streamingManager.GetLayerIndexAtDepth(depthInBlocks);
             x = Mathf.FloorToInt(worldPos.x / cellSize);
             y = depthInBlocks - streamingManager.GetLayerOffset(layerIndex);

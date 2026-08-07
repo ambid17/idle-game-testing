@@ -1,5 +1,6 @@
 using MapGeneration;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Player
 {
@@ -68,9 +69,12 @@ namespace Player
 
         private static Vector2Int? ResolveDirection()
         {
-            if (Input.GetKey(KeyCode.A)) return Vector2Int.left;
-            if (Input.GetKey(KeyCode.D)) return Vector2Int.right;
-            if (Input.GetKey(KeyCode.S)) return Vector2Int.down;
+            var keyboard = Keyboard.current;
+            if (keyboard == null) return null;
+
+            if (keyboard.aKey.isPressed) return Vector2Int.left;
+            if (keyboard.dKey.isPressed) return Vector2Int.right;
+            if (keyboard.sKey.isPressed) return Vector2Int.down;
             return null;
         }
 
