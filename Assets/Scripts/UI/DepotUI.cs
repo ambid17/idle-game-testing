@@ -17,13 +17,11 @@ namespace UI
     public class DepotUI : MonoBehaviour
     {
         [SerializeField] private GameObject panelRoot;
-        [SerializeField] private BuildingInteractable depotBuilding;
         [SerializeField] private Transform rowContainer;
         [SerializeField] private OreRowUI rowPrefab;
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private Button sellAllButton;
         [SerializeField] private Button closeButton;
-        [SerializeField] private GameObject otherPanelToClose;
 
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
         private PlayerInventory playerInventory;
@@ -58,8 +56,14 @@ namespace UI
 
         private void OnBuildingInteracted(BuildingInteractedEvent evt)
         {
-            if (depotBuilding == null || evt.Type != depotBuilding.Type) return;
-            Open();
+            if(evt.Type == InteractableType.Depot)
+            {
+                Open();
+            }
+            else
+            {
+                Close();
+            }
         }
 
         private void BuildRows()
@@ -72,7 +76,7 @@ namespace UI
 
             foreach (var blockType in blockTypeDatabase.BlockTypes)
             {
-                if (blockType == null || blockType.Category != BlockCategory.Ore) continue;
+                if (blockType.Category != BlockCategory.Ore) continue;
 
                 var row = Instantiate(rowPrefab, rowContainer);
                 string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
@@ -83,16 +87,14 @@ namespace UI
 
         private void Open()
         {
-            if (playerInventory != null) Depot.Instance.Deposit(playerInventory.WithdrawAllOre());
-
-            if (otherPanelToClose != null) otherPanelToClose.SetActive(false);
-            if (panelRoot != null) panelRoot.SetActive(true);
+            Depot.Instance.Deposit(playerInventory.WithdrawAllOre());
+            panelRoot.SetActive(true);
             Refresh();
         }
 
         private void Close()
         {
-            if (panelRoot != null) panelRoot.SetActive(false);
+            panelRoot.SetActive(false);
         }
 
         private void OnSellRequested(SellRequestedEvent evt) => Depot.Instance.Sell(evt.Id, evt.Fraction);

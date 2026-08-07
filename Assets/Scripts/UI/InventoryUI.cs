@@ -21,7 +21,6 @@ namespace UI
         [SerializeField] private TMP_Text artifactLabel;
         [SerializeField] private Transform rowContainer;
         [SerializeField] private OreRowUI rowPrefab;
-        [SerializeField] private GameObject otherPanelToClose;
 
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
         private bool isOpen;
@@ -77,11 +76,11 @@ namespace UI
 
         private void SetOpen(bool open)
         {
+            GameManager.EventService.Dispatch<InventoryOpenedEvent>();
             isOpen = open;
-            if (panelRoot != null) panelRoot.SetActive(open);
+            panelRoot.SetActive(open);
             if (open)
             {
-                if (otherPanelToClose != null) otherPanelToClose.SetActive(false);
                 Refresh();
             }
         }

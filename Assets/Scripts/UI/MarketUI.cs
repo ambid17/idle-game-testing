@@ -16,12 +16,10 @@ namespace UI
     public class MarketUI : MonoBehaviour
     {
         [SerializeField] private GameObject panelRoot;
-        [SerializeField] private BuildingInteractable marketBuilding;
         [SerializeField] private Transform scrollViewContent;
         [SerializeField] private UpgradeNodeUI nodePrefab;
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private Button closeButton;
-        [SerializeField] private GameObject otherPanelToClose;
         [SerializeField] private Button miningButton;
         [SerializeField] private Button economyButton;
         [SerializeField] private Button automationButton;
@@ -62,8 +60,14 @@ namespace UI
 
         private void OnBuildingInteracted(BuildingInteractedEvent evt)
         {
-            if (marketBuilding == null || evt.Type != marketBuilding.Type) return;
-            Open();
+            if (evt.Type == InteractableType.Market)
+            {
+                Open();
+            }
+            else
+            {
+                Close();
+            }
         }
 
         private void BuildNodes()
@@ -87,13 +91,14 @@ namespace UI
 
         private void Open()
         {
-            if (otherPanelToClose != null) otherPanelToClose.SetActive(false);
-            if (panelRoot != null) panelRoot.SetActive(true);
+            panelRoot.SetActive(true);
             RefreshAll();
         }
 
         private void SetTab(UpgradeBranch branch)
         {
+            if(activeTab == branch) return;
+
             activeTab = branch;
             foreach (var node in nodes)
             {

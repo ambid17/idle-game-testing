@@ -39,6 +39,8 @@ namespace Events
 
     public class InventoryChangedEvent { }
 
+    public class InventoryOpenedEvent { }
+
     public class BuildingInteractedEvent : IEvent
     {
         public InteractableType Type;

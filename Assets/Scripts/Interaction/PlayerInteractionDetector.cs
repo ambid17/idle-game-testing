@@ -1,3 +1,4 @@
+using Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,7 +18,7 @@ namespace Interaction
         {
             if (current != null && keyboard != null && keyboard.eKey.wasPressedThisFrame)
             {
-                current.Interact();
+                GameManager.EventService.Dispatch(new BuildingInteractedEvent(current.Type));
             }
         }
 
