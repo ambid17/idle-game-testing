@@ -17,11 +17,14 @@ namespace Player
     {
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
 
+        [SerializeField] private MiningCrackIndicator crackIndicator;
+
         private PlayerController playerController;
         private PlayerInventory playerInventory;
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
         private float miningProgress;
+        private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
         private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.OverflowUnlocked;
 
@@ -29,6 +32,8 @@ namespace Player
         {
             playerController = GetComponent<PlayerController>();
             playerInventory = GetComponent<PlayerInventory>();
+
+            if (crackIndicator == null) Debug.LogError($"{nameof(PlayerMining)} on {name} is missing its crackIndicator reference.");
         }
 
         private void Update()
@@ -70,32 +75,27 @@ namespace Player
                 return;
             }
 
-            var upgrades = UpgradeManager.Instance;
+            
+
+            float speedMultiplier = upgradeManager != null ? upgradeManager.MiningSpeedMultiplier : 1f;
+            miningProgress += Time.deltaTime * speedMultiplier;
+            float targetBlockHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
 
             // GameDesignDoc "Insta-mine chance": rolled once per newly-acquired target.
-            if (isNewTarget && upgrades != null && upgrades.InstaMineChance > 0f && Random.value < upgrades.InstaMineChance)
-            {
-                MineTarget(layerIndex, x, y, blockType);
-                ResetTarget();
-                return;
-            }
-
+            var canInstaMine = isNewTarget && upgradeManager != null && upgradeManager.InstaMineChance > 0f && Random.value < upgradeManager.InstaMineChance;
             // GameDesignDoc "the final upgrade makes dirt/stone an instant mine".
-            if (blockType.Category == BlockCategory.Dirt && upgrades != null && upgrades.InstantMineDirt)
+            var canInstaMineDirt = blockType.Category == BlockCategory.Dirt && upgradeManager != null && upgradeManager.InstantMineDirt;
+            var finishedMining =  miningProgress >= targetBlockHealth;
+            if (canInstaMine || canInstaMineDirt || finishedMining)
             {
                 MineTarget(layerIndex, x, y, blockType);
                 ResetTarget();
                 return;
             }
 
-            float speedMultiplier = upgrades != null ? upgrades.MiningSpeedMultiplier : 1f;
-            miningProgress += Time.deltaTime * speedMultiplier;
-
-            float miningTime = blockType.MiningTime * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
-            if (miningProgress >= miningTime)
+            if (crackIndicator != null)
             {
-                MineTarget(layerIndex, x, y, blockType);
-                ResetTarget();
+                crackIndicator.Show(mapGenerationService.CellToWorldCenter(layerIndex, x, y), miningProgress / targetBlockHealth);
             }
         }
 
@@ -114,6 +114,7 @@ namespace Player
         {
             hasTarget = false;
             miningProgress = 0f;
+            if (crackIndicator != null) crackIndicator.Hide();
         }
 
         private void MineTarget(int layerIndex, int x, int y, BlockType blockType)

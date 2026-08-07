@@ -53,7 +53,7 @@ namespace MapGeneration
         public float Value;
         [Tooltip("Inventory weight per unit.")]
         public float Weight;
-        public float MiningTime = 1f;
+        public float Health = 1f;
         public Color Tint = Color.white;
     }
 }

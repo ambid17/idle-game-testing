@@ -52,8 +52,6 @@ namespace MapGeneration
             return baseFogRevealRadius + (upgrades != null ? upgrades.LanternFogRadiusBonus : 0);
         }
 
-        public void SetFocusDepth(float depthInBlocks) => streamingManager.SetFocusDepth(depthInBlocks);
-
         // Inverts ChunkTilemapView's cell->world placement (pos = (x, -y) within a chunk root
         // positioned at -layerOffset*cellSize) so player-facing systems can resolve which cell
         // a world position falls in.
@@ -61,7 +59,10 @@ namespace MapGeneration
         {
             float cellSize = streamingManager.CellSize;
             int depthInBlocks = Mathf.FloorToInt(-worldPos.y / cellSize);
-            depthInBlocks++; // Convert to 1-based depth for layer offset calculations.
+            if (worldPos.y > 0)
+            {
+                depthInBlocks = 0;
+            }
             layerIndex = streamingManager.GetLayerIndexAtDepth(depthInBlocks);
             x = Mathf.FloorToInt(worldPos.x / cellSize);
             y = depthInBlocks - streamingManager.GetLayerOffset(layerIndex);
@@ -102,11 +103,7 @@ namespace MapGeneration
             return !cell.Mined && cell.IsArtifact;
         }
 
-        public float GetBlockHealthMultiplier(int layerIndex)
-        {
-            var config = layerConfigProvider != null ? layerConfigProvider.GetConfig(layerIndex) : null;
-            return config != null ? config.BlockHealth : 1f;
-        }
+        public float GetBlockHealthMultiplier(int layerIndex) => layerConfigProvider.GetConfig(layerIndex).BlockHealth;
 
         // New seed, all tunnels wiped; grid width upgrade level is left untouched so it carries over.
         public void PrestigeReset(int newSeed)
