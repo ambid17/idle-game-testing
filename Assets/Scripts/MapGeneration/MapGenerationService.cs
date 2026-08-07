@@ -84,6 +84,17 @@ namespace MapGeneration
             return blockTypeDatabase != null ? blockTypeDatabase.Get(cell.BlockTypeId) : null;
         }
 
+        // Peeks whether the cell holds an undiscovered artifact without mining it - lets callers
+        // (PlayerMining) know to credit an artifact once the mine completes.
+        public bool IsArtifactAt(int layerIndex, int x, int y)
+        {
+            var chunk = World.GetOrGenerateChunk(layerIndex);
+            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) return false;
+
+            var cell = chunk.Cells[chunk.Index(x, y)];
+            return !cell.Mined && cell.IsArtifact;
+        }
+
         public float GetBlockHealthMultiplier(int layerIndex)
         {
             var config = layerConfigProvider != null ? layerConfigProvider.GetConfig(layerIndex) : null;

@@ -7,18 +7,25 @@ namespace Player
     // Directional mining per GameDesignDoc "Mechanics": holding A/S/D mines in that direction,
     // but only while grounded (PlayerController.IsGrounded). Resolves the targeted grid cell
     // through MapGenerationService's world<->cell helpers and mines it once BlockType.MiningTime
-    // (scaled by the layer's BlockHealth) has elapsed.
+    // (scaled by the layer's BlockHealth) has elapsed. Per "Inventory": once the carried weight is
+    // full, Ore-category blocks can no longer be mined, but Dirt/Hazard/PowerUp blocks still can.
     [RequireComponent(typeof(PlayerController))]
+    [RequireComponent(typeof(PlayerInventory))]
     public class PlayerMining : MonoBehaviour
     {
         [SerializeField] private MapGenerationService mapGenerationService;
 
         private PlayerController playerController;
+        private PlayerInventory playerInventory;
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
         private float miningProgress;
 
-        private void Awake() => playerController = GetComponent<PlayerController>();
+        private void Awake()
+        {
+            playerController = GetComponent<PlayerController>();
+            playerInventory = GetComponent<PlayerInventory>();
+        }
 
         private void Update()
         {
@@ -52,7 +59,7 @@ namespace Player
             }
 
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
-            if (blockType == null)
+            if (blockType == null || (blockType.Category == BlockCategory.Ore && playerInventory.IsFull))
             {
                 ResetTarget();
                 return;
@@ -62,7 +69,12 @@ namespace Player
             float miningTime = blockType.MiningTime * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
             if (miningProgress >= miningTime)
             {
-                mapGenerationService.MineCell(layerIndex, x, y);
+                bool hadArtifact = mapGenerationService.IsArtifactAt(layerIndex, x, y);
+                if (mapGenerationService.MineCell(layerIndex, x, y))
+                {
+                    if (blockType.Category == BlockCategory.Ore) playerInventory.AddOre(blockType);
+                    if (hadArtifact) playerInventory.AddArtifact();
+                }
                 ResetTarget();
             }
         }
