@@ -20,7 +20,7 @@ namespace MapGeneration
         public void Initialize(MineWorld mineWorld)
         {
             world = mineWorld;
-            currentFocusLayer = int.MinValue;
+            SetFocusDepth(0);
         }
 
         public void SetFocusDepth(float depthInBlocks)
@@ -34,18 +34,19 @@ namespace MapGeneration
 
         private void UpdateWindow()
         {
-            var wanted = new HashSet<int>();
+            var wantedLayers = new HashSet<int>();
+            // look up and down <windowRadius layers> from the current focus layer, 
             for (int i = currentFocusLayer - windowRadius; i <= currentFocusLayer + windowRadius; i++)
             {
-                if (i >= 0) wanted.Add(i);
+                if (i >= 0) wantedLayers.Add(i);
             }
 
             foreach (var layerIndex in new List<int>(activeViews.Keys))
             {
-                if (!wanted.Contains(layerIndex)) Release(layerIndex);
+                if (!wantedLayers.Contains(layerIndex)) Release(layerIndex);
             }
 
-            foreach (var layerIndex in wanted)
+            foreach (var layerIndex in wantedLayers)
             {
                 if (!activeViews.ContainsKey(layerIndex)) Acquire(layerIndex);
             }
