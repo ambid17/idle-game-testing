@@ -1,3 +1,4 @@
+using Economy;
 using MapGeneration;
 using UnityEngine;
 
@@ -7,9 +8,11 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private MapGenerationService _mapGenerationService;
     [SerializeField] private BlockTypeDatabase _blockTypeDatabase;
     [SerializeField] private LayerConfigProvider _layerConfigProvider;
+    [SerializeField] private UpgradeDatabase _upgradeDatabase;
 
     public static ChunkStreamingManager ChunkStreamingManager => Instance._chunkStreamingManager;
     public static MapGenerationService MapGenerationService => Instance._mapGenerationService;
     public static BlockTypeDatabase BlockTypeDatabase => Instance._blockTypeDatabase;
     public static LayerConfigProvider LayerConfigProvider => Instance._layerConfigProvider;
+    public static UpgradeDatabase UpgradeDatabase => Instance._upgradeDatabase;
 }

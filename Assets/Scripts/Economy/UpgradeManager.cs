@@ -1,0 +1,111 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Economy
+{
+    // Tracks purchased levels for every UpgradeDefinition in GameManager.UpgradeDatabase and
+    // exposes the resulting gameplay values. Per GameDesignDoc "Market Upgrades": "all regular
+    // upgrades are purchased at the market using Dollars". Consumers (PlayerMining,
+    // PlayerInventory, Depot, MapGenerationService) pull the current effect value from the
+    // properties below on demand rather than being pushed updates, so purchase order/timing never
+    // matters to them. Singleton so it needs no scene wiring, matching Wallet/Depot.
+    public class UpgradeManager : Singleton<UpgradeManager>
+    {
+        private static UpgradeDatabase database => GameManager.UpgradeDatabase;
+
+        private readonly Dictionary<string, int> levels = new();
+
+        // (definition, new level)
+        public event Action<UpgradeDefinition, int> UpgradePurchased;
+
+        public int GetLevel(UpgradeDefinition def) => def != null && levels.TryGetValue(def.Id, out var lvl) ? lvl : 0;
+
+        public bool IsMaxed(UpgradeDefinition def) => def != null && GetLevel(def) >= def.MaxLevel;
+
+        // "Upgrades will be a skill tree ... requires the player to unlock the previous tier":
+        // a plain prerequisite just needs one level purchased; capstones (RequirePrerequisiteMaxed)
+        // need the prerequisite fully maxed first.
+        public bool IsUnlocked(UpgradeDefinition def)
+        {
+            if (def == null) return false;
+            if (def.Prerequisite == null) return true;
+            return def.RequirePrerequisiteMaxed ? IsMaxed(def.Prerequisite) : GetLevel(def.Prerequisite) > 0;
+        }
+
+        public double GetNextCost(UpgradeDefinition def) => def != null ? def.GetCost(GetLevel(def)) : 0;
+
+        public bool CanPurchase(UpgradeDefinition def)
+        {
+            if (def == null || IsMaxed(def) || !IsUnlocked(def)) return false;
+            return Wallet.Instance != null && Wallet.Instance.Dollars >= GetNextCost(def);
+        }
+
+        public bool TryPurchase(UpgradeDefinition def)
+        {
+            if (!CanPurchase(def)) return false;
+
+            double cost = GetNextCost(def);
+            if (!Wallet.Instance.TrySpend(cost)) return false;
+
+            int newLevel = GetLevel(def) + 1;
+            levels[def.Id] = newLevel;
+            UpgradePurchased?.Invoke(def, newLevel);
+            return true;
+        }
+
+        private int LevelOf(UpgradeEffect effect) => GetLevel(database != null ? database.Find(effect) : null);
+
+        private float ValuePerLevelOf(UpgradeEffect effect)
+        {
+            var def = database != null ? database.Find(effect) : null;
+            return def != null ? def.EffectValuePerLevel : 0f;
+        }
+
+        private bool IsMaxedEffect(UpgradeEffect effect)
+        {
+            var def = database != null ? database.Find(effect) : null;
+            return def != null && IsMaxed(def);
+        }
+
+        // GameDesignDoc "Mining > Increase mining size": current cumulative upgrade level: fed
+        // into MiningAreaPattern.GetOffsets by PlayerMining to know which extra cells to mine.
+        public int MiningAreaLevel => LevelOf(UpgradeEffect.MiningAreaRadius);
+
+        // GameDesignDoc "Mining > Increase mining speed": "each tier adds 10% mining speed".
+        public float MiningSpeedMultiplier => 1f + LevelOf(UpgradeEffect.MiningSpeed) * ValuePerLevelOf(UpgradeEffect.MiningSpeed);
+
+        // GameDesignDoc "Mining > Increase mining speed": "the final upgrade makes dirt/stone an
+        // instant mine" - interpreted as the Dirt category (the valueless filler blocks), since
+        // the Ore-category "Stone" block is a sellable mineral, not filler.
+        public bool InstantMineDirt => IsMaxedEffect(UpgradeEffect.MiningSpeed);
+
+        // GameDesignDoc "Mining > Insta-mine chance".
+        public float InstaMineChance => LevelOf(UpgradeEffect.InstaMineChance) * ValuePerLevelOf(UpgradeEffect.InstaMineChance);
+
+        // GameDesignDoc "Mining > Lantern": extra fog-of-war reveal radius on top of the base.
+        public int LanternFogRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.LanternFogRadius) * ValuePerLevelOf(UpgradeEffect.LanternFogRadius));
+
+        // GameDesignDoc "Lantern capstones > true sight: reveals all fog of war".
+        public bool TrueSightUnlocked => IsMaxedEffect(UpgradeEffect.LanternTrueSight);
+
+        // GameDesignDoc "Economy > Inventory: increase the player's max carrying weight".
+        public float InventoryCapacityBonus => LevelOf(UpgradeEffect.InventoryCapacity) * ValuePerLevelOf(UpgradeEffect.InventoryCapacity);
+
+        // GameDesignDoc "Economy > Marketing: increase sales value of minerals".
+        public float SellValueMultiplier => 1f + LevelOf(UpgradeEffect.MarketingSellMultiplier) * ValuePerLevelOf(UpgradeEffect.MarketingSellMultiplier);
+
+        // GameDesignDoc "Economy > Overflow: once inventory is full, you can continue to mine and
+        // ores will auto-sell at a reduced value".
+        public bool OverflowUnlocked => IsMaxedEffect(UpgradeEffect.Overflow);
+
+        public float OverflowSellFraction
+        {
+            get
+            {
+                var def = database != null ? database.Find(UpgradeEffect.Overflow) : null;
+                return def != null ? def.EffectValuePerLevel : 0f;
+            }
+        }
+    }
+}

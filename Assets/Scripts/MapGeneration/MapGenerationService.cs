@@ -1,4 +1,5 @@
 using System;
+using Economy;
 using UnityEngine;
 
 namespace MapGeneration
@@ -32,7 +33,7 @@ namespace MapGeneration
         {
             if (!World.TryMineCell(layerIndex, x, y, out var block, out var artifactFound)) return false;
 
-            int radius = fogRadiusOverride >= 0 ? fogRadiusOverride : baseFogRevealRadius;
+            int radius = fogRadiusOverride >= 0 ? fogRadiusOverride : GetFogRevealRadius();
             var revealed = World.RevealFog(layerIndex, x, y, radius);
             streamingManager.NotifyCellMined(layerIndex, x, y, revealed);
 
@@ -43,6 +44,15 @@ namespace MapGeneration
 
             CellMined?.Invoke(layerIndex, x, y, block, artifactFound);
             return true;
+        }
+
+        // GameDesignDoc "Market Upgrades > Mining > Lantern": base radius plus purchased levels,
+        // or the whole chunk width once the "true sight" capstone is unlocked.
+        private int GetFogRevealRadius()
+        {
+            var upgrades = UpgradeManager.Instance;
+            if (upgrades != null && upgrades.TrueSightUnlocked) return gridWidth;
+            return baseFogRevealRadius + (upgrades != null ? upgrades.LanternFogRadiusBonus : 0);
         }
 
         public void SetFocusDepth(float depthInBlocks) => streamingManager.SetFocusDepth(depthInBlocks);

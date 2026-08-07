@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
+  m_Name: Economy_Inventory
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
+  Id: inventory_capacity
+  DisplayName: Inventory
+  Description: Increase how much weight you can carry before you need to visit the
+    Depot.
+  Branch: 1
+  Effect: 5
+  EffectValuePerLevel: 25
+  MaxLevel: 10
+  BaseCost: 80
+  CostGrowth: 1.2
+  Prerequisite: {fileID: 0}
+  RequirePrerequisiteMaxed: 0

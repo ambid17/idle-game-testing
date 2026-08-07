@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Economy;
 using MapGeneration;
 using UnityEngine;
 
@@ -11,15 +12,16 @@ namespace Player
     // only be turned in at the Museum, never sold/stored at the Depot.
     public class PlayerInventory : MonoBehaviour
     {
-        [SerializeField] private float maxWeight = 100f;
+        [SerializeField] private float baseMaxWeight = 100f;
 
         private readonly Dictionary<BlockTypeId, int> oreCounts = new();
 
         public event Action InventoryChanged;
 
-        public float MaxWeight => maxWeight;
+        // GameDesignDoc "Market Upgrades > Economy > Inventory": each level adds carrying capacity.
+        public float MaxWeight => baseMaxWeight + (UpgradeManager.Instance != null ? UpgradeManager.Instance.InventoryCapacityBonus : 0f);
         public float CurrentWeight { get; private set; }
-        public bool IsFull => CurrentWeight >= maxWeight;
+        public bool IsFull => CurrentWeight >= MaxWeight;
         public int ArtifactCount { get; private set; }
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreCounts;
 

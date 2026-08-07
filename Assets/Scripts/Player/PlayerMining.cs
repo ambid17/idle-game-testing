@@ -1,3 +1,4 @@
+using Economy;
 using MapGeneration;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,8 +8,9 @@ namespace Player
     // Directional mining per GameDesignDoc "Mechanics": holding A/S/D mines in that direction,
     // but only while grounded (PlayerController.IsGrounded). Resolves the targeted grid cell
     // through MapGenerationService's world<->cell helpers and mines it once BlockType.MiningTime
-    // (scaled by the layer's BlockHealth) has elapsed. Per "Inventory": once the carried weight is
-    // full, Ore-category blocks can no longer be mined, but Dirt/Hazard/PowerUp blocks still can.
+    // (scaled by the layer's BlockHealth and the Mining Speed upgrade) has elapsed. Per
+    // "Inventory": once the carried weight is full, Ore-category blocks can no longer be mined
+    // unless the Overflow upgrade is unlocked, in which case they're auto-sold instead.
     [RequireComponent(typeof(PlayerController))]
     [RequireComponent(typeof(PlayerInventory))]
     public class PlayerMining : MonoBehaviour
@@ -20,6 +22,8 @@ namespace Player
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
         private float miningProgress;
+
+        private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.OverflowUnlocked;
 
         private void Awake()
         {
@@ -49,7 +53,8 @@ namespace Player
                 return;
             }
 
-            if (!hasTarget || layerIndex != targetLayer || x != targetX || y != targetY)
+            bool isNewTarget = !hasTarget || layerIndex != targetLayer || x != targetX || y != targetY;
+            if (isNewTarget)
             {
                 targetLayer = layerIndex;
                 targetX = x;
@@ -59,22 +64,37 @@ namespace Player
             }
 
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
-            if (blockType == null || (blockType.Category == BlockCategory.Ore && playerInventory.IsFull))
+            if (blockType == null || (blockType.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow))
             {
                 ResetTarget();
                 return;
             }
 
-            miningProgress += Time.deltaTime;
+            var upgrades = UpgradeManager.Instance;
+
+            // GameDesignDoc "Insta-mine chance": rolled once per newly-acquired target.
+            if (isNewTarget && upgrades != null && upgrades.InstaMineChance > 0f && Random.value < upgrades.InstaMineChance)
+            {
+                MineTarget(layerIndex, x, y, blockType);
+                ResetTarget();
+                return;
+            }
+
+            // GameDesignDoc "the final upgrade makes dirt/stone an instant mine".
+            if (blockType.Category == BlockCategory.Dirt && upgrades != null && upgrades.InstantMineDirt)
+            {
+                MineTarget(layerIndex, x, y, blockType);
+                ResetTarget();
+                return;
+            }
+
+            float speedMultiplier = upgrades != null ? upgrades.MiningSpeedMultiplier : 1f;
+            miningProgress += Time.deltaTime * speedMultiplier;
+
             float miningTime = blockType.MiningTime * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
             if (miningProgress >= miningTime)
             {
-                bool hadArtifact = mapGenerationService.IsArtifactAt(layerIndex, x, y);
-                if (mapGenerationService.MineCell(layerIndex, x, y))
-                {
-                    if (blockType.Category == BlockCategory.Ore) playerInventory.AddOre(blockType);
-                    if (hadArtifact) playerInventory.AddArtifact();
-                }
+                MineTarget(layerIndex, x, y, blockType);
                 ResetTarget();
             }
         }
@@ -94,6 +114,58 @@ namespace Player
         {
             hasTarget = false;
             miningProgress = 0f;
+        }
+
+        private void MineTarget(int layerIndex, int x, int y, BlockType blockType)
+        {
+            bool hadArtifact = mapGenerationService.IsArtifactAt(layerIndex, x, y);
+            if (!mapGenerationService.MineCell(layerIndex, x, y)) return;
+
+            CollectMinedBlock(blockType);
+            if (hadArtifact) playerInventory.AddArtifact();
+
+            MineAreaBonusCells(layerIndex, x, y);
+        }
+
+        private void CollectMinedBlock(BlockType blockType)
+        {
+            if (blockType.Category != BlockCategory.Ore) return;
+
+            if (playerInventory.IsFull && CanOverflow)
+            {
+                var upgrades = UpgradeManager.Instance;
+                double value = blockType.Value * upgrades.OverflowSellFraction * upgrades.SellValueMultiplier;
+                if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
+            }
+            else
+            {
+                playerInventory.AddOre(blockType);
+            }
+        }
+
+        // GameDesignDoc "Market Upgrades > Mining > Increase mining size": each unlocked offset
+        // mines alongside the primary target cell for free (no extra time cost - the upgrade IS
+        // the free hit).
+        private void MineAreaBonusCells(int layerIndex, int centerX, int centerY)
+        {
+            var upgrades = UpgradeManager.Instance;
+            if (upgrades == null || upgrades.MiningAreaLevel <= 0) return;
+
+            foreach (var offset in MiningAreaPattern.GetOffsets(upgrades.MiningAreaLevel))
+            {
+                int x = centerX + offset.x;
+                int y = centerY + offset.y;
+
+                var bonusBlock = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
+                if (bonusBlock == null) continue;
+                if (bonusBlock.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow) continue;
+
+                bool hadArtifact = mapGenerationService.IsArtifactAt(layerIndex, x, y);
+                if (!mapGenerationService.MineCell(layerIndex, x, y)) continue;
+
+                CollectMinedBlock(bonusBlock);
+                if (hadArtifact) playerInventory.AddArtifact();
+            }
         }
     }
 }
