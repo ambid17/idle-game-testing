@@ -267,6 +267,7 @@ GameObject:
   - component: {fileID: 528579660}
   - component: {fileID: 528579659}
   - component: {fileID: 528579658}
+  - component: {fileID: 528579661}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -288,9 +289,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.MapGenerationService
   worldSeed: 12345
   gridWidth: 30
-  layerConfigProvider: {fileID: 11400000, guid: 084e86c3e0e049f49a9fcc12631dd331, type: 2}
-  blockTypeDatabase: {fileID: 11400000, guid: 761eb32727830b3448c5eb7379c5f045, type: 2}
-  streamingManager: {fileID: 528579659}
   baseFogRevealRadius: 3
 --- !u!114 &528579659
 MonoBehaviour:
@@ -305,7 +303,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.ChunkStreamingManager
   chunkViewPrefab: {fileID: 3366483945538663452, guid: 051d956cdefe0f84a9d9406f6ecf5884, type: 3}
-  layerConfigProvider: {fileID: 11400000, guid: 084e86c3e0e049f49a9fcc12631dd331, type: 2}
   poolParent: {fileID: 1270505749}
   windowRadius: 1
   cellSize: 1
@@ -324,6 +321,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &528579661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 528579657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea6b6ab1f94781a47a6f1ce22e2484a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  _chunkStreamingManager: {fileID: 528579659}
+  _mapGenerationService: {fileID: 528579658}
+  _blockTypeDatabase: {fileID: 11400000, guid: 761eb32727830b3448c5eb7379c5f045, type: 2}
+  _layerConfigProvider: {fileID: 11400000, guid: 084e86c3e0e049f49a9fcc12631dd331, type: 2}
 --- !u!1 &553570239 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 203830239378102619, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
@@ -501,7 +514,7 @@ Transform:
   m_GameObject: {fileID: 954990516}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.06069, y: 0, z: -38.98386}
+  m_LocalPosition: {x: 0, y: 0, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -812,11 +825,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2055974189}
   - component: {fileID: 2055974191}
-  - component: {fileID: 2055974190}
   - component: {fileID: 2055974194}
   - component: {fileID: 2055974193}
   - component: {fileID: 2055974192}
   - component: {fileID: 2055974195}
+  - component: {fileID: 2055974196}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -841,52 +854,6 @@ Transform:
   - {fileID: 2092673530}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &2055974190
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2055974188}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 0.8333333}
-    newSize: {x: 1.8, y: 1.5}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.9, y: 1}
-  m_EdgeRadius: 0
 --- !u!212 &2055974191
 SpriteRenderer:
   serializedVersion: 3
@@ -960,6 +927,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerMining
   mapGenerationService: {fileID: 528579658}
+  canMine: 0
 --- !u!114 &2055974193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -980,11 +948,11 @@ MonoBehaviour:
   fuelRegenPerSecondGrounded: 25
   fallDamageVelocityThreshold: 12
   fallDamagePerExcessUnit: 2
-  groundCheckOffset: {x: 0, y: -0.5}
-  groundCheckSize: {x: 0.9, y: 0.1}
+  groundCheckOffset: {x: 0, y: -0.35}
+  groundCheckSize: {x: 0.6, y: 0.1}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 128
 --- !u!50 &2055974194
 Rigidbody2D:
   serializedVersion: 5
@@ -1008,9 +976,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_Interpolate: 1
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &2055974195
 MonoBehaviour:
@@ -1028,6 +996,43 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   promptUI: {fileID: 2092673531}
+--- !u!70 &2055974196
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055974188}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.7, y: 0.75}
+  m_Direction: 0
 --- !u!1 &2092673526
 GameObject:
   m_ObjectHideFlags: 0

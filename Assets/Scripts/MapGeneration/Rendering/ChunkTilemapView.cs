@@ -12,7 +12,7 @@ namespace MapGeneration
         [SerializeField] private Tilemap terrainTilemap;
         [SerializeField] private Tilemap fogTilemap;
         [SerializeField] private TileBase fogTile;
-        [SerializeField] private BlockTypeDatabase blockTypes;
+        private BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
         [SerializeField] private bool fogDisabled;
 
         public int LayerIndex { get; private set; }

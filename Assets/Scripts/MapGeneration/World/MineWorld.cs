@@ -10,16 +10,14 @@ namespace MapGeneration
         public int Seed { get; private set; }
         public int GridWidth { get; private set; }
 
-        private readonly LayerConfigProvider configProvider;
-        private readonly BlockTypeDatabase blockTypes;
+        private LayerConfigProvider configProvider => GameManager.LayerConfigProvider;
+        private BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
         private readonly Dictionary<int, ChunkData> chunksByLayer = new();
 
-        public MineWorld(int seed, int gridWidth, LayerConfigProvider configProvider, BlockTypeDatabase blockTypes)
+        public MineWorld(int seed, int gridWidth)
         {
             Seed = seed;
             GridWidth = gridWidth;
-            this.configProvider = configProvider;
-            this.blockTypes = blockTypes;
         }
 
         public ChunkData GetOrGenerateChunk(int layerIndex)

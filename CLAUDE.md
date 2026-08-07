@@ -19,20 +19,16 @@ Every asset under `Assets/` has a paired `.meta` file holding a stable GUID that
 ## MonoBehaviour rule
 Script filename must exactly match the public class name — Unity requires this to attach the script as a component. A new script's `.meta` file is generated on import, so it won't be usable in the Editor until Unity has imported it at least once.
 
+## Singleton rule
+In general, when a non-instantiated MonoBehaviour script needs to be accessed from multiple places, it is preferred to have singleton access to prevent setup in the Unity Editor.
+
 ## Testing / verification loop
 There's no CLI build or test runner configured yet. The practical loop today: make script changes → let Unity Editor recompile → check the Console panel for compile errors → use Play Mode to verify behavior. Don't claim untested gameplay code "works" — say it compiles cleanly (if verified) and needs a Play Mode check.
-
-If a check is needed without opening the Editor UI, Unity supports headless batchmode compilation:
-```
-Unity.exe -batchmode -quit -projectPath . -logFile -
-```
-For automated tests, the standard approach is the Unity Test Framework (EditMode/PlayMode test assemblies under `Assets/Tests`) — not set up in this project yet.
 
 ## Unity MCP
 `com.coplaydev.unity-mcp` is declared in `Packages/manifest.json` (git dependency, [CoplayDev/unity-mcp](https://github.com/CoplayDev/unity-mcp)), giving Claude Code live access to the running Editor — scene hierarchy, GameObjects, component values, console output, tests, builds — instead of just editing files on disk. It needs a one-time in-Editor setup that can't be scripted from outside Unity:
 1. Open this project in Unity (first launch after adding the dependency imports the package).
 2. `Window → MCP for Unity → Configure All Detected Clients` — registers the server with Claude Code automatically.
-3. Accept the "Pending Connection" prompt Unity shows when Claude Code first connects.
-4. Verify with `claude mcp list` from a terminal — `UnityMCP` should show as connected.
+3. Verify with `claude mcp list` from a terminal — `UnityMCP` should show as connected.
 
 If the Editor-driven tools (`Unity_ManageScene`, `Unity_ManageGameObject`, etc.) aren't available in a session, the bridge likely isn't connected — check Editor → Project Settings for the MCP bridge status before assuming the integration is broken.

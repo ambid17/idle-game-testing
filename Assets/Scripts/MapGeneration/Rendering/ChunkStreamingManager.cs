@@ -8,7 +8,7 @@ namespace MapGeneration
     public class ChunkStreamingManager : MonoBehaviour
     {
         [SerializeField] private ChunkTilemapView chunkViewPrefab;
-        [SerializeField] private LayerConfigProvider layerConfigProvider;
+        private LayerConfigProvider layerConfigProvider => GameManager.LayerConfigProvider;
         [SerializeField] private Transform poolParent;
         [SerializeField] private int windowRadius = 1;
         [SerializeField] private float cellSize = 1f;

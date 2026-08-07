@@ -29,6 +29,7 @@ namespace Player
         [SerializeField] private LayerMask groundLayer;
 
         private Rigidbody2D rb;
+        private CapsuleCollider2D capsuleCollider;
         private PlayerHealth health;
         private bool wasGrounded;
         private float peakFallSpeed;
@@ -41,8 +42,13 @@ namespace Player
         private void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
+            rb.WakeUp();
             health = GetComponent<PlayerHealth>();
             Fuel = fuelMax;
+
+            capsuleCollider = GetComponent<CapsuleCollider2D>();
+            groundCheckOffset = capsuleCollider.size.y * 0.5f * Vector2.down;
+            groundCheckSize = new Vector2(capsuleCollider.size.x * 0.5f, 0.1f);
         }
 
         private void FixedUpdate()
@@ -106,7 +112,9 @@ namespace Player
         private bool CheckGrounded()
         {
             Vector2 origin = (Vector2)transform.position + groundCheckOffset;
-            return Physics2D.OverlapBox(origin, groundCheckSize, 0f, groundLayer);
+            var collided = Physics2D.OverlapBox(origin, groundCheckSize, 0f, groundLayer);
+            Debug.Log($"Ground check collided with {collided?.gameObject.name ?? "nothing"}");
+            return collided != null;
         }
 
         // Draw ground check

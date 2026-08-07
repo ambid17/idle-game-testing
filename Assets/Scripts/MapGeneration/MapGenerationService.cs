@@ -10,9 +10,9 @@ namespace MapGeneration
     {
         [SerializeField] private int worldSeed = 12345;
         [SerializeField] private int gridWidth = 30;
-        [SerializeField] private LayerConfigProvider layerConfigProvider;
-        [SerializeField] private BlockTypeDatabase blockTypeDatabase;
-        [SerializeField] private ChunkStreamingManager streamingManager;
+        private LayerConfigProvider layerConfigProvider => GameManager.LayerConfigProvider;
+        private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
+        private ChunkStreamingManager streamingManager => GameManager.ChunkStreamingManager;
 
         [Tooltip("Placeholder default - exact base radius and Lantern-tier scaling is an open design item (see MapGenerationImplementation.md).")]
         [SerializeField] private int baseFogRevealRadius = 3;
@@ -24,7 +24,7 @@ namespace MapGeneration
 
         private void Awake()
         {
-            World = new MineWorld(worldSeed, gridWidth, layerConfigProvider, blockTypeDatabase);
+            World = new MineWorld(worldSeed, gridWidth);
             streamingManager.Initialize(World);
         }
 

@@ -25,7 +25,7 @@ namespace MapGeneration
 
         public static MineWorld Restore(MapSaveData save, LayerConfigProvider configProvider, BlockTypeDatabase blockTypes)
         {
-            var world = new MineWorld(save.Seed, save.GridWidth, configProvider, blockTypes);
+            var world = new MineWorld(save.Seed, save.GridWidth);
 
             foreach (var chunkSave in save.Chunks)
             {

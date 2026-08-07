@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4776783349440364018}
   - component: {fileID: 1848831202266026119}
   - component: {fileID: 4808782919114589214}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TerrainTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,8 +228,7 @@ MonoBehaviour:
   terrainTilemap: {fileID: 4854983365550696733}
   fogTilemap: {fileID: 1723525027489103912}
   fogTile: {fileID: 11400000, guid: bf4b4d74eeb1338478e3ab236cdfe122, type: 2}
-  blockTypes: {fileID: 11400000, guid: 761eb32727830b3448c5eb7379c5f045, type: 2}
-  fogDisabled: 1
+  fogDisabled: 0
 --- !u!1 &7226294879325617473
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,7 +239,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6856309116590556510}
   - component: {fileID: 1723525027489103912}
-  - component: {fileID: 7723938239747294506}
   - component: {fileID: 2959934874346562207}
   - component: {fileID: 2012197840832368068}
   m_Layer: 0
@@ -303,44 +301,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!19719996 &7723938239747294506
-TilemapCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7226294879325617473}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_MaximumTileChangeCount: 1000
-  m_ExtrusionFactor: 0
-  m_UseDelaunayMesh: 0
 --- !u!483693784 &2959934874346562207
 TilemapRenderer:
   serializedVersion: 2
