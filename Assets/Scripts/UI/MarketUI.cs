@@ -79,12 +79,11 @@ namespace UI
         private void OnPurchaseRequested(UpgradeDefinition def) => UpgradeManager.Instance.TryPurchase(def);
 
         private void OnUpgradePurchased(UpgradeDefinition def, int level) => RefreshAll();
-        private void OnDollarsChanged(double dollars) => RefreshAll();
+        private void OnDollarsChanged() => RefreshAll();
 
         private void RefreshAll()
         {
-            var manager = UpgradeManager.Instance;
-            foreach (var node in nodes) node.Refresh(manager);
+            foreach (var node in nodes) node.Refresh(UpgradeManager.Instance);
             if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
         }
     }

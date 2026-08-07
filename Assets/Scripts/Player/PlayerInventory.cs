@@ -19,7 +19,7 @@ namespace Player
         public event Action InventoryChanged;
 
         // GameDesignDoc "Market Upgrades > Economy > Inventory": each level adds carrying capacity.
-        public float MaxWeight => baseMaxWeight + (UpgradeManager.Instance != null ? UpgradeManager.Instance.InventoryCapacityBonus : 0f);
+        public float MaxWeight => baseMaxWeight + UpgradeManager.Instance.InventoryCapacityBonus;
         public float CurrentWeight { get; private set; }
         public bool IsFull => CurrentWeight >= MaxWeight;
         public int ArtifactCount { get; private set; }

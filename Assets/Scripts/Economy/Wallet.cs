@@ -11,20 +11,20 @@ namespace Economy
 
         public double Dollars => dollars;
 
-        public event Action<double> DollarsChanged;
+        public event Action DollarsChanged;
 
         public void Add(double amount)
         {
             if (amount <= 0) return;
             dollars += amount;
-            DollarsChanged?.Invoke(dollars);
+            DollarsChanged?.Invoke();
         }
 
         public bool TrySpend(double amount)
         {
             if (amount <= 0 || amount > dollars) return false;
             dollars -= amount;
-            DollarsChanged?.Invoke(dollars);
+            DollarsChanged?.Invoke();
             return true;
         }
     }

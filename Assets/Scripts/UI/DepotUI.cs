@@ -54,7 +54,11 @@ namespace UI
         private void BuildRows()
         {
             var database = GameManager.BlockTypeDatabase;
-            if (database == null || rowPrefab == null || rowContainer == null) return;
+            if (database == null || rowPrefab == null || rowContainer == null)
+            {
+                Debug.LogError("DepotUI.BuildRows: Missing BlockTypeDatabase, rowPrefab, or rowContainer. Cannot build ore rows.");
+                return;
+            }
 
             foreach (var blockType in database.BlockTypes)
             {
@@ -86,23 +90,21 @@ namespace UI
 
         private void Refresh()
         {
-            var database = GameManager.BlockTypeDatabase;
-
             foreach (var kvp in rows)
             {
                 Depot.Instance.StoredOres.TryGetValue(kvp.Key, out var count);
                 kvp.Value.SetCount(count);
 
-                var blockType = database != null ? database.Get((byte)kvp.Key) : null;
-                kvp.Value.SetValue(blockType != null ? blockType.Value * count : 0f);
+                var blockType = GameManager.BlockTypeDatabase.Get((byte)kvp.Key);
+                kvp.Value.SetValue(blockType.Value * count);
             }
 
-            OnDollarsChanged(Wallet.Instance.Dollars);
+            OnDollarsChanged();
         }
 
-        private void OnDollarsChanged(double dollars)
+        private void OnDollarsChanged()
         {
-            if (dollarsLabel != null) dollarsLabel.text = $"${dollars:0.##}";
+            if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
         }
     }
 }
