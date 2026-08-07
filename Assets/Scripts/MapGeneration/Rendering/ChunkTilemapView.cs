@@ -13,6 +13,7 @@ namespace MapGeneration
         [SerializeField] private Tilemap fogTilemap;
         [SerializeField] private TileBase fogTile;
         [SerializeField] private BlockTypeDatabase blockTypes;
+        [SerializeField] private bool fogDisabled;
 
         public int LayerIndex { get; private set; }
 
@@ -23,6 +24,11 @@ namespace MapGeneration
             chunk = chunkData;
             LayerIndex = layerIndex;
             RepaintAll();
+
+            if (fogDisabled)
+            {
+                fogTilemap.gameObject.SetActive(false);
+            }
         }
 
         public void RepaintAll()

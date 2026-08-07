@@ -229,6 +229,7 @@ MonoBehaviour:
   fogTilemap: {fileID: 1723525027489103912}
   fogTile: {fileID: 11400000, guid: bf4b4d74eeb1338478e3ab236cdfe122, type: 2}
   blockTypes: {fileID: 11400000, guid: 761eb32727830b3448c5eb7379c5f045, type: 2}
+  fogDisabled: 1
 --- !u!1 &7226294879325617473
 GameObject:
   m_ObjectHideFlags: 0

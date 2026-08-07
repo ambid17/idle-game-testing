@@ -168,6 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.ChunkStreamingManager
   chunkViewPrefab: {fileID: 3366483945538663452, guid: 051d956cdefe0f84a9d9406f6ecf5884, type: 3}
+  layerConfigProvider: {fileID: 11400000, guid: 084e86c3e0e049f49a9fcc12631dd331, type: 2}
   poolParent: {fileID: 1270505749}
   windowRadius: 1
   cellSize: 1

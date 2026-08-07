@@ -7,8 +7,6 @@ namespace MapGeneration
     // miner simulation as well as for the live scene.
     public static class ChunkGenerator
     {
-        public const int LayerHeight = 100;
-
         private enum Salt
         {
             OrePick = 1,
@@ -24,17 +22,18 @@ namespace MapGeneration
             {
                 LayerIndex = layerIndex,
                 Width = gridWidth,
-                Height = LayerHeight,
-                Cells = new CellData[gridWidth * LayerHeight],
+                Height = config.LayerHeight,
+                Cells = new CellData[gridWidth * config.LayerHeight],
             };
 
             if (config == null)
             {
+                Debug.LogWarning($"No config for layer {layerIndex}, generating empty chunk");
                 chunk.IsFullyGenerated = true;
                 return chunk;
             }
 
-            for (int y = 0; y < LayerHeight; y++)
+            for (int y = 0; y < config.LayerHeight; y++)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
@@ -51,14 +50,16 @@ namespace MapGeneration
         {
             var cell = new CellData();
 
+            // grassy dirt for first layer
             if(layerIndex == 0 && y == 0)
             {
-                cell.BlockTypeId = 0;
+                cell.BlockTypeId = (byte) BlockTypeId.GrassyDirt;
                 return cell;
             }
 
             var picked = PickWeighted(config.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OrePick));
 
+            // hazards are optional, so we only roll for them if the config has a chance and a table
             if (config.HazardChancePerCell > 0f && config.HazardTable.Count > 0)
             {
                 float gate = MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.HazardGate);
@@ -75,7 +76,7 @@ namespace MapGeneration
 
         private static void PlaceArtifacts(int worldSeed, int layerIndex, int gridWidth, LayerConfig config, ChunkData chunk)
         {
-            for (int y = 0; y < LayerHeight; y++)
+            for (int y = 0; y < config.LayerHeight; y++)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
@@ -91,7 +92,7 @@ namespace MapGeneration
             {
                 var rng = MapRng.CreateLayerRandom(worldSeed, layerIndex, (int)Salt.ArtifactFallback);
                 int x = rng.Next(0, gridWidth);
-                int y = rng.Next(0, LayerHeight);
+                int y = rng.Next(0, config.LayerHeight);
                 MarkArtifact(chunk, x, y);
             }
         }

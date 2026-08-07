@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfigProvider
   AuthoredLayers:
   - {fileID: 11400000, guid: 77116969f5229b14780de323c0bc00f5, type: 2}
+  - {fileID: 11400000, guid: b3d7dd2b76f611441a741b39979f3fde, type: 2}

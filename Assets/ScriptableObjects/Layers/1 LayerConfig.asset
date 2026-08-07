@@ -22,6 +22,8 @@ MonoBehaviour:
     Weight: 2
   - BlockType: {fileID: 11400000, guid: d529a29641331c448ac6f8f4d4209047, type: 2}
     Weight: 1
+  - BlockType: {fileID: 11400000, guid: da4f65576bcec1847805830d80fd8b5f, type: 2}
+    Weight: 100
   HazardTable: []
   HazardChancePerCell: 0
   ArtifactBonusChancePerCell: 0.0005

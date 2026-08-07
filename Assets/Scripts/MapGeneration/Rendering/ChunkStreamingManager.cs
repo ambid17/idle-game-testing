@@ -8,6 +8,7 @@ namespace MapGeneration
     public class ChunkStreamingManager : MonoBehaviour
     {
         [SerializeField] private ChunkTilemapView chunkViewPrefab;
+        [SerializeField] private LayerConfigProvider layerConfigProvider;
         [SerializeField] private Transform poolParent;
         [SerializeField] private int windowRadius = 1;
         [SerializeField] private float cellSize = 1f;
@@ -25,10 +26,10 @@ namespace MapGeneration
 
         public void SetFocusDepth(float depthInBlocks)
         {
-            int layerIndex = Mathf.FloorToInt(depthInBlocks / ChunkGenerator.LayerHeight);
-            if (layerIndex == currentFocusLayer) return;
+            int layerIndexAtDepth = CalculateLayerFromDepth((int)depthInBlocks);
+            if (layerIndexAtDepth == currentFocusLayer) return;
 
-            currentFocusLayer = layerIndex;
+            currentFocusLayer = layerIndexAtDepth;
             UpdateWindow();
         }
 
@@ -57,10 +58,36 @@ namespace MapGeneration
             var chunk = world.GetOrGenerateChunk(layerIndex);
             var view = pool.Count > 0 ? pool.Dequeue() : Instantiate(chunkViewPrefab, poolParent);
 
+            view.gameObject.name = $"ChunkTilemapView_Layer{layerIndex}";
             view.gameObject.SetActive(true);
-            view.transform.position = new Vector3(0f, -layerIndex * ChunkGenerator.LayerHeight * cellSize, 0f);
+            view.transform.position = new Vector3(0f, -CalculateLayerOffset(layerIndex) * cellSize, 0f);
             view.Bind(chunk, layerIndex);
             activeViews[layerIndex] = view;
+        }
+
+        private int CalculateLayerOffset(int layerIndex)
+        {
+            var yOffset = 0;
+            for(int i = 0; i < layerIndex; i++)
+            {
+                yOffset += layerConfigProvider.GetConfig(i).LayerHeight;
+            }
+            return yOffset;
+        }
+
+        private int CalculateLayerFromDepth(int depthInBlocks)
+        {
+            var currentTotalDepth = 0;
+            for (int i = 0; i < layerConfigProvider.AuthoredLayers.Count; i++)
+            {
+                var config = layerConfigProvider.GetConfig(i);
+                if (depthInBlocks < currentTotalDepth + config.LayerHeight)
+                {
+                    return i;
+                }
+                currentTotalDepth += config.LayerHeight;
+            }
+            return 0;
         }
 
         private void Release(int layerIndex)

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MapGeneration
 {
-    // One layer (width x 100) worth of generated cells - the streaming/persistence unit.
+    // One layer (width x height) worth of generated cells - the streaming/persistence unit.
     public class ChunkData
     {
         public int LayerIndex;

@@ -11,13 +11,15 @@ namespace MapGeneration
         [Min(0f)] public float Weight = 1f;
     }
 
-    // Authored per 100-block layer: ore/dirt table, hazard/power-up table, dirt tint, mining speed.
+    // Authored per layer: ore/dirt table, hazard/power-up table, dirt tint, mining speed.
     // Include a "Dirt" entry directly in OreTable to represent the dirt fallback weight.
     [CreateAssetMenu(fileName = "LayerConfig", menuName = "Map Generation/Layer Config")]
     public class LayerConfig : ScriptableObject
     {
-        [Tooltip("depth / 100, 0-based.")]
+        [Tooltip("depth / layerHeight, 0-based.")]
         public int LayerIndex;
+
+        [Range(0, 100)] public int LayerHeight = 30;
 
         [Tooltip("Tint applied to all dirt blocks in this layer, based on depth")]
         public Color LayerDirtTint = Color.white;
