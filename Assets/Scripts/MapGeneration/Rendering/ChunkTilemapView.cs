@@ -15,6 +15,10 @@ namespace MapGeneration
         private BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
         [SerializeField] private bool fogDisabled;
 
+        // Layer 0 only: fog fades in from clear at the surface (row 0) to full opacity by this
+        // row, so the mine entrance doesn't open into a hard fog wall.
+        [SerializeField] private int surfaceFogGradientRows = 10;
+
         public int LayerIndex { get; private set; }
 
         private ChunkData chunk;
@@ -39,8 +43,7 @@ namespace MapGeneration
 
             var terrainPositions = new Vector3Int[count];
             var terrainTiles = new TileBase[count];
-            var fogPositions = new Vector3Int[count];
-            var fogTiles = new TileBase[count];
+            var fogChanges = new TileChangeData[count];
 
             int n = 0;
             for (int y = 0; y < h; y++)
@@ -53,15 +56,14 @@ namespace MapGeneration
                     terrainPositions[n] = pos;
                     terrainTiles[n] = cell.Mined ? null : ResolveTile(cell.BlockTypeId);
 
-                    fogPositions[n] = pos;
-                    fogTiles[n] = cell.Revealed ? null : fogTile;
+                    fogChanges[n] = BuildFogChange(pos, y, cell.Revealed);
 
                     n++;
                 }
             }
 
             terrainTilemap.SetTiles(terrainPositions, terrainTiles);
-            fogTilemap.SetTiles(fogPositions, fogTiles);
+            fogTilemap.SetTiles(fogChanges, true);
         }
 
         public void RepaintCells(IReadOnlyList<Vector2Int> localCoords)
@@ -69,8 +71,7 @@ namespace MapGeneration
             int count = localCoords.Count;
             var terrainPositions = new Vector3Int[count];
             var terrainTiles = new TileBase[count];
-            var fogPositions = new Vector3Int[count];
-            var fogTiles = new TileBase[count];
+            var fogChanges = new TileChangeData[count];
 
             for (int i = 0; i < count; i++)
             {
@@ -82,12 +83,24 @@ namespace MapGeneration
                 terrainPositions[i] = pos;
                 terrainTiles[i] = cell.Mined ? null : ResolveTile(cell.BlockTypeId);
 
-                fogPositions[i] = pos;
-                fogTiles[i] = cell.Revealed ? null : fogTile;
+                fogChanges[i] = BuildFogChange(pos, y, cell.Revealed);
             }
 
             terrainTilemap.SetTiles(terrainPositions, terrainTiles);
-            fogTilemap.SetTiles(fogPositions, fogTiles);
+            fogTilemap.SetTiles(fogChanges, true);
+        }
+
+        // Revealed cells clear the fog tile entirely. Otherwise, layer 0's top rows fade the
+        // fog tile's alpha in from 0 (surface) to 1 (by surfaceFogGradientRows) instead of
+        // snapping straight to full opacity; every other layer/row stays fully opaque.
+        private TileChangeData BuildFogChange(Vector3Int pos, int y, bool revealed)
+        {
+            if (revealed) return new TileChangeData(pos, null, Color.white, Matrix4x4.identity);
+
+            float alpha = LayerIndex == 0 && y < surfaceFogGradientRows
+                ? Mathf.Clamp01(y / (float)(surfaceFogGradientRows - 1))
+                : 1f;
+            return new TileChangeData(pos, fogTile, new Color(1f, 1f, 1f, alpha), Matrix4x4.identity);
         }
 
         private TileBase ResolveTile(byte blockTypeId)
