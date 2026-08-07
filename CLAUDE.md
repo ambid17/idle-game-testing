@@ -25,6 +25,9 @@ In general, when a non-instantiated MonoBehaviour script needs to be accessed fr
 	- Access the services/classes via `GameManager.<VariableName>`
 	- Do not check for null during access.
 	- Do check for null in the game manager, and log an error if the value isn't set.
+	
+## Null checks
+- when performing null checks to return early, include a `Debug.LogError()`
 
 ## Events
 Whenever one would use an event or action, use the EventService. This keeps the code easier to maintain.

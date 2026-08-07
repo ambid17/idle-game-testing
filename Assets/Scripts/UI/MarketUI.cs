@@ -24,6 +24,8 @@ namespace UI
         [SerializeField] private GameObject otherPanelToClose;
 
         private readonly List<UpgradeNodeUI> nodes = new();
+        private UpgradeDatabase upgradeDatabase = GameManager.UpgradeDatabase;
+        
 
         private void Start()
         {
@@ -47,10 +49,13 @@ namespace UI
 
         private void BuildNodes()
         {
-            var database = GameManager.UpgradeDatabase;
-            if (database == null || nodePrefab == null) return;
+            if (nodePrefab == null)
+            {
+                Debug.LogError("MarketUI: nodePrefab is not assigned.");
+                return;
+            }
 
-            foreach (var def in database.Upgrades)
+            foreach (var def in upgradeDatabase.Upgrades)
             {
                 if (def == null) continue;
 

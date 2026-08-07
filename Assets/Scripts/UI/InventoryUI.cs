@@ -24,6 +24,7 @@ namespace UI
 
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
         private bool isOpen;
+        private BlockTypeDatabase blockTypeDatabase = GameManager.BlockTypeDatabase;
 
         public bool IsOpen => isOpen;
         public void Close() => SetOpen(false);
@@ -56,10 +57,13 @@ namespace UI
 
         private void BuildRows()
         {
-            var database = GameManager.BlockTypeDatabase;
-            if (database == null || rowPrefab == null || rowContainer == null) return;
+            if (rowPrefab == null || rowContainer == null)
+            {
+                Debug.LogError("DepotUI.BuildRows: Missing rowPrefab, or rowContainer. Cannot build ore rows.");
+                return;
+            }
 
-            foreach (var blockType in database.BlockTypes)
+            foreach (var blockType in blockTypeDatabase.BlockTypes)
             {
                 if (blockType == null || blockType.Category != BlockCategory.Ore) continue;
 

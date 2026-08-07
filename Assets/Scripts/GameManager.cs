@@ -30,4 +30,30 @@ public class GameManager : Singleton<GameManager>
             return Instance._eventService;
         }
     }
+
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+        if(_chunkStreamingManager == null)
+        {
+            Debug.LogError("ChunkStreamingManager is not assigned in GameManager.");
+        }
+        if (_mapGenerationService == null)
+        {
+            Debug.LogError("MapGenerationService is not assigned in GameManager.");
+        }
+        if (_blockTypeDatabase == null)
+        {
+            Debug.LogError("BlockTypeDatabase is not assigned in GameManager.");
+        }
+        if (_layerConfigProvider == null)
+        {
+            Debug.LogError("LayerConfigProvider is not assigned in GameManager.");
+        }
+        if (_upgradeDatabase == null)
+        {
+            Debug.LogError("UpgradeDatabase is not assigned in GameManager.");
+        }
+    }
 }

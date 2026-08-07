@@ -23,7 +23,7 @@ namespace MapGeneration
             return save;
         }
 
-        public static MineWorld Restore(MapSaveData save, LayerConfigProvider configProvider, BlockTypeDatabase blockTypes)
+        public static MineWorld Restore(MapSaveData save)
         {
             var world = new MineWorld(save.Seed, save.GridWidth);
 

@@ -15,7 +15,7 @@ namespace Player
     [RequireComponent(typeof(PlayerInventory))]
     public class PlayerMining : MonoBehaviour
     {
-        [SerializeField] private MapGenerationService mapGenerationService;
+        private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
 
         private PlayerController playerController;
         private PlayerInventory playerInventory;
