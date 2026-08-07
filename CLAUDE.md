@@ -22,6 +22,34 @@ Script filename must exactly match the public class name — Unity requires this
 ## Singleton rule
 In general, when a non-instantiated MonoBehaviour script needs to be accessed from multiple places, it is preferred to have singleton access to prevent setup in the Unity Editor.
 
+## Events
+Whenever one would use an event or action, use the EventService. This keeps the code easier to maintain.
+
+### Event usage
+- to add an event listener: `GameManager.EventService.Add<T>(S);`
+	- T : event type, stored in Events.cs
+	- S : function to call when event is invoked
+- to dispatch an event: `GameManager.EventService.Dispatch(new CustomEvent(EventData));`
+	- CustomEvent: The Event class created in Events.cs
+	- EventData:
+- create an event to be sent without any data:
+	- give the class a useful name
+```
+public class MyCustomEvent { }
+```
+- create an event to be sent with data:
+	- you may add multiple pieces of data to be sent with the event
+```
+public class MyCustomEventWithData: IEvent
+{
+    public float EventData
+
+    public CurrencyRewardEvent(float eventData)
+    {
+        EventData = eventData;
+    }
+}
+```
 ## Testing / verification loop
 There's no CLI build or test runner configured yet. The practical loop today: make script changes → let Unity Editor recompile → check the Console panel for compile errors → use Play Mode to verify behavior. Don't claim untested gameplay code "works" — say it compiles cleanly (if verified) and needs a Play Mode check.
 

@@ -1,4 +1,5 @@
 using Economy;
+using Events;
 using MapGeneration;
 using UnityEngine;
 
@@ -15,4 +16,18 @@ public class GameManager : Singleton<GameManager>
     public static BlockTypeDatabase BlockTypeDatabase => Instance._blockTypeDatabase;
     public static LayerConfigProvider LayerConfigProvider => Instance._layerConfigProvider;
     public static UpgradeDatabase UpgradeDatabase => Instance._upgradeDatabase;
+
+    private EventService _eventService;
+    public static EventService EventService
+    {
+        get
+        {
+            if (Instance._eventService == null)
+            {
+                Instance._eventService = new EventService();
+            }
+
+            return Instance._eventService;
+        }
+    }
 }
