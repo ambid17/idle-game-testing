@@ -81,6 +81,7 @@ namespace UI
                 var row = Instantiate(rowPrefab, rowContainer);
                 string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
                 row.Bind(blockType.Id, displayName);
+                row.gameObject.name = $"Row_{blockType.name}";
                 rows[blockType.Id] = row;
             }
         }

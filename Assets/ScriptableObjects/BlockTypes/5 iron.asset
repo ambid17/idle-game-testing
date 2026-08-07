@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 5 iron
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
   Id: 5
-  DisplayName: 
+  DisplayName: Iron
   Category: 1
   HazardBehavior: 0
   Tile: {fileID: 11400000, guid: 4eb9a04682e98e249a51d1205ddaaff1, type: 2}

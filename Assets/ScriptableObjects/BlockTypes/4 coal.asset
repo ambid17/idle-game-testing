@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 4 coal
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
   Id: 4
-  DisplayName: 
+  DisplayName: Coal
   Category: 1
   HazardBehavior: 0
   Tile: {fileID: 11400000, guid: 160e42c7ec5d6d74398b1a11bd374346, type: 2}

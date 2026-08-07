@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 2 Wood
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
   Id: 2
-  DisplayName: 
+  DisplayName: Wood
   Category: 1
   HazardBehavior: 0
   Tile: {fileID: 11400000, guid: a306be7430c8e7c4287489519fb9d0c4, type: 2}

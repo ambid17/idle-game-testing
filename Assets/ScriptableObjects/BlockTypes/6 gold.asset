@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 6 gold
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
   Id: 6
-  DisplayName: 
+  DisplayName: Gold
   Category: 1
   HazardBehavior: 0
   Tile: {fileID: 11400000, guid: 2d5697d7975fe534a8a29d2d3047291b, type: 2}

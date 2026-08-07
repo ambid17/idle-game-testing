@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 8 diamond
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
   Id: 8
-  DisplayName: 
+  DisplayName: Diamond
   Category: 1
   HazardBehavior: 0
   Tile: {fileID: 11400000, guid: 2029342c76010844f898071728206973, type: 2}
