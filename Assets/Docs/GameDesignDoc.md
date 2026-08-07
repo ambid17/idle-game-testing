@@ -52,6 +52,9 @@ I want to make an incremental game similar to motherload
 			- if you sell all "gold" for example, the processing center will not run as it has no gold to process
 		- market: where you purchase upgrades
 			- the UI is a skill tree?
+			- has a tab for repairs
+				- fill up gas
+				- re-fill health
 		- shipping center: where you can sell your own materials for higher prices, based on market fluctuations
 			- maybe a casino instead
 			- value is time-based sine wave + noise
