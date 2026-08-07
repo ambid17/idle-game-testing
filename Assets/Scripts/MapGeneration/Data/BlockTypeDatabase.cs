@@ -22,7 +22,7 @@ namespace MapGeneration
             lookup = new Dictionary<byte, BlockType>();
             foreach (var blockType in BlockTypes)
             {
-                if (blockType != null) lookup[blockType.Id] = blockType;
+                if (blockType != null) lookup[(byte)blockType.Id] = blockType;
             }
         }
 

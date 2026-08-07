@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c845b9a9e35dd1d4894d69b46a0196cb, type: 3}
-  m_Name: LayerConfig1
+  m_Name: 0 LayerConfig
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
-  LayerIndex: 1
-  DirtTint: {r: 1, g: 1, b: 1, a: 1}
-  MiningSpeedModifier: 1
+  LayerIndex: 0
+  LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
+  BlockHealth: 1
   OreTable:
-  - BlockType: {fileID: 11400000, guid: d01a2d5a6d7e9a046a0c6c2866259c1f, type: 2}
-    Weight: 0
+  - BlockType: {fileID: 11400000, guid: c69b304cbb1441c4c86b61f2216632c5, type: 2}
+    Weight: 2
+  - BlockType: {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
+    Weight: 1
   HazardTable: []
-  HazardChancePerCell: 0.01
+  HazardChancePerCell: 0
   ArtifactBonusChancePerCell: 0.0005

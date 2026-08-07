@@ -51,6 +51,12 @@ namespace MapGeneration
         {
             var cell = new CellData();
 
+            if(layerIndex == 0 && y == 0)
+            {
+                cell.BlockTypeId = 0;
+                return cell;
+            }
+
             var picked = PickWeighted(config.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OrePick));
 
             if (config.HazardChancePerCell > 0f && config.HazardTable.Count > 0)
@@ -63,7 +69,7 @@ namespace MapGeneration
                 }
             }
 
-            cell.BlockTypeId = picked != null ? picked.Id : (byte)0;
+            cell.BlockTypeId = picked != null ? (byte)picked.Id : (byte)0;
             return cell;
         }
 
