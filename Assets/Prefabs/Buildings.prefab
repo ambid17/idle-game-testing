@@ -1333,9 +1333,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0071140a5894814189be97fa7c6da7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Automation.AutomationSpawner
-  automatonPrefab: {fileID: 0}
-  storageDronePrefab: {fileID: 0}
-  fuelDronePrefab: {fileID: 0}
+  automatonPrefab: {fileID: 2669522597533096345, guid: f9c4b5ddd07799a48b2305434bc96e82, type: 3}
+  storageDronePrefab: {fileID: 2305454244209700005, guid: a3294852577618a48b9ef2b850e82674, type: 3}
+  fuelDronePrefab: {fileID: 6528800220871837331, guid: af1474b0de443ba43ab03804582ddb39, type: 3}
   player: {fileID: 0}
 --- !u!61 &4096500480684153770
 BoxCollider2D:

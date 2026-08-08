@@ -51,7 +51,6 @@ namespace Player
 
             Vector2Int? direction = ResolveDirection();
 
-            Debug.Log($"grounded: {playerController.IsGrounded}, direction={direction}");
             if (!playerController.IsGrounded || direction == null)
             {
                 ResetTarget();

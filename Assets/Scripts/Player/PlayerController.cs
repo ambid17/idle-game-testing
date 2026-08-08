@@ -216,7 +216,6 @@ namespace Player
         {
             Vector2 origin = (Vector2)transform.position + groundCheckOffset;
             var collided = Physics2D.OverlapBox(origin, groundCheckSize, 0f, groundLayer);
-            Debug.Log($"Ground check collided with {collided?.gameObject.name ?? "nothing"}");
             return collided != null;
         }
 
