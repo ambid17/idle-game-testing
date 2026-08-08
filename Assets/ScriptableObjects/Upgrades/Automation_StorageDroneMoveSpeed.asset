@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
+  m_Name: Automation_StorageDroneMoveSpeed
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
+  Id: storage_drone_move_speed
+  DisplayName: Storage Drone Speed
+  Description: +10% Storage Drone movement speed per level.
+  Branch: 2
+  Effect: 14
+  EffectValuePerLevel: 0.1
+  MaxLevel: 10
+  BaseCost: 120
+  CostGrowth: 1.2
+  Prerequisite: {fileID: 0}
+  RequirePrerequisiteMaxed: 0
