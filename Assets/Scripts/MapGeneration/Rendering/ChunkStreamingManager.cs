@@ -15,9 +15,8 @@ namespace MapGeneration
 
         private MineWorld world;
         private readonly Dictionary<int, ChunkTilemapView> activeViews = new();
-        private readonly Queue<ChunkTilemapView> pool = new();
+        private readonly Queue<ChunkTilemapView> tileMapQueue = new();
         private int currentFocusLayer = int.MinValue;
-
         public float CellSize => cellSize;
 
         public void Initialize(MineWorld mineWorld)
@@ -57,8 +56,9 @@ namespace MapGeneration
 
         private void Acquire(int layerIndex)
         {
+            if(layerIndex < 0) return;
             var chunk = world.GetOrGenerateChunk(layerIndex);
-            var view = pool.Count > 0 ? pool.Dequeue() : Instantiate(chunkViewPrefab, poolParent);
+            var view = tileMapQueue.Count > 0 ? tileMapQueue.Dequeue() : Instantiate(chunkViewPrefab, poolParent);
 
             view.gameObject.name = $"ChunkTilemapView_Layer{layerIndex}";
             view.gameObject.SetActive(true);
@@ -99,7 +99,7 @@ namespace MapGeneration
             var view = activeViews[layerIndex];
             activeViews.Remove(layerIndex);
             view.gameObject.SetActive(false);
-            pool.Enqueue(view);
+            tileMapQueue.Enqueue(view);
         }
 
         public void NotifyCellMined(int layerIndex, int x, int y, IReadOnlyList<Vector2Int> revealedCells)
