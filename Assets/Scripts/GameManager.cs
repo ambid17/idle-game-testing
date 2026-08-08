@@ -11,6 +11,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private MapGenerationService _mapGenerationService;
     [SerializeField] private BlockTypeDatabase _blockTypeDatabase;
     [SerializeField] private LayerConfigProvider _layerConfigProvider;
+    [SerializeField] private MapGenerationConfig _mapGenerationConfig;
     [SerializeField] private UpgradeDatabase _upgradeDatabase;
     [SerializeField] private PrestigeUpgradeDatabase _prestigeUpgradeDatabase;
     [SerializeField] private AutomationConfig _automationConfig;
@@ -19,6 +20,7 @@ public class GameManager : Singleton<GameManager>
     public static MapGenerationService MapGenerationService => Instance._mapGenerationService;
     public static BlockTypeDatabase BlockTypeDatabase => Instance._blockTypeDatabase;
     public static LayerConfigProvider LayerConfigProvider => Instance._layerConfigProvider;
+    public static MapGenerationConfig MapGenerationConfig => Instance._mapGenerationConfig;
     public static UpgradeDatabase UpgradeDatabase => Instance._upgradeDatabase;
     public static PrestigeUpgradeDatabase PrestigeUpgradeDatabase => Instance._prestigeUpgradeDatabase;
     public static AutomationConfig AutomationConfig => Instance._automationConfig;
@@ -56,6 +58,10 @@ public class GameManager : Singleton<GameManager>
         if (_layerConfigProvider == null)
         {
             Debug.LogError("LayerConfigProvider is not assigned in GameManager.");
+        }
+        if (_mapGenerationConfig == null)
+        {
+            Debug.LogError("MapGenerationConfig is not assigned in GameManager.");
         }
         if (_upgradeDatabase == null)
         {

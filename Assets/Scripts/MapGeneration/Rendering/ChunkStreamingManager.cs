@@ -9,15 +9,13 @@ namespace MapGeneration
     {
         [SerializeField] private ChunkTilemapView chunkViewPrefab;
         private LayerConfigProvider layerConfigProvider => GameManager.LayerConfigProvider;
+        private MapGenerationConfig mapGenerationConfig => GameManager.MapGenerationConfig;
         [SerializeField] private Transform poolParent;
-        [SerializeField] private int windowRadius = 1;
-        [SerializeField] private float cellSize = 1f;
 
         private MineWorld world;
         private readonly Dictionary<int, ChunkTilemapView> activeViews = new();
         private readonly Queue<ChunkTilemapView> tileMapQueue = new();
         private int currentFocusLayer = int.MinValue;
-        public float CellSize => cellSize;
 
         public void Initialize(MineWorld mineWorld)
         {
@@ -30,9 +28,9 @@ namespace MapGeneration
             SetFocusDepth(0);
         }
 
-        public void SetFocusDepth(float depthInBlocks)
+        public void SetFocusDepth(float worldY)
         {
-            int layerIndexAtDepth = GetLayerIndexAtDepth((int)depthInBlocks);
+            int layerIndexAtDepth = layerConfigProvider.GetLayerIndexAtWorldY(worldY, mapGenerationConfig.CellSize);
             if (layerIndexAtDepth == currentFocusLayer) return;
 
             currentFocusLayer = layerIndexAtDepth;
@@ -42,7 +40,8 @@ namespace MapGeneration
         private void UpdateWindow()
         {
             var wantedLayers = new HashSet<int>();
-            // look up and down <windowRadius layers> from the current focus layer, 
+            int windowRadius = mapGenerationConfig.WindowRadius;
+            // look up and down <windowRadius layers> from the current focus layer,
             for (int i = currentFocusLayer - windowRadius; i <= currentFocusLayer + windowRadius; i++)
             {
                 if (i >= 0) wantedLayers.Add(i);
@@ -67,36 +66,9 @@ namespace MapGeneration
 
             view.gameObject.name = $"ChunkTilemapView_Layer{layerIndex}";
             view.gameObject.SetActive(true);
-            view.transform.position = new Vector3(0f, -GetLayerOffset(layerIndex) * cellSize, 0f);
+            view.transform.position = new Vector3(0f, -layerConfigProvider.GetLayerOffset(layerIndex) * mapGenerationConfig.CellSize, 0f);
             view.Bind(chunk, layerIndex);
             activeViews[layerIndex] = view;
-        }
-
-        // Depth (in blocks) at which this layer starts - inverse of GetLayerIndexAtDepth.
-        // Public so player-facing systems (e.g. PlayerMining) can convert world position <-> grid cell.
-        public int GetLayerOffset(int layerIndex)
-        {
-            var yOffset = 0;
-            for(int i = 0; i < layerIndex; i++)
-            {
-                yOffset += layerConfigProvider.GetConfig(i).LayerHeight;
-            }
-            return yOffset;
-        }
-
-        public int GetLayerIndexAtDepth(int depthInBlocks)
-        {
-            var currentTotalDepth = 0;
-            for (int i = 0; i < layerConfigProvider.AuthoredLayers.Count; i++)
-            {
-                var config = layerConfigProvider.GetConfig(i);
-                if (depthInBlocks < currentTotalDepth + config.LayerHeight)
-                {
-                    return i;
-                }
-                currentTotalDepth += config.LayerHeight;
-            }
-            return 0;
         }
 
         private void Release(int layerIndex)

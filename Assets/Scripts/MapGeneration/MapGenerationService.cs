@@ -10,11 +10,10 @@ namespace MapGeneration
     // underlying MineWorld calls are headless; this wrapper just also drives the live view).
     public class MapGenerationService : MonoBehaviour
     {
-        [SerializeField] private int worldSeed = 12345;
-        [SerializeField] private int gridWidth = 30;
         private LayerConfigProvider layerConfigProvider => GameManager.LayerConfigProvider;
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
         private ChunkStreamingManager streamingManager => GameManager.ChunkStreamingManager;
+        private MapGenerationConfig mapGenerationConfig => GameManager.MapGenerationConfig;
 
         [Tooltip("Placeholder default - exact base radius and Lantern-tier scaling is an open design item (see MapGenerationImplementation.md).")]
         [SerializeField] private int baseFogRevealRadius = 3;
@@ -24,11 +23,11 @@ namespace MapGeneration
         // The un-upgraded default width, used by PrestigeManager.ExecutePrestige to recompute the
         // absolute width (base + PrestigeUpgradeManager.GridWidthBonus) on every prestige, rather
         // than compounding bonuses onto whatever World.GridWidth already grew to.
-        public int BaseGridWidth => gridWidth;
+        public int BaseGridWidth => mapGenerationConfig.GridWidth;
 
         private void Awake()
         {
-            World = new MineWorld(worldSeed, gridWidth);
+            World = new MineWorld(mapGenerationConfig.Seed, mapGenerationConfig.GridWidth);
             streamingManager.Initialize(World);
         }
 
@@ -84,7 +83,7 @@ namespace MapGeneration
         private int GetFogRevealRadius()
         {
             var upgrades = UpgradeManager.Instance;
-            if (upgrades != null && upgrades.TrueSightUnlocked) return gridWidth;
+            if (upgrades != null && upgrades.TrueSightUnlocked) return mapGenerationConfig.GridWidth;
             return baseFogRevealRadius + (upgrades != null ? upgrades.LanternFogRadiusBonus : 0);
         }
 
@@ -93,12 +92,11 @@ namespace MapGeneration
         // a world position falls in.
         public bool WorldToCell(Vector3 worldPos, out int layerIndex, out int x, out int y)
         {
-            float cellSize = streamingManager.CellSize;
-            int depthInBlocks = Mathf.FloorToInt(-worldPos.y / cellSize);
-            depthInBlocks++; // Convert to 1-based depth for layer offset calculations.
-            layerIndex = streamingManager.GetLayerIndexAtDepth(depthInBlocks);
+            float cellSize = mapGenerationConfig.CellSize;
+            int depthInBlocks = layerConfigProvider.GetDepthInBlocksAtWorldY(worldPos.y, cellSize);
+            layerIndex = layerConfigProvider.GetLayerIndexAtDepth(depthInBlocks);
             x = Mathf.FloorToInt(worldPos.x / cellSize);
-            y = depthInBlocks - streamingManager.GetLayerOffset(layerIndex);
+            y = depthInBlocks - layerConfigProvider.GetLayerOffset(layerIndex);
 
             var chunk = World.GetOrGenerateChunk(layerIndex);
             return x >= 0 && x < chunk.Width && y >= 0 && y < chunk.Height;
@@ -106,12 +104,12 @@ namespace MapGeneration
 
         public Vector3 CellToWorldCenter(int layerIndex, int x, int y)
         {
-            float cellSize = streamingManager.CellSize;
-            int depthInBlocks = streamingManager.GetLayerOffset(layerIndex) + y;
+            float cellSize = mapGenerationConfig.CellSize;
+            int depthInBlocks = layerConfigProvider.GetLayerOffset(layerIndex) + y;
             return new Vector3((x + 0.5f) * cellSize, -(depthInBlocks - 0.5f) * cellSize, 0f);
         }
 
-        public float CellSize => streamingManager.CellSize;
+        public float CellSize => mapGenerationConfig.CellSize;
 
         // Null if out of bounds or already mined - both mean "nothing here to mine".
         public BlockType GetBlockTypeAt(int layerIndex, int x, int y)

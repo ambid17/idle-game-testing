@@ -43,7 +43,7 @@ namespace Player
 
         private void Update()
         {
-            streamingManager.SetFocusDepth(-transform.position.y);
+            streamingManager.SetFocusDepth(transform.position.y);
             Vector2Int? direction = ResolveDirection();
             if (!playerController.IsGrounded || direction == null || InputBlocker.IsBlocked)
             {
