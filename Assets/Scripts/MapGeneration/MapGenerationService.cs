@@ -41,10 +41,31 @@ namespace MapGeneration
             streamingManager.Initialize(World);
         }
 
+        /// <summary>
+        /// Mines cell at coords. Cell is not able to be mined if it was already
+        /// </summary>
+        /// <param name="layerIndex"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="fogRadiusOverride"></param>
+        /// <returns>True if the cell was able to be mined.</returns>
         public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1)
         {
+            // Can't mine if already mined
             if (!World.TryMineCell(layerIndex, x, y, out var block, out var artifactFound)) return false;
 
+            HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);
+            if (block != null && block.Category == BlockCategory.Hazard)
+            {
+                GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.HazardBehavior));
+            }
+
+            GameManager.EventService.Dispatch(new CellMinedEvent(layerIndex, x, y, block, artifactFound));
+            return true;
+        }
+
+        private void HandleFogUpdate(int layerIndex, int x, int y, int fogRadiusOverride = -1)
+        {
             int radius = fogRadiusOverride >= 0 ? fogRadiusOverride : GetFogRevealRadius();
             var revealedByLayer = World.RevealFog(layerIndex, x, y, radius);
 
@@ -56,14 +77,6 @@ namespace MapGeneration
                 if (revealedLayerIndex == layerIndex) continue;
                 streamingManager.NotifyFogRevealed(revealedLayerIndex, revealedCells);
             }
-
-            if (block != null && block.Category == BlockCategory.Hazard)
-            {
-                GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.HazardBehavior));
-            }
-
-            GameManager.EventService.Dispatch(new CellMinedEvent(layerIndex, x, y, block, artifactFound));
-            return true;
         }
 
         // GameDesignDoc "Market Upgrades > Mining > Lantern": base radius plus purchased levels,

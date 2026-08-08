@@ -1,33 +1,40 @@
+using System;
+
 namespace MapGeneration
 {
+    [Flags]
+    public enum CellFlags : byte
+    {
+        None = 0,
+        Mined = 1 << 0,
+        Revealed = 1 << 1,
+        Artifact = 1 << 2,
+    }
+
     // Packed per-cell state: 1 byte block type id + 1 byte flag bits.
     public struct CellData
     {
-        private const byte MinedBit = 1 << 0;
-        private const byte RevealedBit = 1 << 1;
-        private const byte ArtifactBit = 1 << 2;
-
         public byte BlockTypeId;
-        private byte flags;
+        public CellFlags Flags;
 
         public bool Mined
         {
-            get => (flags & MinedBit) != 0;
-            set => flags = SetBit(flags, MinedBit, value);
+            get => (Flags & CellFlags.Mined) != 0;
+            set => SetFlag(CellFlags.Mined, value);
         }
 
         public bool Revealed
         {
-            get => (flags & RevealedBit) != 0;
-            set => flags = SetBit(flags, RevealedBit, value);
+            get => (Flags & CellFlags.Revealed) != 0;
+            set => SetFlag(CellFlags.Revealed, value);
         }
 
         public bool IsArtifact
         {
-            get => (flags & ArtifactBit) != 0;
-            set => flags = SetBit(flags, ArtifactBit, value);
+            get => (Flags & CellFlags.Artifact) != 0;
+            set => SetFlag(CellFlags.Artifact, value);
         }
 
-        private static byte SetBit(byte b, byte bit, bool on) => on ? (byte)(b | bit) : (byte)(b & ~bit);
+        private void SetFlag(CellFlags bit, bool on) => Flags = on ? (Flags | bit) : (Flags & ~bit);
     }
 }

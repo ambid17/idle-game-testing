@@ -24,6 +24,8 @@ namespace MapGeneration
         {
             if (chunksByLayer.TryGetValue(layerIndex, out var chunk)) return chunk;
 
+            Debug.Log($"Generating chunk for layer {layerIndex}");
+
             var config = configProvider != null ? configProvider.GetConfig(layerIndex) : null;
             chunk = ChunkGenerator.Generate(Seed, layerIndex, GridWidth, config);
             chunksByLayer[layerIndex] = chunk;
@@ -38,12 +40,19 @@ namespace MapGeneration
             artifactFound = false;
 
             var chunk = GetOrGenerateChunk(layerIndex);
-            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) return false;
+            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height)
+            {
+                Debug.LogWarning($"TryMineCell: coordinates out of bounds for layer {layerIndex}: ({x}, {y})");
+                return false;
+            }
 
             int idx = chunk.Index(x, y);
             var cell = chunk.Cells[idx];
-            if (cell.Mined) return false;
-
+            if (cell.Mined)
+            {
+                Debug.LogWarning($"TryMineCell: cell already mined for layer {layerIndex}: ({x}, {y})");
+                return false;
+            }
             cell.Mined = true;
             chunk.Cells[idx] = cell;
             chunk.MinedCount++;
