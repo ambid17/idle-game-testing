@@ -1,3 +1,4 @@
+using Events;
 using MapGeneration;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -36,9 +37,11 @@ namespace Player
         private PlayerHealth health;
         private bool wasGrounded;
         private float peakFallSpeed;
+        private Vector3 spawnPosition;
 
         public bool IsGrounded { get; private set; }
         public bool IsFlying { get; private set; }
+        public bool IsDead { get; private set; }
         public float Fuel { get; private set; }
         public float FuelFraction => fuelMax > 0f ? Fuel / fuelMax : 0f;
         private Vector2 movementInput;
@@ -50,6 +53,7 @@ namespace Player
             rb.WakeUp();
             health = GetComponent<PlayerHealth>();
             Fuel = fuelMax;
+            spawnPosition = transform.position;
 
             capsuleCollider = GetComponent<CapsuleCollider2D>();
             groundCheckOffset = capsuleCollider.size.y * 0.5f * Vector2.down;
@@ -57,8 +61,38 @@ namespace Player
 
         }
 
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<PlayerDiedEvent>(HandleDied);
+            GameManager.EventService.Add<PlayerRevivedEvent>(HandleRevived);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<PlayerDiedEvent>(HandleDied);
+            GameManager.EventService.Remove<PlayerRevivedEvent>(HandleRevived);
+        }
+
+        private void HandleDied()
+        {
+            IsDead = true;
+            movementInput = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        private void HandleRevived()
+        {
+            IsDead = false;
+            Fuel = fuelMax;
+            peakFallSpeed = 0f;
+            rb.linearVelocity = Vector2.zero;
+            transform.position = spawnPosition;
+        }
+
         private void Update()
         {
+            if (IsDead) return;
+
             var keyboard = Keyboard.current;
             if (keyboard == null)
             {
@@ -79,6 +113,8 @@ namespace Player
 
         private void FixedUpdate()
         {
+            if (IsDead) return;
+
             IsGrounded = CheckGrounded();
             IsFlying = movementInput.y > 0 && Fuel > 0f;
 
@@ -102,6 +138,11 @@ namespace Player
             else if (IsGrounded)
             {
                 Fuel = Mathf.Min(fuelMax, Fuel + fuelRegenPerSecondGrounded * dt);
+            }
+
+            if (Fuel <= 0f && health != null)
+            {
+                health.Kill();
             }
         }
 

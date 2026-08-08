@@ -30,6 +30,18 @@ namespace Player
             PopulateOreCounts();
         }
 
+        private void OnEnable() => GameManager.EventService.Add<PlayerDiedEvent>(ClearAll);
+        private void OnDisable() => GameManager.EventService.Remove<PlayerDiedEvent>(ClearAll);
+
+        // Death wipes everything the player was carrying, ore and artifacts alike.
+        public void ClearAll()
+        {
+            ClearOreCounts();
+            CurrentWeight = 0f;
+            ArtifactCount = 0;
+            GameManager.EventService.Dispatch<InventoryChangedEvent>();
+        }
+
         public bool AddOre(BlockType blockType, int amount = 1)
         {
             if (blockType == null || amount <= 0) return false;
