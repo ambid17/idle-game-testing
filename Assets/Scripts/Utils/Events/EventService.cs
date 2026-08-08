@@ -65,12 +65,12 @@ namespace Events
 
         public void RemovePermanent<T>(Action action)
         {
-            registry.Transient.Remove<T>(action);
+            registry.Permanent.Remove<T>(action);
         }
 
         public void RemovePermanent<IEventType>(Action<IEventType> action) where IEventType : IEvent
         {
-            registry.Transient.Remove(action);
+            registry.Permanent.Remove(action);
         }
     }
 }

@@ -78,4 +78,11 @@ public class GameManager : Singleton<GameManager>
         SaveService.Instance.ApplyLoadedData(SaveService.Instance.Load());
         SaveService.Instance.ApplyMapData(SaveService.Instance.LoadMap());
     }
+
+    protected override void OnDestroy()
+    {
+        _eventService?.Deinit();
+        _eventService = null;
+        base.OnDestroy();
+    }
 }

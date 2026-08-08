@@ -50,6 +50,14 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         Initialize();
     }
 
+    protected virtual void OnDestroy()
+    {
+        if (_instance == (T)(object)this)
+        {
+            _instance = null;
+        }
+    }
+
     /// <summary>
     /// Initialization override
     /// </summary>
