@@ -23,6 +23,8 @@ namespace Economy
     {
         GridWidthBonus,
         KeepDigWhileFlying, // stub
+        CameraZoomBonus, // stub
+        LayerSizeReduction, // stub
         MineralValueMultiplier,
         ProcessedGoodMultiplier, // stub
         // GameDesignDoc "Prestige > idle > auto miner" lists 4 kept-tier perks (count, speed, dig

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
+  m_Name: Survival_EmergencyShielding
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
+  Id: survival_shield_charge_count
+  DisplayName: Emergency Shielding
+  Description: Grants one-time shield charges that regenerate over time, preventing
+    damage.
+  Branch: 5
+  Effect: 17
+  EffectValuePerLevel: 1
+  MaxLevel: 5
+  BaseCost: 20
+  CostGrowth: 1.5
+  Prerequisite: {fileID: 0}
+  RequirePrerequisiteMaxed: 0

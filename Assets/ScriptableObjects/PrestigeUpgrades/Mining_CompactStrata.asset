@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
+  m_Name: Mining_CompactStrata
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
+  Id: mining_layer_size
+  DisplayName: Compact Strata
+  Description: Reduces the vertical size of each layer, letting you reach deeper
+    layers faster.
+  Branch: 0
+  Effect: 3
+  EffectValuePerLevel: 0.05
+  MaxLevel: 5
+  BaseCost: 80
+  CostGrowth: 1.5
+  Prerequisite: {fileID: 11400000, guid: a49c9f3b14960c34c987e7c3f489656b, type: 2}
+  RequirePrerequisiteMaxed: 0

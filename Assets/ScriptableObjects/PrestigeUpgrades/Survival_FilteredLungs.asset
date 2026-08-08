@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
+  m_Name: Survival_FilteredLungs
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
+  Id: survival_gas_resistance
+  DisplayName: Filtered Lungs
+  Description: Increases resistance to harmful gas.
+  Branch: 5
+  Effect: 20
+  EffectValuePerLevel: 0.1
+  MaxLevel: 8
+  BaseCost: 25
+  CostGrowth: 1.4
+  Prerequisite: {fileID: 11400000, guid: b15182af204f22d4d94717f25744dfe6, type: 2}
+  RequirePrerequisiteMaxed: 0

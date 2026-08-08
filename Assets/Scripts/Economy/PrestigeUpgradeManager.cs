@@ -64,6 +64,10 @@ namespace Economy
         // MapGenerationService before every prestige's map regeneration.
         public int GridWidthBonus => Mathf.RoundToInt(LevelOf(PrestigeUpgradeEffect.GridWidthBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.GridWidthBonus));
 
+        // Stubs - no camera zoom control or layer-size-based generation exists yet to consume these.
+        public float CameraZoomBonus => LevelOf(PrestigeUpgradeEffect.CameraZoomBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.CameraZoomBonus);
+        public float LayerSizeReduction => LevelOf(PrestigeUpgradeEffect.LayerSizeReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.LayerSizeReduction);
+
         // GameDesignDoc "Prestige > Economy": mineral value multiplier.
         public float MineralValueMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.MineralValueMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.MineralValueMultiplier);
 

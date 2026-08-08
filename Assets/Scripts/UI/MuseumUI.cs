@@ -120,6 +120,7 @@ namespace UI
 
                 var node = Instantiate(nodePrefab, scrollViewContent);
                 node.Bind(def);
+                node.gameObject.SetActive(def.Branch == activeTab);
                 nodes.Add(node);
             }
         }
