@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using Automation;
 using Economy;
 using Events;
 using MapGeneration;
@@ -11,44 +11,65 @@ namespace Player
     // CurrentWeight reaches maxWeight the player can no longer mine Ore-category blocks (enforced by
     // PlayerMining) until they deposit at the Depot. Artifacts don't count against weight and can
     // only be turned in at the Museum, never sold/stored at the Depot.
-    public class PlayerInventory : MonoBehaviour
+    //
+    // The dictionary/weight bookkeeping itself lives in the shared Economy.OreInventory (also used
+    // by MiningAutomaton/StorageDrone) - this class composes it and keeps its own public API
+    // unchanged so PlayerMining/DepotUI/HUDUI/InventoryUI need no changes.
+    //
+    // Also implements IOreCarrier so Storage Drones (automationImplementation.md) can target the
+    // player - registers with OreCarrierRegistry alongside its existing PlayerDiedEvent subscription.
+    public class PlayerInventory : MonoBehaviour, IOreCarrier
     {
         [SerializeField] private float baseMaxWeight = 100f;
 
-        private readonly Dictionary<BlockTypeId, int> oreCounts = new();
+        private OreInventory oreInventory;
 
         // GameDesignDoc "Market Upgrades > Economy > Inventory": each level adds carrying capacity.
         public float MaxWeight => baseMaxWeight + UpgradeManager.Instance.InventoryCapacityBonus;
-        public float CurrentWeight { get; private set; }
-        public bool IsFull => CurrentWeight >= MaxWeight;
+        public float CurrentWeight => oreInventory.CurrentWeight;
+        public bool IsFull => oreInventory.IsFull;
         public int ArtifactCount { get; private set; }
-        public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreCounts;
-        private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
+        public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreInventory.OreCounts;
+
+        public Transform CarrierTransform => transform;
+        public OreInventory Inventory => oreInventory;
+
+        private void Awake()
+        {
+            // Self-heals rather than [RequireComponent] so the existing Player prefab doesn't need
+            // a manual Editor step to pick up the new shared component.
+            oreInventory = GetComponent<OreInventory>();
+            if (oreInventory == null) oreInventory = gameObject.AddComponent<OreInventory>();
+        }
 
         private void Start()
         {
-            PopulateOreCounts();
+            oreInventory.Initialize(() => MaxWeight);
         }
 
-        private void OnEnable() => GameManager.EventService.Add<PlayerDiedEvent>(ClearAll);
-        private void OnDisable() => GameManager.EventService.Remove<PlayerDiedEvent>(ClearAll);
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<PlayerDiedEvent>(ClearAll);
+            OreCarrierRegistry.Instance.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<PlayerDiedEvent>(ClearAll);
+            OreCarrierRegistry.Instance.Unregister(this);
+        }
 
         // Death wipes everything the player was carrying, ore and artifacts alike.
         public void ClearAll()
         {
-            ClearOreCounts();
-            CurrentWeight = 0f;
+            oreInventory.ClearAll();
             ArtifactCount = 0;
             GameManager.EventService.Dispatch<InventoryChangedEvent>();
         }
 
         public bool AddOre(BlockType blockType, int amount = 1)
         {
-            if (blockType == null || amount <= 0) return false;
-
-            oreCounts.TryGetValue(blockType.Id, out var current);
-            oreCounts[blockType.Id] = current + amount;
-            CurrentWeight += blockType.Weight * amount;
+            if (!oreInventory.AddOre(blockType, amount)) return false;
 
             GameManager.EventService.Dispatch<InventoryChangedEvent>();
             return true;
@@ -63,30 +84,9 @@ namespace Player
         // Snapshots and clears carried ore (not artifacts) - called when depositing at the Depot.
         public Dictionary<BlockTypeId, int> WithdrawAllOre()
         {
-            var snapshot = new Dictionary<BlockTypeId, int>(oreCounts);
-            ClearOreCounts();
-            CurrentWeight = 0f;
+            var snapshot = oreInventory.WithdrawAllOre();
             GameManager.EventService.Dispatch<InventoryChangedEvent>();
             return snapshot;
-        }
-
-        private void PopulateOreCounts()
-        {
-            foreach (var blockType in blockTypeDatabase.BlockTypes)
-            {
-                if (blockType.Category == BlockCategory.Ore)
-                {
-                    oreCounts[blockType.Id] = 0;
-                }
-            }
-        }
-
-        private void ClearOreCounts()
-        {
-            foreach(var key in oreCounts.Keys.ToList())
-            {
-                oreCounts[key] = 0;
-            }
         }
     }
 }

@@ -25,5 +25,13 @@ namespace Economy
             GameManager.EventService.Dispatch<DollarsChangedEvent>();
             return true;
         }
+
+        // Direct set for Persistence.SaveService restoring a save file - distinct semantics from
+        // Add/TrySpend (no add/subtract, no positive-amount requirement).
+        public void SetDollars(double amount)
+        {
+            dollars = amount;
+            GameManager.EventService.Dispatch<DollarsChangedEvent>();
+        }
     }
 }

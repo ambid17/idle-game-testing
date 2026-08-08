@@ -114,5 +114,33 @@ namespace Economy
                 return def != null ? def.EffectValuePerLevel : 0f;
             }
         }
+
+        // GameDesignDoc "Automation > Mining Automaton": level 0 = no automatons owned, matching
+        // every other UpgradeManager effect - the first purchased level buys the first unit.
+        public int AutomatonCount => LevelOf(UpgradeEffect.AutomatonCount);
+        public float AutomatonMiningSpeedMultiplier => 1f + LevelOf(UpgradeEffect.AutomatonMiningSpeed) * EffectValuePerLevelOf(UpgradeEffect.AutomatonMiningSpeed);
+        public float AutomatonMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.AutomatonMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.AutomatonMoveSpeed);
+        public int AutomatonMiningRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.AutomatonMiningRadius) * EffectValuePerLevelOf(UpgradeEffect.AutomatonMiningRadius));
+        public float AutomatonInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.AutomatonInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.AutomatonInventoryCapacity);
+
+        // GameDesignDoc "Automation > Storage Drone".
+        public int StorageDroneCount => LevelOf(UpgradeEffect.StorageDroneCount);
+        public float StorageDroneMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.StorageDroneMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.StorageDroneMoveSpeed);
+        public float StorageDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.StorageDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.StorageDroneInventoryCapacity);
+
+        // GameDesignDoc "Automation > Fuel Drone".
+        public int FuelDroneCount => LevelOf(UpgradeEffect.FuelDroneCount);
+        public float FuelDroneMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.FuelDroneMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.FuelDroneMoveSpeed);
+        public float FuelDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.FuelDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.FuelDroneInventoryCapacity);
+
+        // Bulk restore for SaveService - silent (no UpgradePurchasedEvent) since AutomationSpawner
+        // reconciles entity counts once after the whole save file is applied, not per-level.
+        public void SetLevel(string upgradeId, int level)
+        {
+            if (string.IsNullOrEmpty(upgradeId) || level < 0) return;
+            levelsByUpgradeId[upgradeId] = level;
+        }
+
+        public IEnumerable<KeyValuePair<string, int>> AllLevels => levelsByUpgradeId;
     }
 }

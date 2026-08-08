@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Automation;
 using Economy;
 using Interaction;
 using MapGeneration;
@@ -118,4 +120,59 @@ namespace Events
             Hazard = hazard;
         }
     }
+
+    // Automation (automationImplementation.md) events below.
+
+    public class SetStorageDroneTargetModeRequestedEvent : IEvent
+    {
+        public TargetMode Mode;
+        public SetStorageDroneTargetModeRequestedEvent(TargetMode mode) => Mode = mode;
+    }
+
+    public class SetFuelDroneTargetModeRequestedEvent : IEvent
+    {
+        public TargetMode Mode;
+        public SetFuelDroneTargetModeRequestedEvent(TargetMode mode) => Mode = mode;
+    }
+
+    public class SetFuelSpendingCapRequestedEvent : IEvent
+    {
+        public float Percent;
+        public SetFuelSpendingCapRequestedEvent(float percent) => Percent = percent;
+    }
+
+    public class AutomationSettingsChangedEvent { }
+
+    // Dispatched by MiningAutomaton/StorageDrone whenever they deposit ore at the Depot - drives
+    // notification toasts and the Control Center's per-automaton earnings graph.
+    public class OreDepositedByAutomationEvent : IEvent
+    {
+        public string EntityDisplayName;
+        public IReadOnlyDictionary<BlockTypeId, int> Deposited;
+        // Index of the depositing automaton for the earnings graph, or -1 for storage drones
+        // (which aren't graphed - only automaton output counts per the design doc's idle-earnings
+        // scope).
+        public int AutomatonIndex;
+
+        public OreDepositedByAutomationEvent(string entityDisplayName, IReadOnlyDictionary<BlockTypeId, int> deposited, int automatonIndex = -1)
+        {
+            EntityDisplayName = entityDisplayName;
+            Deposited = deposited;
+            AutomatonIndex = automatonIndex;
+        }
+    }
+
+    public class OfflineEarningsReadyEvent : IEvent
+    {
+        public IReadOnlyDictionary<BlockTypeId, int> OreGained;
+        public float MinutesAway;
+
+        public OfflineEarningsReadyEvent(IReadOnlyDictionary<BlockTypeId, int> oreGained, float minutesAway)
+        {
+            OreGained = oreGained;
+            MinutesAway = minutesAway;
+        }
+    }
+
+    public class OfflineEarningsAcknowledgedEvent { }
 }

@@ -12,7 +12,8 @@ namespace Interaction
         Depot,
         Market,
         Museum,
-        Processing
+        Processing,
+        ControlCenter
     }
     public class BuildingInteractable : MonoBehaviour
     {

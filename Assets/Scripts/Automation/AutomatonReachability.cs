@@ -1,0 +1,126 @@
+using System.Collections.Generic;
+using MapGeneration;
+using UnityEngine;
+
+namespace Automation
+{
+    // Pure grid-math helper for Mining Automaton wandering, playing the same role for automatons
+    // that Player.MiningAreaPattern plays for the player's mining-radius upgrade - except
+    // reachability here depends on what's actually been dug, so it's a graph search (BFS through
+    // already-mined cells) rather than a fixed offset table.
+    //
+    // Grid convention (per MiningAreaPattern/ChunkTilemapView): +y is DOWN in chunk-local cell
+    // space, opposite of Unity's usual world-space up-positive Y - so "down" here is (0, +1), not
+    // Vector2Int.down.
+    //
+    // Known simplification: stays within a single layer. When wandering finds nothing within
+    // radius (e.g. right at a layer's bottom edge), MiningAutomaton falls back to descending
+    // straight down per the design doc, which naturally crosses into the next layer via
+    // MapGenerationService.WorldToCell's own layer resolution - no BFS involved there.
+    public static class AutomatonReachability
+    {
+        private static readonly Vector2Int GridUp = new(0, -1);
+        private static readonly Vector2Int GridDown = new(0, 1);
+        private static readonly Vector2Int GridLeft = new(-1, 0);
+        private static readonly Vector2Int GridRight = new(1, 0);
+
+        private static readonly Vector2Int[] WalkDirections = { GridUp, GridDown, GridLeft, GridRight };
+        private static readonly Vector2Int[] DigDirections = { GridDown, GridLeft, GridRight };
+
+        // Returns unmined, diggable cells (down/left/right of some reachable mined cell) within
+        // `radius` walking hops from (originX, originY). The origin cell itself is always treated
+        // as walkable regardless of its Mined flag, covering spawn-in on a not-yet-mined tile.
+        public static List<Vector2Int> GetAccessibleTiles(MapGenerationService mapGen, int layerIndex, int originX, int originY, int radius)
+        {
+            var frontier = new HashSet<Vector2Int>();
+            if (mapGen == null || radius <= 0) return new List<Vector2Int>();
+
+            var chunk = mapGen.World.GetOrGenerateChunk(layerIndex);
+            var origin = new Vector2Int(originX, originY);
+            var visited = new HashSet<Vector2Int> { origin };
+            var queue = new Queue<(Vector2Int cell, int depth)>();
+            queue.Enqueue((origin, 0));
+
+            while (queue.Count > 0)
+            {
+                var (cell, depth) = queue.Dequeue();
+
+                foreach (var dir in DigDirections)
+                {
+                    var neighbor = cell + dir;
+                    if (!InBounds(chunk, neighbor) || IsMined(chunk, neighbor)) continue;
+                    frontier.Add(neighbor);
+                }
+
+                if (depth >= radius) continue;
+
+                foreach (var dir in WalkDirections)
+                {
+                    var neighbor = cell + dir;
+                    if (!InBounds(chunk, neighbor) || visited.Contains(neighbor) || !IsMined(chunk, neighbor)) continue;
+
+                    visited.Add(neighbor);
+                    queue.Enqueue((neighbor, depth + 1));
+                }
+            }
+
+            return new List<Vector2Int>(frontier);
+        }
+
+        // Builds a walkable cell path (through already-mined ground, ending on `target` even
+        // though target itself is unmined - it's the cell about to be dug) from origin to target,
+        // in world-space order, for GridPathMover.StepAlongPath to consume.
+        public static List<Vector3> BuildWorldPath(MapGenerationService mapGen, int layerIndex, Vector2Int origin, Vector2Int target)
+        {
+            var path = new List<Vector3>();
+            if (mapGen == null) return path;
+
+            var chunk = mapGen.World.GetOrGenerateChunk(layerIndex);
+            var cameFrom = new Dictionary<Vector2Int, Vector2Int>();
+            var visited = new HashSet<Vector2Int> { origin };
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(origin);
+
+            bool found = origin == target;
+            while (queue.Count > 0 && !found)
+            {
+                var cell = queue.Dequeue();
+                foreach (var dir in WalkDirections)
+                {
+                    var neighbor = cell + dir;
+                    if (!InBounds(chunk, neighbor) || visited.Contains(neighbor)) continue;
+                    if (neighbor != target && !IsMined(chunk, neighbor)) continue;
+
+                    visited.Add(neighbor);
+                    cameFrom[neighbor] = cell;
+                    if (neighbor == target) { found = true; break; }
+                    queue.Enqueue(neighbor);
+                }
+            }
+
+            if (!found) return path;
+
+            var cells = new List<Vector2Int> { target };
+            var walk = target;
+            while (walk != origin)
+            {
+                walk = cameFrom[walk];
+                cells.Add(walk);
+            }
+            cells.Reverse();
+
+            foreach (var cell in cells)
+            {
+                path.Add(mapGen.CellToWorldCenter(layerIndex, cell.x, cell.y));
+            }
+
+            return path;
+        }
+
+        private static bool InBounds(ChunkData chunk, Vector2Int cell) =>
+            cell.x >= 0 && cell.x < chunk.Width && cell.y >= 0 && cell.y < chunk.Height;
+
+        private static bool IsMined(ChunkData chunk, Vector2Int cell) =>
+            chunk.Cells[chunk.Index(cell.x, cell.y)].Mined;
+    }
+}

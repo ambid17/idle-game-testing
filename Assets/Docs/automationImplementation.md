@@ -4,7 +4,7 @@ There are 3 forms of automation in the game:
 - Mining Automatons
 	- Behavior
 		- mining automatons add another entity that roams the map, always aiming towards blocks that haven't been mined, randomly
-		- the automatons don't have fuel or health(therefore no fall damage), but they can fly to leave the tunnel
+		- the automatons don't have fuel or health(therefore no fall damage), but they can trigger hazard blocks that damage the player
 		- as they dig their tunnel, they will accrue resources in their inventory, just like the main player
 		- when their inventory is full, they can walk/fly to the depot to deposit their resources
 			- a notification should appear, letting you know of the deposit
@@ -13,10 +13,11 @@ There are 3 forms of automation in the game:
 			- the automatons can dig similar to the player: down, left or right.
 		- movement behavior
 			- the automatons will randomly choose an accessible tile within a 3 block radius and head to mine it
-			- if there are no tiles in their radius, they will widen their search
+			- if there are no tiles in their radius, they will descend until they hit a block
+			- when they return to the depot to deposit their inventory, they fly directly (ignoring collision)
 - Storage Drones
 	- Behavior
-		- storage drones will fly (ignoring collision) to the mining automatons or the player (whoever has the most full inventory)
+		- storage drones will fly (ignoring collision) to their target (set in control center)
 		- they will take from the entity's inventory until theirs is full.
 			- if the entity they fly to doesn't have enough to fill their inventory, they will fly to the next closest entity with items in their inventory
 		- once their inventory is full, they will travel to the depot to insert their inventory
@@ -24,10 +25,10 @@ There are 3 forms of automation in the game:
 				- the notification should tell you what minerals were deposited, and by which automaton
 		- storage drones will repeat this process as long as there is an entity with minerals in their inventory
 - Fuel Drones
-	- fuel drones will fly (ignoring collision) to the player
+	- fuel drones will fly (ignoring collision) to their target (set in control center)
 	- they will deposit a small portion of fuel (10 units base) into the player
-	- they will then fly back to the control center to purchase more fuel
-	- they will repeat this step as long as the player is missing any fuel, otherwise they will sit idly at the control center
+	- they will then fly back to the control center to automatically purchase more fuel at the standard rate (5 dollars per unit)
+	- they will repeat this step as long as any entity is missing at least 10% of their fuel, otherwise they will sit idly at the control center
 - Control center
 	- this is an interactable building that gives you a few views available in different tabs:
 		- miner automaton dashboard: 
@@ -35,24 +36,43 @@ There are 3 forms of automation in the game:
 			- includes upgrades for miners, each having costs and benefits that scale exponentially:
 				- additional active automatons (max 3)
 				- increase mining speed by 30% (max 10)
+					- base mining speed: 1
 				- increase movement speed by 10% (max 10)
+					- base speed: 5
 				- increase mining radius by 1 (max 2)
+					- base radius: 1 block
 				- increase inventory size by 50% (max 3)
+					- base inventory size: 50
 		- storage drone dashboard: allows you to choose targeting
 			- targeting options: player always, fullest inventory
 			- includes upgrades for storage drone, each having costs and benefits that scale exponentially:
 				- additional active storage drones (max 3)
 				- increase movement speed by 10% (max 10)
+					- base speed: 4
 				- increase inventory size by 50% (max 3)
-		- fuel drone dashboard: allows you to choose targeting
+					- base inventory size: 20
+		- fuel drone dashboard: allows you to choose targeting and set a spending cap
 			- targeting options: player always, fullest inventory
+			- spending cap: a slider that sets a maximum percentage of your currently owned dollars
 			- includes upgrades for fuel drone, each having costs and benefits that scale exponentially:
 				- additional active fuel drones (max 3)
 				- increase movement speed by 10% (max 10)
+					- base speed: 4
 				- increase fuel inventory size by 50% (max 3)
+					- base inventory size: 20 units of fuel
 		- refueling
 			- this shows:
 				- your fuel meter
 				- how much fuel costs per unit of fuel
 				- a slider to choose how much fuel to purchase
 				- a purchase button that refuels the player and spends the money 
+- idle
+	- we don't need to fully simulate everything during times the player is offline
+	- while the game is running, keep a running average of each ore gained per minute by the miner automatons
+	- when the player returns
+		- show a screen that illustrates the calculation of offline gains: average ore per minute * minutes away
+			- the ore should be deposited into the depot when the screen is acknowledged
+		- spawn the automatons at the control center
+- notifications
+	- make a notification container that will queue up notifications
+	- the notifications may be manually dismissed, or they will dismiss on their own after 3 seconds

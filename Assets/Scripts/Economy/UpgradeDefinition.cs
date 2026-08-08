@@ -26,7 +26,18 @@ namespace Economy
         LanternTrueSight,
         InventoryCapacity,
         MarketingSellMultiplier,
-        Overflow
+        Overflow,
+        AutomatonCount,
+        AutomatonMiningSpeed,
+        AutomatonMoveSpeed,
+        AutomatonMiningRadius,
+        AutomatonInventoryCapacity,
+        StorageDroneCount,
+        StorageDroneMoveSpeed,
+        StorageDroneInventoryCapacity,
+        FuelDroneCount,
+        FuelDroneMoveSpeed,
+        FuelDroneInventoryCapacity
     }
 
     [CreateAssetMenu(fileName = "UpgradeDefinition", menuName = "Economy/Upgrade Definition")]

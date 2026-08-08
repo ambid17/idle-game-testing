@@ -43,6 +43,16 @@ namespace Player
         public bool IsFlying { get; private set; }
         public float Fuel { get; private set; }
         public float FuelFraction => fuelMax > 0f ? Fuel / fuelMax : 0f;
+        public float FuelMax => fuelMax;
+        public float FuelMissing => fuelMax - Fuel;
+
+        // Used by Fuel Drones (Automation.FuelDrone) and RefuelingUI's manual purchase button -
+        // both deposit fuel into the player through this rather than touching Fuel directly.
+        public void AddFuel(float amount)
+        {
+            if (amount <= 0f) return;
+            Fuel = Mathf.Min(fuelMax, Fuel + amount);
+        }
         private Vector2 movementInput;
         public Vector2 MovementInput => movementInput;
 
@@ -89,6 +99,16 @@ namespace Player
         private void Update()
         {
             if (health.IsDead) return;
+
+            // Unlike death (which zeroes movementInput once via HandleDied), blocking can start/end
+            // mid-motion, so it has to actively zero the stale input each frame it's active -
+            // otherwise FixedUpdate would keep applying whatever direction was held when the modal
+            // opened.
+            if (InputBlocker.IsBlocked)
+            {
+                movementInput = Vector2.zero;
+                return;
+            }
 
             var keyboard = Keyboard.current;
             if (keyboard == null)

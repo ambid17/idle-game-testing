@@ -42,6 +42,13 @@ namespace Player
         private void Update()
         {
             streamingManager.SetFocusDepth(-transform.position.y);
+
+            if (InputBlocker.IsBlocked)
+            {
+                ResetTarget();
+                return;
+            }
+
             Vector2Int? direction = ResolveDirection();
 
             Debug.Log($"grounded: {playerController.IsGrounded}, direction={direction}");
