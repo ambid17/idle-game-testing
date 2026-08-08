@@ -71,7 +71,7 @@ namespace Player
                 return;
             }
 
-            if(debug) Debug.Log($"PlayerMining: resolved target cell at layer {layerIndex}, x {targetCellX}, y {targetCellY} (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()})");
+            if(debug) Debug.Log($"PlayerMining: resolved target cell at (x,y,layer): ({targetCellX},{targetCellY},{layerIndex}) (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()})");
 
             bool isNewTarget = !hasTarget || layerIndex != targetLayer || targetCellX != targetX || targetCellY != targetY;
             if (isNewTarget)
@@ -86,7 +86,7 @@ namespace Player
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, targetCellX, targetCellY);
             if (blockType == null || (blockType.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow))
             {
-                if (debug) Debug.LogWarning($"PlayerMining: cannot mine target cell at layer {layerIndex}, x {targetCellX}, y {targetCellY} (blockType {(blockType == null ? "none" : blockType.name)}), inventory full {playerInventory.IsFull}, can overflow {CanOverflow})");
+                if (debug) Debug.LogWarning($"PlayerMining: cannot mine target cell at (x,y,layer): ({targetCellX},{targetCellY},{layerIndex}) (blockType {(blockType == null ? "none" : blockType.name)}), inventory full {playerInventory.IsFull}, can overflow {CanOverflow})");
                 ResetTarget();
                 return;
             }
@@ -101,7 +101,7 @@ namespace Player
             var finishedMining =  miningProgress >= targetBlockHealth;
             if (canInstaMine || canInstaMineDirt || finishedMining)
             {
-                if (debug) Debug.Log($"PlayerMining: finishing mine at layer {layerIndex}, x {targetCellX}, y {targetCellY}");
+                if (debug) Debug.Log($"PlayerMining: finishing mine at (x,y,layer): ({targetCellX},{targetCellY},{layerIndex})");
                 MineTarget(layerIndex, targetCellX, targetCellY, blockType);
                 ResetTarget();
                 return;

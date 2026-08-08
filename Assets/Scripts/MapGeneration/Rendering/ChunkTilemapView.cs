@@ -15,6 +15,13 @@ namespace MapGeneration
         private BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
         [SerializeField] private bool fogDisabled;
 
+#if UNITY_EDITOR
+        // Editor-only cell debug overlay (world position + cell index), drawn via Gizmos/Handles
+        // so it never renders and never gets compiled into production/standalone builds.
+        [SerializeField] private bool showDebugCellLabels;
+        [SerializeField] private Color debugCellLabelColor = Color.yellow;
+#endif
+
         // Layer 0 only: fog fades in from clear at the surface (row 0) to full opacity by this
         // row, so the mine entrance doesn't open into a hard fog wall.
         [SerializeField] private int surfaceFogGradientRows = 10;
@@ -110,5 +117,28 @@ namespace MapGeneration
             var blockType = blockTypes != null ? blockTypes.Get(blockTypeId) : null;
             return blockType != null ? blockType.Tile : null;
         }
+
+#if UNITY_EDITOR
+        // Draws one label per cell showing its (x,y) chunk index and world-space center. Only
+        // ever invoked by the Editor (Scene/Game view "Gizmos" toggle), so this - and the fields
+        // above it - compile out of production builds entirely via the UNITY_EDITOR guard.
+        private void OnDrawGizmos()
+        {
+            if (!showDebugCellLabels || chunk == null || terrainTilemap == null) return;
+
+            UnityEditor.Handles.color = debugCellLabelColor;
+            var labelStyle = new GUIStyle { normal = { textColor = debugCellLabelColor }, fontSize = 8, alignment = TextAnchor.MiddleCenter };
+
+            for (int y = 0; y < chunk.Height; y++)
+            {
+                for (int x = 0; x < chunk.Width; x++)
+                {
+                    var cellPos = new Vector3Int(x, -y, 0);
+                    Vector3 worldPos = terrainTilemap.GetCellCenterWorld(cellPos);
+                    UnityEditor.Handles.Label(worldPos, $"[{x},{y}]\n{worldPos.ToFormattedString()}", labelStyle);
+                }
+            }
+        }
+#endif
     }
 }
