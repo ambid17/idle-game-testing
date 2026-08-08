@@ -19,6 +19,7 @@ namespace Player
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private ChunkStreamingManager streamingManager => GameManager.ChunkStreamingManager;
         [SerializeField] private MiningCrackIndicator crackIndicator;
+        [SerializeField] private bool debug;
 
         private PlayerController playerController;
         private PlayerInventory playerInventory;
@@ -29,6 +30,7 @@ namespace Player
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
         private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.OverflowUnlocked;
+        
 
         private void Awake()
         {
@@ -42,17 +44,10 @@ namespace Player
         private void Update()
         {
             streamingManager.SetFocusDepth(-transform.position.y);
-
-            if (InputBlocker.IsBlocked)
-            {
-                ResetTarget();
-                return;
-            }
-
             Vector2Int? direction = ResolveDirection();
-
-            if (!playerController.IsGrounded || direction == null)
+            if (!playerController.IsGrounded || direction == null || InputBlocker.IsBlocked)
             {
+                if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
                 ResetTarget();
                 return;
             }
@@ -67,27 +62,31 @@ namespace Player
             var digDownDepth = direction.Value.y < 0 ? cellSize / 2 : 0;
             float targetYPos = bottomOfCollider - digDownDepth;
 
-            Vector3 target = new Vector3(transform.position.x + direction.Value.x * cellSize, targetYPos, 0f);
+            Vector3 miningTargetWorldPos = new Vector3(transform.position.x + direction.Value.x * cellSize, targetYPos, 0f);
 
-            if (!mapGenerationService.WorldToCell(target, out int layerIndex, out int x, out int y))
+            if (!mapGenerationService.WorldToCell(miningTargetWorldPos, out int layerIndex, out int targetCellX, out int targetCellY))
             {
+                if (debug) Debug.LogWarning($"PlayerMining: failed to resolve target cell at {miningTargetWorldPos} (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()}). Resolved Cell: ({targetCellX}, {targetCellY})");
                 ResetTarget();
                 return;
             }
 
-            bool isNewTarget = !hasTarget || layerIndex != targetLayer || x != targetX || y != targetY;
+            if(debug) Debug.Log($"PlayerMining: resolved target cell at layer {layerIndex}, x {targetCellX}, y {targetCellY} (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()})");
+
+            bool isNewTarget = !hasTarget || layerIndex != targetLayer || targetCellX != targetX || targetCellY != targetY;
             if (isNewTarget)
             {
                 targetLayer = layerIndex;
-                targetX = x;
-                targetY = y;
+                targetX = targetCellX;
+                targetY = targetCellY;
                 hasTarget = true;
                 miningProgress = 0f;
             }
 
-            var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
+            var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, targetCellX, targetCellY);
             if (blockType == null || (blockType.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow))
             {
+                if (debug) Debug.LogWarning($"PlayerMining: cannot mine target cell at layer {layerIndex}, x {targetCellX}, y {targetCellY} (blockType {(blockType == null ? "none" : blockType.name)}), inventory full {playerInventory.IsFull}, can overflow {CanOverflow})");
                 ResetTarget();
                 return;
             }
@@ -102,14 +101,15 @@ namespace Player
             var finishedMining =  miningProgress >= targetBlockHealth;
             if (canInstaMine || canInstaMineDirt || finishedMining)
             {
-                MineTarget(layerIndex, x, y, blockType);
+                if (debug) Debug.Log($"PlayerMining: finishing mine at layer {layerIndex}, x {targetCellX}, y {targetCellY}");
+                MineTarget(layerIndex, targetCellX, targetCellY, blockType);
                 ResetTarget();
                 return;
             }
 
             if (crackIndicator != null)
             {
-                crackIndicator.Show(mapGenerationService.CellToWorldCenter(layerIndex, x, y), miningProgress / targetBlockHealth);
+                crackIndicator.Show(mapGenerationService.CellToWorldCenter(layerIndex, targetCellX, targetCellY), miningProgress / targetBlockHealth);
             }
         }
 
