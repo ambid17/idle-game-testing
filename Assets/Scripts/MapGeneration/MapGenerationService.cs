@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Economy;
 using Events;
 using UnityEngine;
@@ -31,8 +32,16 @@ namespace MapGeneration
             if (!World.TryMineCell(layerIndex, x, y, out var block, out var artifactFound)) return false;
 
             int radius = fogRadiusOverride >= 0 ? fogRadiusOverride : GetFogRevealRadius();
-            var revealed = World.RevealFog(layerIndex, x, y, radius);
-            streamingManager.NotifyCellMined(layerIndex, x, y, revealed);
+            var revealedByLayer = World.RevealFog(layerIndex, x, y, radius);
+
+            revealedByLayer.TryGetValue(layerIndex, out var revealedInOriginLayer);
+            streamingManager.NotifyCellMined(layerIndex, x, y, (IReadOnlyList<Vector2Int>)revealedInOriginLayer ?? System.Array.Empty<Vector2Int>());
+
+            foreach (var (revealedLayerIndex, revealedCells) in revealedByLayer)
+            {
+                if (revealedLayerIndex == layerIndex) continue;
+                streamingManager.NotifyFogRevealed(revealedLayerIndex, revealedCells);
+            }
 
             if (block != null && block.Category == BlockCategory.Hazard)
             {

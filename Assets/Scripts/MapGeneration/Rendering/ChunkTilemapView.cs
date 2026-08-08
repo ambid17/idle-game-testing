@@ -97,9 +97,11 @@ namespace MapGeneration
         {
             if (revealed) return new TileChangeData(pos, null, Color.white, Matrix4x4.identity);
 
+            var defaultAlpha = 0.97f;
+            var gradientPercentage = Mathf.Clamp01(y / (float)(surfaceFogGradientRows - 1));
             float alpha = LayerIndex == 0 && y < surfaceFogGradientRows
-                ? Mathf.Clamp01(y / (float)(surfaceFogGradientRows - 1))
-                : 1f;
+                ? Mathf.Min(defaultAlpha, gradientPercentage)
+                : defaultAlpha;
             return new TileChangeData(pos, fogTile, new Color(1f, 1f, 1f, alpha), Matrix4x4.identity);
         }
 

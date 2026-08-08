@@ -111,6 +111,15 @@ namespace MapGeneration
             view.RepaintCells(affected);
         }
 
+        // For fog reveals that spilled into a neighboring layer's chunk (no mined cell of its own here).
+        public void NotifyFogRevealed(int layerIndex, IReadOnlyList<Vector2Int> revealedCells)
+        {
+            if (revealedCells.Count == 0) return;
+            if (!activeViews.TryGetValue(layerIndex, out var view)) return;
+
+            view.RepaintCells(revealedCells);
+        }
+
         public void ClearAll()
         {
             foreach (var layerIndex in new List<int>(activeViews.Keys))
