@@ -54,6 +54,7 @@ namespace Persistence
 
         public void Save()
         {
+            Debug.Log($"SaveService.Save: writing save file to {SavePath} and map file to {MapSavePath}");
             var data = new GameSaveData
             {
                 Dollars = Wallet.Instance.Dollars,
