@@ -42,14 +42,10 @@ namespace Player
         private void Update()
         {
             streamingManager.SetFocusDepth(-transform.position.y);
-            if (!playerController.IsGrounded)
-            {
-                ResetTarget();
-                return;
-            }
-
             Vector2Int? direction = ResolveDirection();
-            if (direction == null)
+
+            Debug.Log($"grounded: {playerController.IsGrounded}, direction={direction}");
+            if (!playerController.IsGrounded || direction == null)
             {
                 ResetTarget();
                 return;
@@ -60,9 +56,14 @@ namespace Player
             // than the raw pivot Y - otherwise horizontal targets resolve one row too high and
             // never hit a block (only "down" ever happened to land in-bounds by coincidence).
             float cellSize = mapGenerationService.CellSize;
-            float standingRowY = transform.position.y - capsuleCollider.size.y * 0.5f - cellSize * 0.5f;
-            Vector3 targetWorldPos = new Vector3(transform.position.x + direction.Value.x * cellSize, standingRowY, 0f);
-            if (!mapGenerationService.WorldToCell(targetWorldPos, out int layerIndex, out int x, out int y))
+
+            var bottomOfCollider = transform.position.y - (capsuleCollider.size.y / 2);
+            var digDownDepth = direction.Value.y < 0 ? cellSize / 2 : 0;
+            float targetYPos = bottomOfCollider - digDownDepth;
+
+            Vector3 target = new Vector3(transform.position.x + direction.Value.x * cellSize, targetYPos, 0f);
+
+            if (!mapGenerationService.WorldToCell(target, out int layerIndex, out int x, out int y))
             {
                 ResetTarget();
                 return;
@@ -85,10 +86,7 @@ namespace Player
                 return;
             }
 
-            
-
-            float speedMultiplier = upgradeManager != null ? upgradeManager.MiningSpeedMultiplier : 1f;
-            miningProgress += Time.deltaTime * speedMultiplier;
+            miningProgress += Time.deltaTime * upgradeManager.MiningSpeedMultiplier;
             float targetBlockHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
 
             // GameDesignDoc "Insta-mine chance": rolled once per newly-acquired target.
