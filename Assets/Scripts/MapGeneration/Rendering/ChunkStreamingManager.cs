@@ -22,6 +22,10 @@ namespace MapGeneration
         public void Initialize(MineWorld mineWorld)
         {
             world = mineWorld;
+            // Force UpdateWindow() to rebind views even if the focus layer index is unchanged -
+            // otherwise a post-startup world swap (e.g. restoring from save) would no-op here since
+            // SetFocusDepth only acts on a layer-index change, leaving views bound to the old world.
+            currentFocusLayer = int.MinValue;
             SetFocusDepth(0);
         }
 

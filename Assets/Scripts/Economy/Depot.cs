@@ -73,5 +73,18 @@ namespace Economy
             }
             return total;
         }
+
+        // Bulk restore for SaveService - silent (no DepotChangedEvent) since this only ever runs
+        // once at startup before any UI has subscribed.
+        public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> ores)
+        {
+            storedOres.Clear();
+            if (ores == null) return;
+
+            foreach (var kvp in ores)
+            {
+                storedOres[kvp.Key] = kvp.Value;
+            }
+        }
     }
 }

@@ -27,6 +27,15 @@ namespace MapGeneration
             streamingManager.Initialize(World);
         }
 
+        // Swaps in a world restored from save data (SaveService.ApplyMapData), replacing the
+        // throwaway default one created in Awake(), and forces the streaming manager to rebind its
+        // view window to the new world's chunks.
+        public void RestoreWorld(MineWorld restoredWorld)
+        {
+            World = restoredWorld;
+            streamingManager.Initialize(World);
+        }
+
         public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1)
         {
             if (!World.TryMineCell(layerIndex, x, y, out var block, out var artifactFound)) return false;

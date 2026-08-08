@@ -6,24 +6,44 @@ using Automation;
 using Economy;
 using Events;
 using MapGeneration;
+using Player;
 using UnityEngine;
 
 namespace Persistence
 {
-    // Minimal save/load per the resolved persistence decision: Wallet dollars, all UpgradeManager
-    // levels, IdleEarningsTracker's rolling averages, AutomationSettings, and a last-active
-    // timestamp (used to compute "minutes away" for the offline-earnings screen). Follows
-    // MapGeneration/Persistence/ChunkSerializer's JsonUtility approach, but unlike that (never
-    // actually called) code, this is wired to Unity's lifecycle - nothing in the project persisted
-    // anything to disk before this.
+    // Save/load per the resolved persistence decision: Wallet dollars, all UpgradeManager levels,
+    // IdleEarningsTracker's rolling averages, AutomationSettings, Depot's ore bank, player
+    // inventory/health/fuel/position, and a last-active timestamp (used to compute "minutes away"
+    // for the offline-earnings screen) - written to save.json. Mine/chunk terrain is persisted
+    // separately to map.json via MapGeneration/Persistence/MapPersistenceService, since it's
+    // potentially much larger and independent of the rest. Follows
+    // MapGeneration/Persistence/ChunkSerializer's JsonUtility approach, and (unlike that scaffolding,
+    // which sat unwired until this class picked it up) is wired to Unity's lifecycle - nothing in
+    // the project persisted anything to disk before this.
     public class SaveService : Singleton<SaveService>
     {
         private const float AutosaveIntervalSeconds = 60f;
         private string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
+        private string MapSavePath => Path.Combine(Application.persistentDataPath, "map.json");
+
+        [SerializeField] private PlayerController playerController;
+        private PlayerInventory playerInventory;
+        private PlayerHealth playerHealth;
 
         protected override void Initialize()
         {
             base.Initialize();
+
+            if (playerController == null)
+            {
+                Debug.LogError("SaveService.playerController is not assigned. Player state will not be saved/restored.");
+            }
+            else
+            {
+                playerInventory = playerController.GetComponent<PlayerInventory>();
+                playerHealth = playerController.GetComponent<PlayerHealth>();
+            }
+
             // OS force-kill (especially on mobile) doesn't reliably call OnApplicationQuit, so a
             // periodic safety-net autosave backs up OnApplicationQuit/OnApplicationPause below.
             InvokeRepeating(nameof(Save), AutosaveIntervalSeconds, AutosaveIntervalSeconds);
@@ -56,6 +76,30 @@ namespace Persistence
                 data.IdleAverages.Add(new OreAverageEntry { Id = kvp.Key, AveragePerMinute = kvp.Value });
             }
 
+            foreach (var kvp in Depot.Instance.StoredOres)
+            {
+                data.DepotOres.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
+            }
+
+            if (playerController != null)
+            {
+                data.Player = new PlayerSaveData
+                {
+                    CurrentHp = playerHealth != null ? playerHealth.CurrentHp : 0f,
+                    Fuel = playerController.Fuel,
+                    Position = playerController.transform.position,
+                    ArtifactCount = playerInventory != null ? playerInventory.ArtifactCount : 0,
+                };
+
+                if (playerInventory != null)
+                {
+                    foreach (var kvp in playerInventory.OreCounts)
+                    {
+                        data.Player.OreCounts.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
+                    }
+                }
+            }
+
             try
             {
                 File.WriteAllText(SavePath, JsonUtility.ToJson(data));
@@ -63,6 +107,16 @@ namespace Persistence
             catch (Exception e)
             {
                 Debug.LogError($"SaveService.Save: failed to write save file at {SavePath}: {e}");
+            }
+
+            try
+            {
+                var mapData = MapPersistenceService.BuildSaveData(GameManager.MapGenerationService.World);
+                File.WriteAllText(MapSavePath, MapPersistenceService.ToJson(mapData));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"SaveService.Save: failed to write map file at {MapSavePath}: {e}");
             }
         }
 
@@ -78,6 +132,23 @@ namespace Persistence
             catch (Exception e)
             {
                 Debug.LogError($"SaveService.Load: failed to read save file at {SavePath}: {e}");
+                return null;
+            }
+        }
+
+        // Null if no map file exists yet (first run). Independent of Load()/save.json so a
+        // missing/corrupt file for one doesn't block the other.
+        public MapSaveData LoadMap()
+        {
+            if (!File.Exists(MapSavePath)) return null;
+
+            try
+            {
+                return MapPersistenceService.FromJson(File.ReadAllText(MapSavePath));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"SaveService.LoadMap: failed to read map file at {MapSavePath}: {e}");
                 return null;
             }
         }
@@ -112,6 +183,26 @@ namespace Persistence
             }
             IdleEarningsTracker.Instance.RestoreFromSaveData(averages);
 
+            var depotOres = new Dictionary<BlockTypeId, int>();
+            foreach (var entry in data.DepotOres)
+            {
+                depotOres[entry.Id] = entry.Count;
+            }
+            Depot.Instance.RestoreFromSaveData(depotOres);
+
+            if (data.Player != null)
+            {
+                var playerOres = new Dictionary<BlockTypeId, int>();
+                foreach (var entry in data.Player.OreCounts)
+                {
+                    playerOres[entry.Id] = entry.Count;
+                }
+
+                if (playerInventory != null) playerInventory.RestoreFromSaveData(playerOres, data.Player.ArtifactCount);
+                if (playerHealth != null) playerHealth.RestoreFromSaveData(data.Player.CurrentHp);
+                if (playerController != null) playerController.RestoreFromSaveData(data.Player.Fuel, data.Player.Position);
+            }
+
             float minutesAway = ComputeMinutesAway(data.LastActiveUtcTimestamp);
             if (minutesAway <= 0f) return;
 
@@ -124,6 +215,16 @@ namespace Persistence
 
             if (oreGained.Count == 0) return;
             GameManager.EventService.Dispatch(new OfflineEarningsReadyEvent(oreGained, minutesAway));
+        }
+
+        // Restores mine/chunk terrain from map.json - independent of ApplyLoadedData/save.json so
+        // a missing/corrupt file for one doesn't block the other.
+        public void ApplyMapData(MapSaveData mapData)
+        {
+            if (mapData == null) return;
+
+            var restoredWorld = MapPersistenceService.Restore(mapData);
+            GameManager.MapGenerationService.RestoreWorld(restoredWorld);
         }
 
         private static float ComputeMinutesAway(string lastActiveUtcTimestamp)

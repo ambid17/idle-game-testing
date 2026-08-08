@@ -86,6 +86,25 @@ namespace Economy
             CurrentWeight = 0f;
         }
 
+        // Bulk restore for SaveService - silent (no owner event dispatch), recomputes CurrentWeight
+        // from BlockTypeDatabase same as WithdrawUpToWeight. Safe whether or not PopulateOreCounts
+        // has run yet - assigns keys directly rather than relying on pre-seeded zero entries.
+        public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> counts)
+        {
+            ClearOreCounts();
+            CurrentWeight = 0f;
+            if (counts == null) return;
+
+            foreach (var kvp in counts)
+            {
+                if (kvp.Value <= 0) continue;
+                oreCounts[kvp.Key] = kvp.Value;
+
+                var blockType = blockTypeDatabase != null ? blockTypeDatabase.Get((byte)kvp.Key) : null;
+                if (blockType != null) CurrentWeight += blockType.Weight * kvp.Value;
+            }
+        }
+
         private void PopulateOreCounts()
         {
             if (blockTypeDatabase == null) return;

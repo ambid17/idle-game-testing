@@ -88,5 +88,13 @@ namespace Player
             GameManager.EventService.Dispatch<InventoryChangedEvent>();
             return snapshot;
         }
+
+        // Bulk restore for SaveService - silent (no InventoryChangedEvent) since this only ever
+        // runs once at startup before any UI has subscribed.
+        public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> oreCounts, int artifactCount)
+        {
+            oreInventory.RestoreFromSaveData(oreCounts);
+            ArtifactCount = Mathf.Max(0, artifactCount);
+        }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Automation;
 using MapGeneration;
+using UnityEngine;
 
 namespace Persistence
 {
@@ -27,9 +28,26 @@ namespace Persistence
         public float FuelSpendingCapPercent;
     }
 
+    [Serializable]
+    public class OreCountEntry
+    {
+        public BlockTypeId Id;
+        public int Count;
+    }
+
+    [Serializable]
+    public class PlayerSaveData
+    {
+        public float CurrentHp;
+        public float Fuel;
+        public Vector3 Position;
+        public int ArtifactCount;
+        public List<OreCountEntry> OreCounts = new();
+    }
+
     // Minimal save file per the resolved persistence decision - Wallet/UpgradeManager/idle-average/
-    // AutomationSettings state plus a last-active timestamp. Map/chunk data is deliberately not
-    // included (MapGeneration/Persistence's MapSaveData stays unwired, out of scope here).
+    // AutomationSettings/Depot/Player state plus a last-active timestamp. Map/chunk data lives in
+    // the sibling map.json (MapGeneration/Persistence's MapSaveData), not here.
     [Serializable]
     public class GameSaveData
     {
@@ -37,6 +55,8 @@ namespace Persistence
         public List<UpgradeLevelEntry> UpgradeLevels = new();
         public List<OreAverageEntry> IdleAverages = new();
         public AutomationSettingsSaveData AutomationSettings = new();
+        public List<OreCountEntry> DepotOres = new();
+        public PlayerSaveData Player = new();
         // ISO-8601 string, since JsonUtility can't serialize DateTime directly.
         public string LastActiveUtcTimestamp;
     }

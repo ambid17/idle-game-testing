@@ -96,6 +96,19 @@ namespace Player
             transform.position = spawnPosition;
         }
 
+        // Restore for SaveService - restores last-quit Fuel/position. Deliberately does NOT touch
+        // spawnPosition, which is the level's respawn-on-death anchor captured once in Awake() from
+        // the scene's authored Player transform - a different concept from "where the player was
+        // standing when they quit."
+        public void RestoreFromSaveData(float fuel, Vector3 position)
+        {
+            Fuel = Mathf.Clamp(fuel, 0f, fuelMax);
+            rb.position = position;
+            transform.position = position;
+            rb.linearVelocity = Vector2.zero;
+            peakFallSpeed = 0f;
+        }
+
         private void Update()
         {
             if (health.IsDead) return;

@@ -70,5 +70,6 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         SaveService.Instance.ApplyLoadedData(SaveService.Instance.Load());
+        SaveService.Instance.ApplyMapData(SaveService.Instance.LoadMap());
     }
 }

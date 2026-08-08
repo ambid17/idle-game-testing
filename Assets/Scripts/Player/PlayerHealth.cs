@@ -38,5 +38,14 @@ namespace Player
             IsDead = false;
             CurrentHp = maxHp;
         }
+
+        // Restore for SaveService - always resolves alive (resuming into a dead state on load is
+        // an unwanted edge case, not a design goal), flooring a saved 0 HP up to maxHp rather than
+        // reloading instantly dead.
+        public void RestoreFromSaveData(float currentHp)
+        {
+            IsDead = false;
+            CurrentHp = currentHp > 0f ? Mathf.Min(currentHp, maxHp) : maxHp;
+        }
     }
 }
