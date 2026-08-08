@@ -42,6 +42,7 @@ namespace Player
         public float Fuel { get; private set; }
         public float FuelFraction => fuelMax > 0f ? Fuel / fuelMax : 0f;
         private Vector2 movementInput;
+        public Vector2 MovementInput => movementInput;
 
         private void Awake()
         {
@@ -53,6 +54,7 @@ namespace Player
             capsuleCollider = GetComponent<CapsuleCollider2D>();
             groundCheckOffset = capsuleCollider.size.y * 0.5f * Vector2.down;
             groundCheckSize = new Vector2(capsuleCollider.size.x * 0.5f, 0.1f);
+
         }
 
         private void Update()
@@ -72,6 +74,7 @@ namespace Player
             if (aHeld) horizontalInput -= 1f;
             if (dHeld) horizontalInput += 1f;
             movementInput = new Vector2(horizontalInput, wHeld ? 1f : 0f);
+
         }
 
         private void FixedUpdate()

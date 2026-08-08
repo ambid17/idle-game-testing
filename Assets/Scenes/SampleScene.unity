@@ -5830,6 +5830,7 @@ GameObject:
   - component: {fileID: 2055974195}
   - component: {fileID: 2055974196}
   - component: {fileID: 2055974197}
+  - component: {fileID: 2055974198}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -6046,6 +6047,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInventory
   baseMaxWeight: 100
+--- !u!114 &2055974198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055974188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dac6e7fc3a44354a97094a55090bdf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
+  controller: {fileID: 2055974193}
 --- !u!1 &2065914022
 GameObject:
   m_ObjectHideFlags: 0
