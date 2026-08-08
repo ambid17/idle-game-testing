@@ -16,8 +16,17 @@ namespace UI
 
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
 
-        private void OnEnable() => GameManager.EventService.Add<OreDepositedByAutomationEvent>(OnOreDeposited);
-        private void OnDisable() => GameManager.EventService.Remove<OreDepositedByAutomationEvent>(OnOreDeposited);
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<OreDepositedByAutomationEvent>(OnOreDeposited);
+            GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<OreDepositedByAutomationEvent>(OnOreDeposited);
+            GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
+        }
 
         private void OnOreDeposited(OreDepositedByAutomationEvent evt)
         {
@@ -29,6 +38,17 @@ namespace UI
 
             string message = DepositNotificationFormatter.Format(evt.EntityDisplayName, evt.Deposited, blockTypeDatabase);
             Instantiate(itemPrefab, container).Bind(message);
+        }
+
+        private void OnPrestigeCompleted(PrestigeCompletedEvent evt)
+        {
+            if (itemPrefab == null || container == null)
+            {
+                Debug.LogError("NotificationQueueUI: Missing itemPrefab or container. Cannot show notification.");
+                return;
+            }
+
+            Instantiate(itemPrefab, container).Bind("Prestige complete - the mine has regenerated.");
         }
     }
 }

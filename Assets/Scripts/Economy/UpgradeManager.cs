@@ -16,7 +16,32 @@ namespace Economy
 
         private readonly Dictionary<string, int> levelsByUpgradeId = new();
 
-        public int GetLevel(UpgradeDefinition def) => def != null && levelsByUpgradeId.TryGetValue(def.Id, out var lvl) ? lvl : 0;
+        // Purchased levels only - never includes a PrestigeUpgradeManager "kept tier" baseline.
+        // Kept separate from GetLevel so persistence (SetLevel/AllLevels) only ever deals in what
+        // the player actually bought at the Market, not perk-granted baselines.
+        private int RawLevel(UpgradeDefinition def) => def != null && levelsByUpgradeId.TryGetValue(def.Id, out var lvl) ? lvl : 0;
+
+        // GameDesignDoc "Prestige > idle": purchased level plus any "keep tier" prestige perk
+        // baseline for this effect, capped at MaxLevel. After PrestigeManager.ExecutePrestige wipes
+        // levelsByUpgradeId, this is what lets a kept perk make the Market upgrade start above 0 -
+        // GetCost (fed this same combined level) then resumes the cost curve at the kept tier
+        // instead of restarting at tier-0 prices.
+        public int GetLevel(UpgradeDefinition def) => def != null ? Mathf.Min(def.MaxLevel, RawLevel(def) + KeptBaseline(def)) : 0;
+
+        // Maps a Market UpgradeEffect onto its matching PrestigeUpgradeManager "keep tier" perk, if
+        // any. Only the Idle-branch automaton stats have a kept-tier perk today.
+        private int KeptBaseline(UpgradeDefinition def)
+        {
+            var prestige = PrestigeUpgradeManager.Instance;
+            return def.Effect switch
+            {
+                UpgradeEffect.AutomatonCount => prestige.KeptAutomatonCountBaseline,
+                UpgradeEffect.AutomatonMiningSpeed => prestige.KeptAutomatonMiningSpeedBaseline,
+                UpgradeEffect.AutomatonMiningRadius => prestige.KeptAutomatonMiningRadiusBaseline,
+                UpgradeEffect.AutomatonMoveSpeed => prestige.KeptAutomatonMoveSpeedBaseline,
+                _ => 0
+            };
+        }
 
         public bool IsMaxed(UpgradeDefinition def) => def != null && GetLevel(def) >= def.MaxLevel;
 
@@ -142,5 +167,11 @@ namespace Economy
         }
 
         public IEnumerable<KeyValuePair<string, int>> AllLevels => levelsByUpgradeId;
+
+        // GameDesignDoc "# Prestige": hard reset of all purchased Market upgrade levels, called by
+        // PrestigeManager.ExecutePrestige. Any "keep tier" prestige perk baselines still apply
+        // afterward via GetLevel/KeptBaseline - this only clears what the player purchased with
+        // Dollars this run.
+        public void ResetAllLevels() => levelsByUpgradeId.Clear();
     }
 }

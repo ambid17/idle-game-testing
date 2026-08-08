@@ -12,6 +12,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private BlockTypeDatabase _blockTypeDatabase;
     [SerializeField] private LayerConfigProvider _layerConfigProvider;
     [SerializeField] private UpgradeDatabase _upgradeDatabase;
+    [SerializeField] private PrestigeUpgradeDatabase _prestigeUpgradeDatabase;
     [SerializeField] private AutomationConfig _automationConfig;
 
     public static ChunkStreamingManager ChunkStreamingManager => Instance._chunkStreamingManager;
@@ -19,6 +20,7 @@ public class GameManager : Singleton<GameManager>
     public static BlockTypeDatabase BlockTypeDatabase => Instance._blockTypeDatabase;
     public static LayerConfigProvider LayerConfigProvider => Instance._layerConfigProvider;
     public static UpgradeDatabase UpgradeDatabase => Instance._upgradeDatabase;
+    public static PrestigeUpgradeDatabase PrestigeUpgradeDatabase => Instance._prestigeUpgradeDatabase;
     public static AutomationConfig AutomationConfig => Instance._automationConfig;
 
     private EventService _eventService;
@@ -58,6 +60,10 @@ public class GameManager : Singleton<GameManager>
         if (_upgradeDatabase == null)
         {
             Debug.LogError("UpgradeDatabase is not assigned in GameManager.");
+        }
+        if (_prestigeUpgradeDatabase == null)
+        {
+            Debug.LogError("PrestigeUpgradeDatabase is not assigned in GameManager.");
         }
         if (_automationConfig == null)
         {

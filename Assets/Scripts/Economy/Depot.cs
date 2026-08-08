@@ -74,6 +74,17 @@ namespace Economy
             return total;
         }
 
+        // GameDesignDoc "# Prestige": wipes all stored minerals/processed goods for
+        // PrestigeManager.ExecutePrestige's hard reset. Kept distinct from RestoreFromSaveData even
+        // though the body is identical - "restore from save" and "wipe for a live prestige" are
+        // different intents, and dispatches DepotChangedEvent (unlike the silent save-restore path)
+        // since the Depot UI may be live-refreshing.
+        public void ClearAll()
+        {
+            storedOres.Clear();
+            GameManager.EventService.Dispatch<DepotChangedEvent>();
+        }
+
         // Bulk restore for SaveService - silent (no DepotChangedEvent) since this only ever runs
         // once at startup before any UI has subscribed.
         public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> ores)

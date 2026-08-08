@@ -53,6 +53,12 @@ namespace Persistence
     {
         public double Dollars;
         public List<UpgradeLevelEntry> UpgradeLevels = new();
+        // Prestige points and prestige upgrade levels per GameDesignDoc "# Prestige" - deliberately
+        // siblings of Dollars/UpgradeLevels above, not a separate file: they don't need independent
+        // lifecycle, they just must never be touched by PrestigeManager.ExecutePrestige's in-memory
+        // reset (the next autosave captures the correct post-prestige state automatically).
+        public double PrestigePoints;
+        public List<UpgradeLevelEntry> PrestigeUpgradeLevels = new();
         public List<OreAverageEntry> IdleAverages = new();
         public AutomationSettingsSaveData AutomationSettings = new();
         public List<OreCountEntry> DepotOres = new();

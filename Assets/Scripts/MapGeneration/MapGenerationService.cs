@@ -21,6 +21,11 @@ namespace MapGeneration
 
         public MineWorld World { get; private set; }
 
+        // The un-upgraded default width, used by PrestigeManager.ExecutePrestige to recompute the
+        // absolute width (base + PrestigeUpgradeManager.GridWidthBonus) on every prestige, rather
+        // than compounding bonuses onto whatever World.GridWidth already grew to.
+        public int BaseGridWidth => gridWidth;
+
         private void Awake()
         {
             World = new MineWorld(worldSeed, gridWidth);

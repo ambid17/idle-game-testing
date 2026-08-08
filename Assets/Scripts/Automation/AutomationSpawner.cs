@@ -33,8 +33,17 @@ namespace Automation
 
         private void Start() => ReconcileAll();
 
-        private void OnEnable() => GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
-        private void OnDisable() => GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
+        }
 
         private void OnUpgradePurchased(UpgradePurchasedEvent evt)
         {
@@ -44,6 +53,12 @@ namespace Automation
                 ReconcileAll();
             }
         }
+
+        // GameDesignDoc "# Prestige": PrestigeManager.ExecutePrestige clears purchased Market
+        // levels but "keep tier" prestige perk baselines still apply (UpgradeManager.GetLevel), so
+        // any kept automaton count needs to spawn immediately - nothing else fires
+        // UpgradePurchasedEvent as part of a prestige reset.
+        private void OnPrestigeCompleted(PrestigeCompletedEvent evt) => ReconcileAll();
 
         private void ReconcileAll()
         {

@@ -89,6 +89,25 @@ namespace Player
             return snapshot;
         }
 
+        // Snapshots and clears carried ore only, leaving artifacts untouched - used by
+        // PrestigeManager.ExecutePrestige, which wipes Depot/carried ore but not artifacts (those
+        // are turned in via the Museum before a prestige, not silently discarded).
+        public void ClearOreOnly()
+        {
+            oreInventory.ClearAll();
+            GameManager.EventService.Dispatch<InventoryChangedEvent>();
+        }
+
+        // Snapshots and clears carried artifacts (not ore) - called when turning artifacts in at
+        // the Museum for Prestige points. Mirrors WithdrawAllOre's shape.
+        public int WithdrawAllArtifacts()
+        {
+            int count = ArtifactCount;
+            ArtifactCount = 0;
+            GameManager.EventService.Dispatch<InventoryChangedEvent>();
+            return count;
+        }
+
         // Bulk restore for SaveService - silent (no InventoryChangedEvent) since this only ever
         // runs once at startup before any UI has subscribed.
         public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> oreCounts, int artifactCount)

@@ -175,4 +175,56 @@ namespace Events
     }
 
     public class OfflineEarningsAcknowledgedEvent { }
+
+    // Prestige (GameDesignDoc "# Prestige") events below.
+
+    public class PrestigePointsChangedEvent { }
+
+    public class ArtifactsTurnedInEvent : IEvent
+    {
+        public int Count;
+        public double PointsEarned;
+
+        public ArtifactsTurnedInEvent(int count, double pointsEarned)
+        {
+            Count = count;
+            PointsEarned = pointsEarned;
+        }
+    }
+
+    public class TurnInArtifactsRequestedEvent { }
+
+    public class PrestigeUpgradePurchasedEvent : IEvent
+    {
+        public PrestigeUpgradeDefinition Definition;
+        public int NewLevel;
+
+        public PrestigeUpgradePurchasedEvent(PrestigeUpgradeDefinition definition, int newLevel)
+        {
+            Definition = definition;
+            NewLevel = newLevel;
+        }
+    }
+
+    public class PrestigePurchaseRequestedEvent : IEvent
+    {
+        public PrestigeUpgradeDefinition Definition;
+
+        public PrestigePurchaseRequestedEvent(PrestigeUpgradeDefinition definition)
+        {
+            Definition = definition;
+        }
+    }
+
+    public class PrestigeConfirmationRequestedEvent { }
+
+    public class PrestigeCompletedEvent : IEvent
+    {
+        public int NewSeed;
+
+        public PrestigeCompletedEvent(int newSeed)
+        {
+            NewSeed = newSeed;
+        }
+    }
 }

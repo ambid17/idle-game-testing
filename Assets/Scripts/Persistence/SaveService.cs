@@ -71,6 +71,12 @@ namespace Persistence
                 data.UpgradeLevels.Add(new UpgradeLevelEntry { UpgradeId = kvp.Key, Level = kvp.Value });
             }
 
+            data.PrestigePoints = PrestigePoints.Instance.Points;
+            foreach (var kvp in PrestigeUpgradeManager.Instance.AllLevels)
+            {
+                data.PrestigeUpgradeLevels.Add(new UpgradeLevelEntry { UpgradeId = kvp.Key, Level = kvp.Value });
+            }
+
             foreach (var kvp in IdleEarningsTracker.Instance.AveragePerMinute)
             {
                 data.IdleAverages.Add(new OreAverageEntry { Id = kvp.Key, AveragePerMinute = kvp.Value });
@@ -166,6 +172,12 @@ namespace Persistence
             foreach (var entry in data.UpgradeLevels)
             {
                 UpgradeManager.Instance.SetLevel(entry.UpgradeId, entry.Level);
+            }
+
+            PrestigePoints.Instance.SetPoints(data.PrestigePoints);
+            foreach (var entry in data.PrestigeUpgradeLevels)
+            {
+                PrestigeUpgradeManager.Instance.SetLevel(entry.UpgradeId, entry.Level);
             }
 
             if (data.AutomationSettings != null)
