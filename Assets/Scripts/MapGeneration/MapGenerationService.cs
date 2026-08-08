@@ -59,10 +59,7 @@ namespace MapGeneration
         {
             float cellSize = streamingManager.CellSize;
             int depthInBlocks = Mathf.FloorToInt(-worldPos.y / cellSize);
-            if (worldPos.y > 0)
-            {
-                depthInBlocks = 0;
-            }
+            depthInBlocks++; // Convert to 1-based depth for layer offset calculations.
             layerIndex = streamingManager.GetLayerIndexAtDepth(depthInBlocks);
             x = Mathf.FloorToInt(worldPos.x / cellSize);
             y = depthInBlocks - streamingManager.GetLayerOffset(layerIndex);
@@ -75,7 +72,7 @@ namespace MapGeneration
         {
             float cellSize = streamingManager.CellSize;
             int depthInBlocks = streamingManager.GetLayerOffset(layerIndex) + y;
-            return new Vector3((x + 0.5f) * cellSize, -(depthInBlocks + 0.5f) * cellSize, 0f);
+            return new Vector3((x + 0.5f) * cellSize, -(depthInBlocks - 0.5f) * cellSize, 0f);
         }
 
         public float CellSize => streamingManager.CellSize;

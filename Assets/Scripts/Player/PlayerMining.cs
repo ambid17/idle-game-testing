@@ -13,6 +13,7 @@ namespace Player
     // unless the Overflow upgrade is unlocked, in which case they're auto-sold instead.
     [RequireComponent(typeof(PlayerController))]
     [RequireComponent(typeof(PlayerInventory))]
+    [RequireComponent(typeof(CapsuleCollider2D))]
     public class PlayerMining : MonoBehaviour
     {
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
@@ -21,6 +22,7 @@ namespace Player
 
         private PlayerController playerController;
         private PlayerInventory playerInventory;
+        private CapsuleCollider2D capsuleCollider;
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
         private float miningProgress;
@@ -32,6 +34,7 @@ namespace Player
         {
             playerController = GetComponent<PlayerController>();
             playerInventory = GetComponent<PlayerInventory>();
+            capsuleCollider = GetComponent<CapsuleCollider2D>();
 
             if (crackIndicator == null) Debug.LogError($"{nameof(PlayerMining)} on {name} is missing its crackIndicator reference.");
         }
@@ -52,7 +55,13 @@ namespace Player
                 return;
             }
 
-            Vector3 targetWorldPos = transform.position + new Vector3(direction.Value.x, direction.Value.y, 0f) * mapGenerationService.CellSize;
+            // The player's pivot sits at chest height, above the row they're standing on top of,
+            // so targeting always resolves against that standing row's vertical center rather
+            // than the raw pivot Y - otherwise horizontal targets resolve one row too high and
+            // never hit a block (only "down" ever happened to land in-bounds by coincidence).
+            float cellSize = mapGenerationService.CellSize;
+            float standingRowY = transform.position.y - capsuleCollider.size.y * 0.5f - cellSize * 0.5f;
+            Vector3 targetWorldPos = new Vector3(transform.position.x + direction.Value.x * cellSize, standingRowY, 0f);
             if (!mapGenerationService.WorldToCell(targetWorldPos, out int layerIndex, out int x, out int y))
             {
                 ResetTarget();
