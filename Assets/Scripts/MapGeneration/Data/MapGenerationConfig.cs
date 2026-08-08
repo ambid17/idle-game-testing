@@ -17,6 +17,9 @@ namespace MapGeneration
         public int Seed => seed;
         public int GridWidth => gridWidth;
         public float CellSize => cellSize;
+        /// <summary>
+        /// The number of layers above and below the current focus layer to keep loaded in the streaming manager.
+        /// </summary>
         public int WindowRadius => windowRadius;
     }
 }

@@ -229,6 +229,9 @@ MonoBehaviour:
   fogTilemap: {fileID: 1723525027489103912}
   fogTile: {fileID: 11400000, guid: bf4b4d74eeb1338478e3ab236cdfe122, type: 2}
   fogDisabled: 0
+  showDebugCellLabels: 0
+  debugCellLabelColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  surfaceFogGradientRows: 10
 --- !u!1 &7226294879325617473
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,7 +351,7 @@ TilemapRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}

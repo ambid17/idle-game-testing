@@ -9,14 +9,14 @@ namespace MapGeneration
     [CreateAssetMenu(fileName = "LayerConfigProvider", menuName = "Map Generation/Layer Config Provider")]
     public class LayerConfigProvider : ScriptableObject
     {
-        public List<LayerConfig> AuthoredLayers = new();
+        public List<LayerConfig> LayerConfigs = new();
 
         public LayerConfig GetConfig(int layerIndex)
         {
-            if (AuthoredLayers.Count == 0) return null;
+            if (LayerConfigs.Count == 0) return null;
 
             LayerConfig best = null;
-            foreach (var layer in AuthoredLayers)
+            foreach (var layer in LayerConfigs)
             {
                 if (layer.LayerIndex == layerIndex) return layer;
                 if (layer.LayerIndex <= layerIndex && (best == null || layer.LayerIndex > best.LayerIndex))
@@ -25,7 +25,7 @@ namespace MapGeneration
                 }
             }
 
-            return best != null ? best : AuthoredLayers[0];
+            return best != null ? best : LayerConfigs[0];
         }
 
         // Depth (in blocks) at which this layer starts - inverse of GetLayerIndexAtDepth.
@@ -42,7 +42,7 @@ namespace MapGeneration
         public int GetLayerIndexAtDepth(int depthInBlocks)
         {
             var currentTotalDepth = 0;
-            for (int i = 0; i < AuthoredLayers.Count; i++)
+            for (int i = 0; i < LayerConfigs.Count; i++)
             {
                 var config = GetConfig(i);
                 if (depthInBlocks < currentTotalDepth + config.LayerHeight)
@@ -63,7 +63,11 @@ namespace MapGeneration
             return depthInBlocks;
         }
 
-        public int GetLayerIndexAtWorldY(float worldY, float cellSize) =>
-            GetLayerIndexAtDepth(GetDepthInBlocksAtWorldY(worldY, cellSize));
+        public int GetLayerIndexAtWorldY(float worldY, float cellSize)
+        {
+            var layerIndex = GetLayerIndexAtDepth(GetDepthInBlocksAtWorldY(worldY, cellSize));
+            Debug.Log($"GetLayerIndexAtWorldY: worldY={(int)worldY}, cellSize={cellSize.ToString("F1")}, layerIndex={layerIndex}");
+            return layerIndex;
+        }
     }
 }

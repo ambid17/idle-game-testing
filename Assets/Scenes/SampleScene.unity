@@ -5834,7 +5834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.ChunkStreamingManager
   chunkViewPrefab: {fileID: 3366483945538663452, guid: 051d956cdefe0f84a9d9406f6ecf5884, type: 3}
-  poolParent: {fileID: 1270505749}
+  tilemapContainer: {fileID: 1270505749}
 --- !u!4 &528579660
 Transform:
   m_ObjectHideFlags: 0
@@ -19250,7 +19250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerMining
   crackIndicator: {fileID: 2066554865}
-  debug: 1
+  debug: 0
 --- !u!114 &2055974193
 MonoBehaviour:
   m_ObjectHideFlags: 0

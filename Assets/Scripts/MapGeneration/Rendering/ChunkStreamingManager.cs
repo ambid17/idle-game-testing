@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace MapGeneration
@@ -10,11 +12,10 @@ namespace MapGeneration
         [SerializeField] private ChunkTilemapView chunkViewPrefab;
         private LayerConfigProvider layerConfigProvider => GameManager.LayerConfigProvider;
         private MapGenerationConfig mapGenerationConfig => GameManager.MapGenerationConfig;
-        [SerializeField] private Transform poolParent;
+        [SerializeField] private Transform tilemapContainer;
 
         private MineWorld world;
-        private readonly Dictionary<int, ChunkTilemapView> activeViews = new();
-        private readonly Queue<ChunkTilemapView> tileMapQueue = new();
+        private readonly Dictionary<int, ChunkTilemapView> tilemapsByLayer = new();
         private int currentFocusLayer = int.MinValue;
 
         public void Initialize(MineWorld mineWorld)
@@ -47,41 +48,52 @@ namespace MapGeneration
                 if (i >= 0) wantedLayers.Add(i);
             }
 
-            foreach (var layerIndex in new List<int>(activeViews.Keys))
+            Debug.Log($"ChunkStreamingManager.UpdateWindow: focus={currentFocusLayer}, windowRadius={windowRadius}, wantedLayers=[{string.Join(", ", wantedLayers)}]");
+            var activeLayers = tilemapsByLayer.Where(kvp => kvp.Value.gameObject.activeSelf).Select(kvp => kvp.Key).ToList();
+            foreach (var layerIndex in activeLayers)
             {
                 if (!wantedLayers.Contains(layerIndex)) Release(layerIndex);
             }
 
             foreach (var layerIndex in wantedLayers)
             {
-                if (!activeViews.ContainsKey(layerIndex)) Acquire(layerIndex);
+                if (!activeLayers.Contains(layerIndex)) Acquire(layerIndex);
             }
         }
 
         private void Acquire(int layerIndex)
         {
-            if(layerIndex < 0) return;
-            var chunk = world.GetOrGenerateChunk(layerIndex);
-            var view = tileMapQueue.Count > 0 ? tileMapQueue.Dequeue() : Instantiate(chunkViewPrefab, poolParent);
+            if (layerIndex < 0) return;
 
-            view.gameObject.name = $"ChunkTilemapView_Layer{layerIndex}";
-            view.gameObject.SetActive(true);
-            view.transform.position = new Vector3(0f, -layerConfigProvider.GetLayerOffset(layerIndex) * mapGenerationConfig.CellSize, 0f);
-            view.Bind(chunk, layerIndex);
-            activeViews[layerIndex] = view;
+            Debug.Log($"ChunkStreamingManager.Acquire: {layerIndex}");
+
+            if (tilemapsByLayer.ContainsKey(layerIndex))
+            {
+                tilemapsByLayer[layerIndex].gameObject.SetActive(true);
+                return;
+            }
+
+            var chunk = world.GetOrGenerateChunk(layerIndex);
+
+            var newView = Instantiate(chunkViewPrefab, tilemapContainer);
+            newView.gameObject.name = $"ChunkTilemapView_Layer{layerIndex}";
+            newView.gameObject.SetActive(true);
+            newView.transform.position = new Vector3(0f, -layerConfigProvider.GetLayerOffset(layerIndex) * mapGenerationConfig.CellSize, 0f);
+            newView.Bind(chunk, layerIndex);
+
+            tilemapsByLayer[layerIndex] = newView;
         }
 
         private void Release(int layerIndex)
         {
-            var view = activeViews[layerIndex];
-            activeViews.Remove(layerIndex);
+            Debug.Log($"ChunkStreamingManager.Release: {layerIndex}");
+            var view = tilemapsByLayer[layerIndex];
             view.gameObject.SetActive(false);
-            tileMapQueue.Enqueue(view);
         }
 
         public void NotifyCellMined(int layerIndex, int x, int y, IReadOnlyList<Vector2Int> revealedCells)
         {
-            if (!activeViews.TryGetValue(layerIndex, out var view)) return;
+            if (!tilemapsByLayer.TryGetValue(layerIndex, out var view)) return;
 
             var affected = new List<Vector2Int>(revealedCells.Count + 1) { new(x, y) };
             affected.AddRange(revealedCells);
@@ -92,17 +104,19 @@ namespace MapGeneration
         public void NotifyFogRevealed(int layerIndex, IReadOnlyList<Vector2Int> revealedCells)
         {
             if (revealedCells.Count == 0) return;
-            if (!activeViews.TryGetValue(layerIndex, out var view)) return;
+            if (!tilemapsByLayer.TryGetValue(layerIndex, out var view)) return;
 
             view.RepaintCells(revealedCells);
         }
 
         public void ClearAll()
         {
-            foreach (var layerIndex in new List<int>(activeViews.Keys))
+            foreach (var layerIndex in new List<int>(tilemapsByLayer.Keys))
             {
-                Release(layerIndex);
+                if(tilemapsByLayer[layerIndex] == null) continue;
+                Destroy(tilemapsByLayer[layerIndex].gameObject);
             }
+            tilemapsByLayer.Clear();
             currentFocusLayer = int.MinValue;
         }
     }
