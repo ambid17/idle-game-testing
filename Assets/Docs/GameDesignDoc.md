@@ -59,9 +59,7 @@ I want to make an incremental game similar to motherload
 			- has a tab for repairs
 				- fill up gas
 				- re-fill health
-		- shipping center: where you can sell your own materials for higher prices, based on market fluctuations
-			- maybe a casino instead
-			- value is time-based sine wave + noise
+		- control center: where you can control settings for your automatons, view dashboard of their work, and refuel yourself
 		- processing center: where you can turn your minerals into finished goods for higher prices
 			- this will combine various ore to make a product
 				- for example 5 wood and 1 iron will make a chest every 10 seconds.

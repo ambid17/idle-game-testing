@@ -1,0 +1,41 @@
+Automation Implementation
+
+There are 3 forms of automation in the game:
+- Mining
+	- mining automatons add another entity that roams the map, always aiming towards blocks that haven't been mined, randomly
+	- the automatons don't have fuel or health(therefore no fall damage), but they can fly to leave the tunnel
+	- as they dig their tunnel, they will accrue resources in their inventory, just like the main player
+	- when their inventory is full, they can walk/fly to the depot to deposit their resources
+		- a notification should appear, letting you know of the deposit
+		- once they drop off their tools, they will start digging randomly again
+	- digging behavior
+		- the automatons can dig similar to the player: down, left or right.
+	- movement behavior
+		- the automatons will randomly choose an accessible tile within a 3 block radius and head to mine it
+		- if there are no tiles in their radius, they will widen their search
+- Storage
+	- storage drones will fly (ignoring collision) to the mining automatons or the player (whoever has the most full inventory)
+	- they will take from the entity's inventory until theirs is full.
+		- if the entity they fly to doesn't have enough to fill their inventory, they will fly to the next closest entity with items in their inventory
+	- once their inventory is full, they will travel to the depot to insert their inventory
+		- again, a notification should display, in the same style as an automaton manually inserting their inventory
+			- the notification should tell you what minerals were deposited, and by which automaton
+	- storage drones will repeat this process as long as there is an entity with minerals in their inventory
+- Fuel
+	- fuel drones will fly (ignoring collision) to the player
+	- they will deposit a small portion of fuel (10 units base) into the player
+	- they will then fly back to the control center to purchase more fuel
+	- they will repeat this step as long as the player is missing any fuel, otherwise they will sit idly at the control center
+- Control center
+	- here you get a few views:
+		- miner automaton dashboard: shows a graph of dollars earned per minute
+		- storage drone dashboard: allows you to choose targeting
+			- targeting options: player always, fullest inventory
+		- fuel drone dashboard: allows you to choose targeting
+			- targeting options: player always, fullest inventory
+		- refueling
+			- this shows:
+				- your fuel meter
+				- how much fuel costs per unit of fuel
+				- a slider to choose how much fuel to purchase
+				- a purchase button that refuels the player and spends the money 
