@@ -22,6 +22,10 @@ I want to make an incremental game similar to motherload
 		- movement speed while flying is faster than while grounded
 	- approaching a building will pop up an interaction text
 		- pressing E will interact with the building, opening its UI
+- Death
+	- Death happens when the player runs out of fuel, or their health reaches zero. 
+	- a death screen shows ("you have died" and a respawn button)
+	- When you die, you lose your inventory and respawn at the start.
 - Inventory
 	- each block type has a weight and you can only hold so many before you have to drop them off at the ore depot
 	- hit tab to view your inventory.
@@ -126,8 +130,8 @@ Upgrades will be a skill tree that fans out and requires the player to unlock th
 			- true sight: reveals all fog of war
 			- zoom, enhance: zooms the camera out to reveal more of the map
 			- hazard sense: highlights hazard blocks
+	- Enable digging while flying
 - Economy
-	
 	- Inventory: increase the player's max carrying weight
 	- Marketing: increase sales value of minerals
 	- Overflow: once inventory is full, you can continue to mine and ores will auto-sell at a reduced value
@@ -154,13 +158,12 @@ Upgrades will be a skill tree that fans out and requires the player to unlock th
 		- increase drone count
 		- capstones:
 			- Market Sense: drones will auto sell their inventory above a certain threshold market value when they reach the depot 
-- Progression
-	- Increase spawn odds of next tier of blocks in upper layers
-	- increase the spawn odds of all ores
-	- power up blocks 
-		- increase effectiveness of power up blocks
-		- increase spawn rate
-
+- Survival
+	- Increase fuel cap
+	- Increase fly speed
+	- Increase fly acceleration for changing speed
+	- Decrease fall damage
+	- Increase fall speed
 	
 # Prestige
 At a certain point the game will become too difficult. You will have to use a new currency when resetting to work towards a more "meta" skill tree that will make your next run faster. Artifacts are that currency.
@@ -174,6 +177,9 @@ The map will regenerate, all of your dug tunnels will be gone. All of your money
 - Mining:
 	- view: zooms out the camera a certain percentage to view more of the mineable area
 	- Increase grid size: this will add width to the horizontal grid generation
+	- keep "digging while flying" upgrade between prestige runs
+	- adjust layer sizes: smaller layers let you get deeper faster
+		- need to balance with processing recipes
 - Economy
 	- mineral value multiplier
 		- capstones: 
@@ -194,6 +200,12 @@ The map will regenerate, all of your dug tunnels will be gone. All of your money
 	- add passive prestige point gain over time
 	- capstones: 
 		- auto-prestige when it's mathematically worth it
+- Progression
+	- Increase spawn odds of next tier of blocks in upper layers
+	- increase the spawn odds of all ores
+	- power up blocks 
+		- increase effectiveness of power up blocks
+		- increase spawn rate
 - Survival
 	- one time shield charges that regenerate over time, preventing damage
 	- increased move speed
