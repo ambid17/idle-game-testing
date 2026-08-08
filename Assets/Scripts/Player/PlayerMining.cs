@@ -16,7 +16,7 @@ namespace Player
     public class PlayerMining : MonoBehaviour
     {
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
-
+        private ChunkStreamingManager streamingManager => GameManager.ChunkStreamingManager;
         [SerializeField] private MiningCrackIndicator crackIndicator;
 
         private PlayerController playerController;
@@ -38,6 +38,7 @@ namespace Player
 
         private void Update()
         {
+            streamingManager.SetFocusDepth(-transform.position.y);
             if (!playerController.IsGrounded)
             {
                 ResetTarget();
