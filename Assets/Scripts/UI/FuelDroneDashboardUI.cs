@@ -83,7 +83,7 @@ namespace UI
         private void OnUpgradePurchased(UpgradePurchasedEvent evt) => RefreshNodes();
         private void RefreshNodes()
         {
-            foreach (var node in nodes) node.Refresh(UpgradeManager.Instance);
+            foreach (var node in nodes) node.Refresh();
         }
 
         private void OnTargetModeRequested(SetFuelDroneTargetModeRequestedEvent evt) => AutomationSettings.Instance.SetFuelDroneTargetMode(evt.Mode);

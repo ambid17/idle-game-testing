@@ -74,7 +74,7 @@ namespace UI
 
         private void RefreshNodes()
         {
-            foreach (var node in nodes) node.Refresh(UpgradeManager.Instance);
+            foreach (var node in nodes) node.Refresh();
         }
 
         private void OnOreDeposited(OreDepositedByAutomationEvent evt) => RefreshGraph();

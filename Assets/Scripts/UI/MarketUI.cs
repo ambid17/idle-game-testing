@@ -122,7 +122,7 @@ namespace UI
 
         private void RefreshAll()
         {
-            foreach (var node in nodes) node.Refresh(UpgradeManager.Instance);
+            foreach (var node in nodes) node.Refresh();
             if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
         }
     }

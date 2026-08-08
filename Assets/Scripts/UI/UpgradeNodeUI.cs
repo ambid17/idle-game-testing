@@ -18,6 +18,8 @@ namespace UI
         [SerializeField] private Button purchaseButton;
         [SerializeField] private GameObject lockedOverlay;
 
+        private UpgradeManager upgradeManager => UpgradeManager.Instance;
+
         public UpgradeDefinition Definition { get; private set; }
 
         public void Bind(UpgradeDefinition definition)
@@ -26,20 +28,21 @@ namespace UI
             if (nameLabel != null) nameLabel.text = definition.DisplayName;
             if (descriptionLabel != null) descriptionLabel.text = definition.Description;
             if (purchaseButton != null) purchaseButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new PurchaseRequestedEvent(Definition)));
+            Refresh();
         }
 
-        public void Refresh(UpgradeManager manager)
+        public void Refresh()
         {
-            if (Definition == null || manager == null) return;
+            if (Definition == null || upgradeManager == null) return;
 
-            int level = manager.GetLevel(Definition);
-            bool maxed = manager.IsMaxed(Definition);
-            bool unlocked = manager.IsUnlocked(Definition);
+            int level = upgradeManager.GetLevel(Definition);
+            bool maxed = upgradeManager.IsMaxed(Definition);
+            bool unlocked = upgradeManager.IsUnlocked(Definition);
 
             if (levelLabel != null) levelLabel.text = $"{level}/{Definition.MaxLevel}";
-            if (costLabel != null) costLabel.text = maxed ? "MAXED" : $"${manager.GetNextCost(Definition):0.##}";
+            if (costLabel != null) costLabel.text = maxed ? "MAXED" : $"${upgradeManager.GetNextCost(Definition):0.##}";
             if (lockedOverlay != null) lockedOverlay.SetActive(!unlocked);
-            if (purchaseButton != null) purchaseButton.interactable = !maxed && manager.CanPurchase(Definition);
+            if (purchaseButton != null) purchaseButton.interactable = !maxed && upgradeManager.CanPurchase(Definition);
         }
     }
 }

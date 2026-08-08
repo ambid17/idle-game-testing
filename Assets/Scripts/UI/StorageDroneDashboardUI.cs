@@ -78,7 +78,7 @@ namespace UI
         private void OnUpgradePurchased(UpgradePurchasedEvent evt) => RefreshNodes();
         private void RefreshNodes()
         {
-            foreach (var node in nodes) node.Refresh(UpgradeManager.Instance);
+            foreach (var node in nodes) node.Refresh();
         }
 
         private void OnTargetModeRequested(SetStorageDroneTargetModeRequestedEvent evt) => AutomationSettings.Instance.SetStorageDroneTargetMode(evt.Mode);
