@@ -1,3 +1,4 @@
+using MapGeneration;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -27,6 +28,8 @@ namespace Player
         [SerializeField] private Vector2 groundCheckOffset = new(0f, -0.5f);
         [SerializeField] private Vector2 groundCheckSize = new(0.9f, 0.1f);
         [SerializeField] private LayerMask groundLayer;
+
+        private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
 
         private Rigidbody2D rb;
         private CapsuleCollider2D capsuleCollider;
@@ -78,7 +81,8 @@ namespace Player
 
             float horizontalSpeed = IsFlying ? flySpeed : groundSpeed;
             float verticalVelocity = IsFlying ? jetpackLiftSpeed : rb.linearVelocity.y;
-            rb.linearVelocity = new Vector2(movementInput.x * horizontalSpeed, verticalVelocity);
+            float horizontalVelocity = ClampHorizontalVelocity(movementInput.x * horizontalSpeed);
+            rb.linearVelocity = new Vector2(horizontalVelocity, verticalVelocity);
 
             UpdateFuel(Time.fixedDeltaTime);
             TrackFallDamage();
@@ -112,6 +116,20 @@ namespace Player
             }
 
             peakFallSpeed = 0f;
+        }
+
+        // Keeps the player's collider within the mine's horizontal extent. Read live off
+        // World.GridWidth rather than cached, since the grid-width upgrade widens it over time.
+        private float ClampHorizontalVelocity(float horizontalVelocity)
+        {
+            float halfWidth = capsuleCollider.size.x * 0.5f;
+            float minX = halfWidth;
+            float maxX = mapGenerationService.World.GridWidth * mapGenerationService.CellSize - halfWidth;
+
+            float predictedX = rb.position.x + horizontalVelocity * Time.fixedDeltaTime;
+            if (predictedX < minX && horizontalVelocity < 0f) return 0f;
+            if (predictedX > maxX && horizontalVelocity > 0f) return 0f;
+            return horizontalVelocity;
         }
 
         private bool CheckGrounded()
