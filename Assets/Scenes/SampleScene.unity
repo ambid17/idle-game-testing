@@ -1384,7 +1384,7 @@ GameObject:
   - component: {fileID: 270212547}
   - component: {fileID: 270212549}
   - component: {fileID: 270212548}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3377,25 +3377,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 533165674}
   m_CullTransparentMesh: 1
---- !u!1 &553570239 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 203830239378102619, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-  m_PrefabInstance: {fileID: 1293150875}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &553570243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 553570239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1efa7e499a9bb9e48bb0a653eecc3c8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Interaction.BuildingInteractable
-  promptText: Press E to interact
-  interactableType: 0
 --- !u!1 &553968809
 GameObject:
   m_ObjectHideFlags: 0
@@ -4170,25 +4151,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 734767437}
   m_CullTransparentMesh: 1
---- !u!1 &738349371 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6608359772907151492, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-  m_PrefabInstance: {fileID: 1293150875}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &738349375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 738349371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1efa7e499a9bb9e48bb0a653eecc3c8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Interaction.BuildingInteractable
-  promptText: Press E to interact
-  interactableType: 2
 --- !u!1 &777190187
 GameObject:
   m_ObjectHideFlags: 0
@@ -4986,7 +4948,7 @@ GameObject:
   - component: {fileID: 954990519}
   - component: {fileID: 954990518}
   - component: {fileID: 954990517}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -5061,7 +5023,7 @@ Transform:
   m_GameObject: {fileID: 954990516}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.64000034, y: -1.62, z: -7}
+  m_LocalPosition: {x: 0, y: -1, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6719,17 +6681,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 203830239378102619, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 745675126649389851, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       propertyPath: m_LocalPosition.x
       value: 16.56
       objectReference: {fileID: 0}
     - target: {fileID: 745675126649389851, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.03
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 745675126649389851, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6763,62 +6721,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 865921711432852325, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1040669720809946021, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1238215287680172018, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1542460190637491183, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 1866668967186046555, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       propertyPath: m_Name
       value: Buildings
-      objectReference: {fileID: 0}
-    - target: {fileID: 3620102927117090951, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4352634667833669223, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5.76
-      objectReference: {fileID: 0}
-    - target: {fileID: 4461566400704351904, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 2.82
-      objectReference: {fileID: 0}
-    - target: {fileID: 6608359772907151492, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7602671445698422859, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1542460190637491183, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 4766811389896441889, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2104382729}
-    - targetCorrespondingSourceObject: {fileID: 203830239378102619, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 4559597688065757209, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 553570243}
-    - targetCorrespondingSourceObject: {fileID: 1040669720809946021, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 3407100147703594462, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1919657055}
-    - targetCorrespondingSourceObject: {fileID: 6608359772907151492, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 279264785514983366, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 738349375}
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 7043681818280951233, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
 --- !u!1 &1307080262
 GameObject:
@@ -9982,7 +9907,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1838177191}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: InteractionPrompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10763,25 +10688,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 2
   m_LayoutPriority: 555
---- !u!1 &1919657051 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1040669720809946021, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-  m_PrefabInstance: {fileID: 1293150875}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1919657055
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1919657051}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1efa7e499a9bb9e48bb0a653eecc3c8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Interaction.BuildingInteractable
-  promptText: Press E to interact
-  interactableType: 3
 --- !u!1 &1958350867
 GameObject:
   m_ObjectHideFlags: 0
@@ -11525,7 +11431,7 @@ GameObject:
   - component: {fileID: 2055974197}
   - component: {fileID: 2055974198}
   - component: {fileID: 2055974199}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11929,7 +11835,7 @@ GameObject:
   - component: {fileID: 2066554867}
   - component: {fileID: 2066554866}
   - component: {fileID: 2066554865}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: MiningCrackIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12204,7 +12110,7 @@ GameObject:
   - component: {fileID: 2092673528}
   - component: {fileID: 2092673527}
   - component: {fileID: 2092673531}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12446,25 +12352,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2100206071}
   m_CullTransparentMesh: 1
---- !u!1 &2104382725 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1542460190637491183, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-  m_PrefabInstance: {fileID: 1293150875}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2104382729
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2104382725}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1efa7e499a9bb9e48bb0a653eecc3c8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Interaction.BuildingInteractable
-  promptText: Press E to interact
-  interactableType: 1
 --- !u!1 &2108533661
 GameObject:
   m_ObjectHideFlags: 0

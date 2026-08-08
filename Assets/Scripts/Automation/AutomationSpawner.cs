@@ -24,11 +24,11 @@ namespace Automation
 
         private void Awake()
         {
-            if (automatonPrefab == null) Debug.LogError($"{nameof(AutomationSpawner)} on {name} is missing automatonPrefab.");
-            if (storageDronePrefab == null) Debug.LogError($"{nameof(AutomationSpawner)} on {name} is missing storageDronePrefab.");
-            if (fuelDronePrefab == null) Debug.LogError($"{nameof(AutomationSpawner)} on {name} is missing fuelDronePrefab.");
+            if (automatonPrefab == null) Debug.LogError($"AutomationSpawner is missing automatonPrefab.");
+            if (storageDronePrefab == null) Debug.LogError($"AutomationSpawner is missing storageDronePrefab.");
+            if (fuelDronePrefab == null) Debug.LogError($"AutomationSpawner is missing fuelDronePrefab.");
             if (player == null) player = FindAnyObjectByType<PlayerController>();
-            if (player == null) Debug.LogError($"{nameof(AutomationSpawner)} on {name}: no PlayerController found in scene.");
+            if (player == null) Debug.LogError($"AutomationSpawner on {name}: no PlayerController found in scene.");
         }
 
         private void Start() => ReconcileAll();

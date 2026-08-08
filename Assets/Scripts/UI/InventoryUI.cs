@@ -23,35 +23,35 @@ namespace UI
         [SerializeField] private OreRowUI rowPrefab;
 
         private readonly Dictionary<BlockTypeId, OreRowUI> uiRowsByType = new();
-        private bool isOpen;
+        private Keyboard keyboard;
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
-
-        public bool IsOpen => isOpen;
-        public void Close() => SetOpen(false);
 
         private void Start()
         {
+            keyboard = Keyboard.current;
             BuildRows();
-            SetOpen(false);
+            Close();
             Refresh();
         }
 
         private void OnEnable()
         {
             GameManager.EventService.Add<InventoryChangedEvent>(Refresh);
+            GameManager.EventService.Add<UICloseEvent>(Close);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<InventoryChangedEvent>(Refresh);
+            GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
         private void Update()
         {
-            var keyboard = Keyboard.current;
             if (keyboard != null && keyboard.tabKey.wasPressedThisFrame)
             {
-                SetOpen(!isOpen);
+                if(panelRoot.activeSelf) Close();
+                else Open();
             }
         }
 
@@ -74,11 +74,14 @@ namespace UI
             }
         }
 
-        private void SetOpen(bool open)
+        private void Open()
         {
-            GameManager.EventService.Dispatch<InventoryOpenedEvent>();
-            isOpen = open;
-            panelRoot.SetActive(open);
+            panelRoot.SetActive(true);
+        }
+
+        private void Close()
+        {
+            panelRoot.SetActive(false);
         }
 
         private void Refresh()

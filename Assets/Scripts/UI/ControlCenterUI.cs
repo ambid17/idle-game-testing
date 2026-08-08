@@ -22,8 +22,15 @@ namespace UI
             if (rendererRoot != null) rendererRoot.SetActive(false);
         }
 
-        private void OnEnable() => GameManager.EventService.Add<BuildingInteractedEvent>(OnBuildingInteracted);
-        private void OnDisable() => GameManager.EventService.Remove<BuildingInteractedEvent>(OnBuildingInteracted);
+        private void OnEnable() {
+            GameManager.EventService.Add<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Add<UICloseEvent>(Close);
+        }
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Remove<UICloseEvent>(Close);
+        }
 
         private void OnBuildingInteracted(BuildingInteractedEvent evt)
         {

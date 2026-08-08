@@ -80,6 +80,7 @@ namespace UI
             GameManager.EventService.Add<InventoryChangedEvent>(OnInventoryChanged);
             GameManager.EventService.Add<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
+            GameManager.EventService.Add<UICloseEvent>(Close);
         }
 
         private void OnDisable()
@@ -92,6 +93,7 @@ namespace UI
             GameManager.EventService.Remove<InventoryChangedEvent>(OnInventoryChanged);
             GameManager.EventService.Remove<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
+            GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
         private void OnBuildingInteracted(BuildingInteractedEvent evt)

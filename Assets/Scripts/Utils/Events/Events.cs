@@ -41,7 +41,7 @@ namespace Events
 
     public class InventoryChangedEvent { }
 
-    public class InventoryOpenedEvent { }
+    public class UICloseEvent { }
 
     public class BuildingInteractedEvent : IEvent
     {

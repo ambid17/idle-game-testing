@@ -44,6 +44,7 @@ namespace UI
             GameManager.EventService.Add<DepotChangedEvent>(Refresh);
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
+            GameManager.EventService.Add<UICloseEvent>(Close);
         }
 
         private void OnDisable()
@@ -52,6 +53,7 @@ namespace UI
             GameManager.EventService.Remove<DepotChangedEvent>(Refresh);
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
+            GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
         private void OnBuildingInteracted(BuildingInteractedEvent evt)
@@ -95,6 +97,7 @@ namespace UI
 
         private void Close()
         {
+            if(panelRoot == null || !panelRoot.activeSelf) return;
             panelRoot.SetActive(false);
         }
 

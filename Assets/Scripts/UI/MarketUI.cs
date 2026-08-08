@@ -48,6 +48,7 @@ namespace UI
             GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<PurchaseRequestedEvent>(OnPurchaseRequested);
+            GameManager.EventService.Add<UICloseEvent>(Close);
         }
 
         private void OnDisable()
@@ -56,6 +57,7 @@ namespace UI
             GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<PurchaseRequestedEvent>(OnPurchaseRequested);
+            GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
         private void OnBuildingInteracted(BuildingInteractedEvent evt)

@@ -55,6 +55,8 @@ namespace Player
         }
         private Vector2 movementInput;
         public Vector2 MovementInput => movementInput;
+        private Keyboard keyboard;
+
 
         private void Awake()
         {
@@ -67,7 +69,7 @@ namespace Player
             capsuleCollider = GetComponent<CapsuleCollider2D>();
             groundCheckOffset = capsuleCollider.size.y * 0.5f * Vector2.down;
             groundCheckSize = new Vector2(capsuleCollider.size.x * 0.5f, 0.1f);
-
+            keyboard = Keyboard.current;
         }
 
         private void OnEnable()
@@ -113,6 +115,11 @@ namespace Player
         {
             if (health.IsDead) return;
 
+            if (keyboard.escapeKey.wasPressedThisFrame)
+            {
+                GameManager.EventService.Dispatch<UICloseEvent>();
+            }
+
             // Unlike death (which zeroes movementInput once via HandleDied), blocking can start/end
             // mid-motion, so it has to actively zero the stale input each frame it's active -
             // otherwise FixedUpdate would keep applying whatever direction was held when the modal
@@ -123,7 +130,6 @@ namespace Player
                 return;
             }
 
-            var keyboard = Keyboard.current;
             if (keyboard == null)
             {
                 Debug.LogError("no keyboard found");
