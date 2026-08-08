@@ -18,9 +18,9 @@ MonoBehaviour:
   BlockHealth: 1
   OreTable:
   - BlockType: {fileID: 11400000, guid: c69b304cbb1441c4c86b61f2216632c5, type: 2}
-    Weight: 2
+    Weight: 5
   - BlockType: {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
-    Weight: 1
+    Weight: 3
   - BlockType: {fileID: 11400000, guid: da4f65576bcec1847805830d80fd8b5f, type: 2}
     Weight: 100
   HazardTable: []
