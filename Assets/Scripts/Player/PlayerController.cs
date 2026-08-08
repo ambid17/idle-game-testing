@@ -41,7 +41,6 @@ namespace Player
 
         public bool IsGrounded { get; private set; }
         public bool IsFlying { get; private set; }
-        public bool IsDead { get; private set; }
         public float Fuel { get; private set; }
         public float FuelFraction => fuelMax > 0f ? Fuel / fuelMax : 0f;
         private Vector2 movementInput;
@@ -75,14 +74,12 @@ namespace Player
 
         private void HandleDied()
         {
-            IsDead = true;
             movementInput = Vector2.zero;
             rb.linearVelocity = Vector2.zero;
         }
 
         private void HandleRevived()
         {
-            IsDead = false;
             Fuel = fuelMax;
             peakFallSpeed = 0f;
             rb.linearVelocity = Vector2.zero;
@@ -91,7 +88,7 @@ namespace Player
 
         private void Update()
         {
-            if (IsDead) return;
+            if (health.IsDead) return;
 
             var keyboard = Keyboard.current;
             if (keyboard == null)
@@ -113,7 +110,7 @@ namespace Player
 
         private void FixedUpdate()
         {
-            if (IsDead) return;
+            if (health.IsDead) return;
 
             IsGrounded = CheckGrounded();
             IsFlying = movementInput.y > 0 && Fuel > 0f;
@@ -140,7 +137,7 @@ namespace Player
                 Fuel = Mathf.Min(fuelMax, Fuel + fuelRegenPerSecondGrounded * dt);
             }
 
-            if (Fuel <= 0f && health != null)
+            if (Fuel <= 0f)
             {
                 health.Kill();
             }
@@ -154,7 +151,7 @@ namespace Player
                 return;
             }
 
-            if (!wasGrounded && peakFallSpeed > fallDamageVelocityThreshold && health != null)
+            if (!wasGrounded && peakFallSpeed > fallDamageVelocityThreshold)
             {
                 health.TakeDamage((peakFallSpeed - fallDamageVelocityThreshold) * fallDamagePerExcessUnit);
             }
