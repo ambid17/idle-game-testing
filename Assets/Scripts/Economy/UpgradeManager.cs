@@ -14,19 +14,49 @@ namespace Economy
     {
         private static UpgradeDatabase database => GameManager.UpgradeDatabase;
 
-        private readonly Dictionary<string, int> levelsByUpgradeId = new();
+        private readonly Dictionary<string, int> levelsByUpgradeName = new();
 
         // Purchased levels only - never includes a PrestigeUpgradeManager "kept tier" baseline.
         // Kept separate from GetLevel so persistence (SetLevel/AllLevels) only ever deals in what
         // the player actually bought at the Market, not perk-granted baselines.
-        private int RawLevel(UpgradeDefinition def) => def != null && levelsByUpgradeId.TryGetValue(def.Id, out var lvl) ? lvl : 0;
+        private int RawLevel(UpgradeDefinition def) => def != null && levelsByUpgradeName.TryGetValue(def.DisplayName, out var lvl) ? lvl : 0;
 
         // GameDesignDoc "Prestige > idle": purchased level plus any "keep tier" prestige perk
         // baseline for this effect, capped at MaxLevel. After PrestigeManager.ExecutePrestige wipes
         // levelsByUpgradeId, this is what lets a kept perk make the Market upgrade start above 0 -
         // GetCost (fed this same combined level) then resumes the cost curve at the kept tier
         // instead of restarting at tier-0 prices.
-        public int GetLevel(UpgradeDefinition def) => def != null ? Mathf.Min(def.MaxLevel, RawLevel(def) + KeptBaseline(def)) : 0;
+        public int GetLevelIncludingPrestige(UpgradeDefinition def) => def != null ? Mathf.Min(def.MaxLevel, RawLevel(def) + KeptBaseline(def)) : 0;
+
+        private int LevelOf(UpgradeEffect effect) => GetLevelIncludingPrestige(database.Find(effect));
+
+        public bool CanPurchase(UpgradeDefinition def)
+        {
+            if (def == null || IsMaxed(def) || !IsUnlocked(def)) return false;
+            return Wallet.Instance.Dollars >= GetNextCost(def);
+        }
+
+        public bool TryPurchase(UpgradeDefinition def)
+        {
+            if (!CanPurchase(def)) return false;
+
+            double cost = GetNextCost(def);
+            if (!Wallet.Instance.TrySpend(cost)) return false;
+
+            int newLevel = GetLevelIncludingPrestige(def) + 1;
+            levelsByUpgradeName[def.DisplayName] = newLevel;
+            GameManager.EventService.Dispatch(new UpgradePurchasedEvent(def, newLevel));
+            return true;
+        }
+
+        // Bulk restore for SaveService - silent (no UpgradePurchasedEvent) since AutomationSpawner
+        // reconciles entity counts once after the whole save file is applied, not per-level.
+        public void SetLevelFromSave(string upgradeId, int level)
+        {
+            if (string.IsNullOrEmpty(upgradeId) || level < 0) return;
+            levelsByUpgradeName[upgradeId] = level;
+            GameManager.EventService.Dispatch(new UpgradeLoadedEvent(database.Find(upgradeId), level));
+        }
 
         // Maps a Market UpgradeEffect onto its matching PrestigeUpgradeManager "keep tier" perk, if
         // any. Only the Idle-branch automaton stats have a kept-tier perk today.
@@ -43,7 +73,7 @@ namespace Economy
             };
         }
 
-        public bool IsMaxed(UpgradeDefinition def) => def != null && GetLevel(def) >= def.MaxLevel;
+        public bool IsMaxed(UpgradeDefinition def) => def != null && GetLevelIncludingPrestige(def) >= def.MaxLevel;
 
         // "Upgrades will be a skill tree ... requires the player to unlock the previous tier":
         // a plain prerequisite just needs one level purchased; capstones (RequirePrerequisiteMaxed)
@@ -52,31 +82,10 @@ namespace Economy
         {
             if (def == null) return false;
             if (def.Prerequisite == null) return true;
-            return def.RequirePrerequisiteMaxed ? IsMaxed(def.Prerequisite) : GetLevel(def.Prerequisite) > 0;
+            return def.RequirePrerequisiteMaxed ? IsMaxed(def.Prerequisite) : GetLevelIncludingPrestige(def.Prerequisite) > 0;
         }
 
-        public double GetNextCost(UpgradeDefinition def) => def.GetCost(GetLevel(def));
-
-        public bool CanPurchase(UpgradeDefinition def)
-        {
-            if (def == null || IsMaxed(def) || !IsUnlocked(def)) return false;
-            return Wallet.Instance.Dollars >= GetNextCost(def);
-        }
-
-        public bool TryPurchase(UpgradeDefinition def)
-        {
-            if (!CanPurchase(def)) return false;
-
-            double cost = GetNextCost(def);
-            if (!Wallet.Instance.TrySpend(cost)) return false;
-
-            int newLevel = GetLevel(def) + 1;
-            levelsByUpgradeId[def.Id] = newLevel;
-            GameManager.EventService.Dispatch(new UpgradePurchasedEvent(def, newLevel));
-            return true;
-        }
-
-        private int LevelOf(UpgradeEffect effect) => GetLevel(database.Find(effect));
+        public double GetNextCost(UpgradeDefinition def) => def.GetCost(GetLevelIncludingPrestige(def));
 
         private float EffectValuePerLevelOf(UpgradeEffect effect)
         {
@@ -100,6 +109,16 @@ namespace Economy
             return IsMaxed(def);
         }
 
+        public IEnumerable<KeyValuePair<string, int>> AllLevels => levelsByUpgradeName;
+
+        // GameDesignDoc "# Prestige": hard reset of all purchased Market upgrade levels, called by
+        // PrestigeManager.ExecutePrestige. Any "keep tier" prestige perk baselines still apply
+        // afterward via GetLevel/KeptBaseline - this only clears what the player purchased with
+        // Dollars this run.
+        public void ResetAllLevels() => levelsByUpgradeName.Clear();
+
+
+        #region Utils
         // GameDesignDoc "Mining > Increase mining size": current cumulative upgrade level: fed
         // into MiningAreaPattern.GetOffsets by PlayerMining to know which extra cells to mine.
         public int MiningAreaLevel => LevelOf(UpgradeEffect.MiningAreaRadius);
@@ -157,21 +176,6 @@ namespace Economy
         public int FuelDroneCount => LevelOf(UpgradeEffect.FuelDroneCount);
         public float FuelDroneMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.FuelDroneMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.FuelDroneMoveSpeed);
         public float FuelDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.FuelDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.FuelDroneInventoryCapacity);
-
-        // Bulk restore for SaveService - silent (no UpgradePurchasedEvent) since AutomationSpawner
-        // reconciles entity counts once after the whole save file is applied, not per-level.
-        public void SetLevel(string upgradeId, int level)
-        {
-            if (string.IsNullOrEmpty(upgradeId) || level < 0) return;
-            levelsByUpgradeId[upgradeId] = level;
-        }
-
-        public IEnumerable<KeyValuePair<string, int>> AllLevels => levelsByUpgradeId;
-
-        // GameDesignDoc "# Prestige": hard reset of all purchased Market upgrade levels, called by
-        // PrestigeManager.ExecutePrestige. Any "keep tier" prestige perk baselines still apply
-        // afterward via GetLevel/KeptBaseline - this only clears what the player purchased with
-        // Dollars this run.
-        public void ResetAllLevels() => levelsByUpgradeId.Clear();
+        #endregion
     }
 }

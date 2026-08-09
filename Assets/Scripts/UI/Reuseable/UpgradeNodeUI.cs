@@ -35,7 +35,7 @@ namespace UI
         {
             if (Definition == null || upgradeManager == null) return;
 
-            int level = upgradeManager.GetLevel(Definition);
+            int level = upgradeManager.GetLevelIncludingPrestige(Definition);
             bool maxed = upgradeManager.IsMaxed(Definition);
             bool unlocked = upgradeManager.IsUnlocked(Definition);
 

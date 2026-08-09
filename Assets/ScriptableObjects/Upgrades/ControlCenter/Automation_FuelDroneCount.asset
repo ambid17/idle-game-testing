@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Automation_FuelDroneCount
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: fuel_drone_count
+  Id: Additional Fuel Drone
   DisplayName: Additional Fuel Drone
   Description: Add another Fuel Drone to keep you topped off.
   Branch: 2

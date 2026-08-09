@@ -67,6 +67,18 @@ namespace Events
         }
     }
 
+    public class UpgradeLoadedEvent : IEvent
+    {
+        public UpgradeDefinition Definition;
+        public int NewLevel;
+
+        public UpgradeLoadedEvent(UpgradeDefinition definition, int newLevel)
+        {
+            Definition = definition;
+            NewLevel = newLevel;
+        }
+    }
+
     public class PurchaseRequestedEvent : IEvent
     {
         public UpgradeDefinition Definition;

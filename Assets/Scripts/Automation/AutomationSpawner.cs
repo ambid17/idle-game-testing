@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Events;
 using Player;
 using UnityEngine;
@@ -39,16 +40,27 @@ namespace Automation
         private void OnEnable()
         {
             GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Add<UpgradeLoadedEvent>(OnUpgradeLoaded);
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Remove<UpgradeLoadedEvent>(OnUpgradeLoaded);
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
         }
 
         private void OnUpgradePurchased(UpgradePurchasedEvent evt)
+        {
+            var effect = evt.Definition.Effect;
+            if (effect == Economy.UpgradeEffect.AutomatonCount || effect == Economy.UpgradeEffect.StorageDroneCount || effect == Economy.UpgradeEffect.FuelDroneCount)
+            {
+                ReconcileAll();
+            }
+        }
+
+        private void OnUpgradeLoaded(UpgradeLoadedEvent evt)
         {
             var effect = evt.Definition.Effect;
             if (effect == Economy.UpgradeEffect.AutomatonCount || effect == Economy.UpgradeEffect.StorageDroneCount || effect == Economy.UpgradeEffect.FuelDroneCount)

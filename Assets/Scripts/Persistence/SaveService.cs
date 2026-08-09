@@ -173,7 +173,7 @@ namespace Persistence
 
             foreach (var entry in data.UpgradeLevels)
             {
-                UpgradeManager.Instance.SetLevel(entry.UpgradeId, entry.Level);
+                UpgradeManager.Instance.SetLevelFromSave(entry.UpgradeId, entry.Level);
             }
 
             PrestigePoints.Instance.SetPoints(data.PrestigePoints);

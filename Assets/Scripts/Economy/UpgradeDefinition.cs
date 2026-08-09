@@ -43,8 +43,6 @@ namespace Economy
     [CreateAssetMenu(fileName = "UpgradeDefinition", menuName = "Economy/Upgrade Definition")]
     public class UpgradeDefinition : ScriptableObject
     {
-        [Tooltip("Must be unique across the UpgradeDatabase.")]
-        public string Id;
         public string DisplayName;
         [TextArea] public string Description;
         public UpgradeBranch Branch;

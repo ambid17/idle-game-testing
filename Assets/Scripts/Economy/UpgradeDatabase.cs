@@ -9,7 +9,7 @@ namespace Economy
         public List<UpgradeDefinition> Upgrades = new();
 
         private Dictionary<UpgradeEffect, UpgradeDefinition> upgradesByEffect;
-        private Dictionary<string, UpgradeDefinition> upgradesById;
+        private Dictionary<string, UpgradeDefinition> upgradesByName;
 
         // Assumes at most one definition per UpgradeEffect, true for the current Mining/Economy
         // set - if a branch ever needs two upgrades sharing an effect, key this off Id instead.
@@ -24,20 +24,24 @@ namespace Economy
         // matching definition.
         public UpgradeDefinition Find(string id)
         {
-            if (upgradesById == null) BuildLookup();
-            upgradesById.TryGetValue(id, out var def);
+            if (upgradesByName == null) BuildLookup();
+            upgradesByName.TryGetValue(id, out var def);
             return def;
         }
 
         private void BuildLookup()
         {
             upgradesByEffect = new Dictionary<UpgradeEffect, UpgradeDefinition>();
-            upgradesById = new Dictionary<string, UpgradeDefinition>();
+            upgradesByName = new Dictionary<string, UpgradeDefinition>();
             foreach (var def in Upgrades)
             {
                 if (def == null) continue;
                 upgradesByEffect[def.Effect] = def;
-                upgradesById[def.Id] = def;
+                if(upgradesByName.ContainsKey(def.DisplayName))
+                {
+                    Debug.LogWarning($"Duplicate UpgradeDefinition name found: {def.DisplayName}. This may cause issues with saving/loading.");
+                }
+                upgradesByName[def.DisplayName] = def;
             }
         }
     }
