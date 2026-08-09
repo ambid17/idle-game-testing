@@ -102,12 +102,22 @@ namespace Economy
         public bool KeepPassiveLayerBonusUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.KeepPassiveLayerBonus));
         public bool KeepDigWhileFlyingUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.KeepDigWhileFlying));
 
-        // Bulk restore for SaveService - silent (no PrestigeUpgradePurchasedEvent), same convention
-        // as UpgradeManager.SetLevel.
+        // Bulk restore for SaveService. Dispatches the same PrestigeUpgradePurchasedEvent
+        // TryPurchase fires, so every listener (e.g. MuseumUI) reacts identically whether a level
+        // came from a purchase or a save file - same convention as UpgradeManager.SetLevel.
         public void SetLevel(string upgradeId, int level)
         {
             if (string.IsNullOrEmpty(upgradeId) || level < 0) return;
+
+            var def = database.Find(upgradeId);
+            if (def == null)
+            {
+                Debug.LogError($"PrestigeUpgradeManager.SetLevel: no PrestigeUpgradeDefinition found for Id '{upgradeId}'. Save data may be stale (renamed/removed upgrade) - level discarded.");
+                return;
+            }
+
             levelsByUpgradeId[upgradeId] = level;
+            GameManager.EventService.Dispatch(new PrestigeUpgradePurchasedEvent(def, GetLevel(def)));
         }
 
         public IEnumerable<KeyValuePair<string, int>> AllLevels => levelsByUpgradeId;
