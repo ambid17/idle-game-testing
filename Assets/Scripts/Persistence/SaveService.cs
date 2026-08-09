@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using Automation;
 using Economy;
 using Events;
 using MapGeneration;
 using Player;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using UnityEngine;
+using static UnityEngine.Analytics.IAnalytic;
 
 namespace Persistence
 {
@@ -190,13 +191,6 @@ namespace Persistence
                     data.AutomationSettings.FuelSpendingCapPercent);
             }
 
-            var averages = new Dictionary<BlockTypeId, float>();
-            foreach (var entry in data.IdleAverages)
-            {
-                averages[entry.Id] = entry.AveragePerMinute;
-            }
-            IdleEarningsTracker.Instance.RestoreFromSaveData(averages);
-
             var depotOres = new Dictionary<BlockTypeId, int>();
             foreach (var entry in data.DepotOres)
             {
@@ -217,18 +211,8 @@ namespace Persistence
                 if (playerController != null) playerController.RestoreFromSaveData(data.Player.Fuel, data.Player.Position);
             }
 
-            float minutesAway = ComputeMinutesAway(data.LastActiveUtcTimestamp);
-            if (minutesAway <= 0f) return;
-
-            var oreGained = new Dictionary<BlockTypeId, int>();
-            foreach (var kvp in averages)
-            {
-                int amount = Mathf.RoundToInt(kvp.Value * minutesAway);
-                if (amount > 0) oreGained[kvp.Key] = amount;
-            }
-
-            if (oreGained.Count == 0) return;
-            GameManager.EventService.Dispatch(new OfflineEarningsReadyEvent(oreGained, minutesAway));
+            LoadOfflineEarnings(data);
+            
         }
 
         // Restores mine/chunk terrain from map.json - independent of ApplyLoadedData/save.json so
@@ -247,6 +231,29 @@ namespace Persistence
             if (!DateTime.TryParse(lastActiveUtcTimestamp, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var lastActive)) return 0f;
 
             return Mathf.Max(0f, (float)(DateTime.UtcNow - lastActive).TotalMinutes);
+        }
+
+        private void LoadOfflineEarnings(GameSaveData data)
+        {
+            var averages = new Dictionary<BlockTypeId, float>();
+            foreach (var entry in data.IdleAverages)
+            {
+                averages[entry.Id] = entry.AveragePerMinute;
+            }
+            IdleEarningsTracker.Instance.RestoreFromSaveData(averages);
+
+            float minutesAway = ComputeMinutesAway(data.LastActiveUtcTimestamp);
+            if (minutesAway <= 0f) return;
+
+            var oreGained = new Dictionary<BlockTypeId, int>();
+            foreach (var kvp in averages)
+            {
+                int amount = Mathf.RoundToInt(kvp.Value * minutesAway);
+                if (amount > 0) oreGained[kvp.Key] = amount;
+            }
+
+            if (oreGained.Count == 0) return;
+            GameManager.EventService.Dispatch(new OfflineEarningsReadyEvent(oreGained, minutesAway));
         }
     }
 }

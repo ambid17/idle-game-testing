@@ -170,8 +170,6 @@ namespace Events
         }
     }
 
-    public class OfflineEarningsAcknowledgedEvent { }
-
     // Prestige (GameDesignDoc "# Prestige") events below.
 
     public class PrestigePointsChangedEvent { }

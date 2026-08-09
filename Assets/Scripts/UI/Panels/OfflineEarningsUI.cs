@@ -87,7 +87,6 @@ namespace UI
 
             InputBlocker.SetBlocked(false);
             if (rendererRoot != null) rendererRoot.SetActive(false);
-            GameManager.EventService.Dispatch<OfflineEarningsAcknowledgedEvent>();
         }
     }
 }

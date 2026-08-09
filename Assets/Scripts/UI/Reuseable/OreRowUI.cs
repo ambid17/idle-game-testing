@@ -17,8 +17,6 @@ namespace UI
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text countLabel;
         [SerializeField] private TMP_Text valueLabel;
-        [SerializeField] private Button sellHalfButton;
-        [SerializeField] private Button sellAllButton;
 
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
 
@@ -28,8 +26,6 @@ namespace UI
         {
             BlockTypeId = id;
             nameLabel.text = displayName;
-            if (sellHalfButton!= null) sellHalfButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellRequestedEvent(BlockTypeId, 0.5f)));
-            if (sellHalfButton != null) sellAllButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellRequestedEvent(BlockTypeId, 1f)));
         }
 
         public void SetCount(int count)
