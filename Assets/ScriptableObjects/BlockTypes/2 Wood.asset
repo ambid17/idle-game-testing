@@ -17,7 +17,7 @@ MonoBehaviour:
   Category: 1
   HazardBehavior: 0
   Tile: {fileID: 11400000, guid: a306be7430c8e7c4287489519fb9d0c4, type: 2}
-  Value: 1
+  Value: 5
   Weight: 1
-  MiningTime: 1
+  Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}

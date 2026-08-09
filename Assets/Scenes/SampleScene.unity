@@ -5701,7 +5701,6 @@ MonoBehaviour:
   progressionButton: {fileID: 979663837}
   survivalButton: {fileID: 1778590098}
   artifactCountLabel: {fileID: 0}
-  turnInButton: {fileID: 0}
   prestigeNowButton: {fileID: 1555401900}
   confirmRoot: {fileID: 777190187}
   confirmYesButton: {fileID: 710029025}
@@ -18475,7 +18474,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
-  m_ChildControlHeight: 0
+  m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0

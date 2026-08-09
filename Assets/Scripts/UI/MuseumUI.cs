@@ -179,6 +179,7 @@ namespace UI
         private void RefreshArtifactCount()
         {
             if (artifactCountLabel != null) artifactCountLabel.text = $"Artifacts: {Wallet.Instance.ArtifactCount}";
+            prestigeNowButton.interactable = Wallet.Instance.ArtifactCount > 0;
         }
     }
 }
