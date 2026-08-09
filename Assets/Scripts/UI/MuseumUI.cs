@@ -34,7 +34,6 @@ namespace UI
 
         [Header("Artifact turn-in")]
         [SerializeField] private TMP_Text artifactCountLabel;
-        [SerializeField] private Button turnInButton;
 
         [Header("Prestige trigger")]
         [SerializeField] private Button prestigeNowButton;
@@ -50,7 +49,6 @@ namespace UI
         {
             BuildNodes();
             if (closeButton != null) closeButton.onClick.AddListener(Close);
-            if (turnInButton != null) turnInButton.onClick.AddListener(() => GameManager.EventService.Dispatch<TurnInArtifactsRequestedEvent>());
             if (prestigeNowButton != null) prestigeNowButton.onClick.AddListener(() => PrestigeManager.Instance.RequestPrestige());
             if (confirmYesButton != null) confirmYesButton.onClick.AddListener(ConfirmPrestige);
             if (confirmNoButton != null) confirmNoButton.onClick.AddListener(() => confirmRoot.SetActive(false));
@@ -72,7 +70,6 @@ namespace UI
             GameManager.EventService.Add<PrestigeUpgradePurchasedEvent>(OnPrestigeUpgradePurchased);
             GameManager.EventService.Add<PrestigePointsChangedEvent>(OnPrestigePointsChanged);
             GameManager.EventService.Add<PrestigePurchaseRequestedEvent>(OnPrestigePurchaseRequested);
-            GameManager.EventService.Add<TurnInArtifactsRequestedEvent>(OnTurnInArtifactsRequested);
             GameManager.EventService.Add<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Add<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
@@ -153,9 +150,6 @@ namespace UI
         }
 
         private void OnPrestigePurchaseRequested(PrestigePurchaseRequestedEvent evt) => PrestigeUpgradeManager.Instance.TryPurchase(evt.Definition);
-
-        private void OnTurnInArtifactsRequested() => Museum.Instance.TurnInArtifacts();
-
         private void OnPrestigeUpgradePurchased(PrestigeUpgradePurchasedEvent evt) => RefreshAll();
         private void OnPrestigePointsChanged() => RefreshAll();
 
@@ -186,7 +180,6 @@ namespace UI
         private void RefreshArtifactCount()
         {
             if (artifactCountLabel != null) artifactCountLabel.text = $"Artifacts: {Wallet.Instance.ArtifactCount}";
-            if (turnInButton != null) turnInButton.interactable = Wallet.Instance.ArtifactCount > 0;
         }
     }
 }

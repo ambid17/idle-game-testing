@@ -176,8 +176,6 @@ namespace Events
         }
     }
 
-    public class TurnInArtifactsRequestedEvent { }
-
     public class PrestigeUpgradePurchasedEvent : IEvent
     {
         public PrestigeUpgradeDefinition Definition;
