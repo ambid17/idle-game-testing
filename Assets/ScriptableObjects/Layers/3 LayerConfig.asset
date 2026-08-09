@@ -10,19 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c845b9a9e35dd1d4894d69b46a0196cb, type: 3}
-  m_Name: 0 LayerConfig
+  m_Name: 3 LayerConfig
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
-  LayerIndex: 0
-  LayerHeight: 20
+  LayerIndex: 2
+  LayerHeight: 30
   LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
-  BlockHealth: 1
+  BlockHealth: 1.7
   OreTable:
-  - BlockType: {fileID: 11400000, guid: c69b304cbb1441c4c86b61f2216632c5, type: 2}
-    Weight: 5
   - BlockType: {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
+    Weight: 3
+  - BlockType: {fileID: 11400000, guid: d529a29641331c448ac6f8f4d4209047, type: 2}
+    Weight: 4
+  - BlockType: {fileID: 11400000, guid: db0846b8ec2f6884aa974ff0b1172348, type: 2}
     Weight: 3
   - BlockType: {fileID: 11400000, guid: da4f65576bcec1847805830d80fd8b5f, type: 2}
     Weight: 100
+  - BlockType: {fileID: 11400000, guid: 6ff86b5bdf2db464eb95a3b610508372, type: 2}
+    Weight: 3
   HazardTable: []
   HazardChancePerCell: 0
   ArtifactBonusChance: 0.1

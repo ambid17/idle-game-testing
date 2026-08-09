@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 1 LayerConfig
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
   LayerIndex: 1
-  LayerHeight: 15
+  LayerHeight: 25
   LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
   BlockHealth: 1.2
   OreTable:

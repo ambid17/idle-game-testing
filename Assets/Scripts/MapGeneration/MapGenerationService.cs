@@ -97,7 +97,9 @@ namespace MapGeneration
             y = depthInBlocks - layerConfigProvider.GetLayerOffset(layerIndex);
 
             var chunk = World.GetOrGenerateChunk(layerIndex);
-            return x >= 0 && x < chunk.Width && y >= 0 && y < chunk.Height;
+            var inHorizontalBounds = x >= 0 && x < chunk.Width;
+            var inVerticalBounds = y < chunk.Height;
+            return inHorizontalBounds && inVerticalBounds;
         }
 
         public Vector3 CellToWorldCenter(int layerIndex, int x, int y)

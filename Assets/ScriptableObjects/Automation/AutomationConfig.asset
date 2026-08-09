@@ -15,10 +15,10 @@ MonoBehaviour:
   AutomatonBaseMiningSpeed: 1
   AutomatonBaseMoveSpeed: 5
   AutomatonBaseMiningRadius: 1
-  AutomatonBaseInventoryWeight: 50
+  AutomatonBaseInventoryWeight: 10
   AutomatonWanderRadius: 3
   StorageDroneBaseMoveSpeed: 4
-  StorageDroneBaseInventoryWeight: 20
+  StorageDroneBaseInventoryWeight: 5
   FuelDroneBaseMoveSpeed: 4
   FuelDroneBaseFuelCapacity: 20
   FuelCostPerUnit: 5

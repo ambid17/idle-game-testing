@@ -16,7 +16,7 @@ namespace MapGeneration
 
         private MineWorld world;
         private readonly Dictionary<int, ChunkTilemapView> tilemapsByLayer = new();
-        private int currentFocusLayer = int.MinValue;
+        private Dictionary<string, int> focusLayerByEntity = new();
 
         public void Initialize(MineWorld mineWorld)
         {
@@ -26,15 +26,14 @@ namespace MapGeneration
             // bound to the previous world's ChunkData instances, since UpdateWindow() only
             // Acquire()s layers that aren't already in activeViews.
             ClearAll();
-            SetFocusDepth(0);
         }
 
-        public void SetFocusDepth(float worldY)
+        public void SetFocusDepth(string entityName,float worldY)
         {
             int layerIndexAtDepth = layerConfigProvider.GetLayerIndexAtWorldY(worldY, mapGenerationConfig.CellSize);
-            if (layerIndexAtDepth == currentFocusLayer) return;
+            if (focusLayerByEntity.TryGetValue(entityName, out int currentFocusLayer) && currentFocusLayer == layerIndexAtDepth) return;
 
-            currentFocusLayer = layerIndexAtDepth;
+            focusLayerByEntity[entityName] = layerIndexAtDepth;
             UpdateWindow();
         }
 
@@ -42,13 +41,23 @@ namespace MapGeneration
         {
             var wantedLayers = new HashSet<int>();
             int windowRadius = mapGenerationConfig.WindowRadius;
-            // look up and down <windowRadius layers> from the current focus layer,
-            for (int i = currentFocusLayer - windowRadius; i <= currentFocusLayer + windowRadius; i++)
+
+            var layersWithEntity = new HashSet<int>();
+            foreach(var layerIndex in focusLayerByEntity.Values)
             {
-                if (i >= 0) wantedLayers.Add(i);
+                layersWithEntity.Add(layerIndex);
             }
 
-            Debug.Log($"ChunkStreamingManager.UpdateWindow: focus={currentFocusLayer}, windowRadius={windowRadius}, wantedLayers=[{string.Join(", ", wantedLayers)}]");
+            foreach (var layerIndex in layersWithEntity)
+            {
+                // look up and down <windowRadius layers> from the current focus layer,
+                for (int i = layerIndex - windowRadius; i <= layerIndex + windowRadius; i++)
+                {
+                    if (i >= 0) wantedLayers.Add(i);
+                }
+            }
+
+            Debug.Log($"ChunkStreamingManager.UpdateWindow: focus={string.Join(", ", focusLayerByEntity.Values.ToList())}, windowRadius={windowRadius}, wantedLayers=[{string.Join(", ", wantedLayers)}]");
             var activeLayers = tilemapsByLayer.Where(kvp => kvp.Value.gameObject.activeSelf).Select(kvp => kvp.Key).ToList();
             foreach (var layerIndex in activeLayers)
             {
@@ -117,7 +126,7 @@ namespace MapGeneration
                 Destroy(tilemapsByLayer[layerIndex].gameObject);
             }
             tilemapsByLayer.Clear();
-            currentFocusLayer = int.MinValue;
+            focusLayerByEntity.Clear();
         }
     }
 }

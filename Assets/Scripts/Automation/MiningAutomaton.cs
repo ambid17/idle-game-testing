@@ -21,17 +21,18 @@ namespace Automation
         private static MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private static AutomationConfig config => GameManager.AutomationConfig;
         private static UpgradeManager upgrades => UpgradeManager.Instance;
+        private ChunkStreamingManager streamingManager => GameManager.ChunkStreamingManager;
 
         private OreInventory oreInventory;
         private readonly GridPathMover mover = new();
-        private State state = State.PickingTarget;
+        [SerializeField] private State state = State.PickingTarget;
 
         private int currentLayer;
-        private Vector2Int currentCell;
-        private List<Vector3> path;
-        private int pathIndex;
-        private Vector2Int digTargetCell;
-        private float miningProgress;
+        [SerializeField] private Vector2Int currentCell;
+        [SerializeField] private List<Vector3> path;
+        [SerializeField] private int pathIndex;
+        [SerializeField] private Vector2Int digTargetCell;
+        [SerializeField] private float miningProgress;
 
         public int DisplayIndex { get; private set; } = 1;
         public Transform CarrierTransform => transform;
@@ -53,11 +54,16 @@ namespace Automation
             RefreshCurrentCell();
         }
 
-        private void OnEnable() => OreCarrierRegistry.Instance.Register(this);
+        private void OnEnable()
+        {
+            RefreshCurrentCell();
+            OreCarrierRegistry.Instance.Register(this);
+        }
         private void OnDisable() => OreCarrierRegistry.Instance.Unregister(this);
 
         private void Update()
         {
+            streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
             switch (state)
             {
                 case State.PickingTarget:

@@ -18,10 +18,12 @@ namespace Automation
         [SerializeField] private StorageDrone storageDronePrefab;
         [SerializeField] private FuelDrone fuelDronePrefab;
         [SerializeField] private PlayerController player;
+        [SerializeField] private Transform automatonSpawn;
 
         private readonly List<MiningAutomaton> automatons = new();
         private readonly List<StorageDrone> storageDrones = new();
         private readonly List<FuelDrone> fuelDrones = new();
+
 
         private void Awake()
         {
@@ -89,7 +91,8 @@ namespace Automation
 
             while (instances.Count < targetCount)
             {
-                var instance = Instantiate(prefab, transform.position, Quaternion.identity);
+                var instance = Instantiate(prefab, automatonSpawn.transform.position, Quaternion.identity);
+                instance.gameObject.name = $"{prefab.name} {instances.Count + 1}";
                 configure(instance, instances.Count + 1);
                 instances.Add(instance);
             }
