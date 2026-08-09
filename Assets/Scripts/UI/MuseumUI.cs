@@ -82,7 +82,6 @@ namespace UI
             GameManager.EventService.Remove<PrestigeUpgradePurchasedEvent>(OnPrestigeUpgradePurchased);
             GameManager.EventService.Remove<PrestigePointsChangedEvent>(OnPrestigePointsChanged);
             GameManager.EventService.Remove<PrestigePurchaseRequestedEvent>(OnPrestigePurchaseRequested);
-            GameManager.EventService.Remove<TurnInArtifactsRequestedEvent>(OnTurnInArtifactsRequested);
             GameManager.EventService.Remove<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Remove<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
