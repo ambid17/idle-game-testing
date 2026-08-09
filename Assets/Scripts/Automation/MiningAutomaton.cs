@@ -33,6 +33,7 @@ namespace Automation
         [SerializeField] private int pathIndex;
         [SerializeField] private Vector2Int digTargetCell;
         [SerializeField] private float miningProgress;
+        [SerializeField] private Vector3 spawnLocation;
 
         public int DisplayIndex { get; private set; } = 1;
         public Transform CarrierTransform => transform;
@@ -50,6 +51,7 @@ namespace Automation
 
         private void Start()
         {
+            spawnLocation = transform.position;
             oreInventory.Initialize(() => config.AutomatonBaseInventoryWeight * upgrades.AutomatonInventoryCapacityMultiplier);
             RefreshCurrentCell();
         }
@@ -79,6 +81,7 @@ namespace Automation
                     UpdateFlyingToDepot();
                     break;
             }
+            RefreshCurrentCell();
         }
 
         private void UpdatePickingTarget()
@@ -125,7 +128,6 @@ namespace Automation
             if (blockType == null)
             {
                 // Already mined out from under us (e.g. the player got there first) - move on.
-                RefreshCurrentCell();
                 state = State.PickingTarget;
                 return;
             }
@@ -136,7 +138,6 @@ namespace Automation
             if (miningProgress < targetHealth) return;
 
             MineTargetAndBonusCells(currentLayer, digTargetCell, blockType);
-            RefreshCurrentCell();
             state = State.PickingTarget;
         }
 
@@ -160,7 +161,6 @@ namespace Automation
                 // Already-open ground directly below - step down into it and keep descending.
                 float moveSpeed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
                 transform.position = Vector3.MoveTowards(transform.position, mapGenerationService.CellToWorldCenter(layer, x, y), moveSpeed * Time.deltaTime);
-                RefreshCurrentCell();
                 return;
             }
 
@@ -170,7 +170,6 @@ namespace Automation
             if (miningProgress < targetHealth) return;
 
             MineTargetAndBonusCells(layer, new Vector2Int(x, y), blockType);
-            RefreshCurrentCell();
             state = State.PickingTarget;
         }
 
@@ -224,11 +223,10 @@ namespace Automation
         private void UpdateFlyingToDepot()
         {
             float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, Depot.Instance.transform.position, speed);
+            bool arrived = mover.StepDirect(transform, spawnLocation, speed);
             if (!arrived) return;
 
             Deposit();
-            RefreshCurrentCell();
             state = State.PickingTarget;
         }
 
@@ -241,7 +239,7 @@ namespace Automation
 
             foreach (var kvp in withdrawn)
             {
-                if (kvp.Value > 0) IdleEarningsTracker.Instance.RecordOreMined(kvp.Key, kvp.Value);
+                if (kvp.Value > 0) IdleEarningsTracker.Instance.RecordOreDeposited(kvp.Key, kvp.Value);
             }
 
             GameManager.EventService.Dispatch(new OreDepositedByAutomationEvent($"Automaton #{DisplayIndex}", withdrawn, DisplayIndex));

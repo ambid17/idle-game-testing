@@ -11,7 +11,7 @@ namespace Automation
     // compute the offline-earnings screen on load.
     public class IdleEarningsTracker : Singleton<IdleEarningsTracker>
     {
-        private const float WindowMinutes = 10f;
+        private const float WindowMinutes = 2f;
 
         private readonly Dictionary<BlockTypeId, Queue<(float time, int amount)>> recordsByOre = new();
         private float trackerStartTime;
@@ -22,7 +22,7 @@ namespace Automation
             trackerStartTime = Time.time;
         }
 
-        public void RecordOreMined(BlockTypeId id, int amount)
+        public void RecordOreDeposited(BlockTypeId id, int amount)
         {
             if (amount <= 0) return;
 
@@ -48,6 +48,12 @@ namespace Automation
 
                 foreach (var kvp in recordsByOre)
                 {
+                    // If we only have the record from save, just keep that value otherwise the average will get multiplied
+                    if (kvp.Value.Count == 1 && kvp.Value.All(record => record.time == 0))
+                    {
+                        result[kvp.Key] = kvp.Value.Sum(r => r.amount) / WindowMinutes;
+                        continue;
+                    } 
                     Prune(kvp.Value);
                     int total = kvp.Value.Sum(r => r.amount);
                     if (total > 0) result[kvp.Key] = total / elapsedMinutes;
@@ -59,7 +65,7 @@ namespace Automation
 
         private void Prune(Queue<(float time, int amount)> queue)
         {
-            float cutoff = Time.time - WindowMinutes * 60f;
+            float cutoff = Time.time - (WindowMinutes * 60f);
             while (queue.Count > 0 && queue.Peek().time < cutoff)
             {
                 queue.Dequeue();
@@ -76,7 +82,7 @@ namespace Automation
             {
                 if (kvp.Value <= 0f) continue;
                 int seedAmount = Mathf.Max(1, Mathf.RoundToInt(kvp.Value * WindowMinutes));
-                RecordOreMined(kvp.Key, seedAmount);
+                RecordOreDeposited(kvp.Key, seedAmount);
             }
         }
     }
