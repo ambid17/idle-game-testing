@@ -35,20 +35,31 @@ namespace Automation
             var frontier = new HashSet<Vector2Int>();
             if (mapGen == null || radius <= 0) return new List<Vector2Int>();
 
+            // TODO: potential bug, doesn't cross chunk boundaries. Might not matter because they will descend if out of tiles to mine
             var chunk = mapGen.World.GetOrGenerateChunk(layerIndex);
             var origin = new Vector2Int(originX, originY);
-            var visited = new HashSet<Vector2Int> { origin };
-            var queue = new Queue<(Vector2Int cell, int depth)>();
-            queue.Enqueue((origin, 0));
 
-            while (queue.Count > 0)
+            // 0-1 BFS (deque instead of a plain FIFO queue): walking a mined cell costs 1 hop of
+            // the wander budget, but crossing a building-support tile costs 0 - it's fixed, always-
+            // passable ground, not newly explored territory. A plain FIFO queue can't mix those two
+            // edge weights correctly (a cell could get settled via a longer path before a cheaper
+            // one - e.g. reaching a support tile by walking under and up costs more than reaching it
+            // sideways along the same free row - which would then block the cheaper route from ever
+            // improving it), so we track best-known depth per cell and use front/back pushes instead.
+            var bestDepth = new Dictionary<Vector2Int, int> { [origin] = 0 };
+            var deque = new LinkedList<(Vector2Int cell, int depth)>();
+            deque.AddFirst((origin, 0));
+
+            while (deque.Count > 0)
             {
-                var (cell, depth) = queue.Dequeue();
+                var (cell, depth) = deque.First.Value;
+                deque.RemoveFirst();
+                if (depth > bestDepth[cell]) continue; // stale entry, already improved upon
 
                 foreach (var dir in DigDirections)
                 {
                     var neighbor = cell + dir;
-                    if (!InBounds(chunk, neighbor) || IsMined(chunk, neighbor)) continue;
+                    if (!InBounds(chunk, neighbor) || IsMined(chunk, neighbor) || IsBuildingSupported(chunk, neighbor)) continue;
                     frontier.Add(neighbor);
                 }
 
@@ -57,10 +68,17 @@ namespace Automation
                 foreach (var dir in WalkDirections)
                 {
                     var neighbor = cell + dir;
-                    if (!InBounds(chunk, neighbor) || visited.Contains(neighbor) || !IsMined(chunk, neighbor)) continue;
+                    if (!InBounds(chunk, neighbor)) continue;
 
-                    visited.Add(neighbor);
-                    queue.Enqueue((neighbor, depth + 1));
+                    bool supported = IsBuildingSupported(chunk, neighbor);
+                    if (!IsMined(chunk, neighbor) && !supported) continue;
+
+                    int neighborDepth = supported ? depth : depth + 1;
+                    if (bestDepth.TryGetValue(neighbor, out var known) && known <= neighborDepth) continue;
+
+                    bestDepth[neighbor] = neighborDepth;
+                    if (supported) deque.AddFirst((neighbor, neighborDepth));
+                    else deque.AddLast((neighbor, neighborDepth));
                 }
             }
 
@@ -89,7 +107,8 @@ namespace Automation
                 {
                     var neighbor = cell + dir;
                     if (!InBounds(chunk, neighbor) || visited.Contains(neighbor)) continue;
-                    if (neighbor != target && !IsMined(chunk, neighbor)) continue;
+                    bool walkable = IsMined(chunk, neighbor) || IsBuildingSupported(chunk, neighbor);
+                    if (neighbor != target && !walkable) continue;
 
                     visited.Add(neighbor);
                     cameFrom[neighbor] = cell;
@@ -122,5 +141,8 @@ namespace Automation
 
         private static bool IsMined(ChunkData chunk, Vector2Int cell) =>
             chunk.Cells[chunk.Index(cell.x, cell.y)].Mined;
+
+        private static bool IsBuildingSupported(ChunkData chunk, Vector2Int cell) =>
+            chunk.Cells[chunk.Index(cell.x, cell.y)].BlockTypeId == (byte)BlockTypeId.GrassyDirt;
     }
 }

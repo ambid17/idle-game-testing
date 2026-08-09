@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Automation_FuelDroneInventoryCapacity
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: fuel_drone_inventory_capacity
   DisplayName: Fuel Drone Capacity
   Description: +50% Fuel Drone fuel capacity per level.
   Branch: 2
@@ -21,5 +20,5 @@ MonoBehaviour:
   MaxLevel: 3
   BaseCost: 250
   CostGrowth: 1.3
-  Prerequisite: {fileID: 0}
+  Prerequisite: {fileID: 11400000, guid: f018278ce44ea1f499d4eef01b675b09, type: 2}
   RequirePrerequisiteMaxed: 0

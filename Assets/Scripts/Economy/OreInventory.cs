@@ -15,7 +15,8 @@ namespace Economy
         private System.Func<float> maxWeightProvider;
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
 
-        public float CurrentWeight { get; private set; }
+        [SerializeField] float _currentWeight;
+        public float CurrentWeight => _currentWeight;
         public float MaxWeight => maxWeightProvider != null ? maxWeightProvider() : 0f;
         public bool IsFull => CurrentWeight >= MaxWeight;
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreCounts;
@@ -33,7 +34,7 @@ namespace Economy
 
             oreCounts.TryGetValue(blockType.Id, out var current);
             oreCounts[blockType.Id] = current + amount;
-            CurrentWeight += blockType.Weight * amount;
+            _currentWeight += blockType.Weight * amount;
             return true;
         }
 
@@ -41,7 +42,7 @@ namespace Economy
         {
             var snapshot = new Dictionary<BlockTypeId, int>(oreCounts);
             ClearOreCounts();
-            CurrentWeight = 0f;
+            _currentWeight = 0f;
             return snapshot;
         }
 
@@ -72,7 +73,7 @@ namespace Economy
                 if (amountToTake <= 0) continue;
 
                 oreCounts[id] = count - amountToTake;
-                CurrentWeight -= unitWeight * amountToTake;
+                _currentWeight -= unitWeight * amountToTake;
                 weightBudget -= unitWeight * amountToTake;
                 withdrawn[id] = amountToTake;
             }
@@ -83,7 +84,7 @@ namespace Economy
         public void ClearAll()
         {
             ClearOreCounts();
-            CurrentWeight = 0f;
+            _currentWeight = 0f;
         }
 
         // Bulk restore for SaveService - silent (no owner event dispatch), recomputes CurrentWeight
@@ -92,7 +93,7 @@ namespace Economy
         public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> counts)
         {
             ClearOreCounts();
-            CurrentWeight = 0f;
+            _currentWeight = 0f;
             if (counts == null) return;
 
             foreach (var kvp in counts)
@@ -101,7 +102,7 @@ namespace Economy
                 oreCounts[kvp.Key] = kvp.Value;
 
                 var blockType = blockTypeDatabase != null ? blockTypeDatabase.Get((byte)kvp.Key) : null;
-                if (blockType != null) CurrentWeight += blockType.Weight * kvp.Value;
+                if (blockType != null) _currentWeight += blockType.Weight * kvp.Value;
             }
         }
 

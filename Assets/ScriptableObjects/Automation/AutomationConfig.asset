@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AutomationConfig
   m_EditorClassIdentifier: Assembly-CSharp::Automation.AutomationConfig
   AutomatonBaseMiningSpeed: 1
-  AutomatonBaseMoveSpeed: 5
+  AutomatonBaseMoveSpeed: 1
   AutomatonBaseMiningRadius: 1
   AutomatonBaseInventoryWeight: 10
   AutomatonWanderRadius: 3

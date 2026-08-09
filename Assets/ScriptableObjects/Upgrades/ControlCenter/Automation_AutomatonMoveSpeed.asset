@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Automation_AutomatonMoveSpeed
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: Automaton Move Speed
   DisplayName: Automaton Move Speed
   Description: +10% Automaton movement speed per level.
   Branch: 2
@@ -21,5 +20,5 @@ MonoBehaviour:
   MaxLevel: 10
   BaseCost: 120
   CostGrowth: 1.2
-  Prerequisite: {fileID: 0}
+  Prerequisite: {fileID: 11400000, guid: fae3e5a0bdaa417409887c7d197d852d, type: 2}
   RequirePrerequisiteMaxed: 0
