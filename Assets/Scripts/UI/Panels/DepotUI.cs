@@ -21,6 +21,7 @@ namespace UI
         [SerializeField] private OreRowUI rowPrefab;
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private Button sellAllButton;
+        [SerializeField] private TMP_Text sellAllButtonLabel;
         [SerializeField] private Button closeButton;
 
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
@@ -105,14 +106,19 @@ namespace UI
 
         private void Refresh()
         {
+            var totalValue = 0f;
             foreach (var kvp in rows)
             {
                 Depot.Instance.StoredOres.TryGetValue(kvp.Key, out var count);
                 kvp.Value.SetCount(count);
 
                 var blockType = blockTypeDatabase.Get((byte)kvp.Key);
-                kvp.Value.SetValue(blockType.Value * count);
+                var value = blockType.Value * count;
+                kvp.Value.SetValue(value);
+                totalValue += value;
             }
+
+            sellAllButtonLabel.text = $"Sell All (${totalValue:0.##})";
 
             OnDollarsChanged();
         }
