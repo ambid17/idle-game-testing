@@ -12,8 +12,16 @@ namespace MapGeneration
         [SerializeField] private Tilemap terrainTilemap;
         [SerializeField] private Tilemap fogTilemap;
         [SerializeField] private TileBase fogTile;
+        [SerializeField] private Tilemap backgroundTilemap;
+        [SerializeField] private TileBase backgroundTile;
         private BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
         [SerializeField] private bool fogDisabled;
+
+        // Background tint: brown at the surface fading to purple by backgroundGradientLayers,
+        // then flat purple for every layer beyond that.
+        [SerializeField] private Color surfaceBackgroundColor = new(0.45f, 0.32f, 0.2f);
+        [SerializeField] private Color deepBackgroundColor = new(0.25f, 0.1f, 0.35f);
+        [SerializeField] private int backgroundGradientLayers = 10;
 
 #if UNITY_EDITOR
         // Editor-only cell debug overlay (world position + cell index), drawn via Gizmos/Handles
@@ -35,11 +43,41 @@ namespace MapGeneration
             chunk = chunkData;
             LayerIndex = layerIndex;
             RepaintAll();
+            PaintBackground();
 
             if (fogDisabled)
             {
                 fogTilemap.gameObject.SetActive(false);
             }
+        }
+
+        // Background is a flat, per-layer tint rather than per-cell data, so it's filled once
+        // on bind rather than touched by RepaintCells - every cell gets the same tile, and the
+        // whole tilemap's color is set once instead of per-tile.
+        private void PaintBackground()
+        {
+            if (backgroundTilemap == null) return;
+
+            int w = chunk.Width;
+            int h = chunk.Height;
+            int count = w * h;
+
+            var positions = new Vector3Int[count];
+            var tiles = new TileBase[count];
+            int n = 0;
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    positions[n] = new Vector3Int(x, -y, 0);
+                    tiles[n] = backgroundTile;
+                    n++;
+                }
+            }
+            backgroundTilemap.SetTiles(positions, tiles);
+
+            float t = backgroundGradientLayers > 0 ? Mathf.Clamp01(LayerIndex / (float)backgroundGradientLayers) : 1f;
+            backgroundTilemap.color = Color.Lerp(surfaceBackgroundColor, deepBackgroundColor, t);
         }
 
         public void RepaintAll()
