@@ -85,6 +85,19 @@ namespace Automation
             return new List<Vector2Int>(frontier);
         }
 
+        // Fallback for when the radius-limited wander above finds nothing. That can happen even
+        // with plenty of unmined ground left in the layer - e.g. everything within the normal
+        // wander radius is exhausted and the only way onward is walking around a building-support
+        // run wider than the radius, or reaching a pocket that's simply farther than `radius` hops
+        // away. Bounded by the chunk's own footprint (the longest any walk within one layer could
+        // possibly need) rather than an arbitrary large number, so it stays a real, terminating BFS.
+        public static List<Vector2Int> GetAccessibleTilesUnbounded(MapGenerationService mapGen, int layerIndex, int originX, int originY)
+        {
+            if (mapGen == null) return new List<Vector2Int>();
+            var chunk = mapGen.World.GetOrGenerateChunk(layerIndex);
+            return GetAccessibleTiles(mapGen, layerIndex, originX, originY, chunk.Width + chunk.Height);
+        }
+
         // Builds a walkable cell path (through already-mined ground, ending on `target` even
         // though target itself is unmined - it's the cell about to be dug) from origin to target,
         // in world-space order, for GridPathMover.StepAlongPath to consume.

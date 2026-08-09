@@ -33,7 +33,7 @@ namespace Automation
         [SerializeField] private int pathIndex;
         [SerializeField] private Vector2Int digTargetCell;
         [SerializeField] private float miningProgress;
-        [SerializeField] private Vector3 spawnLocation;
+        [SerializeField] private Vector3 _depotLocation;
 
         public int DisplayIndex { get; private set; } = 1;
         public Transform CarrierTransform => transform;
@@ -41,7 +41,11 @@ namespace Automation
 
         // Assigned by AutomationSpawner - used for notification text ("Automaton #2") and the
         // Control Center earnings graph's per-automaton series.
-        public void Configure(int displayIndex) => DisplayIndex = displayIndex;
+        public void Configure(int displayIndex, Vector3 depotPosition)
+        {
+            DisplayIndex = displayIndex;
+            _depotLocation = depotPosition;
+        }
 
         private void Awake()
         {
@@ -51,7 +55,6 @@ namespace Automation
 
         private void Start()
         {
-            spawnLocation = transform.position;
             oreInventory.Initialize(() => config.AutomatonBaseInventoryWeight * upgrades.AutomatonInventoryCapacityMultiplier);
             RefreshCurrentCell();
         }
@@ -94,6 +97,15 @@ namespace Automation
 
             var accessible = AutomatonReachability.GetAccessibleTiles(mapGenerationService, currentLayer, currentCell.x, currentCell.y, config.AutomatonWanderRadius);
             miningProgress = 0f;
+
+            if (accessible.Count == 0)
+            {
+                // Nothing within the normal wander radius - before giving up and drilling blind
+                // straight down, try the whole layer. Local exhaustion often means the only
+                // unmined ground left is past a building-support run wider than the wander radius,
+                // reachable by walking (not digging) around it.
+                accessible = AutomatonReachability.GetAccessibleTilesUnbounded(mapGenerationService, currentLayer, currentCell.x, currentCell.y);
+            }
 
             if (accessible.Count == 0)
             {
@@ -223,7 +235,7 @@ namespace Automation
         private void UpdateFlyingToDepot()
         {
             float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, spawnLocation, speed);
+            bool arrived = mover.StepDirect(transform, _depotLocation, speed);
             if (!arrived) return;
 
             Deposit();

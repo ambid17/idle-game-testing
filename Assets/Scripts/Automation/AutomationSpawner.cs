@@ -19,6 +19,7 @@ namespace Automation
         [SerializeField] private FuelDrone fuelDronePrefab;
         [SerializeField] private PlayerController player;
         [SerializeField] private Transform automatonSpawn;
+        [SerializeField] private Transform depotDepositLocation;
 
         private readonly List<MiningAutomaton> automatons = new();
         private readonly List<StorageDrone> storageDrones = new();
@@ -80,8 +81,8 @@ namespace Automation
         private void ReconcileAll()
         {
             var upgrades = Economy.UpgradeManager.Instance;
-            Reconcile(automatons, automatonPrefab, upgrades.AutomatonCount, (instance, index) => instance.Configure(index));
-            Reconcile(storageDrones, storageDronePrefab, upgrades.StorageDroneCount, (instance, index) => instance.Configure(transform.position, index));
+            Reconcile(automatons, automatonPrefab, upgrades.AutomatonCount, (instance, index) => instance.Configure(index, depotDepositLocation.position));
+            Reconcile(storageDrones, storageDronePrefab, upgrades.StorageDroneCount, (instance, index) => instance.Configure(depotDepositLocation.position, index));
             Reconcile(fuelDrones, fuelDronePrefab, upgrades.FuelDroneCount, (instance, _) => instance.Configure(transform.position, player));
         }
 

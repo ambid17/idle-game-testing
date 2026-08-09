@@ -33,6 +33,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5052937373502482364}
+  - {fileID: 3034906857418333102}
   m_Father: {fileID: 745675126649389851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7209973637957759625
@@ -82,7 +83,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.8584906, g: 0.6259291, b: 0.17412782, a: 1}
@@ -418,7 +419,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.4162313, g: 0.745283, b: 0.19335175, a: 1}
@@ -573,7 +574,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1235,7 +1236,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6381627065839062940}
   - component: {fileID: 8017626580702937305}
-  - component: {fileID: 4652470253571320391}
   - component: {fileID: 4096500480684153770}
   - component: {fileID: 5263450223223735629}
   m_Layer: 6
@@ -1259,6 +1259,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3266993632237693374}
+  - {fileID: 5514890622955486240}
   m_Father: {fileID: 745675126649389851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8017626580702937305
@@ -1308,7 +1309,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.16456035, g: 0.38669506, b: 0.8113208, a: 1}
@@ -1321,22 +1322,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &4652470253571320391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4885295210755330477}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0071140a5894814189be97fa7c6da7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Automation.AutomationSpawner
-  automatonPrefab: {fileID: 2669522597533096345, guid: f9c4b5ddd07799a48b2305434bc96e82, type: 3}
-  storageDronePrefab: {fileID: 2305454244209700005, guid: a3294852577618a48b9ef2b850e82674, type: 3}
-  fuelDronePrefab: {fileID: 6528800220871837331, guid: af1474b0de443ba43ab03804582ddb39, type: 3}
-  player: {fileID: 0}
 --- !u!61 &4096500480684153770
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1397,6 +1382,87 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Interaction.BuildingInteractable
   promptText: Press E to interact
   interactableType: 4
+--- !u!1 &6004676579041123006
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5514890622955486240}
+  - component: {fileID: 1758704587460004440}
+  m_Layer: 6
+  m_Name: AutomatonSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5514890622955486240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6004676579041123006}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6381627065839062940}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1758704587460004440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6004676579041123006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0071140a5894814189be97fa7c6da7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Automation.AutomationSpawner
+  automatonPrefab: {fileID: 2669522597533096345, guid: f9c4b5ddd07799a48b2305434bc96e82, type: 3}
+  storageDronePrefab: {fileID: 2305454244209700005, guid: a3294852577618a48b9ef2b850e82674, type: 3}
+  fuelDronePrefab: {fileID: 6528800220871837331, guid: af1474b0de443ba43ab03804582ddb39, type: 3}
+  player: {fileID: 0}
+  automatonSpawn: {fileID: 5514890622955486240}
+  depotDepositLocation: {fileID: 3034906857418333102}
+--- !u!1 &6063283101632829056
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3034906857418333102}
+  m_Layer: 6
+  m_Name: DepotDepositLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3034906857418333102
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6063283101632829056}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4461566400704351904}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6608359772907151492
 GameObject:
   m_ObjectHideFlags: 0
@@ -1479,7 +1545,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.74509805, g: 0.19215684, b: 0.21473224, a: 1}

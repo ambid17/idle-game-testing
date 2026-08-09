@@ -26,16 +26,16 @@ namespace Automation
         private State state = State.SelectingTarget;
 
         private IOreCarrier currentTarget;
-        private Vector3 controlCenterPosition;
+        private Vector3 _depositLocation;
         private float idleRepollTimer;
 
         public int DisplayIndex { get; private set; } = 1;
 
         // Assigned by AutomationSpawner - control center position is the idle/refuel anchor,
         // displayIndex feeds notification text ("Storage Drone #2").
-        public void Configure(Vector3 controlCenterPos, int displayIndex)
+        public void Configure(Vector3 depotDepositLocation, int displayIndex)
         {
-            controlCenterPosition = controlCenterPos;
+            _depositLocation = depotDepositLocation;
             DisplayIndex = displayIndex;
         }
 
@@ -181,7 +181,7 @@ namespace Automation
         private void UpdateFlyingToDepot()
         {
             float speed = config.StorageDroneBaseMoveSpeed * upgrades.StorageDroneMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, Depot.Instance.transform.position, speed);
+            bool arrived = mover.StepDirect(transform, _depositLocation, speed);
             if (!arrived) return;
 
             Deposit();
@@ -204,7 +204,7 @@ namespace Automation
         private void UpdateIdle()
         {
             float speed = config.StorageDroneBaseMoveSpeed * upgrades.StorageDroneMoveSpeedMultiplier;
-            mover.StepDirect(transform, controlCenterPosition, speed);
+            mover.StepDirect(transform, _depositLocation, speed);
 
             idleRepollTimer += Time.deltaTime;
             if (idleRepollTimer >= IdleRepollInterval)

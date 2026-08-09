@@ -9656,11 +9656,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 911873049}
   m_CullTransparentMesh: 1
---- !u!4 &932269168 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6381627065839062940, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-  m_PrefabInstance: {fileID: 1293150875}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &938917967
 GameObject:
   m_ObjectHideFlags: 0
@@ -10208,37 +10203,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 979663835}
   m_CullTransparentMesh: 1
---- !u!1 &988340828
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 988340829}
-  m_Layer: 6
-  m_Name: AutomatonSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &988340829
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 988340828}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.375, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 932269168}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &999410036
 GameObject:
   m_ObjectHideFlags: 0
@@ -12518,44 +12482,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1758704587460004440, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 2055974193}
     - target: {fileID: 1866668967186046555, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       propertyPath: m_Name
       value: Buildings
       objectReference: {fileID: 0}
-    - target: {fileID: 4652470253571320391, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: player
-      value: 
-      objectReference: {fileID: 2055974193}
-    - target: {fileID: 4652470253571320391, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: automatonSpawn
-      value: 
-      objectReference: {fileID: 988340829}
-    - target: {fileID: 6907794066953271781, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_SortingOrder
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7209973637957759625, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_SortingOrder
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7444900479430611188, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_SortingOrder
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8017626580702937305, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_SortingOrder
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8685694700064467304, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      propertyPath: m_SortingOrder
-      value: -1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 6381627065839062940, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 988340829}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4766811389896441889, guid: eb8f30db50fd9364283cd1bd157c0fca, type: 3}
       insertIndex: -1
