@@ -50,7 +50,7 @@ namespace MapGeneration
         /// <returns>True if the cell was able to be mined.</returns>
         public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1)
         {
-            // Can't mine if already mined
+            // Can't mine if: already mined, or target is a building support
             if (!World.TryMineCell(layerIndex, x, y, out var block)) return false;
 
             HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);

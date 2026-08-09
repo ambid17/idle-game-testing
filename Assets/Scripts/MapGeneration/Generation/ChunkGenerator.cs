@@ -8,6 +8,9 @@ namespace MapGeneration
     // miner simulation as well as for the live scene.
     public static class ChunkGenerator
     {
+        // The first layer is a special case: the buildings sit on tiles and we dont want to remove them.
+        private static readonly List<int> firstLayerBlocksToIgnore = new List<int>() { 3, 4, 5, 9, 10, 11, 14, 15, 16, 20, 21, 22, 25, 26, 27 };
+
         private enum Salt
         {
             OrePick = 1,
@@ -50,8 +53,8 @@ namespace MapGeneration
         {
             var cell = new CellData();
 
-            // grassy dirt for first layer
-            if(layerIndex == 0 && y == 0)
+            // grassy dirt for first layer blocks that aren't mineable
+            if(layerIndex == 0 && y == 0 && firstLayerBlocksToIgnore.Contains(x))
             {
                 cell.BlockTypeId = (byte) BlockTypeId.GrassyDirt;
                 return cell;

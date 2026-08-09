@@ -13,8 +13,6 @@ namespace MapGeneration
         private LayerConfigProvider configProvider => GameManager.LayerConfigProvider;
         private BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
         private readonly Dictionary<int, ChunkData> chunksByLayer = new();
-        // The first layer is a special case: the buildings sit on tiles and we dont want to remove them.
-        private readonly List<int> firstLayerBlocksToIgnore = new List<int>() { 3, 4, 5, 9, 10, 11, 14, 15, 16, 20, 21, 22, 25, 26, 27 };
 
         public MineWorld(int seed, int gridWidth)
         {
@@ -47,14 +45,13 @@ namespace MapGeneration
                 return false;
             }
 
-            if(layerIndex == 0 && firstLayerBlocksToIgnore.Contains(x))
-            {
-                Debug.LogWarning($"TryMineCell: cell is on first layer and should be ignored for layer {layerIndex}: ({x}, {y})");
-                return false;
-            }
-
             int idx = chunk.Index(x, y);
             var cell = chunk.Cells[idx];
+            if (cell.BlockTypeId == (byte)BlockTypeId.GrassyDirt)
+            {
+                Debug.LogWarning($"TryMineCell: can't mine grassy dirt tiles, they support buildings");
+                return false;
+            }
             if (cell.Mined)
             {
                 Debug.LogWarning($"TryMineCell: cell already mined for layer {layerIndex}: ({x}, {y})");
