@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace MapGeneration
 {
@@ -14,8 +13,6 @@ namespace MapGeneration
         // Dense bit arrays (1 bit/cell) - a few hundred bytes per chunk even fully mined.
         public byte[] MinedBits;
         public byte[] RevealedBits;
-
-        public List<Vector2Int> DiscoveredArtifactCells = new();
     }
 
     [Serializable]

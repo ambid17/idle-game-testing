@@ -1,6 +1,4 @@
 using Events;
-using Player;
-using UnityEngine;
 
 namespace Economy
 {
@@ -11,15 +9,9 @@ namespace Economy
     // for Depot.Sell.
     public class Museum : Singleton<Museum>
     {
-        public double TurnInArtifacts(PlayerInventory playerInventory)
+        public double TurnInArtifacts()
         {
-            if (playerInventory == null)
-            {
-                Debug.LogError("Museum.TurnInArtifacts: playerInventory is null.");
-                return 0;
-            }
-
-            int count = playerInventory.WithdrawAllArtifacts();
+            int count = Wallet.Instance.WithdrawAllArtifacts();
             if (count <= 0) return 0;
 
             double pointsEarned = count * PrestigeUpgradeManager.Instance.PrestigePointsPerArtifactMultiplier;

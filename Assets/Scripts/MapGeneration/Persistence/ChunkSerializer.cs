@@ -13,15 +13,6 @@ namespace MapGeneration
                 RevealedBits = PackRevealed(chunk),
             };
 
-            foreach (var pos in chunk.ArtifactCells)
-            {
-                var cell = chunk.Cells[chunk.Index(pos.x, pos.y)];
-                if (cell.Mined || cell.Revealed)
-                {
-                    save.DiscoveredArtifactCells.Add(pos);
-                }
-            }
-
             return save;
         }
 

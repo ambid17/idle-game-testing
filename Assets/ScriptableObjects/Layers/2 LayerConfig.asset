@@ -29,4 +29,4 @@ MonoBehaviour:
     Weight: 3
   HazardTable: []
   HazardChancePerCell: 0
-  ArtifactBonusChancePerCell: 0.0005
+  ArtifactBonusChance: 0.1

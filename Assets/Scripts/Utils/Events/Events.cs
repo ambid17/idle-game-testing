@@ -37,6 +37,8 @@ namespace Events
 
     public class DollarsChangedEvent { }
 
+    public class ArtifactCountChangedEvent { }
+
     public class DepotChangedEvent { }
 
     public class InventoryChangedEvent { }
@@ -84,24 +86,6 @@ namespace Events
         {
             Id = id;
             Fraction = fraction;
-        }
-    }
-
-    public class CellMinedEvent : IEvent
-    {
-        public int LayerIndex;
-        public int X;
-        public int Y;
-        public BlockType Block;
-        public bool ArtifactFound;
-
-        public CellMinedEvent(int layerIndex, int x, int y, BlockType block, bool artifactFound)
-        {
-            LayerIndex = layerIndex;
-            X = x;
-            Y = y;
-            Block = block;
-            ArtifactFound = artifactFound;
         }
     }
 

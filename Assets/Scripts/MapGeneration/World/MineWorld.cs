@@ -34,10 +34,9 @@ namespace MapGeneration
 
         public IEnumerable<ChunkData> GetLoadedChunks() => chunksByLayer.Values;
 
-        public bool TryMineCell(int layerIndex, int x, int y, out BlockType minedBlock, out bool artifactFound)
+        public bool TryMineCell(int layerIndex, int x, int y, out BlockType minedBlock)
         {
             minedBlock = null;
-            artifactFound = false;
 
             var chunk = GetOrGenerateChunk(layerIndex);
             if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height)
@@ -58,7 +57,6 @@ namespace MapGeneration
             chunk.MinedCount++;
 
             minedBlock = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
-            artifactFound = cell.IsArtifact;
             return true;
         }
 

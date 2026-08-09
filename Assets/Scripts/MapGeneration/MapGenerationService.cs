@@ -51,15 +51,13 @@ namespace MapGeneration
         public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1)
         {
             // Can't mine if already mined
-            if (!World.TryMineCell(layerIndex, x, y, out var block, out var artifactFound)) return false;
+            if (!World.TryMineCell(layerIndex, x, y, out var block)) return false;
 
             HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);
             if (block != null && block.Category == BlockCategory.Hazard)
             {
                 GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.HazardBehavior));
             }
-
-            GameManager.EventService.Dispatch(new CellMinedEvent(layerIndex, x, y, block, artifactFound));
             return true;
         }
 
@@ -121,17 +119,6 @@ namespace MapGeneration
             if (cell.Mined) return null;
 
             return blockTypeDatabase != null ? blockTypeDatabase.Get(cell.BlockTypeId) : null;
-        }
-
-        // Peeks whether the cell holds an undiscovered artifact without mining it - lets callers
-        // (PlayerMining) know to credit an artifact once the mine completes.
-        public bool IsArtifactAt(int layerIndex, int x, int y)
-        {
-            var chunk = World.GetOrGenerateChunk(layerIndex);
-            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) return false;
-
-            var cell = chunk.Cells[chunk.Index(x, y)];
-            return !cell.Mined && cell.IsArtifact;
         }
 
         public float GetBlockHealthMultiplier(int layerIndex) => layerConfigProvider.GetConfig(layerIndex).BlockHealth;

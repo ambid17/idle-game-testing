@@ -133,17 +133,19 @@ namespace Player
 
         private void MineTarget(int layerIndex, int x, int y, BlockType blockType)
         {
-            bool hadArtifact = mapGenerationService.IsArtifactAt(layerIndex, x, y);
             if (!mapGenerationService.MineCell(layerIndex, x, y)) return;
 
             CollectMinedBlock(blockType);
-            if (hadArtifact) playerInventory.AddArtifact();
-
             MineAreaBonusCells(layerIndex, x, y);
         }
 
         private void CollectMinedBlock(BlockType blockType)
         {
+            if (blockType.Category == BlockCategory.Artifact)
+            {
+                Wallet.Instance.AddArtifact();
+                return;
+            }
             if (blockType.Category != BlockCategory.Ore) return;
 
             if (playerInventory.IsFull && CanOverflow)
@@ -175,11 +177,9 @@ namespace Player
                 if (bonusBlock == null) continue;
                 if (bonusBlock.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow) continue;
 
-                bool hadArtifact = mapGenerationService.IsArtifactAt(layerIndex, x, y);
                 if (!mapGenerationService.MineCell(layerIndex, x, y)) continue;
 
                 CollectMinedBlock(bonusBlock);
-                if (hadArtifact) playerInventory.AddArtifact();
             }
         }
     }

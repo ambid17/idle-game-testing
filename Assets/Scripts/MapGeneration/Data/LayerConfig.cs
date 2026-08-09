@@ -29,6 +29,9 @@ namespace MapGeneration
         public List<WeightedBlockEntry> HazardTable = new();
 
         [Range(0f, 1f)] public float HazardChancePerCell = 0.01f;
-        [Range(0f, 1f)] public float ArtifactBonusChancePerCell = 0.0005f;
+
+        [Tooltip("Chance to place an additional artifact beyond the 1 guaranteed per layer. " +
+                 "Re-rolled after every success, so it's really a geometric distribution of bonus artifacts.")]
+        [Range(0f, 1f)] public float ArtifactBonusChance = 0.1f;
     }
 }

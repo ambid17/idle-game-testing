@@ -8,7 +8,8 @@ namespace MapGeneration
         Dirt,
         Ore,
         Hazard,
-        PowerUp
+        PowerUp,
+        Artifact
     }
 
     public enum BlockTypeId : byte
@@ -22,6 +23,7 @@ namespace MapGeneration
         GoldOre = 6,
         EmeraldOre = 7,
         DiamondOre = 8,
+        Artifact = 9,
     }
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)

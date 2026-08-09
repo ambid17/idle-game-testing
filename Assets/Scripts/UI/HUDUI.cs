@@ -22,6 +22,7 @@ namespace UI
         [SerializeField] private Image weightFillBar;
         [SerializeField] private TMP_Text weightLabel;
         [SerializeField] private TMP_Text dollarsLabel;
+        [SerializeField] private TMP_Text artifactCountLabel;
 
         private void Start()
         {
@@ -33,18 +34,21 @@ namespace UI
             if (playerInventory == null) Debug.LogError("HUDUI: no PlayerInventory found in scene.");
 
             RefreshDollars();
+            RefreshArtifactCount();
             RefreshWeight();
         }
 
         private void OnEnable()
         {
             GameManager.EventService.Add<DollarsChangedEvent>(RefreshDollars);
+            GameManager.EventService.Add<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Add<InventoryChangedEvent>(RefreshWeight);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<DollarsChangedEvent>(RefreshDollars);
+            GameManager.EventService.Remove<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Remove<InventoryChangedEvent>(RefreshWeight);
         }
 
@@ -82,6 +86,11 @@ namespace UI
         private void RefreshDollars()
         {
             if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
+        }
+
+        private void RefreshArtifactCount()
+        {
+            if (artifactCountLabel != null) artifactCountLabel.text = $"Artifacts: {Wallet.Instance.ArtifactCount}";
         }
     }
 }

@@ -41,7 +41,6 @@ namespace Persistence
         public float CurrentHp;
         public float Fuel;
         public Vector3 Position;
-        public int ArtifactCount;
         public List<OreCountEntry> OreCounts = new();
     }
 
@@ -52,6 +51,9 @@ namespace Persistence
     public class GameSaveData
     {
         public double Dollars;
+        // Wallet.ArtifactCount - a sibling of Dollars rather than nested under Player, since
+        // artifacts are banked directly to the Wallet, not carried in PlayerInventory.
+        public int ArtifactCount;
         public List<UpgradeLevelEntry> UpgradeLevels = new();
         // Prestige points and prestige upgrade levels per GameDesignDoc "# Prestige" - deliberately
         // siblings of Dollars/UpgradeLevels above, not a separate file: they don't need independent

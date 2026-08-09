@@ -196,7 +196,13 @@ namespace Automation
 
         private void CollectMinedBlock(BlockType blockType)
         {
-            if (blockType == null || blockType.Category != BlockCategory.Ore) return;
+            if (blockType == null) return;
+            if (blockType.Category == BlockCategory.Artifact)
+            {
+                Wallet.Instance.AddArtifact();
+                return;
+            }
+            if (blockType.Category != BlockCategory.Ore) return;
             oreInventory.AddOre(blockType);
         }
 

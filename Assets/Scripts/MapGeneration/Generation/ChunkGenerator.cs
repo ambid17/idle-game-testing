@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,8 +13,7 @@ namespace MapGeneration
             OrePick = 1,
             HazardGate = 2,
             HazardPick = 3,
-            ArtifactBonus = 4,
-            ArtifactFallback = 5
+            ArtifactPlacement = 4
         }
 
         public static ChunkData Generate(int worldSeed, int layerIndex, int gridWidth, LayerConfig config)
@@ -74,38 +74,25 @@ namespace MapGeneration
             return cell;
         }
 
+        // 1 artifact is guaranteed per layer; each placement then has a repeating
+        // ArtifactBonusChance to place one more, so bonus count follows a geometric distribution
+        // (roll again after every success, stop on the first failure).
         private static void PlaceArtifacts(int worldSeed, int layerIndex, int gridWidth, LayerConfig config, ChunkData chunk)
         {
-            for (int y = 0; y < config.LayerHeight; y++)
-            {
-                for (int x = 0; x < gridWidth; x++)
-                {
-                    float roll = MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.ArtifactBonus);
-                    if (roll < config.ArtifactBonusChancePerCell)
-                    {
-                        MarkArtifact(chunk, x, y);
-                    }
-                }
-            }
+            var rng = MapRng.CreateLayerRandom(worldSeed, layerIndex, (int)Salt.ArtifactPlacement);
 
-            if (chunk.ArtifactCells.Count == 0)
+            PlaceArtifact(rng, gridWidth, config.LayerHeight, chunk);
+            while (rng.NextDouble() < config.ArtifactBonusChance)
             {
-                var rng = MapRng.CreateLayerRandom(worldSeed, layerIndex, (int)Salt.ArtifactFallback);
-                int x = rng.Next(0, gridWidth);
-                int y = rng.Next(0, config.LayerHeight);
-                MarkArtifact(chunk, x, y);
+                PlaceArtifact(rng, gridWidth, config.LayerHeight, chunk);
             }
         }
 
-        private static void MarkArtifact(ChunkData chunk, int x, int y)
+        private static void PlaceArtifact(System.Random rng, int gridWidth, int layerHeight, ChunkData chunk)
         {
-            int idx = chunk.Index(x, y);
-            var cell = chunk.Cells[idx];
-            if (cell.IsArtifact) return;
-
-            cell.IsArtifact = true;
-            chunk.Cells[idx] = cell;
-            chunk.ArtifactCells.Add(new Vector2Int(x, y));
+            int x = rng.Next(0, gridWidth);
+            int y = rng.Next(0, layerHeight);
+            chunk.Cells[chunk.Index(x, y)].BlockTypeId = (byte)BlockTypeId.Artifact;
         }
 
         private static BlockType PickWeighted(IReadOnlyList<WeightedBlockEntry> table, float roll01)

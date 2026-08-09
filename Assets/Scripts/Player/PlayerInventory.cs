@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace Player
 {
-    // Carried ore + artifacts per GameDesignDoc "Inventory": each block type has a weight, and once
+    // Carried ore per GameDesignDoc "Inventory": each block type has a weight, and once
     // CurrentWeight reaches maxWeight the player can no longer mine Ore-category blocks (enforced by
-    // PlayerMining) until they deposit at the Depot. Artifacts don't count against weight and can
-    // only be turned in at the Museum, never sold/stored at the Depot.
+    // PlayerMining) until they deposit at the Depot. Artifacts are banked directly to Wallet
+    // (Economy.Wallet) instead of being carried here - see PlayerMining.CollectMinedBlock.
     //
     // The dictionary/weight bookkeeping itself lives in the shared Economy.OreInventory (also used
     // by MiningAutomaton/StorageDrone) - this class composes it and keeps its own public API
@@ -28,7 +28,6 @@ namespace Player
         public float MaxWeight => baseMaxWeight + UpgradeManager.Instance.InventoryCapacityBonus;
         public float CurrentWeight => oreInventory.CurrentWeight;
         public bool IsFull => oreInventory.IsFull;
-        public int ArtifactCount { get; private set; }
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreInventory.OreCounts;
 
         public Transform CarrierTransform => transform;
@@ -59,11 +58,11 @@ namespace Player
             OreCarrierRegistry.Instance.Unregister(this);
         }
 
-        // Death wipes everything the player was carrying, ore and artifacts alike.
+        // Death wipes everything the player was carrying. Artifacts are unaffected - they're
+        // banked in Wallet, not carried here.
         public void ClearAll()
         {
             oreInventory.ClearAll();
-            ArtifactCount = 0;
             GameManager.EventService.Dispatch<InventoryChangedEvent>();
         }
 
@@ -75,13 +74,7 @@ namespace Player
             return true;
         }
 
-        public void AddArtifact()
-        {
-            ArtifactCount++;
-            GameManager.EventService.Dispatch<InventoryChangedEvent>();
-        }
-
-        // Snapshots and clears carried ore (not artifacts) - called when depositing at the Depot.
+        // Snapshots and clears carried ore - called when depositing at the Depot.
         public Dictionary<BlockTypeId, int> WithdrawAllOre()
         {
             var snapshot = oreInventory.WithdrawAllOre();
@@ -89,31 +82,18 @@ namespace Player
             return snapshot;
         }
 
-        // Snapshots and clears carried ore only, leaving artifacts untouched - used by
-        // PrestigeManager.ExecutePrestige, which wipes Depot/carried ore but not artifacts (those
-        // are turned in via the Museum before a prestige, not silently discarded).
+        // Used by PrestigeManager.ExecutePrestige, which wipes Depot/carried ore on prestige.
         public void ClearOreOnly()
         {
             oreInventory.ClearAll();
             GameManager.EventService.Dispatch<InventoryChangedEvent>();
         }
 
-        // Snapshots and clears carried artifacts (not ore) - called when turning artifacts in at
-        // the Museum for Prestige points. Mirrors WithdrawAllOre's shape.
-        public int WithdrawAllArtifacts()
-        {
-            int count = ArtifactCount;
-            ArtifactCount = 0;
-            GameManager.EventService.Dispatch<InventoryChangedEvent>();
-            return count;
-        }
-
         // Bulk restore for SaveService - silent (no InventoryChangedEvent) since this only ever
         // runs once at startup before any UI has subscribed.
-        public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> oreCounts, int artifactCount)
+        public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> oreCounts)
         {
             oreInventory.RestoreFromSaveData(oreCounts);
-            ArtifactCount = Mathf.Max(0, artifactCount);
         }
     }
 }

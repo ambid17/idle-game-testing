@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Economy;
 using Events;
 using MapGeneration;
 using Player;
@@ -10,8 +11,9 @@ using UnityEngine.UI;
 namespace UI
 {
     // Tab-toggled inventory panel per GameDesignDoc "Inventory": shows a count of each ore type,
-    // a weight meter, and the artifact count (artifacts can't be stored/sold at the Depot, only
-    // turned in at the Museum, so they get no sell UI here).
+    // a weight meter, and the artifact count (artifacts are banked directly to Wallet, not carried
+    // in PlayerInventory - they can't be stored/sold at the Depot, only turned in at the Museum,
+    // so they get no sell UI here).
     public class InventoryUI : MonoBehaviour
     {
         [SerializeField] private GameObject panelRoot;
@@ -37,12 +39,14 @@ namespace UI
         private void OnEnable()
         {
             GameManager.EventService.Add<InventoryChangedEvent>(Refresh);
+            GameManager.EventService.Add<ArtifactCountChangedEvent>(Refresh);
             GameManager.EventService.Add<UICloseEvent>(Close);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<InventoryChangedEvent>(Refresh);
+            GameManager.EventService.Remove<ArtifactCountChangedEvent>(Refresh);
             GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
@@ -96,7 +100,7 @@ namespace UI
                 ? Mathf.Clamp01(playerInventory.CurrentWeight / playerInventory.MaxWeight)
                 : 0f;
             weightLabel.text = $"{playerInventory.CurrentWeight:0}/{playerInventory.MaxWeight:0}";
-            artifactLabel.text = $"Artifacts: {playerInventory.ArtifactCount}";
+            artifactLabel.text = $"Artifacts: {Wallet.Instance.ArtifactCount}";
         }
     }
 }

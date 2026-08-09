@@ -45,13 +45,9 @@ namespace UI
         private readonly List<PrestigeUpgradeNodeUI> nodes = new();
         private PrestigeUpgradeDatabase upgradeDatabase => GameManager.PrestigeUpgradeDatabase;
         private PrestigeUpgradeBranch activeTab = PrestigeUpgradeBranch.Mining;
-        private PlayerInventory playerInventory;
 
         private void Start()
         {
-            playerInventory = FindAnyObjectByType<PlayerInventory>();
-            if (playerInventory == null) Debug.LogError("MuseumUI: no PlayerInventory found in scene.");
-
             BuildNodes();
             if (closeButton != null) closeButton.onClick.AddListener(Close);
             if (turnInButton != null) turnInButton.onClick.AddListener(() => GameManager.EventService.Dispatch<TurnInArtifactsRequestedEvent>());
@@ -77,7 +73,7 @@ namespace UI
             GameManager.EventService.Add<PrestigePointsChangedEvent>(OnPrestigePointsChanged);
             GameManager.EventService.Add<PrestigePurchaseRequestedEvent>(OnPrestigePurchaseRequested);
             GameManager.EventService.Add<TurnInArtifactsRequestedEvent>(OnTurnInArtifactsRequested);
-            GameManager.EventService.Add<InventoryChangedEvent>(OnInventoryChanged);
+            GameManager.EventService.Add<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Add<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Add<UICloseEvent>(Close);
@@ -90,7 +86,7 @@ namespace UI
             GameManager.EventService.Remove<PrestigePointsChangedEvent>(OnPrestigePointsChanged);
             GameManager.EventService.Remove<PrestigePurchaseRequestedEvent>(OnPrestigePurchaseRequested);
             GameManager.EventService.Remove<TurnInArtifactsRequestedEvent>(OnTurnInArtifactsRequested);
-            GameManager.EventService.Remove<InventoryChangedEvent>(OnInventoryChanged);
+            GameManager.EventService.Remove<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Remove<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Remove<UICloseEvent>(Close);
@@ -158,11 +154,10 @@ namespace UI
 
         private void OnPrestigePurchaseRequested(PrestigePurchaseRequestedEvent evt) => PrestigeUpgradeManager.Instance.TryPurchase(evt.Definition);
 
-        private void OnTurnInArtifactsRequested() => Museum.Instance.TurnInArtifacts(playerInventory);
+        private void OnTurnInArtifactsRequested() => Museum.Instance.TurnInArtifacts();
 
         private void OnPrestigeUpgradePurchased(PrestigeUpgradePurchasedEvent evt) => RefreshAll();
         private void OnPrestigePointsChanged() => RefreshAll();
-        private void OnInventoryChanged() => RefreshArtifactCount();
 
         // MuseumUI owns the confirm sub-panel per the plan's "destructive action needs an explicit
         // confirm, not a single misclick" requirement - PrestigeManager only requests it.
@@ -175,7 +170,7 @@ namespace UI
         // value to a hard reset they just confirmed.
         private void ConfirmPrestige()
         {
-            if (playerInventory != null) Museum.Instance.TurnInArtifacts(playerInventory);
+            Museum.Instance.TurnInArtifacts();
             PrestigeManager.Instance.ExecutePrestige();
         }
 
@@ -190,8 +185,8 @@ namespace UI
 
         private void RefreshArtifactCount()
         {
-            if (artifactCountLabel != null && playerInventory != null) artifactCountLabel.text = $"Artifacts: {playerInventory.ArtifactCount}";
-            if (turnInButton != null) turnInButton.interactable = playerInventory != null && playerInventory.ArtifactCount > 0;
+            if (artifactCountLabel != null) artifactCountLabel.text = $"Artifacts: {Wallet.Instance.ArtifactCount}";
+            if (turnInButton != null) turnInButton.interactable = Wallet.Instance.ArtifactCount > 0;
         }
     }
 }

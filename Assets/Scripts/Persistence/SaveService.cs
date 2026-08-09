@@ -58,6 +58,7 @@ namespace Persistence
             var data = new GameSaveData
             {
                 Dollars = Wallet.Instance.Dollars,
+                ArtifactCount = Wallet.Instance.ArtifactCount,
                 LastActiveUtcTimestamp = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture),
                 AutomationSettings = new AutomationSettingsSaveData
                 {
@@ -95,7 +96,6 @@ namespace Persistence
                     CurrentHp = playerHealth != null ? playerHealth.CurrentHp : 0f,
                     Fuel = playerController.Fuel,
                     Position = playerController.transform.position,
-                    ArtifactCount = playerInventory != null ? playerInventory.ArtifactCount : 0,
                 };
 
                 if (playerInventory != null)
@@ -169,6 +169,7 @@ namespace Persistence
             if (data == null) return;
 
             Wallet.Instance.SetDollars(data.Dollars);
+            Wallet.Instance.SetArtifactCount(data.ArtifactCount);
 
             foreach (var entry in data.UpgradeLevels)
             {
@@ -211,7 +212,7 @@ namespace Persistence
                     playerOres[entry.Id] = entry.Count;
                 }
 
-                if (playerInventory != null) playerInventory.RestoreFromSaveData(playerOres, data.Player.ArtifactCount);
+                if (playerInventory != null) playerInventory.RestoreFromSaveData(playerOres);
                 if (playerHealth != null) playerHealth.RestoreFromSaveData(data.Player.CurrentHp);
                 if (playerController != null) playerController.RestoreFromSaveData(data.Player.Fuel, data.Player.Position);
             }
