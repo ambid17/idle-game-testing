@@ -31,7 +31,10 @@ namespace Automation
             if (player == null) Debug.LogError($"AutomationSpawner on {name}: no PlayerController found in scene.");
         }
 
-        private void Start() => ReconcileAll();
+        private void Start()
+        {
+
+        }
 
         private void OnEnable()
         {
