@@ -57,7 +57,7 @@ namespace MapGeneration
                 }
             }
 
-            Debug.Log($"ChunkStreamingManager.UpdateWindow: focus={string.Join(", ", focusLayerByEntity.Values.ToList())}, windowRadius={windowRadius}, wantedLayers=[{string.Join(", ", wantedLayers)}]");
+            //Debug.Log($"ChunkStreamingManager.UpdateWindow: focus={string.Join(", ", focusLayerByEntity.Values.ToList())}, windowRadius={windowRadius}, wantedLayers=[{string.Join(", ", wantedLayers)}]");
             var activeLayers = tilemapsByLayer.Where(kvp => kvp.Value.gameObject.activeSelf).Select(kvp => kvp.Key).ToList();
             foreach (var layerIndex in activeLayers)
             {
@@ -74,7 +74,7 @@ namespace MapGeneration
         {
             if (layerIndex < 0) return;
 
-            Debug.Log($"ChunkStreamingManager.Acquire: {layerIndex}");
+            //Debug.Log($"ChunkStreamingManager.Acquire: {layerIndex}");
 
             if (tilemapsByLayer.ContainsKey(layerIndex))
             {
@@ -95,7 +95,7 @@ namespace MapGeneration
 
         private void Release(int layerIndex)
         {
-            Debug.Log($"ChunkStreamingManager.Release: {layerIndex}");
+            //Debug.Log($"ChunkStreamingManager.Release: {layerIndex}");
             var view = tilemapsByLayer[layerIndex];
             view.gameObject.SetActive(false);
         }

@@ -66,7 +66,7 @@ namespace MapGeneration
         public int GetLayerIndexAtWorldY(float worldY, float cellSize)
         {
             var layerIndex = GetLayerIndexAtDepth(GetDepthInBlocksAtWorldY(worldY, cellSize));
-            Debug.Log($"GetLayerIndexAtWorldY: worldY={(int)worldY}, cellSize={cellSize.ToString("F1")}, layerIndex={layerIndex}");
+            //Debug.Log($"GetLayerIndexAtWorldY: worldY={(int)worldY}, cellSize={cellSize.ToString("F1")}, layerIndex={layerIndex}");
             return layerIndex;
         }
     }

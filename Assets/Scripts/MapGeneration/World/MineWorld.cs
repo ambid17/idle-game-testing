@@ -24,7 +24,7 @@ namespace MapGeneration
         {
             if (chunksByLayer.TryGetValue(layerIndex, out var chunk)) return chunk;
 
-            Debug.Log($"Generating chunk for layer {layerIndex}");
+            //Debug.Log($"Generating chunk for layer {layerIndex}");
 
             var config = configProvider != null ? configProvider.GetConfig(layerIndex) : null;
             chunk = ChunkGenerator.Generate(Seed, layerIndex, GridWidth, config);
@@ -41,7 +41,7 @@ namespace MapGeneration
             var chunk = GetOrGenerateChunk(layerIndex);
             if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height)
             {
-                Debug.LogWarning($"TryMineCell: coordinates out of bounds for layer {layerIndex}: ({x}, {y})");
+                //Debug.LogWarning($"TryMineCell: coordinates out of bounds for layer {layerIndex}: ({x}, {y})");
                 return false;
             }
 
@@ -49,12 +49,12 @@ namespace MapGeneration
             var cell = chunk.Cells[idx];
             if (cell.BlockTypeId == (byte)BlockTypeId.GrassyDirt)
             {
-                Debug.LogWarning($"TryMineCell: can't mine grassy dirt tiles, they support buildings");
+                //Debug.LogWarning($"TryMineCell: can't mine grassy dirt tiles, they support buildings");
                 return false;
             }
             if (cell.Mined)
             {
-                Debug.LogWarning($"TryMineCell: cell already mined for layer {layerIndex}: ({x}, {y})");
+                //Debug.LogWarning($"TryMineCell: cell already mined for layer {layerIndex}: ({x}, {y})");
                 return false;
             }
             cell.Mined = true;
