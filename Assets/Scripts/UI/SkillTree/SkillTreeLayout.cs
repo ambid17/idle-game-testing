@@ -12,7 +12,7 @@ namespace UI.SkillTree
         public static Dictionary<ISkillTreeLayoutNode, Vector2> Compute(
             IReadOnlyList<ISkillTreeLayoutNode> nodes,
             int branchCount,
-            float depthSpacing = 220f,
+            float depthSpacing = 400f,
             float sectorPaddingDegrees = 8f,
             float startAngleDegrees = -90f)
         {

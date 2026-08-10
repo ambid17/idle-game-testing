@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Increase Mining Speed
   Description: +10% mining speed per level. Maxing this out makes dirt instant to
     mine.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: b315d551152574741a4ef5a75f6b1c8a, type: 3}
   Branch: 0
   Effect: 1
   EffectValuePerLevel: 0.1
