@@ -57,6 +57,7 @@ namespace Economy
         public string Id;
         public string DisplayName;
         [TextArea] public string Description;
+        public Sprite Icon;
         public PrestigeUpgradeBranch Branch;
         public PrestigeUpgradeEffect Effect;
 

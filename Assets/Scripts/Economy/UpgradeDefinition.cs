@@ -45,6 +45,7 @@ namespace Economy
     {
         public string DisplayName;
         [TextArea] public string Description;
+        public Sprite Icon;
         public UpgradeBranch Branch;
         public UpgradeEffect Effect;
 

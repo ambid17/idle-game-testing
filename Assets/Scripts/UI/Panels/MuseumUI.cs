@@ -4,6 +4,7 @@ using Events;
 using Interaction;
 using Player;
 using TMPro;
+using UI.SkillTree;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,9 +42,21 @@ namespace UI
         [SerializeField] private Button confirmYesButton;
         [SerializeField] private Button confirmNoButton;
 
+        // skillTreeImplementation.md: a pannable/zoomable radial view of the same perks, toggled
+        // alongside (not replacing) the tabbed view above so it stays available as a fallback.
+        // classicViewRoot wraps the branch tab buttons + scrollViewContent scroll view above;
+        // skillTreeViewRoot hosts skillTreePanel. The prestige confirm/turn-in UI stays outside
+        // both - it isn't perk-list content.
+        [Header("Skill tree view")]
+        [SerializeField] private GameObject classicViewRoot;
+        [SerializeField] private GameObject skillTreeViewRoot;
+        [SerializeField] private SkillTreePanelUI skillTreePanel;
+        [SerializeField] private Button toggleViewButton;
+
         private readonly List<PrestigeUpgradeNodeUI> nodes = new();
         private PrestigeUpgradeDatabase upgradeDatabase => GameManager.PrestigeUpgradeDatabase;
         private PrestigeUpgradeBranch activeTab = PrestigeUpgradeBranch.Mining;
+        private bool useSkillTreeView;
 
         private void Start()
         {
@@ -59,6 +72,10 @@ namespace UI
             prestigeButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Prestige));
             progressionButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Progression));
             survivalButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Survival));
+
+            if (skillTreePanel != null) skillTreePanel.Initialize(new MuseumSkillTreeSource());
+            if (toggleViewButton != null) toggleViewButton.onClick.AddListener(ToggleView);
+            SetView(useSkillTreeView: false);
 
             if (confirmRoot != null) confirmRoot.SetActive(false);
             if (rendererRoot != null) rendererRoot.SetActive(false);
@@ -148,6 +165,16 @@ namespace UI
             if (confirmRoot != null) confirmRoot.SetActive(false);
         }
 
+        private void ToggleView() => SetView(!useSkillTreeView);
+
+        private void SetView(bool useSkillTreeView)
+        {
+            this.useSkillTreeView = useSkillTreeView;
+            if (classicViewRoot != null) classicViewRoot.SetActive(!useSkillTreeView);
+            if (skillTreeViewRoot != null) skillTreeViewRoot.SetActive(useSkillTreeView);
+            if (useSkillTreeView && skillTreePanel != null) skillTreePanel.Open();
+        }
+
         private void OnPrestigePurchaseRequested(PrestigePurchaseRequestedEvent evt) => PrestigeUpgradeManager.Instance.TryPurchase(evt.Definition);
         private void OnPrestigeUpgradePurchased(PrestigeUpgradePurchasedEvent evt) => RefreshAll();
         private void OnPrestigePointsChanged() => RefreshAll();
@@ -174,6 +201,7 @@ namespace UI
             foreach (var node in nodes) node.Refresh(PrestigeUpgradeManager.Instance);
             if (prestigePointsLabel != null) prestigePointsLabel.text = $"{PrestigePoints.Instance.Points:0.##} pts";
             RefreshArtifactCount();
+            if (skillTreePanel != null) skillTreePanel.RefreshAll();
         }
 
         private void RefreshArtifactCount()

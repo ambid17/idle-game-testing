@@ -3,6 +3,7 @@ using Economy;
 using Events;
 using Interaction;
 using TMPro;
+using UI.SkillTree;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,9 +26,20 @@ namespace UI
         [SerializeField] private Button automationButton;
         [SerializeField] private Button progressionButton;
 
+        // skillTreeImplementation.md: a pannable/zoomable radial view of the same upgrades,
+        // toggled alongside (not replacing) the tabbed view above so it stays available as a
+        // fallback. classicViewRoot wraps the tab buttons + scrollViewContent scroll view above;
+        // skillTreeViewRoot hosts skillTreePanel. Both are children of panelRoot.
+        [Header("Skill tree view")]
+        [SerializeField] private GameObject classicViewRoot;
+        [SerializeField] private GameObject skillTreeViewRoot;
+        [SerializeField] private SkillTreePanelUI skillTreePanel;
+        [SerializeField] private Button toggleViewButton;
+
         private readonly List<UpgradeNodeUI> nodes = new();
         private UpgradeDatabase upgradeDatabase => GameManager.UpgradeDatabase;
         private UpgradeBranch activeTab = UpgradeBranch.Mining;
+        private bool useSkillTreeView;
 
 
         private void Start()
@@ -40,6 +52,10 @@ namespace UI
             economyButton.onClick.AddListener(() => SetTab(UpgradeBranch.Economy));
             automationButton.onClick.AddListener(() => SetTab(UpgradeBranch.Automation));
             progressionButton.onClick.AddListener(() => SetTab(UpgradeBranch.Progression));
+
+            if (skillTreePanel != null) skillTreePanel.Initialize(new MarketSkillTreeSource());
+            if (toggleViewButton != null) toggleViewButton.onClick.AddListener(ToggleView);
+            SetView(useSkillTreeView: false);
         }
 
         private void OnEnable()
@@ -115,6 +131,16 @@ namespace UI
             if (panelRoot != null) panelRoot.SetActive(false);
         }
 
+        private void ToggleView() => SetView(!useSkillTreeView);
+
+        private void SetView(bool useSkillTreeView)
+        {
+            this.useSkillTreeView = useSkillTreeView;
+            if (classicViewRoot != null) classicViewRoot.SetActive(!useSkillTreeView);
+            if (skillTreeViewRoot != null) skillTreeViewRoot.SetActive(useSkillTreeView);
+            if (useSkillTreeView && skillTreePanel != null) skillTreePanel.Open();
+        }
+
         private void OnPurchaseRequested(PurchaseRequestedEvent evt) => UpgradeManager.Instance.TryPurchase(evt.Definition);
 
         private void OnUpgradePurchased(UpgradePurchasedEvent evt) => RefreshAll();
@@ -124,6 +150,7 @@ namespace UI
         {
             foreach (var node in nodes) node.Refresh();
             if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
+            if (skillTreePanel != null) skillTreePanel.RefreshAll();
         }
     }
 }
