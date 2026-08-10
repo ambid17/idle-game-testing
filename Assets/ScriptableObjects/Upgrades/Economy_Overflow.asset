@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Economy_Overflow
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: overflow
   DisplayName: Overflow
   Description: Once your inventory is full, mined ore auto-sells at reduced value
     instead of blocking you from mining.
+  Icon: {fileID: 0}
   Branch: 1
   Effect: 7
   EffectValuePerLevel: 0.5
@@ -23,4 +23,4 @@ MonoBehaviour:
   BaseCost: 2000
   CostGrowth: 1
   Prerequisite: {fileID: 11400000, guid: 967f85a4e0f53e049959bc7880ebd322, type: 2}
-  RequirePrerequisiteMaxed: 0
+  RequirePrerequisiteMaxed: 1

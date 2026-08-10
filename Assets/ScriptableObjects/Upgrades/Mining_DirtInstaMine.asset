@@ -10,17 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
-  m_Name: Mining_Speed
+  m_Name: Mining_DirtInstaMine
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  DisplayName: Increase Mining Speed
-  Description: +10% mining speed per level. Maxing this out makes dirt instant to
-    mine.
+  DisplayName: Dirt Insta-Mine
+  Description: Dirt blocks are always mined instantly, no matter your mining speed.
   Icon: {fileID: 0}
   Branch: 0
-  Effect: 1
-  EffectValuePerLevel: 0.1
-  MaxLevel: 10
-  BaseCost: 100
-  CostGrowth: 1.2
-  Prerequisite: {fileID: 0}
+  Effect: 20
+  EffectValuePerLevel: 1
+  MaxLevel: 1
+  BaseCost: 1200
+  CostGrowth: 1
+  Prerequisite: {fileID: 11400000, guid: 3df9500009b0e5340a61d174164fcb9f, type: 2}
   RequirePrerequisiteMaxed: 0

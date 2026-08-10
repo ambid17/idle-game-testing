@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Automation_StorageDroneCount
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: storage_drone_count
   DisplayName: Additional Storage Drone
   Description: Add another Storage Drone to ferry minerals to the Depot.
+  Icon: {fileID: 0}
   Branch: 2
   Effect: 13
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 500
   CostGrowth: 1.5
-  Prerequisite: {fileID: 0}
+  Prerequisite: {fileID: 11400000, guid: f018278ce44ea1f499d4eef01b675b09, type: 2}
   RequirePrerequisiteMaxed: 0

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Mining_LanternRadius
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: lantern_radius
   DisplayName: Lantern
   Description: Reveals more of the fog of war around your mine shaft as you dig.
+  Icon: {fileID: 0}
   Branch: 0
   Effect: 3
   EffectValuePerLevel: 1
   MaxLevel: 5
   BaseCost: 200
   CostGrowth: 1.3
-  Prerequisite: {fileID: 0}
+  Prerequisite: {fileID: 11400000, guid: b6234e36b72e4ed41ac0aa38eafa186e, type: 2}
   RequirePrerequisiteMaxed: 0

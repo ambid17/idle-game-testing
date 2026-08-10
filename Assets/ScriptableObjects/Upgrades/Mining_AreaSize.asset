@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Mining_AreaSize
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: mining_area
   DisplayName: Increase Mining Size
   Description: Mine an extra block on every dig. Cycles left, right, down-left, down-right,
     then repeats one block farther out.
+  Icon: {fileID: 0}
   Branch: 0
   Effect: 0
   EffectValuePerLevel: 1
   MaxLevel: 12
   BaseCost: 150
   CostGrowth: 1.25
-  Prerequisite: {fileID: 0}
+  Prerequisite: {fileID: 11400000, guid: b6234e36b72e4ed41ac0aa38eafa186e, type: 2}
   RequirePrerequisiteMaxed: 0

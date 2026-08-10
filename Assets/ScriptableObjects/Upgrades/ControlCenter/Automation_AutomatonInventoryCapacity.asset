@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Automaton Inventory
   Description: +50% Automaton carrying capacity per level.
+  Icon: {fileID: 0}
   Branch: 2
   Effect: 12
   EffectValuePerLevel: 0.5
   MaxLevel: 3
   BaseCost: 300
-  CostGrowth: 1.3
+  CostGrowth: 3
   Prerequisite: {fileID: 11400000, guid: fae3e5a0bdaa417409887c7d197d852d, type: 2}
   RequirePrerequisiteMaxed: 0

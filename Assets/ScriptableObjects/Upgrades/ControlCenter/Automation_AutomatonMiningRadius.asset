@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Automaton Mining Radius
   Description: Automatons mine an extra block alongside every dig.
+  Icon: {fileID: 0}
   Branch: 2
   Effect: 11
   EffectValuePerLevel: 1
   MaxLevel: 2
   BaseCost: 1000
-  CostGrowth: 1.5
+  CostGrowth: 6
   Prerequisite: {fileID: 11400000, guid: fae3e5a0bdaa417409887c7d197d852d, type: 2}
   RequirePrerequisiteMaxed: 0
