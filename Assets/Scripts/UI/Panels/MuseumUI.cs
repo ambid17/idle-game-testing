@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Economy;
 using Events;
 using Interaction;
@@ -11,11 +10,11 @@ using UnityEngine.UI;
 namespace UI
 {
     // Museum panel per GameDesignDoc "Map Layout > buildings > museum" / "# Prestige": turn
-    // artifacts in for Prestige points, spend them on the permanent perk tree (mirrors MarketUI's
-    // tab-filter-by-branch layout), and trigger a prestige. Per CLAUDE.md's UI panel rule, this
-    // controller stays enabled on the Panel GameObject and only toggles the child rendererRoot.
-    // Blocks player input while open (like ControlCenterUI) since "Prestige Now" is a destructive,
-    // irreversible action that shouldn't be one accidental click away.
+    // artifacts in for Prestige points, spend them on the permanent perk tree via the radial skill
+    // tree (see Assets/Docs/skillTreeImplementation.md), and trigger a prestige. Per CLAUDE.md's UI
+    // panel rule, this controller stays enabled on the Panel GameObject and only toggles the child
+    // rendererRoot. Blocks player input while open (like ControlCenterUI) since "Prestige Now" is a
+    // destructive, irreversible action that shouldn't be one accidental click away.
     public class MuseumUI : MonoBehaviour
     {
         [Header("Panel")]
@@ -23,15 +22,8 @@ namespace UI
         [SerializeField] private Button closeButton;
 
         [Header("Perk tree")]
-        [SerializeField] private Transform scrollViewContent;
-        [SerializeField] private PrestigeUpgradeNodeUI nodePrefab;
         [SerializeField] private TMP_Text prestigePointsLabel;
-        [SerializeField] private Button miningButton;
-        [SerializeField] private Button economyButton;
-        [SerializeField] private Button idleButton;
-        [SerializeField] private Button prestigeButton;
-        [SerializeField] private Button progressionButton;
-        [SerializeField] private Button survivalButton;
+        [SerializeField] private SkillTreePanelUI skillTreePanel;
 
         [Header("Artifact turn-in")]
         [SerializeField] private TMP_Text artifactCountLabel;
@@ -42,40 +34,14 @@ namespace UI
         [SerializeField] private Button confirmYesButton;
         [SerializeField] private Button confirmNoButton;
 
-        // skillTreeImplementation.md: a pannable/zoomable radial view of the same perks, toggled
-        // alongside (not replacing) the tabbed view above so it stays available as a fallback.
-        // classicViewRoot wraps the branch tab buttons + scrollViewContent scroll view above;
-        // skillTreeViewRoot hosts skillTreePanel. The prestige confirm/turn-in UI stays outside
-        // both - it isn't perk-list content.
-        [Header("Skill tree view")]
-        [SerializeField] private GameObject classicViewRoot;
-        [SerializeField] private GameObject skillTreeViewRoot;
-        [SerializeField] private SkillTreePanelUI skillTreePanel;
-        [SerializeField] private Button toggleViewButton;
-
-        private readonly List<PrestigeUpgradeNodeUI> nodes = new();
-        private PrestigeUpgradeDatabase upgradeDatabase => GameManager.PrestigeUpgradeDatabase;
-        private PrestigeUpgradeBranch activeTab = PrestigeUpgradeBranch.Mining;
-        private bool useSkillTreeView;
-
         private void Start()
         {
-            BuildNodes();
             if (closeButton != null) closeButton.onClick.AddListener(Close);
             if (prestigeNowButton != null) prestigeNowButton.onClick.AddListener(() => PrestigeManager.Instance.RequestPrestige());
             if (confirmYesButton != null) confirmYesButton.onClick.AddListener(ConfirmPrestige);
             if (confirmNoButton != null) confirmNoButton.onClick.AddListener(() => confirmRoot.SetActive(false));
 
-            miningButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Mining));
-            economyButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Economy));
-            idleButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Idle));
-            prestigeButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Prestige));
-            progressionButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Progression));
-            survivalButton.onClick.AddListener(() => SetTab(PrestigeUpgradeBranch.Survival));
-
             if (skillTreePanel != null) skillTreePanel.Initialize(new MuseumSkillTreeSource());
-            if (toggleViewButton != null) toggleViewButton.onClick.AddListener(ToggleView);
-            SetView(useSkillTreeView: false);
 
             if (confirmRoot != null) confirmRoot.SetActive(false);
             if (rendererRoot != null) rendererRoot.SetActive(false);
@@ -117,44 +83,13 @@ namespace UI
             }
         }
 
-        private void BuildNodes()
-        {
-            if (nodePrefab == null)
-            {
-                Debug.LogError("MuseumUI: nodePrefab is not assigned.");
-                return;
-            }
-
-            foreach (var def in upgradeDatabase.Upgrades)
-            {
-                if (def == null) continue;
-
-                var node = Instantiate(nodePrefab, scrollViewContent);
-                node.Bind(def);
-                node.gameObject.SetActive(def.Branch == activeTab);
-                nodes.Add(node);
-            }
-        }
-
         private void Open()
         {
             if (rendererRoot == null || rendererRoot.activeSelf) return;
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
-            RefreshAll();
-        }
-
-        private void SetTab(PrestigeUpgradeBranch branch)
-        {
-            if (activeTab == branch) return;
-
-            activeTab = branch;
-            foreach (var node in nodes)
-            {
-                node.gameObject.SetActive(node.Definition.Branch == branch);
-            }
-
-            RefreshAll();
+            RefreshNonTreeUI();
+            if (skillTreePanel != null) skillTreePanel.Open();
         }
 
         private void Close()
@@ -163,16 +98,6 @@ namespace UI
             InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
             if (confirmRoot != null) confirmRoot.SetActive(false);
-        }
-
-        private void ToggleView() => SetView(!useSkillTreeView);
-
-        private void SetView(bool useSkillTreeView)
-        {
-            this.useSkillTreeView = useSkillTreeView;
-            if (classicViewRoot != null) classicViewRoot.SetActive(!useSkillTreeView);
-            if (skillTreeViewRoot != null) skillTreeViewRoot.SetActive(useSkillTreeView);
-            if (useSkillTreeView && skillTreePanel != null) skillTreePanel.Open();
         }
 
         private void OnPrestigePurchaseRequested(PrestigePurchaseRequestedEvent evt) => PrestigeUpgradeManager.Instance.TryPurchase(evt.Definition);
@@ -198,10 +123,14 @@ namespace UI
 
         private void RefreshAll()
         {
-            foreach (var node in nodes) node.Refresh(PrestigeUpgradeManager.Instance);
+            RefreshNonTreeUI();
+            if (skillTreePanel != null) skillTreePanel.RefreshAll();
+        }
+
+        private void RefreshNonTreeUI()
+        {
             if (prestigePointsLabel != null) prestigePointsLabel.text = $"{PrestigePoints.Instance.Points:0.##} pts";
             RefreshArtifactCount();
-            if (skillTreePanel != null) skillTreePanel.RefreshAll();
         }
 
         private void RefreshArtifactCount()

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Economy;
 using Events;
 using Interaction;
@@ -9,53 +8,23 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    // Market panel per GameDesignDoc "Map Layout > buildings > market": purchase Mining/Economy
-    // upgrades with Dollars. Skill-tree gating (previous tier required) is enforced by
-    // UpgradeManager.IsUnlocked; this just renders every UpgradeDefinition in
-    // GameManager.UpgradeDatabase (split into its Mining/Economy containers) and forwards
-    // purchase clicks.
+    // Market panel per GameDesignDoc "Map Layout > buildings > market": purchase Mining/Economy/
+    // Automation/Progression upgrades with Dollars via the radial skill tree (see
+    // Assets/Docs/skillTreeImplementation.md). Skill-tree gating (previous tier required) is
+    // enforced by UpgradeManager.IsUnlocked; purchase clicks route through
+    // SkillTreeDetailModalUI -> MarketSkillTreeSource -> PurchaseRequestedEvent below.
     public class MarketUI : MonoBehaviour
     {
         [SerializeField] private GameObject panelRoot;
-        [SerializeField] private Transform scrollViewContent;
-        [SerializeField] private UpgradeNodeUI nodePrefab;
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private Button closeButton;
-        [SerializeField] private Button miningButton;
-        [SerializeField] private Button economyButton;
-        [SerializeField] private Button automationButton;
-        [SerializeField] private Button progressionButton;
-
-        // skillTreeImplementation.md: a pannable/zoomable radial view of the same upgrades,
-        // toggled alongside (not replacing) the tabbed view above so it stays available as a
-        // fallback. classicViewRoot wraps the tab buttons + scrollViewContent scroll view above;
-        // skillTreeViewRoot hosts skillTreePanel. Both are children of panelRoot.
-        [Header("Skill tree view")]
-        [SerializeField] private GameObject classicViewRoot;
-        [SerializeField] private GameObject skillTreeViewRoot;
         [SerializeField] private SkillTreePanelUI skillTreePanel;
-        [SerializeField] private Button toggleViewButton;
-
-        private readonly List<UpgradeNodeUI> nodes = new();
-        private UpgradeDatabase upgradeDatabase => GameManager.UpgradeDatabase;
-        private UpgradeBranch activeTab = UpgradeBranch.Mining;
-        private bool useSkillTreeView;
-
 
         private void Start()
         {
-            BuildNodes();
             if (closeButton != null) closeButton.onClick.AddListener(Close);
             if (panelRoot != null) panelRoot.SetActive(false);
-
-            miningButton.onClick.AddListener(() => SetTab(UpgradeBranch.Mining));
-            economyButton.onClick.AddListener(() => SetTab(UpgradeBranch.Economy));
-            automationButton.onClick.AddListener(() => SetTab(UpgradeBranch.Automation));
-            progressionButton.onClick.AddListener(() => SetTab(UpgradeBranch.Progression));
-
             if (skillTreePanel != null) skillTreePanel.Initialize(new MarketSkillTreeSource());
-            if (toggleViewButton != null) toggleViewButton.onClick.AddListener(ToggleView);
-            SetView(useSkillTreeView: false);
         }
 
         private void OnEnable()
@@ -88,57 +57,16 @@ namespace UI
             }
         }
 
-        private void BuildNodes()
-        {
-            if (nodePrefab == null)
-            {
-                Debug.LogError("MarketUI: nodePrefab is not assigned.");
-                return;
-            }
-
-            foreach (var def in upgradeDatabase.Upgrades)
-            {
-                if (def == null) continue;
-
-
-                var node = Instantiate(nodePrefab, scrollViewContent);
-                node.Bind(def);
-                nodes.Add(node);
-            }
-        }
-
         private void Open()
         {
             panelRoot.SetActive(true);
-            RefreshAll();
-        }
-
-        private void SetTab(UpgradeBranch branch)
-        {
-            if(activeTab == branch) return;
-
-            activeTab = branch;
-            foreach (var node in nodes)
-            {
-                node.gameObject.SetActive(node.Definition.Branch == branch);
-            }
-
-            RefreshAll();
+            RefreshDollars();
+            if (skillTreePanel != null) skillTreePanel.Open();
         }
 
         private void Close()
         {
             if (panelRoot != null) panelRoot.SetActive(false);
-        }
-
-        private void ToggleView() => SetView(!useSkillTreeView);
-
-        private void SetView(bool useSkillTreeView)
-        {
-            this.useSkillTreeView = useSkillTreeView;
-            if (classicViewRoot != null) classicViewRoot.SetActive(!useSkillTreeView);
-            if (skillTreeViewRoot != null) skillTreeViewRoot.SetActive(useSkillTreeView);
-            if (useSkillTreeView && skillTreePanel != null) skillTreePanel.Open();
         }
 
         private void OnPurchaseRequested(PurchaseRequestedEvent evt) => UpgradeManager.Instance.TryPurchase(evt.Definition);
@@ -148,9 +76,13 @@ namespace UI
 
         private void RefreshAll()
         {
-            foreach (var node in nodes) node.Refresh();
-            if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
+            RefreshDollars();
             if (skillTreePanel != null) skillTreePanel.RefreshAll();
+        }
+
+        private void RefreshDollars()
+        {
+            if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
         }
     }
 }
