@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
+  m_Name: Mining_WoodInstaMine
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
+  DisplayName: Wood Insta-Mine
+  Description: Wood blocks are always mined instantly, no matter your mining speed.
+  Icon: {fileID: 0}
+  Branch: 0
+  Effect: 20
+  EffectValuePerLevel: 1
+  MaxLevel: 1
+  BaseCost: 1200
+  CostGrowth: 1
+  Prerequisite: {fileID: 11400000, guid: 444cbac6d43f35942b9d27256eb74723, type: 2}
+  RequirePrerequisiteMaxed: 0

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
+  m_Name: Progression_FuelInventory
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
+  DisplayName: Fuel Inventory
+  Description: Increases the amount of fuel you can carry for flight.
+  Icon: {fileID: 0}
+  Branch: 3
+  Effect: 31
+  EffectValuePerLevel: 1
+  MaxLevel: 6
+  BaseCost: 300
+  CostGrowth: 1.3
+  Prerequisite: {fileID: 0}
+  RequirePrerequisiteMaxed: 0

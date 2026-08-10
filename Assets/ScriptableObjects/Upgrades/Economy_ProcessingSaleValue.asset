@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
+  m_Name: Economy_ProcessingSaleValue
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
+  DisplayName: Processing Sale Value
+  Description: Increases the sale value of goods produced by the Processing Center.
+  Icon: {fileID: 0}
+  Branch: 1
+  Effect: 23
+  EffectValuePerLevel: 0.1
+  MaxLevel: 10
+  BaseCost: 1000
+  CostGrowth: 1.3
+  Prerequisite: {fileID: 0}
+  RequirePrerequisiteMaxed: 0
