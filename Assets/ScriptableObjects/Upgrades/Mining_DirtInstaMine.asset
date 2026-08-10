@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Dirt blocks are always mined instantly, no matter your mining speed.
   Icon: {fileID: 0}
   Branch: 0
-  Effect: 20
+  Effect: 34
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 1200

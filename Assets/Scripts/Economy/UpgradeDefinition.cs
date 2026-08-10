@@ -56,7 +56,12 @@ namespace Economy
         GravityBonus, // stub
         FuelInventoryCapacity, // stub
         FuelEfficiencyBonus, // stub
-        HazardSenseUnlock // stub
+        HazardSenseUnlock, // stub
+
+        // Real effect (Dirt block category already exists) - appended after the stubs, out of
+        // branch order, so every earlier member keeps its serialized int stable in existing
+        // UpgradeDefinition assets. Drives UpgradeManager.InstantMineDirt.
+        DirtInstaMineUnlock
     }
 
     [CreateAssetMenu(fileName = "UpgradeDefinition", menuName = "Economy/Upgrade Definition")]

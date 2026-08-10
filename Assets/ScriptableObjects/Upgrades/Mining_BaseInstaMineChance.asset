@@ -16,10 +16,10 @@ MonoBehaviour:
   Description: Gives a 1% chance to instantly mine
   Icon: {fileID: 0}
   Branch: 0
-  Effect: 0
+  Effect: 2
   EffectValuePerLevel: 0.01
   MaxLevel: 5
   BaseCost: 1000
   CostGrowth: 1.5
-  Prerequisite: {fileID: 0}
+  Prerequisite: {fileID: 11400000, guid: b6234e36b72e4ed41ac0aa38eafa186e, type: 2}
   RequirePrerequisiteMaxed: 0

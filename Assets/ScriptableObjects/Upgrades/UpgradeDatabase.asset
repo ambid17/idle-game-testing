@@ -15,7 +15,6 @@ MonoBehaviour:
   Upgrades:
   - {fileID: 11400000, guid: 444cbac6d43f35942b9d27256eb74723, type: 2}
   - {fileID: 11400000, guid: b6234e36b72e4ed41ac0aa38eafa186e, type: 2}
-  - {fileID: 11400000, guid: 38880f5724707f24a8f3fc5d06bfd40e, type: 2}
   - {fileID: 11400000, guid: eb6a7263731ab1842827c642d624a422, type: 2}
   - {fileID: 11400000, guid: d4eac15f8e1865740a113e111d4bcdf8, type: 2}
   - {fileID: 11400000, guid: 26e34a0a82f15b6438744507ee599d52, type: 2}
@@ -47,3 +46,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d7c6fdb4de778bd479039a3957da5ca8, type: 2}
   - {fileID: 11400000, guid: 0ead90cceab9b2e4798d968a028fc2b5, type: 2}
   - {fileID: 11400000, guid: edd658680fde1884fb0b7608bd6058fe, type: 2}
+  - {fileID: 11400000, guid: 6cdc361d8cd52954eb1ecf16b648add8, type: 2}
+  - {fileID: 11400000, guid: 3df9500009b0e5340a61d174164fcb9f, type: 2}

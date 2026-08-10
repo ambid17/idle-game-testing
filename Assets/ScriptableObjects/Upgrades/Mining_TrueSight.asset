@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Mining_TrueSight
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: lantern_true_sight
   DisplayName: True Sight
   Description: Reveals the entire fog of war. Requires a maxed-out Lantern.
   Branch: 0

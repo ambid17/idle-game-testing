@@ -128,8 +128,9 @@ namespace Economy
 
         // GameDesignDoc "Mining > Increase mining speed": "the final upgrade makes dirt/stone an
         // instant mine" - interpreted as the Dirt category (the valueless filler blocks), since
-        // the Ore-category "Stone" block is a sellable mineral, not filler.
-        public bool InstantMineDirt => IsMaxedEffect(UpgradeEffect.MiningSpeed);
+        // the Ore-category "Stone" block is a sellable mineral, not filler. Its own capstone
+        // (Mining_DirtInstaMine), not a side effect of maxing Mining Speed.
+        public bool InstantMineDirt => IsMaxedEffect(UpgradeEffect.DirtInstaMineUnlock);
 
         // GameDesignDoc "Mining > Insta-mine chance".
         public float InstaMineChance => LevelOf(UpgradeEffect.InstaMineChance) * EffectValuePerLevelOf(UpgradeEffect.InstaMineChance);

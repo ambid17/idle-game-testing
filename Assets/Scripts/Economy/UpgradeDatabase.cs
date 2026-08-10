@@ -36,6 +36,10 @@ namespace Economy
             foreach (var def in Upgrades)
             {
                 if (def == null) continue;
+                if (upgradesByEffect.ContainsKey(def.Effect))
+                {
+                    Debug.LogWarning($"Duplicate UpgradeDefinition effect found: {def.Effect} on {def.DisplayName}. Only one definition per effect is supported - the later entry wins.");
+                }
                 upgradesByEffect[def.Effect] = def;
                 if(upgradesByName.ContainsKey(def.DisplayName))
                 {
