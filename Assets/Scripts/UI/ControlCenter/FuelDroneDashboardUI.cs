@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using Automation;
-using Economy;
 using Events;
 using TMPro;
 using UnityEngine;
@@ -8,20 +6,11 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    // Control Center "fuel drone dashboard" tab: upgrade nodes (see MinerDashboardUI's header
-    // comment on why no PurchaseRequestedEvent listener is needed here), targeting choice, and the
-    // spending-cap slider (AutomationSettings.FuelSpendingCapPercent).
+    // Control Center "fuel drone dashboard" tab: targeting choice and the spending-cap slider
+    // (AutomationSettings.FuelSpendingCapPercent) only. Fuel drone upgrades are purchased from
+    // MarketUI's Automation tab instead - no duplicate purchase UI in the Control Center.
     public class FuelDroneDashboardUI : MonoBehaviour
     {
-        private static readonly UpgradeEffect[] Effects =
-        {
-            UpgradeEffect.FuelDroneCount,
-            UpgradeEffect.FuelDroneMoveSpeed,
-            UpgradeEffect.FuelDroneInventoryCapacity
-        };
-
-        [SerializeField] private Transform nodeContainer;
-        [SerializeField] private UpgradeNodeUI nodePrefab;
         [SerializeField] private Button playerAlwaysButton;
         [SerializeField] private Button fullestInventoryButton;
         [SerializeField] private GameObject playerAlwaysSelectedIndicator;
@@ -29,13 +18,10 @@ namespace UI
         [SerializeField] private Slider spendingCapSlider; // 0-1, normalized
         [SerializeField] private TMP_Text spendingCapLabel;
 
-        private readonly List<UpgradeNodeUI> nodes = new();
-        private UpgradeDatabase upgradeDatabase => GameManager.UpgradeDatabase;
         private bool suppressSliderEvent;
 
         private void Start()
         {
-            BuildNodes();
             if (playerAlwaysButton != null) playerAlwaysButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SetFuelDroneTargetModeRequestedEvent(TargetMode.PlayerAlways)));
             if (fullestInventoryButton != null) fullestInventoryButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SetFuelDroneTargetModeRequestedEvent(TargetMode.FullestInventory)));
             if (spendingCapSlider != null) spendingCapSlider.onValueChanged.AddListener(OnSliderChanged);
@@ -43,47 +29,17 @@ namespace UI
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
-            GameManager.EventService.Add<DollarsChangedEvent>(RefreshNodes);
             GameManager.EventService.Add<SetFuelDroneTargetModeRequestedEvent>(OnTargetModeRequested);
             GameManager.EventService.Add<SetFuelSpendingCapRequestedEvent>(OnSpendingCapRequested);
             GameManager.EventService.Add<AutomationSettingsChangedEvent>(RefreshSettingsDisplay);
-            RefreshNodes();
             RefreshSettingsDisplay();
         }
 
         private void OnDisable()
         {
-            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
-            GameManager.EventService.Remove<DollarsChangedEvent>(RefreshNodes);
             GameManager.EventService.Remove<SetFuelDroneTargetModeRequestedEvent>(OnTargetModeRequested);
             GameManager.EventService.Remove<SetFuelSpendingCapRequestedEvent>(OnSpendingCapRequested);
             GameManager.EventService.Remove<AutomationSettingsChangedEvent>(RefreshSettingsDisplay);
-        }
-
-        private void BuildNodes()
-        {
-            if (nodePrefab == null || nodeContainer == null)
-            {
-                Debug.LogError("FuelDroneDashboardUI: Missing nodePrefab or nodeContainer.");
-                return;
-            }
-
-            foreach (var effect in Effects)
-            {
-                var def = upgradeDatabase.Find(effect);
-                if (def == null) continue;
-
-                var node = Instantiate(nodePrefab, nodeContainer);
-                node.Bind(def);
-                nodes.Add(node);
-            }
-        }
-
-        private void OnUpgradePurchased(UpgradePurchasedEvent evt) => RefreshNodes();
-        private void RefreshNodes()
-        {
-            foreach (var node in nodes) node.Refresh();
         }
 
         private void OnTargetModeRequested(SetFuelDroneTargetModeRequestedEvent evt) => AutomationSettings.Instance.SetFuelDroneTargetMode(evt.Mode);
