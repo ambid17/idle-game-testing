@@ -14,11 +14,20 @@ Processing is the term used for taking the ores, and combining them, to make an 
 - each recipe is an individual upgrade that has to be purchased
 
 # UI
-- the main panel is split into each of the unlocked processing queues
-	- click the "select recipe" button to select a recipe
-		- a model pops up showing all unlocked recipes 
-	- select the amount to create with a slider (up to how many materials are available in the depot)
-	- click "start"
+- the main panel is made of slots, one for each of the unlocked processing queues
+	- each slot contains:
+		- an image of the selected recipe, or an emty image if no recipe selected
+			- the image can be clicked, which will display a modal to allow recipe selection
+		- the name of the recipe
+		- the list of ingredients, with the text being red if an ingredient is missing
+		- if the processing has started:
+			- Show a progress bar and label with the remaining duration
+			- show a cancel button
+		- if the processing has been cancelled, or not started yet:
+			- show a slider that lets you select between 1 and "max craftable"
+				- max craftable is how many of the recipe you can craft based on what is available in the depot
+	- recipe selection modal
+		- a simple modal that has the name and ingredients of each unlocked recipe . 
 
 
 # Upgrades
