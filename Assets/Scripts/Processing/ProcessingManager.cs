@@ -33,7 +33,7 @@ namespace Processing
         public IReadOnlyList<ProcessingJob> Slots => slots;
 
         public bool IsRecipeUnlocked(ProcessingRecipeDefinition recipe) =>
-            recipe != null && recipe.RequiredUpgrade != null && UpgradeManager.Instance.IsMaxed(recipe.RequiredUpgrade);
+            recipe.RequiredUpgrade != null && UpgradeManager.Instance.IsMaxed(recipe.RequiredUpgrade);
 
         private void EnsureSlotCapacity()
         {
@@ -84,18 +84,7 @@ namespace Processing
 
         public void CancelJob(int slotIndex)
         {
-            if (slotIndex < 0 || slotIndex >= slots.Count)
-            {
-                Debug.LogError($"ProcessingManager.CancelJob: slotIndex {slotIndex} out of range.");
-                return;
-            }
             var job = slots[slotIndex];
-            if (job == null)
-            {
-                Debug.LogError($"ProcessingManager.CancelJob: slot {slotIndex} has no active job.");
-                return;
-            }
-
             Depot.Instance.Deposit(job.ConsumedIngredients);
             slots[slotIndex] = null;
             GameManager.EventService.Dispatch(new ProcessingJobCancelledEvent(slotIndex));
@@ -125,8 +114,7 @@ namespace Processing
             var scaled = new Dictionary<BlockTypeId, int>();
             foreach (var ingredient in recipe.Ingredients)
             {
-                scaled.TryGetValue(ingredient.Material, out var current);
-                scaled[ingredient.Material] = current + ingredient.Count * quantity;
+                scaled[ingredient.Material] = ingredient.Count * quantity;
             }
             return scaled;
         }

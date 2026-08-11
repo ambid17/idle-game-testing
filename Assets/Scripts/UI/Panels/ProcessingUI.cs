@@ -26,16 +26,13 @@ namespace UI
 
         [Header("Modals")]
         [SerializeField] private ProcessingRecipeListModalUI recipeListModal;
-        [SerializeField] private ProcessingRecipeDetailModalUI recipeDetailModal;
 
         private readonly List<ProcessingQueueSlotUI> spawnedSlots = new();
 
         private void Start()
         {
-            if (closeButton != null) closeButton.onClick.AddListener(Close);
-            if (recipeListModal != null) recipeListModal.Initialize((slotIndex, recipe) => recipeDetailModal.Show(slotIndex, recipe));
-
-            if (rendererRoot != null) rendererRoot.SetActive(false);
+            closeButton.onClick.AddListener(Close);
+            rendererRoot.SetActive(false);
         }
 
         private void OnEnable()
@@ -68,29 +65,20 @@ namespace UI
 
         private void Open()
         {
-            if (rendererRoot == null || rendererRoot.activeSelf) return;
             rendererRoot.SetActive(true);
             BuildSlots();
         }
 
         private void Close()
         {
-            if (rendererRoot == null || !rendererRoot.activeSelf) return;
             rendererRoot.SetActive(false);
             if (recipeListModal != null) recipeListModal.Close();
-            if (recipeDetailModal != null) recipeDetailModal.Close();
         }
 
         // Rebuilt on every Open() rather than incrementally maintained, so a Queue Slots purchase
         // made while the panel was closed is picked up for free next time it's opened.
         private void BuildSlots()
         {
-            if (slotPrefab == null || slotContainer == null)
-            {
-                Debug.LogError("ProcessingUI.BuildSlots: missing slotPrefab or slotContainer.");
-                return;
-            }
-
             foreach (var slot in spawnedSlots) Destroy(slot.gameObject);
             spawnedSlots.Clear();
 
@@ -106,7 +94,7 @@ namespace UI
 
         private void OnSelectRecipeClicked(int slotIndex)
         {
-            if (recipeListModal != null) recipeListModal.Show(slotIndex);
+            recipeListModal.Show(slotIndex);
         }
 
         private void OnStartRequested(ProcessingStartRequestedEvent evt) => ProcessingManager.Instance.StartJob(evt.SlotIndex, evt.Recipe, evt.Quantity);

@@ -23,8 +23,8 @@ namespace UI.Processing
 
         private void Awake()
         {
-            if (closeButton != null) closeButton.onClick.AddListener(Close);
-            if (root != null) root.SetActive(false);
+            closeButton.onClick.AddListener(Close);
+            root.SetActive(false);
         }
 
         public void Initialize(Action<int, ProcessingRecipeDefinition> onRecipeSelected) => this.onRecipeSelected = onRecipeSelected;
@@ -32,13 +32,13 @@ namespace UI.Processing
         public void Show(int slotIndex)
         {
             this.slotIndex = slotIndex;
-            if (root != null) root.SetActive(true);
+            root.SetActive(true);
             BuildRows();
         }
 
         public void Close()
         {
-            if (root != null) root.SetActive(false);
+            root.SetActive(false);
         }
 
         private void BuildRows()
@@ -52,16 +52,9 @@ namespace UI.Processing
             foreach (var row in spawnedRows) Destroy(row.gameObject);
             spawnedRows.Clear();
 
-            var database = GameManager.ProcessingRecipeDatabase;
-            if (database == null)
+            foreach (var recipe in GameManager.ProcessingRecipeDatabase.Recipes)
             {
-                Debug.LogError("ProcessingRecipeListModalUI.BuildRows: GameManager.ProcessingRecipeDatabase is not assigned.");
-                return;
-            }
-
-            foreach (var recipe in database.Recipes)
-            {
-                if (recipe == null || !ProcessingManager.Instance.IsRecipeUnlocked(recipe)) continue;
+                if (!ProcessingManager.Instance.IsRecipeUnlocked(recipe)) continue;
 
                 var row = Instantiate(rowPrefab, rowContainer);
                 row.Bind(recipe, OnRecipeClicked);

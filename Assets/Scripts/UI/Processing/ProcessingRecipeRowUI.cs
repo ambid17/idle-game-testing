@@ -17,15 +17,12 @@ namespace UI.Processing
 
         public void Bind(ProcessingRecipeDefinition recipe, Action<ProcessingRecipeDefinition> onClicked)
         {
-            if (icon != null) icon.sprite = recipe.Icon;
-            if (nameLabel != null) nameLabel.text = recipe.DisplayName;
-            if (ingredientsLabel != null) ingredientsLabel.text = FormatIngredients(recipe);
+            icon.sprite = recipe.Icon;
+            nameLabel.text = recipe.DisplayName;
+            ingredientsLabel.text = FormatIngredients(recipe);
 
-            if (button != null)
-            {
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => onClicked?.Invoke(recipe));
-            }
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => onClicked?.Invoke(recipe));
         }
 
         private static string FormatIngredients(ProcessingRecipeDefinition recipe)
@@ -34,9 +31,9 @@ namespace UI.Processing
             for (int i = 0; i < recipe.Ingredients.Count; i++)
             {
                 var ingredient = recipe.Ingredients[i];
-                parts[i] = $"{ingredient.Count} {ingredient.Material}";
+                parts[i] = $"- {ingredient.Count} {ingredient.Material}";
             }
-            return string.Join(" + ", parts);
+            return string.Join("\n", parts);
         }
     }
 }

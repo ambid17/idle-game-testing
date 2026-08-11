@@ -24,6 +24,7 @@ namespace UI.Processing
         [SerializeField] private TMP_Text actionButtonLabel;
 
         private int slotIndex;
+        private ProcessingRecipeDefinition selectedRecipe;
 
         public void Bind(int slotIndex, Action<int> onSelectRecipeClicked)
         {
@@ -48,10 +49,15 @@ namespace UI.Processing
             var job = ProcessingManager.Instance.Slots.Count > slotIndex ? ProcessingManager.Instance.Slots[slotIndex] : null;
             bool active = job != null;
 
+            progressFill.gameObject.SetActive(active);
+            progressLabel.gameObject.SetActive(active);
+            recipeSizeSlider.gameObject.SetActive(!active);
+            actionButtonLabel.text = active ? "Cancel" : "Start";
+
             if (!active) return;
 
-            if (recipeNameLabel != null) recipeNameLabel.text = $"{job.Recipe.DisplayName} x{job.Quantity}";
-            if (recipeIcon != null) recipeIcon.sprite = job.Recipe.Icon;
+            recipeIcon.sprite = job.Recipe.Icon;
+            recipeNameLabel.text = $"{job.Recipe.DisplayName} x{job.Quantity}";
             UpdateProgress(job);
         }
 
@@ -67,14 +73,6 @@ namespace UI.Processing
             float fraction = job.TotalDuration > 0f ? 1f - Mathf.Clamp01(job.TimeRemaining / job.TotalDuration) : 1f;
             progressFill.fillAmount = fraction;
             progressLabel.text = $"{Mathf.Max(0f, job.TimeRemaining):0.#}s";
-        }
-
-        private void ToggleActiveUI(bool active)
-        {
-            progressFill.gameObject.SetActive(active);
-            progressLabel.gameObject.SetActive(active);
-            recipeSizeSlider.gameObject.SetActive(!active);
-            actionButtonLabel.text = active ? "Cancel" : "Start";
         }
     }
 }
