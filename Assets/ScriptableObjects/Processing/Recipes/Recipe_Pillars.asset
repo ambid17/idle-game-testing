@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90da7a1960fe0d647b71a46e0012d969, type: 3}
+  m_Name: Recipe_Pillars
+  m_EditorClassIdentifier: Assembly-CSharp::Processing.ProcessingRecipeDefinition
+  Id: 1
+  DisplayName: Pillars
+  Icon: {fileID: 0}
+  Ingredients:
+  - Material: 3
+    Count: 3
+  SaleValue: 60
+  DurationPerUnit: 8
+  RequiredUpgrade: {fileID: 11400000, guid: c0d690c2ce4f5b447a7305b9c06e6b7a, type: 2}

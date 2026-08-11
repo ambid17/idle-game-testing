@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
-  m_Name: Economy_ProcessingSpeed
+  m_Name: Processing_QueueSlots
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  DisplayName: Processing Speed
-  Description: Increases how quickly the Processing Center converts raw goods.
+  DisplayName: Processing Queue Slots
+  Description: Adds another concurrent processing queue slot.
   Icon: {fileID: 0}
   Branch: 1
-  Effect: 25
-  EffectValuePerLevel: 0.1
-  MaxLevel: 10
-  BaseCost: 1500
-  CostGrowth: 1.3
+  Effect: 41
+  EffectValuePerLevel: 1
+  MaxLevel: 3
+  BaseCost: 5000
+  CostGrowth: 1.5
   Prerequisite: {fileID: 11400000, guid: e33be1e148710034babacefe001c2780, type: 2}
   RequirePrerequisiteMaxed: 0

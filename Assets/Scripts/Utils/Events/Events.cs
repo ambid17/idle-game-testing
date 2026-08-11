@@ -3,6 +3,7 @@ using Automation;
 using Economy;
 using Interaction;
 using MapGeneration;
+using Processing;
 
 namespace Events
 {
@@ -95,6 +96,82 @@ namespace Events
         public float Fraction;
 
         public SellRequestedEvent(BlockTypeId id, float fraction)
+        {
+            Id = id;
+            Fraction = fraction;
+        }
+    }
+
+    // Processing Center (Assets/Docs/processingImplementation.md) events below.
+
+    public class ProcessingStartRequestedEvent : IEvent
+    {
+        public int SlotIndex;
+        public ProcessingRecipeDefinition Recipe;
+        public int Quantity;
+
+        public ProcessingStartRequestedEvent(int slotIndex, ProcessingRecipeDefinition recipe, int quantity)
+        {
+            SlotIndex = slotIndex;
+            Recipe = recipe;
+            Quantity = quantity;
+        }
+    }
+
+    public class ProcessingCancelRequestedEvent : IEvent
+    {
+        public int SlotIndex;
+
+        public ProcessingCancelRequestedEvent(int slotIndex)
+        {
+            SlotIndex = slotIndex;
+        }
+    }
+
+    public class ProcessingJobStartedEvent : IEvent
+    {
+        public int SlotIndex;
+        public ProcessingRecipeDefinition Recipe;
+        public int Quantity;
+
+        public ProcessingJobStartedEvent(int slotIndex, ProcessingRecipeDefinition recipe, int quantity)
+        {
+            SlotIndex = slotIndex;
+            Recipe = recipe;
+            Quantity = quantity;
+        }
+    }
+
+    public class ProcessingJobCompletedEvent : IEvent
+    {
+        public int SlotIndex;
+        public ProcessingRecipeDefinition Recipe;
+        public int Quantity;
+
+        public ProcessingJobCompletedEvent(int slotIndex, ProcessingRecipeDefinition recipe, int quantity)
+        {
+            SlotIndex = slotIndex;
+            Recipe = recipe;
+            Quantity = quantity;
+        }
+    }
+
+    public class ProcessingJobCancelledEvent : IEvent
+    {
+        public int SlotIndex;
+
+        public ProcessingJobCancelledEvent(int slotIndex)
+        {
+            SlotIndex = slotIndex;
+        }
+    }
+
+    public class SellGoodsRequestedEvent : IEvent
+    {
+        public ProcessingRecipeId Id;
+        public float Fraction;
+
+        public SellGoodsRequestedEvent(ProcessingRecipeId id, float fraction)
         {
             Id = id;
             Fraction = fraction;

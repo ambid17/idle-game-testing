@@ -3,6 +3,7 @@ using Economy;
 using Events;
 using MapGeneration;
 using Persistence;
+using Processing;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
@@ -15,6 +16,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private UpgradeDatabase _upgradeDatabase;
     [SerializeField] private PrestigeUpgradeDatabase _prestigeUpgradeDatabase;
     [SerializeField] private AutomationConfig _automationConfig;
+    [SerializeField] private ProcessingRecipeDatabase _processingRecipeDatabase;
 
     public static ChunkStreamingManager ChunkStreamingManager => Instance._chunkStreamingManager;
     public static MapGenerationService MapGenerationService => Instance._mapGenerationService;
@@ -24,6 +26,7 @@ public class GameManager : Singleton<GameManager>
     public static UpgradeDatabase UpgradeDatabase => Instance._upgradeDatabase;
     public static PrestigeUpgradeDatabase PrestigeUpgradeDatabase => Instance._prestigeUpgradeDatabase;
     public static AutomationConfig AutomationConfig => Instance._automationConfig;
+    public static ProcessingRecipeDatabase ProcessingRecipeDatabase => Instance._processingRecipeDatabase;
 
     private EventService _eventService;
     public static EventService EventService
@@ -74,6 +77,10 @@ public class GameManager : Singleton<GameManager>
         if (_automationConfig == null)
         {
             Debug.LogError("AutomationConfig is not assigned in GameManager.");
+        }
+        if (_processingRecipeDatabase == null)
+        {
+            Debug.LogError("ProcessingRecipeDatabase is not assigned in GameManager.");
         }
     }
 

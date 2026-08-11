@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
-  m_Name: Economy_ProcessingRecipes
+  m_Name: Processing_UnlockStone
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  DisplayName: Processing Recipes
-  Description: Unlocks additional recipes at the Processing Center.
+  DisplayName: 'Processing: Unlock Stone Recipe'
+  Description: Unlocks the Pillars recipe at the Processing Center.
   Icon: {fileID: 0}
   Branch: 1
-  Effect: 24
+  Effect: 36
   EffectValuePerLevel: 1
-  MaxLevel: 5
-  BaseCost: 2000
-  CostGrowth: 1.4
-  Prerequisite: {fileID: 11400000, guid: d8d2ae2e42c355d4b823d901bac66e01, type: 2}
+  MaxLevel: 1
+  BaseCost: 1500
+  CostGrowth: 1.1
+  Prerequisite: {fileID: 11400000, guid: e33be1e148710034babacefe001c2780, type: 2}
   RequirePrerequisiteMaxed: 0

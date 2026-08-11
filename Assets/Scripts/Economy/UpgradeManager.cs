@@ -177,6 +177,19 @@ namespace Economy
         public int FuelDroneCount => LevelOf(UpgradeEffect.FuelDroneCount);
         public float FuelDroneMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.FuelDroneMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.FuelDroneMoveSpeed);
         public float FuelDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.FuelDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.FuelDroneInventoryCapacity);
+
+        // GameDesignDoc processingImplementation.md "Upgrades > processing time": "multiplicatively
+        // reduces the duration of all recipe crafting" - divides ProcessingManager's computed
+        // duration, mirrors MiningSpeedMultiplier's shape.
+        public float ProcessingSpeedMultiplier => 1f + LevelOf(UpgradeEffect.ProcessingSpeedMultiplier) * EffectValuePerLevelOf(UpgradeEffect.ProcessingSpeedMultiplier);
+
+        // "Upgrades > processed good sale value": mirrors SellValueMultiplier but only applies to
+        // Depot.SellGood, kept independent of the ore MarketingSellMultiplier.
+        public float ProcessingGoodsSellMultiplier => 1f + LevelOf(UpgradeEffect.ProcessingSaleValueMultiplier) * EffectValuePerLevelOf(UpgradeEffect.ProcessingSaleValueMultiplier);
+
+        // "Upgrades > processing queue": "allows multiple recipes to be running at once" - added on
+        // top of ProcessingManager's 1 free base slot.
+        public int ProcessingQueueSlotCount => LevelOf(UpgradeEffect.ProcessingQueueSlots);
         #endregion
     }
 }

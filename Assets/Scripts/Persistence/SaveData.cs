@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Automation;
 using MapGeneration;
+using Processing;
 using UnityEngine;
 
 namespace Persistence
@@ -36,6 +37,22 @@ namespace Persistence
     }
 
     [Serializable]
+    public class GoodsCountEntry
+    {
+        public ProcessingRecipeId Id;
+        public int Count;
+    }
+
+    [Serializable]
+    public class ProcessingJobSaveEntry
+    {
+        public int SlotIndex;
+        public ProcessingRecipeId RecipeId;
+        public int Quantity;
+        public float TimeRemainingSeconds;
+    }
+
+    [Serializable]
     public class PlayerSaveData
     {
         public float CurrentHp;
@@ -64,6 +81,11 @@ namespace Persistence
         public List<OreAverageEntry> IdleAverages = new();
         public AutomationSettingsSaveData AutomationSettings = new();
         public List<OreCountEntry> DepotOres = new();
+        // Processing Center (processingImplementation.md): Depot's crafted-goods bank and any
+        // in-progress jobs, siblings of DepotOres/UpgradeLevels for the same reason - no
+        // independent lifecycle.
+        public List<GoodsCountEntry> DepotGoods = new();
+        public List<ProcessingJobSaveEntry> ProcessingJobs = new();
         public PlayerSaveData Player = new();
         // ISO-8601 string, since JsonUtility can't serialize DateTime directly.
         public string LastActiveUtcTimestamp;

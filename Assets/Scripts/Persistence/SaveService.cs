@@ -3,6 +3,7 @@ using Economy;
 using Events;
 using MapGeneration;
 using Player;
+using Processing;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -88,6 +89,26 @@ namespace Persistence
             foreach (var kvp in Depot.Instance.StoredOres)
             {
                 data.DepotOres.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
+            }
+
+            foreach (var kvp in Depot.Instance.StoredGoods)
+            {
+                data.DepotGoods.Add(new GoodsCountEntry { Id = kvp.Key, Count = kvp.Value });
+            }
+
+            var processingSlots = ProcessingManager.Instance.Slots;
+            for (int i = 0; i < processingSlots.Count; i++)
+            {
+                var job = processingSlots[i];
+                if (job == null) continue;
+
+                data.ProcessingJobs.Add(new ProcessingJobSaveEntry
+                {
+                    SlotIndex = i,
+                    RecipeId = job.Recipe.Id,
+                    Quantity = job.Quantity,
+                    TimeRemainingSeconds = job.TimeRemaining
+                });
             }
 
             if (playerController != null)
@@ -197,6 +218,19 @@ namespace Persistence
                 depotOres[entry.Id] = entry.Count;
             }
             Depot.Instance.RestoreFromSaveData(depotOres);
+
+            var depotGoods = new Dictionary<ProcessingRecipeId, int>();
+            foreach (var entry in data.DepotGoods)
+            {
+                depotGoods[entry.Id] = entry.Count;
+            }
+            Depot.Instance.RestoreGoodsFromSaveData(depotGoods);
+
+            // Fast-forwards in-progress Processing jobs by the same elapsed-real-time math as the
+            // idle ore average below - any job that would have finished while the game was closed
+            // completes immediately (goods deposited, no popup).
+            float elapsedSeconds = ComputeMinutesAway(data.LastActiveUtcTimestamp) * 60f;
+            ProcessingManager.Instance.RestoreFromSaveData(data.ProcessingJobs, elapsedSeconds);
 
             if (data.Player != null)
             {

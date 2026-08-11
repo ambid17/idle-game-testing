@@ -61,7 +61,20 @@ namespace Economy
         // Real effect (Dirt block category already exists) - appended after the stubs, out of
         // branch order, so every earlier member keeps its serialized int stable in existing
         // UpgradeDefinition assets. Drives UpgradeManager.InstantMineDirt.
-        DirtInstaMineUnlock
+        DirtInstaMineUnlock,
+
+        // Processing Center (Assets/Docs/processingImplementation.md), appended here rather than
+        // replacing the stub above for the same reason as DirtInstaMineUnlock: every earlier
+        // member must keep its serialized int. ProcessingRecipeUnlock above is superseded/unused -
+        // each recipe gets its own one-time (MaxLevel 1) unlock effect, chained via Prerequisite,
+        // since UpgradeDatabase.Find(UpgradeEffect) only supports one definition per effect.
+        ProcessingWoodRecipeUnlock,
+        ProcessingStoneRecipeUnlock,
+        ProcessingIronRecipeUnlock,
+        ProcessingGoldRecipeUnlock,
+        ProcessingEmeraldRecipeUnlock,
+        ProcessingDiamondRecipeUnlock,
+        ProcessingQueueSlots
     }
 
     [CreateAssetMenu(fileName = "UpgradeDefinition", menuName = "Economy/Upgrade Definition")]

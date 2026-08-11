@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
-  m_Name: Economy_ProcessingSpeed
+  m_Name: Processing_UnlockDiamond
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  DisplayName: Processing Speed
-  Description: Increases how quickly the Processing Center converts raw goods.
+  DisplayName: 'Processing: Unlock Diamond Recipe'
+  Description: Unlocks the Wedding Rings recipe at the Processing Center.
   Icon: {fileID: 0}
   Branch: 1
-  Effect: 25
-  EffectValuePerLevel: 0.1
-  MaxLevel: 10
-  BaseCost: 1500
-  CostGrowth: 1.3
-  Prerequisite: {fileID: 11400000, guid: e33be1e148710034babacefe001c2780, type: 2}
+  Effect: 40
+  EffectValuePerLevel: 1
+  MaxLevel: 1
+  BaseCost: 60000
+  CostGrowth: 1.1
+  Prerequisite: {fileID: 11400000, guid: 7c5df66e927e4414db0c92d78b0bf3dd, type: 2}
   RequirePrerequisiteMaxed: 0
