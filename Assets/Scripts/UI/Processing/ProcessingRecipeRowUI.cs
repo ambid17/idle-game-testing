@@ -17,7 +17,7 @@ namespace UI.Processing
 
         public void Bind(ProcessingRecipeDefinition recipe, Action<ProcessingRecipeDefinition> onClicked)
         {
-            icon.sprite = recipe.Icon;
+            if(recipe.Icon != null) icon.sprite = recipe.Icon;
             nameLabel.text = recipe.DisplayName;
             ingredientsLabel.text = FormatIngredients(recipe);
 

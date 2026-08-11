@@ -8,8 +8,9 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    // Processing Center panel per Assets/Docs/processingImplementation.md: one queue row per
-    // ProcessingManager.SlotCount, each opening a recipe-picker modal then a quantity/start modal.
+    // Processing Center panel per Assets/Docs/processingImplementation.md: one queue slot per
+    // ProcessingManager.SlotCount. Clicking a slot's recipe image opens the recipe-picker modal;
+    // the slot itself then owns quantity selection and starting/cancelling the job.
     // Per CLAUDE.md's UI panel rule, this controller stays enabled on the Panel GameObject and
     // only toggles the child rendererRoot - same shape as MuseumUI. Never mutates ProcessingManager
     // state directly from a UI callback; Start/Cancel go through request events so the modals stay
@@ -32,6 +33,7 @@ namespace UI
         private void Start()
         {
             closeButton.onClick.AddListener(Close);
+            if (recipeListModal != null) recipeListModal.Initialize(OnRecipeSelected);
             rendererRoot.SetActive(false);
         }
 
@@ -95,6 +97,13 @@ namespace UI
         private void OnSelectRecipeClicked(int slotIndex)
         {
             recipeListModal.Show(slotIndex);
+        }
+
+        // Picking a recipe just assigns it to the slot per processingImplementation.md - the
+        // slot itself now owns quantity selection and starting the job (no separate detail modal).
+        private void OnRecipeSelected(int slotIndex, ProcessingRecipeDefinition recipe)
+        {
+            if (slotIndex >= 0 && slotIndex < spawnedSlots.Count) spawnedSlots[slotIndex].SetRecipe(recipe);
         }
 
         private void OnStartRequested(ProcessingStartRequestedEvent evt) => ProcessingManager.Instance.StartJob(evt.SlotIndex, evt.Recipe, evt.Quantity);
