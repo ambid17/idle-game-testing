@@ -64,7 +64,7 @@ namespace Player
 
             Vector3 miningTargetWorldPos = new Vector3(transform.position.x + direction.Value.x * cellSize, targetYPos, 0f);
 
-            if (!mapGenerationService.WorldToCell(miningTargetWorldPos, out int layerIndex, out int targetCellX, out int targetCellY))
+            if (!mapGenerationService.TryWorldToCellInBounds(miningTargetWorldPos, out int layerIndex, out int targetCellX, out int targetCellY))
             {
                 if (debug) Debug.LogWarning($"PlayerMining: failed to resolve target cell at {miningTargetWorldPos} (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()}). Resolved Cell: ({targetCellX}, {targetCellY})");
                 ResetTarget();

@@ -104,7 +104,12 @@ namespace Automation
                 // straight down, try the whole layer. Local exhaustion often means the only
                 // unmined ground left is past a building-support run wider than the wander radius,
                 // reachable by walking (not digging) around it.
-                accessible = AutomatonReachability.GetAccessibleTilesUnbounded(mapGenerationService, currentLayer, currentCell.x, currentCell.y);
+                var extraDepthLayer = 0;
+                while(accessible.Count == 0)
+                {
+                    accessible = AutomatonReachability.GetAccessibleTilesUnbounded(mapGenerationService, currentLayer + extraDepthLayer, currentCell.x, currentCell.y);
+                    extraDepthLayer++;
+                }
             }
 
             if (accessible.Count == 0)
@@ -161,7 +166,7 @@ namespace Automation
             float cellSize = mapGenerationService.CellSize;
             Vector3 targetWorldPos = new(transform.position.x, transform.position.y - cellSize, 0f);
 
-            if (!mapGenerationService.WorldToCell(targetWorldPos, out int layer, out int x, out int y))
+            if (!mapGenerationService.TryWorldToCellInBounds(targetWorldPos, out int layer, out int x, out int y))
             {
                 state = State.PickingTarget;
                 return;
@@ -225,7 +230,7 @@ namespace Automation
 
         private void RefreshCurrentCell()
         {
-            if (mapGenerationService.WorldToCell(transform.position, out int layer, out int x, out int y))
+            if (mapGenerationService.TryWorldToCellInBounds(transform.position, out int layer, out int x, out int y))
             {
                 currentLayer = layer;
                 currentCell = new Vector2Int(x, y);

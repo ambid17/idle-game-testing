@@ -88,7 +88,7 @@ namespace MapGeneration
         // Inverts ChunkTilemapView's cell->world placement (pos = (x, -y) within a chunk root
         // positioned at -layerOffset*cellSize) so player-facing systems can resolve which cell
         // a world position falls in.
-        public bool WorldToCell(Vector3 worldPos, out int layerIndex, out int x, out int y)
+        public bool TryWorldToCellInBounds(Vector3 worldPos, out int layerIndex, out int x, out int y)
         {
             float cellSize = mapGenerationConfig.CellSize;
             int depthInBlocks = layerConfigProvider.GetDepthInBlocksAtWorldY(worldPos.y, cellSize);
