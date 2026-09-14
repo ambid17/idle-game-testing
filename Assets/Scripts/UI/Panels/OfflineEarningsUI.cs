@@ -30,7 +30,6 @@ namespace UI
         private void Start()
         {
             if (collectButton != null) collectButton.onClick.AddListener(Collect);
-            if (rendererRoot != null) rendererRoot.SetActive(false);
         }
 
         private void OnEnable() => GameManager.EventService.Add<OfflineEarningsReadyEvent>(Open);
@@ -44,7 +43,7 @@ namespace UI
             if (minutesAwayLabel != null) minutesAwayLabel.text = $"You were away for {evt.MinutesAway:0} minutes";
 
             InputBlocker.SetBlocked(true);
-            if (rendererRoot != null) rendererRoot.SetActive(true);
+            rendererRoot.SetActive(true);
         }
 
         private void BuildRows(IReadOnlyDictionary<BlockTypeId, int> oreGained)
@@ -86,7 +85,7 @@ namespace UI
             pendingOre = null;
 
             InputBlocker.SetBlocked(false);
-            if (rendererRoot != null) rendererRoot.SetActive(false);
+            rendererRoot.SetActive(false);
         }
     }
 }
