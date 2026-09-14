@@ -61,23 +61,22 @@ namespace UI.Processing
 
         public void Refresh()
         {
-            var job = ActiveJob();
-            bool active = job != null;
+            bool active = ActiveJob != null;
 
             progressFill.gameObject.SetActive(active);
             progressLabel.gameObject.SetActive(active);
             recipeSizeSlider.gameObject.SetActive(!active);
             actionButtonLabel.text = active ? "Cancel" : "Start";
 
-            var recipe = active ? job.Recipe : selectedRecipe;
+            var recipe = active ? ActiveJob.Recipe : selectedRecipe;
             recipeIcon.sprite = recipe != null ? recipe.Icon : null;
             recipeNameLabel.text = recipe != null ? recipe.DisplayName : "No Recipe Selected";
 
             if (active)
             {
-                ingredientsLabel.text = FormatIngredients(job.Recipe);
+                ingredientsLabel.text = FormatIngredients(ActiveJob.Recipe);
                 actionButton.interactable = true;
-                UpdateProgress(job);
+                UpdateProgress(ActiveJob);
                 return;
             }
 
@@ -95,18 +94,16 @@ namespace UI.Processing
 
         private void Update()
         {
-            var job = ActiveJob();
-            if (job != null)
+            if (ActiveJob != null)
             {
-                UpdateProgress(job);
+                UpdateProgress(ActiveJob);
                 return;
             }
 
             if (selectedRecipe != null) RefreshIdleDynamic();
         }
 
-        private ProcessingJob ActiveJob() =>
-            ProcessingManager.Instance.Slots.Count > slotIndex ? ProcessingManager.Instance.Slots[slotIndex] : null;
+        private ProcessingJob ActiveJob => ProcessingManager.Instance.Slots[slotIndex];
 
         // Max craftable and ingredient shortages both depend on the Depot's live stock, so this
         // is re-run every frame while idle with a recipe selected, matching how the progress bar
@@ -123,7 +120,7 @@ namespace UI.Processing
 
         private void OnActionButtonClicked()
         {
-            var job = ActiveJob();
+            var job = ActiveJob;
             if (job != null)
             {
                 GameManager.EventService.Dispatch(new ProcessingCancelRequestedEvent(slotIndex));
@@ -150,7 +147,7 @@ namespace UI.Processing
             foreach (var ingredient in recipe.Ingredients)
             {
                 Depot.Instance.StoredOres.TryGetValue(ingredient.Material, out var stored);
-                int affordable = ingredient.Count > 0 ? stored / ingredient.Count : 0;
+                int affordable = stored / ingredient.Count;
                 if (max < 0 || affordable < max) max = affordable;
             }
             return Mathf.Max(0, max);
