@@ -31,6 +31,7 @@ namespace Automation
         [SerializeField] private Vector2Int currentCell;
         [SerializeField] private List<Vector3> path;
         [SerializeField] private int pathIndex;
+        [SerializeField] private int digTargetLayer;
         [SerializeField] private Vector2Int digTargetCell;
         [SerializeField] private float miningProgress;
         [SerializeField] private Vector3 _depotLocation;
@@ -98,29 +99,30 @@ namespace Automation
             var accessible = AutomatonReachability.GetAccessibleTiles(mapGenerationService, currentLayer, currentCell.x, currentCell.y, config.AutomatonWanderRadius);
             miningProgress = 0f;
 
-            if (accessible.Count == 0)
+            if (accessible.Count > 0)
+            {
+                digTargetLayer = currentLayer;
+                digTargetCell = accessible[Random.Range(0, accessible.Count)];
+            }
+            else
             {
                 // Nothing within the normal wander radius - before giving up and drilling blind
-                // straight down, try the whole layer. Local exhaustion often means the only
-                // unmined ground left is past a building-support run wider than the wander radius,
-                // reachable by walking (not digging) around it.
-                var extraDepthLayer = 0;
-                while(accessible.Count == 0)
+                // straight down, try the whole reachable region instead. Local exhaustion often
+                // means the only unmined ground left is past a building-support run wider than the
+                // wander radius, or the current layer is fully mined out and the only way onward is
+                // through the next layer down - either way this can cross into a deeper chunk.
+                var unbounded = AutomatonReachability.GetAccessibleTilesUnbounded(mapGenerationService, currentLayer, currentCell.x, currentCell.y);
+                if (unbounded.Count == 0)
                 {
-                    accessible = AutomatonReachability.GetAccessibleTilesUnbounded(mapGenerationService, currentLayer + extraDepthLayer, currentCell.x, currentCell.y);
-                    extraDepthLayer++;
+                    // "if there are no tiles in their radius, they will descend until they hit a block."
+                    state = State.Descending;
+                    return;
                 }
+
+                (digTargetLayer, digTargetCell) = unbounded[Random.Range(0, unbounded.Count)];
             }
 
-            if (accessible.Count == 0)
-            {
-                // "if there are no tiles in their radius, they will descend until they hit a block."
-                state = State.Descending;
-                return;
-            }
-
-            digTargetCell = accessible[Random.Range(0, accessible.Count)];
-            path = AutomatonReachability.BuildWorldPath(mapGenerationService, currentLayer, currentCell, digTargetCell);
+            path = AutomatonReachability.BuildWorldPath(mapGenerationService, currentLayer, currentCell, digTargetLayer, digTargetCell);
             pathIndex = 0;
             state = State.MovingAndDigging;
         }
@@ -141,7 +143,7 @@ namespace Automation
             // player is simply facing the target rather than fully "arrived."
             if (pathIndex < path.Count - 1) return;
 
-            var blockType = mapGenerationService.GetBlockTypeAt(currentLayer, digTargetCell.x, digTargetCell.y);
+            var blockType = mapGenerationService.GetBlockTypeAt(digTargetLayer, digTargetCell.x, digTargetCell.y);
             if (blockType == null)
             {
                 // Already mined out from under us (e.g. the player got there first) - move on.
@@ -151,10 +153,10 @@ namespace Automation
 
             float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.AutomatonMiningSpeedMultiplier;
             miningProgress += Time.deltaTime * miningSpeed;
-            float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(currentLayer);
+            float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(digTargetLayer);
             if (miningProgress < targetHealth) return;
 
-            MineTargetAndBonusCells(currentLayer, digTargetCell, blockType);
+            MineTargetAndBonusCells(digTargetLayer, digTargetCell, blockType);
             state = State.PickingTarget;
         }
 

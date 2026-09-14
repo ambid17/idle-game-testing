@@ -13,10 +13,12 @@ namespace Automation
     // space, opposite of Unity's usual world-space up-positive Y - so "down" here is (0, +1), not
     // Vector2Int.down.
     //
-    // Known simplification: stays within a single layer. When wandering finds nothing within
-    // radius (e.g. right at a layer's bottom edge), MiningAutomaton falls back to descending
-    // straight down per the design doc, which naturally crosses into the next layer via
-    // MapGenerationService.WorldToCell's own layer resolution - no BFS involved there.
+    // Known simplification: the radius-limited wander (GetAccessibleTiles) stays within a single
+    // layer's chunk - fine in practice since MiningAutomaton only leans on it while there's still
+    // nearby ground to dig. GetAccessibleTilesUnbounded and BuildWorldPath, used once a layer runs
+    // dry, cross layer boundaries via TryStep: MineWorld stacks layers vertically (row 0 of layer
+    // N+1 sits directly below layer N's last row), so walking off one chunk's edge continues into
+    // the neighboring chunk's matching edge instead of stopping dead.
     public static class AutomatonReachability
     {
         private static readonly Vector2Int GridUp = new(0, -1);
@@ -86,67 +88,161 @@ namespace Automation
         }
 
         // Fallback for when the radius-limited wander above finds nothing. That can happen even
-        // with plenty of unmined ground left in the layer - e.g. everything within the normal
+        // with plenty of unmined ground left in the mine - e.g. everything within the normal
         // wander radius is exhausted and the only way onward is walking around a building-support
-        // run wider than the radius, or reaching a pocket that's simply farther than `radius` hops
-        // away. Bounded by the chunk's own footprint (the longest any walk within one layer could
-        // possibly need) rather than an arbitrary large number, so it stays a real, terminating BFS.
-        public static List<Vector2Int> GetAccessibleTilesUnbounded(MapGenerationService mapGen, int layerIndex, int originX, int originY)
+        // run wider than the radius, reaching a pocket that's simply farther than `radius` hops
+        // away, or the whole current layer being fully mined out so the only ground left is past
+        // its floor. Unlike the bounded wander, this crosses layer boundaries (via TryStep) rather
+        // than stopping at the origin layer's chunk edge, so results are tagged with the layer they
+        // were found in - callers (BuildWorldPath, MineCell) can no longer assume the origin layer.
+        // Termination relies on freshly generated chunks always having unmined ground near their
+        // entry row rather than an artificial cap - a real, but effectively unbounded, BFS.
+        public static List<(int Layer, Vector2Int Cell)> GetAccessibleTilesUnbounded(MapGenerationService mapGen, int originLayer, int originX, int originY)
         {
-            if (mapGen == null) return new List<Vector2Int>();
-            var chunk = mapGen.World.GetOrGenerateChunk(layerIndex);
-            return GetAccessibleTiles(mapGen, layerIndex, originX, originY, chunk.Width + chunk.Height);
+            var frontier = new List<(int Layer, Vector2Int Cell)>();
+            var frontierSeen = new HashSet<(int, Vector2Int)>();
+            if (mapGen == null) return frontier;
+
+            var origin = (originLayer, new Vector2Int(originX, originY));
+            var visited = new HashSet<(int, Vector2Int)> { origin };
+            var queue = new Queue<(int Layer, Vector2Int Cell)>();
+            queue.Enqueue(origin);
+
+            while (queue.Count > 0)
+            {
+                var (layer, cell) = queue.Dequeue();
+
+                foreach (var dir in DigDirections)
+                {
+                    if (!TryStep(mapGen, layer, cell, dir, out int dLayer, out Vector2Int dCell)) continue;
+                    var dChunk = mapGen.World.GetOrGenerateChunk(dLayer);
+                    if (!InBounds(dChunk, dCell) || IsMined(dChunk, dCell) || IsBuildingSupported(dChunk, dCell)) continue;
+
+                    var key = (dLayer, dCell);
+                    if (frontierSeen.Add(key)) frontier.Add(key);
+                }
+
+                foreach (var dir in WalkDirections)
+                {
+                    if (!TryStep(mapGen, layer, cell, dir, out int wLayer, out Vector2Int wCell)) continue;
+                    var key = (wLayer, wCell);
+                    if (visited.Contains(key)) continue;
+
+                    var wChunk = mapGen.World.GetOrGenerateChunk(wLayer);
+                    if (!InBounds(wChunk, wCell)) continue;
+                    if (!IsMined(wChunk, wCell) && !IsBuildingSupported(wChunk, wCell)) continue;
+
+                    visited.Add(key);
+                    queue.Enqueue(key);
+                }
+            }
+
+            return frontier;
         }
 
         // Builds a walkable cell path (through already-mined ground, ending on `target` even
         // though target itself is unmined - it's the cell about to be dug) from origin to target,
-        // in world-space order, for GridPathMover.StepAlongPath to consume.
-        public static List<Vector3> BuildWorldPath(MapGenerationService mapGen, int layerIndex, Vector2Int origin, Vector2Int target)
+        // in world-space order, for GridPathMover.StepAlongPath to consume. Origin and target may
+        // sit in different layers (e.g. target came from GetAccessibleTilesUnbounded crossing into
+        // a deeper chunk) - the walk crosses that boundary via TryStep just like the search that
+        // found the target did, so the two stay consistent.
+        public static List<Vector3> BuildWorldPath(MapGenerationService mapGen, int originLayer, Vector2Int origin, int targetLayer, Vector2Int target)
         {
             var path = new List<Vector3>();
             if (mapGen == null) return path;
 
-            var chunk = mapGen.World.GetOrGenerateChunk(layerIndex);
-            var cameFrom = new Dictionary<Vector2Int, Vector2Int>();
-            var visited = new HashSet<Vector2Int> { origin };
-            var queue = new Queue<Vector2Int>();
-            queue.Enqueue(origin);
+            var originNode = (Layer: originLayer, Cell: origin);
+            var targetNode = (Layer: targetLayer, Cell: target);
 
-            bool found = origin == target;
+            var cameFrom = new Dictionary<(int Layer, Vector2Int Cell), (int Layer, Vector2Int Cell)>();
+            var visited = new HashSet<(int Layer, Vector2Int Cell)> { originNode };
+            var queue = new Queue<(int Layer, Vector2Int Cell)>();
+            queue.Enqueue(originNode);
+
+            bool found = originNode.Equals(targetNode);
             while (queue.Count > 0 && !found)
             {
-                var cell = queue.Dequeue();
+                var current = queue.Dequeue();
                 foreach (var dir in WalkDirections)
                 {
-                    var neighbor = cell + dir;
-                    if (!InBounds(chunk, neighbor) || visited.Contains(neighbor)) continue;
-                    bool walkable = IsMined(chunk, neighbor) || IsBuildingSupported(chunk, neighbor);
-                    if (neighbor != target && !walkable) continue;
+                    if (!TryStep(mapGen, current.Layer, current.Cell, dir, out int nLayer, out Vector2Int nCell)) continue;
+                    var neighbor = (Layer: nLayer, Cell: nCell);
+                    if (visited.Contains(neighbor)) continue;
+
+                    bool isTarget = neighbor.Equals(targetNode);
+                    if (!isTarget)
+                    {
+                        var chunk = mapGen.World.GetOrGenerateChunk(nLayer);
+                        if (!InBounds(chunk, nCell)) continue;
+                        if (!IsMined(chunk, nCell) && !IsBuildingSupported(chunk, nCell)) continue;
+                    }
 
                     visited.Add(neighbor);
-                    cameFrom[neighbor] = cell;
-                    if (neighbor == target) { found = true; break; }
+                    cameFrom[neighbor] = current;
+                    if (isTarget) { found = true; break; }
                     queue.Enqueue(neighbor);
                 }
             }
 
             if (!found) return path;
 
-            var cells = new List<Vector2Int> { target };
-            var walk = target;
-            while (walk != origin)
+            var nodes = new List<(int Layer, Vector2Int Cell)> { targetNode };
+            var walk = targetNode;
+            while (!walk.Equals(originNode))
             {
                 walk = cameFrom[walk];
-                cells.Add(walk);
+                nodes.Add(walk);
             }
-            cells.Reverse();
+            nodes.Reverse();
 
-            foreach (var cell in cells)
+            foreach (var node in nodes)
             {
-                path.Add(mapGen.CellToWorldCenter(layerIndex, cell.x, cell.y));
+                path.Add(mapGen.CellToWorldCenter(node.Layer, node.Cell.x, node.Cell.y));
             }
 
             return path;
+        }
+
+        // Resolves the (layer, cell) landed on by moving `dir` from (layer, cell). A vertical step
+        // that would leave the chunk crosses into the neighboring layer's matching edge instead of
+        // stopping (per MineWorld: layer N+1's row 0 sits directly below layer N's last row).
+        // Horizontal steps never cross layers - each chunk has its own width. Returns false only
+        // when the step would go out of bounds with nowhere to cross into (off the grid
+        // horizontally, or above the surface / below layer 0's chunk).
+        private static bool TryStep(MapGenerationService mapGen, int layer, Vector2Int cell, Vector2Int dir, out int newLayer, out Vector2Int newCell)
+        {
+            var next = cell + dir;
+            var chunk = mapGen.World.GetOrGenerateChunk(layer);
+
+            if (next.x < 0 || next.x >= chunk.Width)
+            {
+                newLayer = layer;
+                newCell = next;
+                return false;
+            }
+
+            if (next.y < 0)
+            {
+                newLayer = layer;
+                newCell = next;
+                if (layer <= 0) return false;
+
+                var above = mapGen.World.GetOrGenerateChunk(layer - 1);
+                newLayer = layer - 1;
+                newCell = new Vector2Int(next.x, above.Height - 1);
+                return true;
+            }
+
+            if (next.y >= chunk.Height)
+            {
+                newLayer = layer + 1;
+                newCell = new Vector2Int(next.x, 0);
+                return true;
+            }
+
+            newLayer = layer;
+            newCell = next;
+            return true;
         }
 
         private static bool InBounds(ChunkData chunk, Vector2Int cell) =>
