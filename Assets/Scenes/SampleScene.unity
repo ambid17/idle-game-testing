@@ -9391,7 +9391,7 @@ GameObject:
   m_Component:
   - component: {fileID: 777190188}
   m_Layer: 5
-  m_Name: modalRenderer
+  m_Name: confirmPrestigeModal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12757,7 +12757,7 @@ GameObject:
   - component: {fileID: 1108425402}
   - component: {fileID: 1108425403}
   m_Layer: 0
-  m_Name: SkillTreeModal
+  m_Name: PurchaseModal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
