@@ -23,6 +23,7 @@ namespace UI
         [SerializeField] private TMP_Text weightLabel;
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private TMP_Text artifactCountLabel;
+        [SerializeField] private TMP_Text depthLabel;
 
         private void Start()
         {
@@ -32,6 +33,7 @@ namespace UI
             if (playerController == null) Debug.LogError("HUDUI: no PlayerController found in scene.");
             if (playerHealth == null) Debug.LogError("HUDUI: no PlayerHealth found in scene.");
             if (playerInventory == null) Debug.LogError("HUDUI: no PlayerInventory found in scene.");
+            if (depthLabel == null) Debug.LogError("HUDUI: no depthLabel found in scene.");
 
             RefreshDollars();
             RefreshArtifactCount();
@@ -56,6 +58,7 @@ namespace UI
         {
             RefreshFuel();
             RefreshHealth();
+            RefreshDepth();
         }
 
         private void RefreshFuel()
@@ -91,6 +94,15 @@ namespace UI
         private void RefreshArtifactCount()
         {
             if (artifactCountLabel != null) artifactCountLabel.text = $"Artifacts: {Wallet.Instance.ArtifactCount}";
+        }
+
+        private void RefreshDepth()
+        {
+            if (depthLabel != null)
+            {
+                float depth = playerController != null ? playerController.transform.position.y : 0f;
+                depthLabel.text = $"Depth: {depth:0}m";
+            }
         }
     }
 }
