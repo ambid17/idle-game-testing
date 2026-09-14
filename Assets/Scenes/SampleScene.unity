@@ -2408,10 +2408,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.SkillTree.SkillTreePanZoomUI
   content: {fileID: 849008185}
-  zoomSpeed: 0.1
-  minZoom: 0.4
+  zoomSpeed: 0.05
+  minZoom: 0.2
   maxZoom: 1.5
   maxPanRadius: 1600
+  defaultScale: 0.5
 --- !u!114 &188991054
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8529,7 +8530,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.23529412, g: 0.23529412, b: 0.23529412, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -8720,8 +8721,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 862, y: -515.12}
-  m_SizeDelta: {x: 1524, y: 167.92}
+  m_AnchoredPosition: {x: 787, y: -557.62}
+  m_SizeDelta: {x: 1374, y: 196.25334}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &710029025
 MonoBehaviour:
@@ -9396,7 +9397,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &777190188
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12389,6 +12390,7 @@ MonoBehaviour:
   minZoom: 0.4
   maxZoom: 1.5
   maxPanRadius: 1600
+  defaultScale: 0.5
 --- !u!114 &1068692440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13452,7 +13454,7 @@ Transform:
   m_GameObject: {fileID: 1150534566}
   serializedVersion: 2
   m_LocalRotation: {x: -4.6565474e-10, y: 0.000000029816878, z: 1.388437e-17, w: 1}
-  m_LocalPosition: {x: 20.911016, y: 2.1699998, z: -10}
+  m_LocalPosition: {x: 22.86186, y: 2.1699998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16260,7 +16262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1421697037
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17124,8 +17126,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 862, y: -693.04004}
-  m_SizeDelta: {x: 1524, y: 167.92}
+  m_AnchoredPosition: {x: 787, y: -763.87335}
+  m_SizeDelta: {x: 1374, y: 196.25334}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1540149096
 MonoBehaviour:
@@ -19467,8 +19469,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 862, y: -260.58002}
-  m_SizeDelta: {x: 1524, y: 321.16}
+  m_AnchoredPosition: {x: 787, y: -274.74667}
+  m_SizeDelta: {x: 1374, y: 349.49335}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1773610405
 MonoBehaviour:

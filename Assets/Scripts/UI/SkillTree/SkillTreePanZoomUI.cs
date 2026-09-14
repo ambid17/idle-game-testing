@@ -15,6 +15,7 @@ namespace UI.SkillTree
         [SerializeField] private float minZoom = 0.4f;
         [SerializeField] private float maxZoom = 1.5f;
         [SerializeField] private float maxPanRadius = 1600f;
+        [SerializeField] private float defaultScale = 0.5f;
 
         public void OnDrag(PointerEventData eventData)
         {
@@ -38,7 +39,7 @@ namespace UI.SkillTree
         {
             if (content == null) return;
             content.anchoredPosition = Vector2.zero;
-            content.localScale = Vector3.one;
+            content.localScale = new Vector3(defaultScale, defaultScale, 1f);
         }
     }
 }

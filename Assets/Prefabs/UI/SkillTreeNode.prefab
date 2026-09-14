@@ -355,7 +355,7 @@ MonoBehaviour:
   levelBadge: {fileID: 6998863569965863214}
   button: {fileID: 2275921255066561474}
   lockedColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  unlockedColor: {r: 1, g: 1, b: 1, a: 1}
+  unlockedColor: {r: 1, g: 1, b: 1, a: 0}
   partialColor: {r: 0, g: 1, b: 0, a: 1}
   maxedColor: {r: 1, g: 0.84, b: 0, a: 1}
 --- !u!114 &2633085920914742446
@@ -373,8 +373,8 @@ MonoBehaviour:
   m_Padding:
     m_Left: 5
     m_Right: 5
-    m_Top: 5
-    m_Bottom: 5
+    m_Top: 20
+    m_Bottom: 20
   m_ChildAlignment: 4
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
