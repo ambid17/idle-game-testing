@@ -19,35 +19,39 @@ namespace UI.Processing
         [SerializeField] private Image recipeIcon;
         [SerializeField] private Button selectRecipeButton;
         [SerializeField] private TMP_Text recipeNameLabel;
-        [SerializeField] private TMP_Text ingredientsLabel;
-        [SerializeField] private Image progressFill;
+
+        [SerializeField] private GameObject progressFillParent;
+        [SerializeField] private Image progressFillMask;
         [SerializeField] private TMP_Text progressLabel;
+
         [SerializeField] private Slider recipeSizeSlider;
+        [SerializeField] private TMP_Text recipeSizeLabel;
+
+        [SerializeField] private TMP_Text ingredientsLabel;
+
         [SerializeField] private Button actionButton;
         [SerializeField] private TMP_Text actionButtonLabel;
 
         private int slotIndex;
         private ProcessingRecipeDefinition selectedRecipe;
 
+        private void Start()
+        {
+            actionButton.onClick.RemoveAllListeners();
+            actionButton.onClick.AddListener(OnActionButtonClicked);
+
+            recipeSizeSlider.wholeNumbers = true;
+            recipeSizeSlider.minValue = 1;
+            recipeSizeSlider.onValueChanged.RemoveAllListeners();
+            recipeSizeSlider.onValueChanged.AddListener((f) => OnRecipeSizeChanged());
+        }
+
         public void Bind(int slotIndex, System.Action<int> onSelectRecipeClicked)
         {
             this.slotIndex = slotIndex;
 
-            if (selectRecipeButton != null)
-            {
-                selectRecipeButton.onClick.RemoveAllListeners();
-                selectRecipeButton.onClick.AddListener(() => onSelectRecipeClicked?.Invoke(this.slotIndex));
-            }
-            if (actionButton != null)
-            {
-                actionButton.onClick.RemoveAllListeners();
-                actionButton.onClick.AddListener(OnActionButtonClicked);
-            }
-            if (recipeSizeSlider != null)
-            {
-                recipeSizeSlider.wholeNumbers = true;
-                recipeSizeSlider.minValue = 1;
-            }
+            selectRecipeButton.onClick.RemoveAllListeners();
+            selectRecipeButton.onClick.AddListener(() => onSelectRecipeClicked?.Invoke(this.slotIndex));
 
             Refresh();
         }
@@ -62,21 +66,23 @@ namespace UI.Processing
         public void Refresh()
         {
             bool active = ActiveJob != null;
+            bool hasRecipe = selectedRecipe != null;
+            progressFillParent.SetActive(active);
 
-            progressFill.gameObject.SetActive(active);
-            progressLabel.gameObject.SetActive(active);
-            recipeSizeSlider.gameObject.SetActive(!active);
+            recipeSizeSlider.gameObject.SetActive(hasRecipe && !active);
+            recipeSizeLabel.gameObject.SetActive(hasRecipe && !active);
+            recipeSizeLabel.text = $"{recipeSizeSlider.value:0}/{recipeSizeSlider.maxValue:0}";
             actionButtonLabel.text = active ? "Cancel" : "Start";
 
             var recipe = active ? ActiveJob.Recipe : selectedRecipe;
             recipeIcon.sprite = recipe != null ? recipe.Icon : null;
             recipeNameLabel.text = recipe != null ? recipe.DisplayName : "No Recipe Selected";
 
+            ingredientsLabel.gameObject.SetActive(hasRecipe && !active);
+
             if (active)
             {
-                ingredientsLabel.text = FormatIngredients(ActiveJob.Recipe);
                 actionButton.interactable = true;
-                UpdateProgress(ActiveJob);
                 return;
             }
 
@@ -89,7 +95,7 @@ namespace UI.Processing
                 return;
             }
 
-            RefreshIdleDynamic();
+            RefreshCraftableQuantity();
         }
 
         private void Update()
@@ -99,16 +105,11 @@ namespace UI.Processing
                 UpdateProgress(ActiveJob);
                 return;
             }
-
-            if (selectedRecipe != null) RefreshIdleDynamic();
         }
 
         private ProcessingJob ActiveJob => ProcessingManager.Instance.Slots[slotIndex];
 
-        // Max craftable and ingredient shortages both depend on the Depot's live stock, so this
-        // is re-run every frame while idle with a recipe selected, matching how the progress bar
-        // is re-run every frame while a job is active.
-        private void RefreshIdleDynamic()
+        private void RefreshCraftableQuantity()
         {
             int maxCraftable = MaxCraftableQuantity(selectedRecipe);
             recipeSizeSlider.maxValue = Mathf.Max(1, maxCraftable);
@@ -116,6 +117,8 @@ namespace UI.Processing
 
             ingredientsLabel.text = FormatIngredients(selectedRecipe);
             actionButton.interactable = maxCraftable >= 1;
+
+            recipeSizeLabel.text = $"{recipeSizeSlider.value:0}/{recipeSizeSlider.maxValue:0}";
         }
 
         private void OnActionButtonClicked()
@@ -137,33 +140,41 @@ namespace UI.Processing
         private void UpdateProgress(ProcessingJob job)
         {
             float fraction = job.TotalDuration > 0f ? 1f - Mathf.Clamp01(job.TimeRemaining / job.TotalDuration) : 1f;
-            progressFill.fillAmount = fraction;
+            progressFillMask.fillAmount = fraction;
             progressLabel.text = $"{Mathf.Max(0f, job.TimeRemaining):0.#}s";
         }
 
         private static int MaxCraftableQuantity(ProcessingRecipeDefinition recipe)
         {
-            int max = -1;
+            int max = 0;
             foreach (var ingredient in recipe.Ingredients)
             {
                 Depot.Instance.StoredOres.TryGetValue(ingredient.Material, out var stored);
-                int affordable = stored / ingredient.Count;
-                if (max < 0 || affordable < max) max = affordable;
+                int craftableCount = stored / ingredient.Count;
+                if (max == 0) max = craftableCount;
+                else
+                    max = Mathf.Min(craftableCount, max);
             }
             return Mathf.Max(0, max);
         }
 
-        private static string FormatIngredients(ProcessingRecipeDefinition recipe)
+        private string FormatIngredients(ProcessingRecipeDefinition recipe)
         {
             var parts = new string[recipe.Ingredients.Count];
             for (int i = 0; i < recipe.Ingredients.Count; i++)
             {
                 var ingredient = recipe.Ingredients[i];
-                Depot.Instance.StoredOres.TryGetValue(ingredient.Material, out var stored);
-                string line = $"{ingredient.Count} {ingredient.Material}";
-                parts[i] = stored < ingredient.Count ? $"<color=#FF5C5C>{line}</color>" : line;
+                var ingredientCount = ingredient.Count * (int)recipeSizeSlider.value;
+                string line = $"- {ingredientCount} {ingredient.Material}";
+                parts[i] = line;
             }
             return string.Join("\n", parts);
+        }
+
+        private void OnRecipeSizeChanged()
+        {
+            recipeSizeLabel.text = $"{recipeSizeSlider.value:0}/{recipeSizeSlider.maxValue:0}";
+            ingredientsLabel.text = FormatIngredients(selectedRecipe);
         }
     }
 }
