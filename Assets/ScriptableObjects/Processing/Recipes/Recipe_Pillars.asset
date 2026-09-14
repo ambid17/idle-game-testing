@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Processing.ProcessingRecipeDefinition
   Id: 1
   DisplayName: Pillars
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: fd8523086a0bdb5489a853b99740effe, type: 3}
   Ingredients:
   - Material: 3
     Count: 3

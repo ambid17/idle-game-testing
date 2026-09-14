@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Processing.ProcessingRecipeDefinition
   Id: 5
   DisplayName: Wedding Rings
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 0897e9f618ea80b418a0ea7bd3869b3a, type: 3}
   Ingredients:
   - Material: 8
     Count: 1

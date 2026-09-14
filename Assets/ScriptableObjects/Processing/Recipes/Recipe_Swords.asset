@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Processing.ProcessingRecipeDefinition
   Id: 2
   DisplayName: Swords
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: e1bf7285da0b565468280c54741c9d32, type: 3}
   Ingredients:
   - Material: 5
     Count: 2

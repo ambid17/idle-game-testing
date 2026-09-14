@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Processing.ProcessingRecipeDefinition
   Id: 3
   DisplayName: Bracelets
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 9a7c1a48a5e2d7c448d074cdaeb32019, type: 3}
   Ingredients:
   - Material: 6
     Count: 2

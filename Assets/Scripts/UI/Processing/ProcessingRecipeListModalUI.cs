@@ -12,7 +12,7 @@ namespace UI.Processing
     // visualization need here, IsRecipeUnlocked already filters to only what's selectable.
     public class ProcessingRecipeListModalUI : MonoBehaviour
     {
-        [SerializeField] private GameObject root;
+        [SerializeField] private GameObject renderer;
         [SerializeField] private Transform rowContainer;
         [SerializeField] private ProcessingRecipeRowUI rowPrefab;
         [SerializeField] private Button closeButton;
@@ -24,7 +24,7 @@ namespace UI.Processing
         private void Awake()
         {
             closeButton.onClick.AddListener(Close);
-            root.SetActive(false);
+            renderer.SetActive(false);
         }
 
         public void Initialize(Action<int, ProcessingRecipeDefinition> onRecipeSelected) => this.onRecipeSelected = onRecipeSelected;
@@ -32,13 +32,13 @@ namespace UI.Processing
         public void Show(int slotIndex)
         {
             this.slotIndex = slotIndex;
-            root.SetActive(true);
+            renderer.SetActive(true);
             BuildRows();
         }
 
         public void Close()
         {
-            root.SetActive(false);
+            renderer.SetActive(false);
         }
 
         private void BuildRows()
