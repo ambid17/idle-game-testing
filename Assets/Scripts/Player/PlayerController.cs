@@ -14,7 +14,7 @@ namespace Player
         [Header("Movement")]
         [SerializeField] private float groundSpeed = 5f;
         [SerializeField] private float flySpeed = 8f;
-        [SerializeField] private float jetpackLiftSpeed = 6f;
+        [SerializeField] private float jetpackForce = 15f;
 
         [Header("Jetpack Fuel")]
         [SerializeField] private float fuelMax = 100f;
@@ -155,9 +155,16 @@ namespace Player
             IsFlying = movementInput.y > 0 && Fuel > 0f;
 
             float horizontalSpeed = IsFlying ? flySpeed : groundSpeed;
-            float verticalVelocity = IsFlying ? jetpackLiftSpeed : rb.linearVelocity.y;
             float horizontalVelocity = ClampHorizontalVelocity(movementInput.x * horizontalSpeed);
-            rb.linearVelocity = new Vector2(horizontalVelocity, verticalVelocity);
+            rb.linearVelocity = new Vector2(horizontalVelocity, rb.linearVelocity.y);
+
+            // Jetpack pushes rather than snapping vertical velocity, so gravity still pulls
+            // against it - lets the player feather W for a soft landing instead of a hard cutoff.
+            if (IsFlying)
+            {
+                var force = rb.linearVelocityY > 0f ? jetpackForce : jetpackForce * 2;
+                rb.AddForce(Vector2.up * force, ForceMode2D.Force);
+            }
 
             UpdateFuel(Time.fixedDeltaTime);
             TrackFallDamage();

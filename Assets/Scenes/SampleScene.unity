@@ -22991,7 +22991,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerController
   groundSpeed: 5
   flySpeed: 8
-  jetpackLiftSpeed: 6
+  jetpackForce: 15
   fuelMax: 100
   fuelDrainPerSecond: 20
   fuelRegenPerSecondGrounded: 1
