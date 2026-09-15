@@ -13,6 +13,7 @@ namespace UI.SkillTree
         [SerializeField] private SkillTreeNodeUI nodePrefab;
         [SerializeField] private SkillTreeConnectorUI connectorPrefab;
         [SerializeField] private SkillTreeDetailModalUI detailModal;
+        [SerializeField] private SkillTreeLayoutConfig layoutConfig;
 
         private ISkillTreeSource source;
         private readonly List<SkillTreeNodeUI> nodes = new();
@@ -43,7 +44,7 @@ namespace UI.SkillTree
             var viewModels = source.BuildViewModels();
             var layoutNodes = new List<ISkillTreeLayoutNode>(viewModels.Count);
             foreach (var vm in viewModels) layoutNodes.Add(vm);
-            var positions = SkillTreeLayout.Compute(layoutNodes, source.BranchCount);
+            var positions = SkillTreeLayout.Compute(layoutNodes, layoutConfig, source.BranchCount);
 
             ClearInstances();
 

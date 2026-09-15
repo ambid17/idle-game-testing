@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,10 +12,8 @@ namespace UI.SkillTree
     {
         public static Dictionary<ISkillTreeLayoutNode, Vector2> Compute(
             IReadOnlyList<ISkillTreeLayoutNode> nodes,
-            int branchCount,
-            float depthSpacing = 400f,
-            float sectorPaddingDegrees = 8f,
-            float startAngleDegrees = -90f)
+            SkillTreeLayoutConfig config,
+            int branchCount)
         {
             var positions = new Dictionary<ISkillTreeLayoutNode, Vector2>();
             if (nodes == null || nodes.Count == 0 || branchCount <= 0) return positions;
@@ -45,9 +44,9 @@ namespace UI.SkillTree
             {
                 var key = pair.Key;
                 var siblings = pair.Value;
-                float sectorCenter = startAngleDegrees + key.branch * sectorWidth;
-                float usableWidth = Mathf.Max(0f, sectorWidth - 2f * sectorPaddingDegrees);
-                float radius = (key.depth + 1) * depthSpacing;
+                float sectorCenter = config.startAngleDegrees + key.branch * sectorWidth;
+                float usableWidth = Mathf.Max(0f, sectorWidth - 2f * config.sectorPaddingDegrees);
+                float radius = (key.depth + 1) * config.depthSpacing;
 
                 for (int i = 0; i < siblings.Count; i++)
                 {
@@ -98,5 +97,13 @@ namespace UI.SkillTree
                 rootCache[chain[i]] = root;
             }
         }
+    }
+
+    [Serializable]
+    public class SkillTreeLayoutConfig
+    {
+        public float depthSpacing = 400f;
+        public float sectorPaddingDegrees = 8f;
+        public float startAngleDegrees = -90f;
     }
 }
