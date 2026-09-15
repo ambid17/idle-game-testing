@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEditor.Profiling.HierarchyFrameDataView;
 
 namespace UI.SkillTree
 {
@@ -47,7 +49,13 @@ namespace UI.SkillTree
             var positions = SkillTreeLayout.Compute(layoutNodes, layoutConfig, source.BranchCount);
 
             ClearInstances();
+            AddNodes(viewModels, positions);
+            AddConnectors(viewModels, positions);
+            RebuildDetailModal(viewModels, previousModalSource);
+        }
 
+        private void AddNodes(IReadOnlyList<SkillTreeNodeViewModel> viewModels, Dictionary<ISkillTreeLayoutNode, Vector2> positions)
+        {
             foreach (var vm in viewModels)
             {
                 var nodeUI = Instantiate(nodePrefab, content);
@@ -58,31 +66,32 @@ namespace UI.SkillTree
                 }
                 nodes.Add(nodeUI);
             }
+        }
 
-            if (connectorPrefab != null)
+        private void AddConnectors(IReadOnlyList<SkillTreeNodeViewModel> viewModels, Dictionary<ISkillTreeLayoutNode, Vector2> positions)
+        {
+            foreach (var vm in viewModels)
             {
-                foreach (var vm in viewModels)
-                {
-                    var prereqVm = vm.Prerequisite as SkillTreeNodeViewModel;
-                    if (prereqVm == null) continue;
-                    if (!positions.TryGetValue(vm, out var childPos)) continue;
-                    if (!positions.TryGetValue(prereqVm, out var parentPos)) continue;
+                var prereqVm = vm.Prerequisite as SkillTreeNodeViewModel;
+                if (prereqVm == null) continue;
+                if (!positions.TryGetValue(vm, out var childPos)) continue;
+                if (!positions.TryGetValue(prereqVm, out var parentPos)) continue;
 
-                    var connector = Instantiate(connectorPrefab, content);
-                    connector.transform.SetAsFirstSibling();
-                    connector.SetEndpoints(parentPos, childPos);
-                    connectors.Add(connector);
-                }
+                var connector = Instantiate(connectorPrefab, content);
+                connector.transform.SetAsFirstSibling();
+                connector.SetEndpoints(parentPos, childPos);
+                connectors.Add(connector);
             }
+        }
 
-            if (detailModal != null && previousModalSource != null)
+        private void RebuildDetailModal(IReadOnlyList<SkillTreeNodeViewModel> viewModels, object previousModalSource)
+        {
+            if(detailModal == null || previousModalSource == null) return;
+            foreach (var vm in viewModels)
             {
-                foreach (var vm in viewModels)
-                {
-                    if (!ReferenceEquals(vm.Source, previousModalSource)) continue;
-                    detailModal.Show(vm);
-                    break;
-                }
+                if (!ReferenceEquals(vm.Source, previousModalSource)) continue;
+                detailModal.Show(vm);
+                break;
             }
         }
 

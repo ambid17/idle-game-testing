@@ -30,18 +30,18 @@ namespace UI
         private void OnEnable()
         {
             GameManager.EventService.Add<BuildingInteractedEvent>(OnBuildingInteracted);
-            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<PurchaseRequestedEvent>(OnPurchaseRequested);
+            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
             GameManager.EventService.Add<UICloseEvent>(Close);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<BuildingInteractedEvent>(OnBuildingInteracted);
-            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<PurchaseRequestedEvent>(OnPurchaseRequested);
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
             GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
@@ -61,12 +61,12 @@ namespace UI
         {
             panelRoot.SetActive(true);
             RefreshDollars();
-            if (skillTreePanel != null) skillTreePanel.Open();
+            skillTreePanel.Open();
         }
 
         private void Close()
         {
-            if (panelRoot != null) panelRoot.SetActive(false);
+            panelRoot.SetActive(false);
         }
 
         private void OnPurchaseRequested(PurchaseRequestedEvent evt) => UpgradeManager.Instance.TryPurchase(evt.Definition);
@@ -77,12 +77,12 @@ namespace UI
         private void RefreshAll()
         {
             RefreshDollars();
-            if (skillTreePanel != null) skillTreePanel.RefreshAll();
+            skillTreePanel.RefreshAll();
         }
 
         private void RefreshDollars()
         {
-            if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
+            dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
         }
     }
 }
