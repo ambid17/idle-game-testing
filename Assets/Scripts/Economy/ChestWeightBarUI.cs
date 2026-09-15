@@ -12,14 +12,14 @@ namespace Economy
         [SerializeField] private Image weightFillBar;
         [SerializeField] private TMP_Text weightLabel;
 
-        public void SetWeight(float currentWeight, float displayCapacity)
+        public void SetWeight(float currentWeight, float maxWeight)
         {
             if (rendererRoot != null) rendererRoot.SetActive(true);
             if (weightFillBar != null)
             {
-                weightFillBar.fillAmount = displayCapacity > 0f ? Mathf.Clamp01(currentWeight / displayCapacity) : 0f;
+                weightFillBar.fillAmount = maxWeight > 0f ? Mathf.Clamp01(currentWeight / maxWeight) : 0f;
             }
-            if (weightLabel != null) weightLabel.text = $"{currentWeight:0}";
+            if (weightLabel != null) weightLabel.text = $"{currentWeight:0}/{maxWeight:0}";
         }
     }
 }

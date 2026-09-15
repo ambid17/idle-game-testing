@@ -39,7 +39,7 @@ namespace UI
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Add<ProcessingStartRequestedEvent>(OnStartRequested);
             GameManager.EventService.Add<ProcessingCancelRequestedEvent>(OnCancelRequested);
             GameManager.EventService.Add<ProcessingJobStartedEvent>(OnJobStarted);
@@ -50,7 +50,7 @@ namespace UI
 
         private void OnDisable()
         {
-            GameManager.EventService.Remove<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Remove<ProcessingStartRequestedEvent>(OnStartRequested);
             GameManager.EventService.Remove<ProcessingCancelRequestedEvent>(OnCancelRequested);
             GameManager.EventService.Remove<ProcessingJobStartedEvent>(OnJobStarted);
@@ -59,9 +59,9 @@ namespace UI
             GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
-        private void OnBuildingInteracted(BuildingInteractedEvent evt)
+        private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
-            if (evt.Type == InteractableType.Processing) Open();
+            if (evt.Type == InteractableType.Building_Processing) Open();
             else Close();
         }
 

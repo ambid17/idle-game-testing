@@ -4,22 +4,32 @@ using UnityEngine.InputSystem;
 
 namespace Interaction
 {
-    // Proximity prompt + E-to-interact per GameDesignDoc "Mechanics": approaching a building
-    // pops up interaction text, pressing E interacts.
+    // Generic proximity prompt + E-to-interact per GameDesignDoc "Mechanics": approaching any
+    // IInteractable (buildings, chests, ...) pops up its prompt text, pressing E interacts. Only
+    // one IInteractable is ever tracked at a time, so a single E press can't fire two interactions
+    // when the player is near more than one interactable at once.
     public class PlayerInteractionDetector : MonoBehaviour
     {
         [SerializeField] private LayerMask interactableLayer;
         [SerializeField] private InteractionPromptUI promptUI;
 
-        private BuildingInteractable current;
+        private IInteractable current;
         Keyboard keyboard => Keyboard.current;
 
         private void Update()
         {
+            // current can be a destroyed MonoBehaviour (e.g. a looted-empty Chest) without becoming
+            // a C# null through the interface reference - check Unity's own null first.
+            if (current is Object obj && obj == null)
+            {
+                current = null;
+                promptUI.Hide();
+                return;
+            }
+
             if (current != null && keyboard != null && keyboard.eKey.wasPressedThisFrame)
             {
-                Debug.Log($"PlayerInteractionDetector: Interacting with {current.Type}");
-                GameManager.EventService.Dispatch(new BuildingInteractedEvent(current.Type));
+                current.Interact();
             }
         }
 
@@ -29,7 +39,9 @@ namespace Interaction
             {
                 return;
             }
-            var other = collision.GetComponent<BuildingInteractable>();
+            var other = collision.GetComponent<IInteractable>();
+            if (other == null) return;
+
             current = other;
             promptUI.Show(current.PromptText);
         }
@@ -40,6 +52,8 @@ namespace Interaction
             {
                 return;
             }
+            if (collision.GetComponent<IInteractable>() != current) return;
+
             current = null;
             promptUI.Hide();
         }

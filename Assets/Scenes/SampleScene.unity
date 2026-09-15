@@ -23764,7 +23764,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6597479c0cf3b4b4eacaa06b1ae751e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerInventory
-  baseMaxWeight: 100
+  baseMaxWeight: 10
 --- !u!114 &2055974198
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -26,6 +26,12 @@ In general, when a non-instantiated MonoBehaviour script needs to be accessed fr
 	- Do not check for null during access.
 	- Do check for null in the game manager, and log an error if the value isn't set.
 	
+## Object references
+- Never use "Find" methods like FindAnyObjectByType()
+- instead do one of the following:
+	- if the object is referenced in one area only, just use an editor reference and set the reference in the scene
+	- if the object is used in multiple disjoint places, add it to a relevant singleton (or create one) and use the singleton's reference
+	
 ## Null checks
 - when performing null checks to return early, include a `Debug.LogError()`
 

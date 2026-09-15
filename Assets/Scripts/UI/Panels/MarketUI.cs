@@ -29,7 +29,7 @@ namespace UI
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<PurchaseRequestedEvent>(OnPurchaseRequested);
             GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
@@ -38,16 +38,16 @@ namespace UI
 
         private void OnDisable()
         {
-            GameManager.EventService.Remove<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<PurchaseRequestedEvent>(OnPurchaseRequested);
             GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
             GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
-        private void OnBuildingInteracted(BuildingInteractedEvent evt)
+        private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
-            if (evt.Type == InteractableType.Market)
+            if (evt.Type == InteractableType.Building_Market)
             {
                 Open();
             }

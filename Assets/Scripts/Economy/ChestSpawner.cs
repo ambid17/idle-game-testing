@@ -1,5 +1,6 @@
 using Events;
 using Player;
+using System.Linq;
 using UnityEngine;
 
 namespace Economy
@@ -31,7 +32,7 @@ namespace Economy
 
         private void OnPlayerInventoryDropped(PlayerInventoryDroppedEvent evt)
         {
-            if (chestPrefab == null || player == null) return;
+            if (chestPrefab == null || player == null || evt.OreCounts.All(kvp => kvp.Value <= 0)) return;
 
             var mapGenerationService = GameManager.MapGenerationService;
             Vector3 deathPosition = player.transform.position;

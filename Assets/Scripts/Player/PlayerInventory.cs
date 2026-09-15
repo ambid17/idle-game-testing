@@ -95,7 +95,8 @@ namespace Player
         // runs once at startup before any UI has subscribed.
         public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> oreCounts)
         {
-            oreInventory.RestoreFromSaveData(oreCounts);
+            oreInventory.PopulateFromDictionary(oreCounts);
+            GameManager.EventService.Dispatch<InventoryChangedEvent>();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using MapGeneration;
 using UnityEngine;
 
@@ -14,9 +15,7 @@ namespace Economy
         private readonly Dictionary<BlockTypeId, int> oreCounts = new();
         private System.Func<float> maxWeightProvider;
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
-
-        [SerializeField] float _currentWeight;
-        public float CurrentWeight => _currentWeight;
+        public float CurrentWeight => oreCounts.Sum(kvp => blockTypeDatabase.Get((byte)kvp.Key).Weight * kvp.Value);
         public float MaxWeight => maxWeightProvider != null ? maxWeightProvider() : 0f;
         public bool IsFull => CurrentWeight >= MaxWeight;
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreCounts;
@@ -34,7 +33,6 @@ namespace Economy
 
             oreCounts.TryGetValue(blockType.Id, out var current);
             oreCounts[blockType.Id] = current + amount;
-            _currentWeight += blockType.Weight * amount;
             return true;
         }
 
@@ -42,7 +40,6 @@ namespace Economy
         {
             var snapshot = new Dictionary<BlockTypeId, int>(oreCounts);
             ClearOreCounts();
-            _currentWeight = 0f;
             return snapshot;
         }
 
@@ -53,28 +50,30 @@ namespace Economy
         {
             var withdrawn = new Dictionary<BlockTypeId, int>();
             if (weightBudget <= 0f) return withdrawn;
+            var remainingWeightBudget = weightBudget;
 
             foreach (var id in new List<BlockTypeId>(oreCounts.Keys))
             {
-                if (weightBudget <= 0f) break;
+                if (remainingWeightBudget <= 0f) break;
 
                 int count = oreCounts[id];
                 if (count <= 0) continue;
 
-                var blockType = blockTypeDatabase != null ? blockTypeDatabase.Get((byte)id) : null;
-                float unitWeight = blockType != null ? blockType.Weight : 0f;
+                var blockType = blockTypeDatabase.Get((byte)id);
+                float unitWeight = blockType.Weight;
 
                 int amountToTake = count;
                 if (unitWeight > 0f)
                 {
-                    int affordable = Mathf.FloorToInt(weightBudget / unitWeight);
+                    int affordable = Mathf.FloorToInt(remainingWeightBudget / unitWeight);
                     amountToTake = Mathf.Clamp(affordable, 0, count);
                 }
                 if (amountToTake <= 0) continue;
 
+                // remove from this inventory
                 oreCounts[id] = count - amountToTake;
-                _currentWeight -= unitWeight * amountToTake;
-                weightBudget -= unitWeight * amountToTake;
+                remainingWeightBudget -= unitWeight * amountToTake;
+                // add to withdrawn snapshot
                 withdrawn[id] = amountToTake;
             }
 
@@ -84,16 +83,11 @@ namespace Economy
         public void ClearAll()
         {
             ClearOreCounts();
-            _currentWeight = 0f;
         }
 
-        // Bulk restore for SaveService - silent (no owner event dispatch), recomputes CurrentWeight
-        // from BlockTypeDatabase same as WithdrawUpToWeight. Safe whether or not PopulateOreCounts
-        // has run yet - assigns keys directly rather than relying on pre-seeded zero entries.
-        public void RestoreFromSaveData(IReadOnlyDictionary<BlockTypeId, int> counts)
+        public void PopulateFromDictionary(IReadOnlyDictionary<BlockTypeId, int> counts)
         {
             ClearOreCounts();
-            _currentWeight = 0f;
             if (counts == null) return;
 
             foreach (var kvp in counts)
@@ -101,8 +95,7 @@ namespace Economy
                 if (kvp.Value <= 0) continue;
                 oreCounts[kvp.Key] = kvp.Value;
 
-                var blockType = blockTypeDatabase != null ? blockTypeDatabase.Get((byte)kvp.Key) : null;
-                if (blockType != null) _currentWeight += blockType.Weight * kvp.Value;
+                var blockType = blockTypeDatabase.Get((byte)kvp.Key);
             }
         }
 

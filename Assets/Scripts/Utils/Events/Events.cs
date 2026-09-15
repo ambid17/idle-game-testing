@@ -58,11 +58,11 @@ namespace Events
 
     public class UICloseEvent { }
 
-    public class BuildingInteractedEvent : IEvent
+    public class PlayerInteractedEvent : IEvent
     {
         public InteractableType Type;
 
-        public BuildingInteractedEvent(InteractableType type)
+        public PlayerInteractedEvent(InteractableType type)
         {
             Type = type;
         }

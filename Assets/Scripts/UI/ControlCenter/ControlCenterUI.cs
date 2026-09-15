@@ -23,18 +23,18 @@ namespace UI
         }
 
         private void OnEnable() {
-            GameManager.EventService.Add<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Add<UICloseEvent>(Close);
         }
         private void OnDisable()
         {
-            GameManager.EventService.Remove<BuildingInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
-        private void OnBuildingInteracted(BuildingInteractedEvent evt)
+        private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
-            if (evt.Type == InteractableType.ControlCenter) Open();
+            if (evt.Type == InteractableType.Building_ControlCenter) Open();
             else Close();
         }
 
