@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: 'Processing: Unlock Iron Recipe'
   Description: Unlocks the Swords recipe at the Processing Center.
   Icon: {fileID: 0}
-  Branch: 1
+  Branch: 4
   Effect: 37
   EffectValuePerLevel: 1
   MaxLevel: 1

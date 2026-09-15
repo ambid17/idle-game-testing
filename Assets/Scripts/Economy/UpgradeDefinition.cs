@@ -11,7 +11,8 @@ namespace Economy
         Mining,
         Economy,
         Automation,
-        Progression
+        Movement,
+        Processing
     }
 
     // What purchasing a level of this upgrade actually does. UpgradeManager exposes one computed
@@ -49,7 +50,6 @@ namespace Economy
         ProcessingSaleValueMultiplier, // stub - Processing Center doesn't exist yet
         ProcessingRecipeUnlock, // stub - Processing Center doesn't exist yet
         ProcessingSpeedMultiplier, // stub - Processing Center doesn't exist yet
-        FallSpeedBonus, // stub
         FallDamageReductionBonus, // stub
         PlayerMoveSpeedBonus, // stub
         FlightSpeedBonus, // stub

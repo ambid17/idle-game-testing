@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: 'Processing: Unlock Emerald Recipe'
   Description: Unlocks the Earrings recipe at the Processing Center.
   Icon: {fileID: 0}
-  Branch: 1
+  Branch: 4
   Effect: 39
   EffectValuePerLevel: 1
   MaxLevel: 1

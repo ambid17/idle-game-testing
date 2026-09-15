@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
-  m_Name: Progression_MoveSpeed
+  m_Name: Processing_Speed
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  DisplayName: Move Speed
-  Description: Increases your on-foot movement speed.
+  DisplayName: Processing Speed
+  Description: Increases how quickly the Processing Center converts raw goods.
   Icon: {fileID: 0}
-  Branch: 3
-  Effect: 28
+  Branch: 4
+  Effect: 25
   EffectValuePerLevel: 0.1
-  MaxLevel: 8
-  BaseCost: 250
-  CostGrowth: 1.25
-  Prerequisite: {fileID: 11400000, guid: d7c6fdb4de778bd479039a3957da5ca8, type: 2}
+  MaxLevel: 10
+  BaseCost: 1500
+  CostGrowth: 1.3
+  Prerequisite: {fileID: 0}
   RequirePrerequisiteMaxed: 0

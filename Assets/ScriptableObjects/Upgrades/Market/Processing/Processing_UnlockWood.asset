@@ -15,11 +15,11 @@ MonoBehaviour:
   DisplayName: 'Processing: Unlock Wood Recipe'
   Description: Unlocks the Chairs recipe at the Processing Center.
   Icon: {fileID: 0}
-  Branch: 1
+  Branch: 4
   Effect: 35
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 500
   CostGrowth: 1.1
-  Prerequisite: {fileID: 0}
+  Prerequisite: {fileID: 11400000, guid: 3c92dbad6e54d8046a7636cc252ecc13, type: 2}
   RequirePrerequisiteMaxed: 0
