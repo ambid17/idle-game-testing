@@ -24,6 +24,7 @@ namespace UI.SkillTree
 
         public void Bind(SkillTreeNodeViewModel viewModel, Action<SkillTreeNodeViewModel> onClicked)
         {
+            gameObject.name = $"SkillTreeNode_{viewModel.DisplayName}";
             if (button != null)
             {
                 button.onClick.RemoveAllListeners();

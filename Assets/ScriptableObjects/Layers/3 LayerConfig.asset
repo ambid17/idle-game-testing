@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c845b9a9e35dd1d4894d69b46a0196cb, type: 3}
   m_Name: 3 LayerConfig
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
-  LayerIndex: 2
+  LayerIndex: 3
   LayerHeight: 30
   LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
   BlockHealth: 1.7
