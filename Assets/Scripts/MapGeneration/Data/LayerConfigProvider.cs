@@ -41,15 +41,24 @@ namespace MapGeneration
 
         public int GetLayerIndexAtDepth(int depthInBlocks)
         {
-            var currentTotalDepth = 0;
+            var totalLayerHeight = 0;
             for (int i = 0; i < LayerConfigs.Count; i++)
             {
                 var config = GetConfig(i);
-                if (depthInBlocks < currentTotalDepth + config.LayerHeight)
+                if (depthInBlocks < totalLayerHeight + config.LayerHeight)
                 {
                     return i;
                 }
-                currentTotalDepth += config.LayerHeight;
+                totalLayerHeight += config.LayerHeight;
+            }
+
+            // if we are deeper than the last configured layer, use the last layer config for all deeper layers. This is a design choice to allow for infinite depth with the last layer's configuration.
+            if (depthInBlocks >= totalLayerHeight)
+            {
+                var depthBeyondLastLayer = depthInBlocks - totalLayerHeight;
+                var lastLayer = LayerConfigs[LayerConfigs.Count - 1];
+                var actualLayer = (depthBeyondLastLayer / lastLayer.LayerHeight) + lastLayer.LayerIndex + 1;
+                return actualLayer;
             }
             return 0;
         }
