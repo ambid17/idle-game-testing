@@ -48,22 +48,24 @@ namespace Player
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<PlayerDiedEvent>(ClearAll);
+            GameManager.EventService.Add<PlayerDiedEvent>(HandleDeath);
             OreCarrierRegistry.Instance.Register(this);
         }
 
         private void OnDisable()
         {
-            GameManager.EventService.Remove<PlayerDiedEvent>(ClearAll);
+            GameManager.EventService.Remove<PlayerDiedEvent>(HandleDeath);
             OreCarrierRegistry.Instance.Unregister(this);
         }
 
-        // Death wipes everything the player was carrying. Artifacts are unaffected - they're
-        // banked in Wallet, not carried here.
-        public void ClearAll()
+        // Death drops everything the player was carrying into a chest at the death location
+        // (Economy.ChestSpawner reacts to the dispatched event) instead of just discarding it.
+        // Artifacts are unaffected - they're banked in Wallet, not carried here.
+        private void HandleDeath()
         {
-            oreInventory.ClearAll();
+            var droppedOre = oreInventory.WithdrawAllOre();
             GameManager.EventService.Dispatch<InventoryChangedEvent>();
+            GameManager.EventService.Dispatch(new PlayerInventoryDroppedEvent(droppedOre));
         }
 
         public bool AddOre(BlockType blockType, int amount = 1)

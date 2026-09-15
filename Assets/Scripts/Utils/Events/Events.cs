@@ -44,6 +44,18 @@ namespace Events
 
     public class InventoryChangedEvent { }
 
+    // Dispatched by PlayerInventory.HandleDeath with the ore that was just withdrawn on death, so
+    // Economy.ChestSpawner can drop it into a chest instead of it just being discarded.
+    public class PlayerInventoryDroppedEvent : IEvent
+    {
+        public IReadOnlyDictionary<BlockTypeId, int> OreCounts;
+
+        public PlayerInventoryDroppedEvent(IReadOnlyDictionary<BlockTypeId, int> oreCounts)
+        {
+            OreCounts = oreCounts;
+        }
+    }
+
     public class UICloseEvent { }
 
     public class BuildingInteractedEvent : IEvent

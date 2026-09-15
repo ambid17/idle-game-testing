@@ -7480,6 +7480,7 @@ GameObject:
   - component: {fileID: 528579658}
   - component: {fileID: 528579661}
   - component: {fileID: 528579662}
+  - component: {fileID: 528579663}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -7563,6 +7564,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Persistence.SaveService
   playerController: {fileID: 2055974193}
+--- !u!114 &528579663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 528579657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7269277ca7ebf40a773b3593e72618, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.ChestSpawner
+  chestPrefab: {fileID: 6569216783213287884, guid: 2e0cb40e23a17ba4c8b7e3f63a68f494, type: 3}
+  player: {fileID: 2055974193}
 --- !u!1 &528690465
 GameObject:
   m_ObjectHideFlags: 0
@@ -22006,6 +22021,50 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: 2
   m_LayoutPriority: 555
+--- !u!1 &1938950548
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1938950550}
+  - component: {fileID: 1938950549}
+  m_Layer: 0
+  m_Name: '[singleton] Economy.PrestigeUpgradeManager'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1938950549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1938950548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6da709131f92d0e40aed231f4519aee1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeManager
+--- !u!4 &1938950550
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1938950548}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1941702768
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25172,3 +25231,4 @@ SceneRoots:
   - {fileID: 296392793}
   - {fileID: 1622996567}
   - {fileID: 2056869621}
+  - {fileID: 1938950550}
