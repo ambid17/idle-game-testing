@@ -29,6 +29,7 @@ namespace Persistence
         private string MapSavePath => Path.Combine(Application.persistentDataPath, "map.json");
 
         [SerializeField] private PlayerController playerController;
+        [SerializeField] private ChestSpawner chestSpawner;
         private PlayerInventory playerInventory;
         private PlayerHealth playerHealth;
 
@@ -44,6 +45,11 @@ namespace Persistence
             {
                 playerInventory = playerController.GetComponent<PlayerInventory>();
                 playerHealth = playerController.GetComponent<PlayerHealth>();
+            }
+
+            if (chestSpawner == null)
+            {
+                Debug.LogError("SaveService.chestSpawner is not assigned. Active chests will not be saved/restored.");
             }
 
             // OS force-kill (especially on mobile) doesn't reliably call OnApplicationQuit, so a
@@ -127,6 +133,17 @@ namespace Persistence
                         data.Player.OreCounts.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
                     }
                 }
+            }
+
+            foreach (var chest in ChestRegistry.Instance.ActiveChests)
+            {
+                var entry = new ChestSaveEntry { Position = chest.transform.position };
+                foreach (var kvp in chest.OreCounts)
+                {
+                    if (kvp.Value <= 0) continue;
+                    entry.OreCounts.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
+                }
+                data.Chests.Add(entry);
             }
 
             try
@@ -243,6 +260,21 @@ namespace Persistence
                 if (playerInventory != null) playerInventory.RestoreFromSaveData(playerOres);
                 if (playerHealth != null) playerHealth.RestoreFromSaveData(data.Player.CurrentHp);
                 if (playerController != null) playerController.RestoreFromSaveData(data.Player.Fuel, data.Player.Position);
+            }
+
+            if (chestSpawner != null && data.Chests != null)
+            {
+                var chestSpawnData = new List<ChestSpawnData>();
+                foreach (var entry in data.Chests)
+                {
+                    var oreCounts = new Dictionary<BlockTypeId, int>();
+                    foreach (var oreEntry in entry.OreCounts)
+                    {
+                        oreCounts[oreEntry.Id] = oreEntry.Count;
+                    }
+                    chestSpawnData.Add(new ChestSpawnData(entry.Position, oreCounts));
+                }
+                chestSpawner.RestoreFromSaveData(chestSpawnData);
             }
 
             LoadOfflineEarnings(data);

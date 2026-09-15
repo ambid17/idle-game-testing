@@ -61,6 +61,14 @@ namespace Persistence
         public List<OreCountEntry> OreCounts = new();
     }
 
+    // A Chest that was still active (unlooted) at save time - see Economy.Chest/ChestSpawner.
+    [Serializable]
+    public class ChestSaveEntry
+    {
+        public Vector3 Position;
+        public List<OreCountEntry> OreCounts = new();
+    }
+
     // Minimal save file per the resolved persistence decision - Wallet/UpgradeManager/idle-average/
     // AutomationSettings/Depot/Player state plus a last-active timestamp. Map/chunk data lives in
     // the sibling map.json (MapGeneration/Persistence's MapSaveData), not here.
@@ -87,6 +95,8 @@ namespace Persistence
         public List<GoodsCountEntry> DepotGoods = new();
         public List<ProcessingJobSaveEntry> ProcessingJobs = new();
         public PlayerSaveData Player = new();
+        // Chests still active (unlooted) at save time - see Economy.ChestRegistry.
+        public List<ChestSaveEntry> Chests = new();
         // ISO-8601 string, since JsonUtility can't serialize DateTime directly.
         public string LastActiveUtcTimestamp;
     }

@@ -24,6 +24,9 @@ namespace Economy
 
         public string PromptText => "Press E to pick up lost ores";
 
+        // Snapshot of what's currently in the chest, for SaveService (via ChestRegistry) to persist.
+        public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreInventory.OreCounts;
+
         private void Awake()
         {
             oreInventory = GetComponent<OreInventory>();
@@ -34,6 +37,9 @@ namespace Economy
             playerInventory = FindAnyObjectByType<PlayerInventory>();
             if (playerInventory == null) Debug.LogError("Chest: no PlayerInventory found in scene.");
         }
+
+        private void OnEnable() => ChestRegistry.Instance.Register(this);
+        private void OnDisable() => ChestRegistry.Instance.Unregister(this);
 
         // Called immediately after Instantiate by ChestSpawner to seed the dropped ore.
         public void Configure(IReadOnlyDictionary<BlockTypeId, int> initialOre)
