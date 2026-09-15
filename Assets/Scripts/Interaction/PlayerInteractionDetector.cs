@@ -12,12 +12,13 @@ namespace Interaction
         [SerializeField] private InteractionPromptUI promptUI;
 
         private BuildingInteractable current;
-        Keyboard keyboard = Keyboard.current;
+        Keyboard keyboard => Keyboard.current;
 
         private void Update()
         {
             if (current != null && keyboard != null && keyboard.eKey.wasPressedThisFrame)
             {
+                Debug.Log($"PlayerInteractionDetector: Interacting with {current.Type}");
                 GameManager.EventService.Dispatch(new BuildingInteractedEvent(current.Type));
             }
         }

@@ -113,7 +113,7 @@ namespace Player
 
         private void Update()
         {
-            if (health.IsDead) return;
+            if (health.IsDead || keyboard == null) return;
 
             if (keyboard.escapeKey.wasPressedThisFrame)
             {
