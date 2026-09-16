@@ -22,9 +22,6 @@ namespace Economy
             if (playerInventory == null) Debug.LogError("PrestigeManager: no PlayerInventory found in scene.");
         }
 
-        // UI-facing entry point - only requests confirmation, performs no reset itself.
-        public void RequestPrestige() => GameManager.EventService.Dispatch<PrestigeConfirmationRequestedEvent>();
-
         // Only ever called after the player has explicitly confirmed (MuseumUI's confirm sub-panel).
         public void ExecutePrestige()
         {
