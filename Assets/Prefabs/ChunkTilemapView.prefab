@@ -378,6 +378,7 @@ MonoBehaviour:
   showDebugCellLabels: 0
   debugCellLabelColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   surfaceFogGradientRows: 10
+  defaultAlpha: 1
 --- !u!1 &7226294879325617473
 GameObject:
   m_ObjectHideFlags: 0

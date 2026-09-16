@@ -33,6 +33,12 @@ namespace MapGeneration
         // Layer 0 only: fog fades in from clear at the surface (row 0) to full opacity by this
         // row, so the mine entrance doesn't open into a hard fog wall.
         [SerializeField] private int surfaceFogGradientRows = 10;
+        [SerializeField] private float defaultAlpha = 0.97f;
+
+        // Unrevealed cells within this many cells of any revealed cell fade in from clear
+        // (adjacent to revealed) to full opacity (at/beyond this radius), so the fog edge
+        // reads as a soft glow around explored ground instead of a hard boundary.
+        [SerializeField] private int revealGradientRadius = 4;
 
         public int LayerIndex { get; private set; }
 
@@ -101,7 +107,7 @@ namespace MapGeneration
                     terrainPositions[n] = pos;
                     terrainTiles[n] = cell.Mined ? null : ResolveTile(cell.BlockTypeId);
 
-                    fogChanges[n] = BuildFogChange(pos, y, cell.Revealed);
+                    fogChanges[n] = BuildFogChange(pos, x, y, cell.Revealed);
 
                     n++;
                 }
@@ -113,41 +119,122 @@ namespace MapGeneration
 
         public void RepaintCells(IReadOnlyList<Vector2Int> localCoords)
         {
-            int count = localCoords.Count;
+            var expandedCoords = ExpandForFogGradient(localCoords);
+            int count = expandedCoords.Count;
             var terrainPositions = new Vector3Int[count];
             var terrainTiles = new TileBase[count];
             var fogChanges = new TileChangeData[count];
 
             for (int i = 0; i < count; i++)
             {
-                int x = localCoords[i].x;
-                int y = localCoords[i].y;
+                int x = expandedCoords[i].x;
+                int y = expandedCoords[i].y;
                 var cell = chunk.Cells[chunk.Index(x, y)];
                 var pos = new Vector3Int(x, -y, 0);
 
                 terrainPositions[i] = pos;
                 terrainTiles[i] = cell.Mined ? null : ResolveTile(cell.BlockTypeId);
 
-                fogChanges[i] = BuildFogChange(pos, y, cell.Revealed);
+                fogChanges[i] = BuildFogChange(pos, x, y, cell.Revealed);
             }
 
             terrainTilemap.SetTiles(terrainPositions, terrainTiles);
             fogTilemap.SetTiles(fogChanges, true);
         }
 
-        // Revealed cells clear the fog tile entirely. Otherwise, layer 0's top rows fade the
-        // fog tile's alpha in from 0 (surface) to 1 (by surfaceFogGradientRows) instead of
-        // snapping straight to full opacity; every other layer/row stays fully opaque.
-        private TileChangeData BuildFogChange(Vector3Int pos, int y, bool revealed)
+        // A cell's reveal-distance fade (see BuildFogChange) depends on its neighbors' Revealed
+        // state, so a partial repaint has to also touch every still-fogged cell within
+        // revealGradientRadius of a newly-revealed/mined cell, not just the cells whose own flags
+        // changed - otherwise the gradient around the new reveal never gets drawn until the next
+        // full RepaintAll.
+        private List<Vector2Int> ExpandForFogGradient(IReadOnlyList<Vector2Int> localCoords)
+        {
+            if (revealGradientRadius <= 0) return new List<Vector2Int>(localCoords);
+
+            int w = chunk.Width;
+            int h = chunk.Height;
+            var seen = new HashSet<Vector2Int>();
+            var result = new List<Vector2Int>();
+
+            foreach (var coord in localCoords)
+            {
+                for (int dy = -revealGradientRadius; dy <= revealGradientRadius; dy++)
+                {
+                    int y = coord.y + dy;
+                    if (y < 0 || y >= h) continue;
+
+                    for (int dx = -revealGradientRadius; dx <= revealGradientRadius; dx++)
+                    {
+                        int x = coord.x + dx;
+                        if (x < 0 || x >= w) continue;
+
+                        var pos = new Vector2Int(x, y);
+                        if (seen.Add(pos)) result.Add(pos);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        // Revealed cells clear the fog tile entirely. Otherwise alpha is the lowest (most see-
+        // through) of two independent fades, each fully opaque by default:
+        //  - layer 0's top rows fade in from 0 (surface) to 1 (by surfaceFogGradientRows), so the
+        //    mine entrance doesn't open into a hard fog wall;
+        //  - any cell within revealGradientRadius of a revealed cell fades in from 0 (adjacent)
+        //    to 1 (at the radius), so the edge of explored ground reads as a soft glow.
+        private TileChangeData BuildFogChange(Vector3Int pos, int x, int y, bool revealed)
         {
             if (revealed) return new TileChangeData(pos, null, Color.white, Matrix4x4.identity);
 
-            var defaultAlpha = 0.97f;
-            var gradientPercentage = Mathf.Clamp01(y / (float)(surfaceFogGradientRows - 1));
-            float alpha = LayerIndex == 0 && y < surfaceFogGradientRows
-                ? Mathf.Min(defaultAlpha, gradientPercentage)
-                : defaultAlpha;
+            float alpha = defaultAlpha;
+
+            if (LayerIndex == 0 && y < surfaceFogGradientRows)
+            {
+                var surfacePercentage = Mathf.Clamp01(y / (float)(surfaceFogGradientRows - 1));
+                alpha = Mathf.Min(alpha, surfacePercentage);
+            }
+
+            if (revealGradientRadius > 0)
+            {
+                float distance = DistanceToNearestRevealed(x, y, revealGradientRadius);
+                if (distance >= 0f)
+                {
+                    var revealPercentage = Mathf.Clamp01(distance / revealGradientRadius);
+                    alpha = Mathf.Min(alpha, revealPercentage);
+                }
+            }
+
             return new TileChangeData(pos, fogTile, new Color(1f, 1f, 1f, alpha), Matrix4x4.identity);
+        }
+
+        // Euclidean distance (in cells) to the closest Revealed cell within maxRadius, searched
+        // as a square window and chunk-bounds clamped; -1 if none is that close.
+        private float DistanceToNearestRevealed(int x, int y, int maxRadius)
+        {
+            int w = chunk.Width;
+            int h = chunk.Height;
+            float nearestSq = float.MaxValue;
+
+            for (int dy = -maxRadius; dy <= maxRadius; dy++)
+            {
+                int ny = y + dy;
+                if (ny < 0 || ny >= h) continue;
+
+                for (int dx = -maxRadius; dx <= maxRadius; dx++)
+                {
+                    int nx = x + dx;
+                    if (nx < 0 || nx >= w) continue;
+
+                    int distSq = dx * dx + dy * dy;
+                    if (distSq >= nearestSq) continue;
+                    if (!chunk.Cells[chunk.Index(nx, ny)].Revealed) continue;
+
+                    nearestSq = distSq;
+                }
+            }
+
+            return nearestSq <= maxRadius * (float)maxRadius ? Mathf.Sqrt(nearestSq) : -1f;
         }
 
         private TileBase ResolveTile(byte blockTypeId)
