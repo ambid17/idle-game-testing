@@ -17869,8 +17869,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.SkillTree.SkillTreePanZoomUI
   content: {fileID: 2062135263}
-  zoomSpeed: 0.1
-  minZoom: 0.4
+  zoomSpeed: 0.01
+  minZoom: 0.1
   maxZoom: 1.5
   maxPanRadius: 1600
   defaultScale: 0.5
@@ -19048,7 +19048,7 @@ Transform:
   m_GameObject: {fileID: 1150534566}
   serializedVersion: 2
   m_LocalRotation: {x: -4.6565474e-10, y: 0.000000029816878, z: 1.388437e-17, w: 1}
-  m_LocalPosition: {x: 21.321167, y: 2.1699998, z: -10}
+  m_LocalPosition: {x: 19.93597, y: 2.1699998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
