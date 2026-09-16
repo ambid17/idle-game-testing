@@ -35,12 +35,19 @@ namespace Tutorial
         {
             GameManager.EventService.Add<ArtifactCountChangedEvent>(OnArtifactCountChanged);
             GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Add<LoadCompletedEvent>(OnLoadCompleted);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<ArtifactCountChangedEvent>(OnArtifactCountChanged);
             GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
+            GameManager.EventService.Remove<LoadCompletedEvent>(OnLoadCompleted);
+        }
+
+        private void OnLoadCompleted()
+        {
+            TryShow(TutorialId.CoreGoal);
         }
 
         private void OnArtifactCountChanged()
@@ -95,8 +102,6 @@ namespace Tutorial
             {
                 shownTutorials.Add(id);
             }
-
-            TryShow(TutorialId.CoreGoal);
         }
     }
 }

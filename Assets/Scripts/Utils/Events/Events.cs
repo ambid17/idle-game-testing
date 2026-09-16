@@ -322,4 +322,6 @@ namespace Events
             WorldPosition = worldPosition;
         }
     }
+
+    public class LoadCompletedEvent { }
 }

@@ -292,7 +292,8 @@ namespace Persistence
             }
 
             LoadOfflineEarnings(data);
-            
+
+            GameManager.EventService.Dispatch<LoadCompletedEvent>();
         }
 
         // Restores mine/chunk terrain from map.json - independent of ApplyLoadedData/save.json so
