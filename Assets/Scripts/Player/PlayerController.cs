@@ -36,7 +36,7 @@ namespace Player
         private CapsuleCollider2D capsuleCollider;
         private PlayerHealth health;
         private bool wasGrounded;
-        private float peakFallSpeed;
+        private float lastFallSpeed;
         private Vector3 spawnPosition;
 
         public bool IsGrounded { get; private set; }
@@ -93,7 +93,7 @@ namespace Player
         private void HandleRevived()
         {
             Fuel = fuelMax;
-            peakFallSpeed = 0f;
+            lastFallSpeed = 0f;
             rb.linearVelocity = Vector2.zero;
             transform.position = spawnPosition;
         }
@@ -108,7 +108,7 @@ namespace Player
             rb.position = position;
             transform.position = position;
             rb.linearVelocity = Vector2.zero;
-            peakFallSpeed = 0f;
+            lastFallSpeed = 0f;
         }
 
         private void Update()
@@ -201,16 +201,18 @@ namespace Player
         {
             if (!IsGrounded)
             {
-                peakFallSpeed = Mathf.Max(peakFallSpeed, -rb.linearVelocity.y);
+                // Overwrite rather than take a max - we want the velocity from the last airborne
+                // frame (right before impact), not the highest speed reached anywhere in the fall.
+                lastFallSpeed = -rb.linearVelocity.y;
                 return;
             }
 
-            if (!wasGrounded && peakFallSpeed > fallDamageVelocityThreshold)
+            if (!wasGrounded && lastFallSpeed > fallDamageVelocityThreshold)
             {
-                health.TakeDamage((peakFallSpeed - fallDamageVelocityThreshold) * fallDamagePerExcessUnit);
+                health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * fallDamagePerExcessUnit);
             }
 
-            peakFallSpeed = 0f;
+            lastFallSpeed = 0f;
         }
 
         // Keeps the player's collider within the mine's horizontal extent. Read live off
