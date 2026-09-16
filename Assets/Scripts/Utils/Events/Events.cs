@@ -39,6 +39,10 @@ namespace Events
 
     public class InventoryChangedEvent { }
 
+    // Dispatched by PlayerMining when it blocks a dig because PlayerInventory.IsFull (and the
+    // Overflow upgrade isn't unlocked to auto-sell instead) - drives UI.InventoryFullUI's popup.
+    public class InventoryFullEvent { }
+
     // Dispatched by PlayerInventory.HandleDeath with the ore that was just withdrawn on death, so
     // Economy.ChestSpawner can drop it into a chest instead of it just being discarded.
     public class PlayerInventoryDroppedEvent : IEvent

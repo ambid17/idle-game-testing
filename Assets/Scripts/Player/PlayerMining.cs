@@ -1,4 +1,5 @@
 using Economy;
+using Events;
 using MapGeneration;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,6 +29,12 @@ namespace Player
         private int targetLayer, targetX, targetY;
         private float miningProgress;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
+
+        // Debounces InventoryFullEvent: without it, the full-inventory block below would fire
+        // every single frame the player holds a direction into a full ore cell (ResetTarget
+        // clears hasTarget each time, so isNewTarget is never a reliable once-per-attempt signal).
+        private const float InventoryFullNoticeCooldown = 2f;
+        private float lastInventoryFullNoticeTime = -Mathf.Infinity;
 
         private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.OverflowUnlocked;
         
@@ -84,8 +91,16 @@ namespace Player
             }
 
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, targetCellX, targetCellY);
-            if (blockType == null 
-                || (blockType.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow)
+            bool blockedByFullInventory = blockType != null && blockType.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow;
+            if (blockedByFullInventory && Time.time - lastInventoryFullNoticeTime >= InventoryFullNoticeCooldown)
+            {
+                lastInventoryFullNoticeTime = Time.time;
+                GameManager.EventService.Dispatch<InventoryFullEvent>();
+                ResetTarget();
+                return;
+            }
+
+            if (blockType == null
                 || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
                 )
             {
