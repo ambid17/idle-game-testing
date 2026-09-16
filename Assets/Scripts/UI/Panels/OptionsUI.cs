@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Settings;
 using TMPro;
 using UnityEngine;
@@ -8,11 +9,9 @@ namespace UI
     // Tabbed audio/video/control options, opened from PauseMenuUI's Options button (tab
     // switching itself is TabGroupUI, shared with ControlCenterUI's dashboards). Audio and Video
     // controls read/write through SettingsService (PlayerPrefs-backed, applies immediately as the
-    // player drags/clicks). Quality/Resolution use prev/next cycle buttons rather than a dropdown -
-    // this project has no TMP_Dropdown template asset, and a cycler matches the plain
-    // button-driven look already used everywhere else (see DeathUI/ControlCenterUI). Controls is a
-    // static legend rather than a rebinding UI - the project has no Input Actions asset, every key
-    // is hardcoded via UnityEngine.InputSystem.Keyboard.
+    // player drags/clicks). Quality/Resolution use TMP_Dropdowns. Controls is a static legend
+    // rather than a rebinding UI - the project has no Input Actions asset, every key is
+    // hardcoded via UnityEngine.InputSystem.Keyboard.
     public class OptionsUI : MonoBehaviour
     {
         [SerializeField] private GameObject rendererRoot;
@@ -25,16 +24,16 @@ namespace UI
 
         [Header("Video")]
         [SerializeField] private Toggle fullscreenToggle;
-        [SerializeField] private TMP_Text qualityValueLabel;
-        [SerializeField] private Button qualityPrevButton;
-        [SerializeField] private Button qualityNextButton;
-        [SerializeField] private TMP_Text resolutionValueLabel;
-        [SerializeField] private Button resolutionPrevButton;
-        [SerializeField] private Button resolutionNextButton;
+        [SerializeField] private TMP_Dropdown qualityDropdown;
+        [SerializeField] private TMP_Dropdown resolutionDropdown;
+        [SerializeField] private TMP_Dropdown refreshRateDropdown;
 
         private Resolution[] resolutions;
-        private int qualityIndex;
-        private int resolutionIndex;
+        // Screen.resolutions has one entry per supported refresh rate per resolution, so the
+        // resolution dropdown lists each (width, height) once here, and currentRefreshRates
+        // holds the refresh rates available for whichever resolution is currently selected.
+        private readonly List<(int width, int height)> uniqueResolutions = new();
+        private readonly List<RefreshRate> currentRefreshRates = new();
         private SettingsService settings => SettingsService.Instance;
 
         private void Start()
@@ -43,8 +42,11 @@ namespace UI
             if (backButton != null) backButton.onClick.AddListener(Close);
 
             resolutions = Screen.resolutions;
+            BuildUniqueResolutions();
             BindAudioControls();
             BindVideoControls();
+            PopulateQualityOptions();
+            PopulateResolutionOptions();
 
             if (rendererRoot != null) rendererRoot.SetActive(false);
         }
@@ -72,27 +74,104 @@ namespace UI
         private void BindVideoControls()
         {
             if (fullscreenToggle != null) fullscreenToggle.onValueChanged.AddListener(settings.SetFullscreen);
-            if (qualityPrevButton != null) qualityPrevButton.onClick.AddListener(() => StepQuality(-1));
-            if (qualityNextButton != null) qualityNextButton.onClick.AddListener(() => StepQuality(1));
-            if (resolutionPrevButton != null) resolutionPrevButton.onClick.AddListener(() => StepResolution(-1));
-            if (resolutionNextButton != null) resolutionNextButton.onClick.AddListener(() => StepResolution(1));
+            if (qualityDropdown != null) qualityDropdown.onValueChanged.AddListener(settings.SetQualityLevel);
+            if (resolutionDropdown != null) resolutionDropdown.onValueChanged.AddListener(OnResolutionSelected);
+            if (refreshRateDropdown != null) refreshRateDropdown.onValueChanged.AddListener(OnRefreshRateSelected);
         }
 
-        private void StepQuality(int direction)
+        private void BuildUniqueResolutions()
         {
-            int count = QualitySettings.names.Length;
-            if (count <= 0) return;
-            qualityIndex = (qualityIndex + direction + count) % count;
-            settings.SetQualityLevel(qualityIndex);
-            RefreshQualityLabel();
+            uniqueResolutions.Clear();
+            if (resolutions == null) return;
+            foreach (Resolution res in resolutions)
+            {
+                if (!uniqueResolutions.Contains((res.width, res.height)))
+                {
+                    uniqueResolutions.Add((res.width, res.height));
+                }
+            }
         }
 
-        private void StepResolution(int direction)
+        private void OnResolutionSelected(int index)
         {
-            if (resolutions == null || resolutions.Length == 0) return;
-            resolutionIndex = (resolutionIndex + direction + resolutions.Length) % resolutions.Length;
-            settings.SetResolution(resolutionIndex, resolutions[resolutionIndex]);
-            RefreshResolutionLabel();
+            if (index < 0 || index >= uniqueResolutions.Count) return;
+            PopulateRefreshRateOptions(index);
+            int refreshRateIndex = FindRefreshRateIndex(settings.RefreshRateNumerator, settings.RefreshRateDenominator);
+            if (refreshRateIndex < 0) refreshRateIndex = 0;
+            if (refreshRateDropdown != null) refreshRateDropdown.SetValueWithoutNotify(refreshRateIndex);
+            ApplyResolution(index, refreshRateIndex);
+        }
+
+        private void OnRefreshRateSelected(int index)
+        {
+            int resolutionIndex = resolutionDropdown != null ? resolutionDropdown.value : 0;
+            ApplyResolution(resolutionIndex, index);
+        }
+
+        private void ApplyResolution(int resolutionIndex, int refreshRateIndex)
+        {
+            if (resolutionIndex < 0 || resolutionIndex >= uniqueResolutions.Count) return;
+            if (refreshRateIndex < 0 || refreshRateIndex >= currentRefreshRates.Count) return;
+            (int width, int height) = uniqueResolutions[resolutionIndex];
+            settings.SetResolution(width, height, currentRefreshRates[refreshRateIndex]);
+        }
+
+        private void PopulateQualityOptions()
+        {
+            if (qualityDropdown == null) return;
+            qualityDropdown.ClearOptions();
+            qualityDropdown.AddOptions(new List<string>(QualitySettings.names));
+        }
+
+        private void PopulateResolutionOptions()
+        {
+            if (resolutionDropdown == null) return;
+            var options = new List<string>(uniqueResolutions.Count);
+            foreach ((int width, int height) in uniqueResolutions)
+            {
+                options.Add($"{width} x {height}");
+            }
+
+            resolutionDropdown.ClearOptions();
+            resolutionDropdown.AddOptions(options);
+        }
+
+        // Refresh rates are resolution-specific (a monitor may only support 144Hz at a lower
+        // resolution, for example), so this repopulates whenever the selected resolution changes.
+        private void PopulateRefreshRateOptions(int resolutionIndex)
+        {
+            currentRefreshRates.Clear();
+            if (refreshRateDropdown == null) return;
+
+            if (resolutionIndex >= 0 && resolutionIndex < uniqueResolutions.Count && resolutions != null)
+            {
+                (int width, int height) = uniqueResolutions[resolutionIndex];
+                foreach (Resolution res in resolutions)
+                {
+                    if (res.width == width && res.height == height)
+                    {
+                        currentRefreshRates.Add(res.refreshRateRatio);
+                    }
+                }
+            }
+
+            var options = new List<string>(currentRefreshRates.Count);
+            foreach (RefreshRate rate in currentRefreshRates)
+            {
+                options.Add($"{Mathf.RoundToInt((float)rate.value)} Hz");
+            }
+
+            refreshRateDropdown.ClearOptions();
+            refreshRateDropdown.AddOptions(options);
+        }
+
+        private int FindRefreshRateIndex(int numerator, int denominator)
+        {
+            for (int i = 0; i < currentRefreshRates.Count; i++)
+            {
+                if (currentRefreshRates[i].numerator == (uint)numerator && currentRefreshRates[i].denominator == (uint)denominator) return i;
+            }
+            return -1;
         }
 
         private void RefreshFromSettings()
@@ -100,45 +179,41 @@ namespace UI
             if (masterVolumeSlider != null) masterVolumeSlider.SetValueWithoutNotify(settings.MasterVolume);
             if (musicVolumeSlider != null) musicVolumeSlider.SetValueWithoutNotify(settings.MusicVolume);
             if (sfxVolumeSlider != null) sfxVolumeSlider.SetValueWithoutNotify(settings.SFXVolume);
+            settings.SyncFullscreenState();
             if (fullscreenToggle != null) fullscreenToggle.SetIsOnWithoutNotify(settings.Fullscreen);
 
-            qualityIndex = Mathf.Clamp(settings.QualityLevel, 0, Mathf.Max(0, QualitySettings.names.Length - 1));
-            RefreshQualityLabel();
-
-            resolutionIndex = settings.ResolutionIndex >= 0 ? settings.ResolutionIndex : FindCurrentResolutionIndex();
-            RefreshResolutionLabel();
-        }
-
-        private int FindCurrentResolutionIndex()
-        {
-            if (resolutions == null) return 0;
-            Resolution current = Screen.currentResolution;
-            for (int i = 0; i < resolutions.Length; i++)
+            if (qualityDropdown != null)
             {
-                if (resolutions[i].width == current.width && resolutions[i].height == current.height) return i;
+                int qualityIndex = Mathf.Clamp(settings.QualityLevel, 0, Mathf.Max(0, QualitySettings.names.Length - 1));
+                qualityDropdown.SetValueWithoutNotify(qualityIndex);
             }
-            return 0;
-        }
 
-        private void RefreshQualityLabel()
-        {
-            if (qualityValueLabel == null) return;
-            string[] names = QualitySettings.names;
-            qualityValueLabel.text = names.Length > 0 && qualityIndex >= 0 && qualityIndex < names.Length
-                ? names[qualityIndex]
-                : "-";
-        }
-
-        private void RefreshResolutionLabel()
-        {
-            if (resolutionValueLabel == null) return;
-            if (resolutions == null || resolutionIndex < 0 || resolutionIndex >= resolutions.Length)
+            if (resolutionDropdown != null)
             {
-                resolutionValueLabel.text = "-";
-                return;
+                int resolutionIndex = FindResolutionIndex(settings.ResolutionWidth, settings.ResolutionHeight);
+                if (resolutionIndex < 0) resolutionIndex = FindResolutionIndex(Screen.currentResolution.width, Screen.currentResolution.height);
+                if (resolutionIndex < 0) resolutionIndex = 0;
+                resolutionDropdown.SetValueWithoutNotify(resolutionIndex);
+
+                PopulateRefreshRateOptions(resolutionIndex);
+                if (refreshRateDropdown != null)
+                {
+                    Resolution currentRes = Screen.currentResolution;
+                    int refreshRateIndex = FindRefreshRateIndex(settings.RefreshRateNumerator, settings.RefreshRateDenominator);
+                    if (refreshRateIndex < 0) refreshRateIndex = FindRefreshRateIndex((int)currentRes.refreshRateRatio.numerator, (int)currentRes.refreshRateRatio.denominator);
+                    if (refreshRateIndex < 0) refreshRateIndex = 0;
+                    refreshRateDropdown.SetValueWithoutNotify(refreshRateIndex);
+                }
             }
-            Resolution res = resolutions[resolutionIndex];
-            resolutionValueLabel.text = $"{res.width} x {res.height}";
+        }
+
+        private int FindResolutionIndex(int width, int height)
+        {
+            for (int i = 0; i < uniqueResolutions.Count; i++)
+            {
+                if (uniqueResolutions[i].width == width && uniqueResolutions[i].height == height) return i;
+            }
+            return -1;
         }
     }
 }
