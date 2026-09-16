@@ -28,17 +28,21 @@ public class GameManager : Singleton<GameManager>
     public static AutomationConfig AutomationConfig => Instance._automationConfig;
     public static ProcessingRecipeDatabase ProcessingRecipeDatabase => Instance._processingRecipeDatabase;
 
-    private EventService _eventService;
+    // Deliberately static rather than routed through Instance: many listeners remove themselves
+    // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
+    // Stopping the Player, so this must stay reachable (and safe to Add/Remove no-ops against)
+    // even after the GameManager singleton itself has already been destroyed.
+    private static EventService _eventService;
     public static EventService EventService
     {
         get
         {
-            if (Instance._eventService == null)
+            if (_eventService == null)
             {
-                Instance._eventService = new EventService();
+                _eventService = new EventService();
             }
 
-            return Instance._eventService;
+            return _eventService;
         }
     }
 
@@ -94,8 +98,11 @@ public class GameManager : Singleton<GameManager>
 
     protected override void OnDestroy()
     {
-        _eventService?.Deinit();
-        _eventService = null;
+        if (_instance == this)
+        {
+            _eventService?.Deinit();
+            _eventService = null;
+        }
         base.OnDestroy();
     }
 }

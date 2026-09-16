@@ -57,7 +57,14 @@ namespace Persistence
             InvokeRepeating(nameof(Save), AutosaveIntervalSeconds, AutosaveIntervalSeconds);
         }
 
-        private void OnApplicationQuit() => Save();
+        // Must override (not hide) Singleton<T>.OnApplicationQuit - Unity invokes magic methods by
+        // reflecting on the most-derived declaration, so a same-named method here that doesn't
+        // override would stop the base's IsQuitting flag from ever being set for this singleton.
+        protected override void OnApplicationQuit()
+        {
+            base.OnApplicationQuit();
+            Save();
+        }
         private void OnApplicationPause(bool paused) { if (paused) Save(); }
 
         public void Save()

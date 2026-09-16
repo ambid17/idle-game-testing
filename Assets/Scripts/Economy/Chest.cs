@@ -39,7 +39,9 @@ namespace Economy
         }
 
         private void OnEnable() => ChestRegistry.Instance.Register(this);
-        private void OnDisable() => ChestRegistry.Instance.Unregister(this);
+        // Null-conditional: teardown order across objects isn't guaranteed when Stopping the
+        // Player, so ChestRegistry's singleton may already be destroyed by the time this runs.
+        private void OnDisable() => ChestRegistry.Instance?.Unregister(this);
 
         // Called immediately after Instantiate by ChestSpawner to seed the dropped ore.
         public void Configure(IReadOnlyDictionary<BlockTypeId, int> initialOre)

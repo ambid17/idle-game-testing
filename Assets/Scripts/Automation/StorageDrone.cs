@@ -50,7 +50,9 @@ namespace Automation
             oreInventory.Initialize(() => config.StorageDroneBaseInventoryWeight * upgrades.StorageDroneInventoryCapacityMultiplier);
         }
 
-        private void OnDisable() => OreCarrierRegistry.Instance.ReleaseClaim(this);
+        // Null-conditional: teardown order across objects isn't guaranteed when Stopping the
+        // Player, so OreCarrierRegistry's singleton may already be destroyed by the time this runs.
+        private void OnDisable() => OreCarrierRegistry.Instance?.ReleaseClaim(this);
 
         private void Update()
         {

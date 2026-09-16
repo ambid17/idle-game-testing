@@ -55,7 +55,7 @@ namespace Player
         private void OnDisable()
         {
             GameManager.EventService.Remove<PlayerDiedEvent>(HandleDeath);
-            OreCarrierRegistry.Instance.Unregister(this);
+            OreCarrierRegistry.Instance?.Unregister(this);
         }
 
         // Death drops everything the player was carrying into a chest at the death location

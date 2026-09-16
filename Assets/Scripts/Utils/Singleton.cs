@@ -10,11 +10,19 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     protected static T _instance;
 
+    // Set once OnApplicationQuit fires (which Unity broadcasts to every active object before it
+    // starts tearing down the scene - including when Stopping the Player in the Editor). Guards
+    // GetInstance() below so a listener whose OnDisable/OnDestroy runs after this singleton's own
+    // OnDestroy (teardown order across objects isn't guaranteed) can't resurrect it as a fresh,
+    // half-initialized "[singleton] " GameObject that then spams "not assigned" errors.
+    private static bool _isQuitting;
+    protected static bool IsQuitting => _isQuitting;
+
     public static T Instance
     {
         get
         {
-            if (_instance == null)
+            if (_instance == null && !_isQuitting)
             {
                 _instance = GetInstance();
             }
@@ -25,6 +33,11 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     public static T GetInstance()
     {
+        if (_isQuitting)
+        {
+            return null;
+        }
+
         _instance = FindAnyObjectByType<T>();
         if (_instance == null)
         {
@@ -48,6 +61,11 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
 
         Initialize();
+    }
+
+    protected virtual void OnApplicationQuit()
+    {
+        _isQuitting = true;
     }
 
     protected virtual void OnDestroy()
