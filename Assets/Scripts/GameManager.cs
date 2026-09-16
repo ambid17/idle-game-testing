@@ -4,6 +4,7 @@ using Events;
 using MapGeneration;
 using Persistence;
 using Processing;
+using Tutorial;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
@@ -17,6 +18,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private PrestigeUpgradeDatabase _prestigeUpgradeDatabase;
     [SerializeField] private AutomationConfig _automationConfig;
     [SerializeField] private ProcessingRecipeDatabase _processingRecipeDatabase;
+    [SerializeField] private TutorialDatabase _tutorialDatabase;
 
     public static ChunkStreamingManager ChunkStreamingManager => Instance._chunkStreamingManager;
     public static MapGenerationService MapGenerationService => Instance._mapGenerationService;
@@ -27,6 +29,7 @@ public class GameManager : Singleton<GameManager>
     public static PrestigeUpgradeDatabase PrestigeUpgradeDatabase => Instance._prestigeUpgradeDatabase;
     public static AutomationConfig AutomationConfig => Instance._automationConfig;
     public static ProcessingRecipeDatabase ProcessingRecipeDatabase => Instance._processingRecipeDatabase;
+    public static TutorialDatabase TutorialDatabase => Instance._tutorialDatabase;
 
     // Deliberately static rather than routed through Instance: many listeners remove themselves
     // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
@@ -86,6 +89,10 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.LogError("ProcessingRecipeDatabase is not assigned in GameManager.");
         }
+        if (_tutorialDatabase == null)
+        {
+            Debug.LogError("TutorialDatabase is not assigned in GameManager.");
+        }
     }
 
     // Runs after every scene object's Awake(), so Wallet/UpgradeManager/AutomationSettings/
@@ -94,6 +101,7 @@ public class GameManager : Singleton<GameManager>
     {
         SaveService.Instance.ApplyLoadedData(SaveService.Instance.Load());
         SaveService.Instance.ApplyMapData(SaveService.Instance.LoadMap());
+        EventService.Dispatch<SceneIsReadyEvent>();
     }
 
     protected override void OnDestroy()

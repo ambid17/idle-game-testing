@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a3e05ac99e285f46a346cc951bb5545, type: 3}
+  m_Name: TutorialDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.TutorialDatabase
+  Entries:
+  - Id: 0
+    Title: Welcome!
+    Body: Dig down, get rich. Mine ore and sell it at the Depot for Dollars, spend
+      Dollars at the Market on upgrades and automation, and keep an eye out for rare
+      Artifacts - turn them in at the Museum for Prestige Points and permanent bonuses.
+  - Id: 1
+    Title: You found an Artifact!
+    Body: Artifacts can't be sold or stored at the Depot. Carry them to the Museum
+      and turn them in for Prestige Points, which unlock permanent upgrades that
+      survive a Prestige reset.
+  - Id: 2
+    Title: Storage Depot
+    Body: Deposit the ore you're carrying here, then sell it for Dollars - sell one
+      ore type at a time or everything at once.
+  - Id: 3
+    Title: Market
+    Body: Spend Dollars here on permanent upgrades - better mining, more inventory
+      space, faster automatons - and repair your fuel or health.
+  - Id: 4
+    Title: Museum
+    Body: Turn in the Artifacts you've found here for Prestige Points, then spend
+      those points on permanent Prestige upgrades that carry across resets.
+  - Id: 5
+    Title: Processing Center
+    Body: Combine raw ore into finished goods worth more than the raw materials.
+      Finished goods show up back at the Depot, ready to sell.
+  - Id: 6
+    Title: Control Center
+    Body: Monitor your automatons and drones, adjust their settings, and refuel yourself
+      here.

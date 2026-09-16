@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Automation;
 using MapGeneration;
 using Processing;
+using Tutorial;
 using UnityEngine;
 
 namespace Persistence
@@ -97,6 +98,9 @@ namespace Persistence
         public PlayerSaveData Player = new();
         // Chests still active (unlooted) at save time - see Economy.ChestRegistry.
         public List<ChestSaveEntry> Chests = new();
+        // Tutorial.TutorialManager: which one-time tutorial popups have already been shown, so they
+        // don't repeat after reload.
+        public List<TutorialId> ShownTutorials = new();
         // ISO-8601 string, since JsonUtility can't serialize DateTime directly.
         public string LastActiveUtcTimestamp;
     }

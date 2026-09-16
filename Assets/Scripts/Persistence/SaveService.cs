@@ -4,6 +4,7 @@ using Events;
 using MapGeneration;
 using Player;
 using Processing;
+using Tutorial;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -153,6 +154,11 @@ namespace Persistence
                 data.Chests.Add(entry);
             }
 
+            foreach (var id in TutorialManager.Instance.ShownTutorials)
+            {
+                data.ShownTutorials.Add(id);
+            }
+
             try
             {
                 File.WriteAllText(SavePath, JsonUtility.ToJson(data));
@@ -216,6 +222,7 @@ namespace Persistence
 
             Wallet.Instance.SetDollars(data.Dollars);
             Wallet.Instance.SetArtifactCount(data.ArtifactCount);
+            TutorialManager.Instance.RestoreFromSaveData(data.ShownTutorials);
 
             foreach (var entry in data.UpgradeLevels)
             {

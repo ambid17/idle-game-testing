@@ -4,6 +4,8 @@ using Economy;
 using Interaction;
 using MapGeneration;
 using Processing;
+using Tutorial;
+using UnityEngine;
 
 namespace Events
 {
@@ -312,4 +314,19 @@ namespace Events
     // Dispatched by PlayerController on Escape, but only when nothing else was already blocking
     // input - see PlayerController.Update. PauseMenuUI is the sole listener.
     public class PauseMenuOpenRequestedEvent { }
+
+    // Tutorial popup system (Tutorial.TutorialManager). WorldPosition is null for a screen-space
+    // overlay tutorial (UI.Panels.TutorialModalUI) or set for a world-anchored one
+    // (UI.Panels.WorldTutorialPopupUI) - each display component ignores events that aren't theirs.
+    public class ShowTutorialEvent : IEvent
+    {
+        public TutorialEntry Entry;
+        public Vector3? WorldPosition;
+
+        public ShowTutorialEvent(TutorialEntry entry, Vector3? worldPosition = null)
+        {
+            Entry = entry;
+            WorldPosition = worldPosition;
+        }
+    }
 }
