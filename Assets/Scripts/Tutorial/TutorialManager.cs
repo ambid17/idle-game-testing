@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Economy;
 using Events;
 using Interaction;
+using Persistence;
 using Player;
 using UnityEngine;
 
@@ -53,7 +54,7 @@ namespace Tutorial
         private void OnArtifactCountChanged()
         {
             // ensure no artifacts have ever been gained
-            if (Wallet.Instance.ArtifactCount <= 0 && PrestigePoints.Instance.Points <= 0) return;
+            if (Wallet.Instance.ArtifactCount <= 0 && PrestigePoints.Instance.Points <= 0 || !SaveService.Instance.HasLoadedData) return;
 
             Vector3? anchor = playerController != null ? playerController.transform.position + new Vector3(0, 2, 0) : null;
             TryShow(TutorialId.FirstArtifact, anchor);

@@ -28,6 +28,8 @@ namespace Persistence
         private const float AutosaveIntervalSeconds = 60f;
         private string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
         private string MapSavePath => Path.Combine(Application.persistentDataPath, "map.json");
+        public bool HasLoadedData => hasLoadedData;
+        private bool hasLoadedData = false;
 
         [SerializeField] private PlayerController playerController;
         [SerializeField] private ChestSpawner chestSpawner;
@@ -218,7 +220,11 @@ namespace Persistence
         // that only happens once the player acknowledges the offline-earnings screen.
         public void ApplyLoadedData(GameSaveData data)
         {
-            if (data == null) return;
+            if (data == null)
+            {
+                hasLoadedData = true;
+                return;
+            }
 
             Wallet.Instance.SetDollars(data.Dollars);
             Wallet.Instance.SetArtifactCount(data.ArtifactCount);
@@ -293,6 +299,7 @@ namespace Persistence
 
             LoadOfflineEarnings(data);
 
+            hasLoadedData = true;
             GameManager.EventService.Dispatch<LoadCompletedEvent>();
         }
 
