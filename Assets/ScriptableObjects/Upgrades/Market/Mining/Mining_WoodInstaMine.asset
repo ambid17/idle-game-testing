@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Wood Insta-Mine
   Description: Wood blocks are always mined instantly, no matter your mining speed.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: a052e763a74c2f04b9b346c538c2cb5e, type: 3}
   Branch: 0
   Effect: 20
   EffectValuePerLevel: 1

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Lantern
   Description: Reveals more of the fog of war around your mine shaft as you dig.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: abbf0d3234a4e524bae6e7e7d8607ec0, type: 3}
   Branch: 0
   Effect: 3
   EffectValuePerLevel: 1
