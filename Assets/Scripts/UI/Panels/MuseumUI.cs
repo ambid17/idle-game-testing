@@ -37,7 +37,7 @@ namespace UI
         private void Start()
         {
             if (closeButton != null) closeButton.onClick.AddListener(Close);
-            if (prestigeNowButton != null) prestigeNowButton.onClick.AddListener(() => PrestigeManager.Instance.RequestPrestige());
+            if (prestigeNowButton != null) prestigeNowButton.onClick.AddListener(() => GameManager.EventService.Dispatch<PrestigeConfirmationRequestedEvent>());
             if (confirmYesButton != null) confirmYesButton.onClick.AddListener(ConfirmPrestige);
             if (confirmNoButton != null) confirmNoButton.onClick.AddListener(() => confirmRoot.SetActive(false));
 
