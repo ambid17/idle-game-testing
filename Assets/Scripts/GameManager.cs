@@ -101,7 +101,6 @@ public class GameManager : Singleton<GameManager>
     {
         SaveService.Instance.ApplyLoadedData(SaveService.Instance.Load());
         SaveService.Instance.ApplyMapData(SaveService.Instance.LoadMap());
-        EventService.Dispatch<SceneIsReadyEvent>();
     }
 
     protected override void OnDestroy()

@@ -7,19 +7,16 @@ using UnityEngine;
 
 namespace Tutorial
 {
-    // Drives the tutorial popup system: listens for the trigger events for each tutorial moment
-    // (first load, first Artifact mined, first open of each building UI), and - the first time only,
-    // tracked by TutorialId and persisted via RestoreFromSaveData/ShownTutorials - dispatches
-    // ShowTutorialEvent with that tutorial's copy from GameManager.TutorialDatabase.
+    // Drives the tutorial popup system: listens for the trigger events for first-Artifact-mined and
+    // first-open-of-each-building-UI, and - the first time only, tracked by TutorialId and persisted
+    // via RestoreFromSaveData/ShownTutorials - dispatches ShowTutorialEvent with that tutorial's copy
+    // from GameManager.TutorialDatabase.
     //
     // Both UI.Panels.TutorialModalUI (screen overlay) and UI.Panels.WorldTutorialPopupUI (world
     // popup) listen for the same ShowTutorialEvent and each decide from WorldPosition whether it's
     // theirs to show - see ShowTutorialEvent's own comment in Events.cs.
     public class TutorialManager : Singleton<TutorialManager>
     {
-        // Only needed to anchor the world-space FirstArtifact popup at the player - a single,
-        // single-purpose use, so an Inspector reference rather than a singleton/Find per the
-        // object-reference rule.
         [SerializeField] private PlayerController playerController;
 
         private readonly HashSet<TutorialId> shownTutorials = new();
@@ -36,25 +33,22 @@ namespace Tutorial
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<SceneIsReadyEvent>(OnSceneReady);
             GameManager.EventService.Add<ArtifactCountChangedEvent>(OnArtifactCountChanged);
             GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
         }
 
         private void OnDisable()
         {
-            GameManager.EventService.Remove<SceneIsReadyEvent>(OnSceneReady);
             GameManager.EventService.Remove<ArtifactCountChangedEvent>(OnArtifactCountChanged);
             GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
         }
 
-        private void OnSceneReady() => TryShow(TutorialId.CoreGoal);
-
         private void OnArtifactCountChanged()
         {
-            if (Wallet.Instance.ArtifactCount <= 0) return;
+            // ensure no artifacts have ever been gained
+            if (Wallet.Instance.ArtifactCount <= 0 && PrestigePoints.Instance.Points <= 0) return;
 
-            Vector3? anchor = playerController != null ? playerController.transform.position : null;
+            Vector3? anchor = playerController != null ? playerController.transform.position + new Vector3(0, 2, 0) : null;
             TryShow(TutorialId.FirstArtifact, anchor);
         }
 
@@ -101,6 +95,8 @@ namespace Tutorial
             {
                 shownTutorials.Add(id);
             }
+
+            TryShow(TutorialId.CoreGoal);
         }
     }
 }

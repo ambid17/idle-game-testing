@@ -31,13 +31,6 @@ namespace Events
         }
     }
 
-    public class SceneIsReadyEvent : IEvent
-    {
-        public SceneIsReadyEvent()
-        {
-        }
-    }
-
     public class DollarsChangedEvent { }
 
     public class ArtifactCountChangedEvent { }
