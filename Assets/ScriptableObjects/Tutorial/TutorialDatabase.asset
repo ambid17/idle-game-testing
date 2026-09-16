@@ -25,12 +25,13 @@ MonoBehaviour:
       survive a Prestige reset.
   - Id: 2
     Title: Storage Depot
-    Body: Deposit the ore you're carrying here, then sell it for Dollars - sell one
-      ore type at a time or everything at once.
+    Body: Deposit the ore you're carrying here, then sell it for Dollars. Ores stored
+      here can also be used in the Processing Center to trade time for extra money!
   - Id: 3
     Title: Market
     Body: Spend Dollars here on permanent upgrades - better mining, more inventory
-      space, faster automatons - and repair your fuel or health.
+      space, faster automatons - and repair your fuel or health. These upgrades are
+      lost when prestiging.
   - Id: 4
     Title: Museum
     Body: Turn in the Artifacts you've found here for Prestige Points, then spend
