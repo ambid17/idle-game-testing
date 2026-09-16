@@ -12,11 +12,13 @@ using UnityEngine.UI;
 namespace UI
 {
     // Storage depot panel per GameDesignDoc "Map Layout > buildings > storage depot": opening it
-    // (via BuildingInteractedEvent from the Depot building) deposits everything the player is
-    // carrying, then shows the depot's accrued minerals with per-type sell (any percentage, or all)
-    // plus a sell-everything button. Also shows Processing Center goods in a second, parallel row
-    // list (goodsRowContainer/goodsRowPrefab/sellAllGoodsButton) since Depot banks them separately
-    // from ore - see Depot.cs's StoredGoods.
+    // (via BuildingInteractedEvent from the Depot building) shows the depot's accrued minerals with
+    // per-type sell (any percentage, or all) plus a sell-everything button. A separate, explicit
+    // "Deposit All" button banks whatever the player is currently carrying into the depot without
+    // selling any of it - kept as its own action (rather than an implicit side effect of opening
+    // the panel) so depositing reads as an intentional player choice. Also shows Processing Center
+    // goods in a second, parallel row list (goodsRowContainer/goodsRowPrefab/sellAllGoodsButton)
+    // since Depot banks them separately from ore - see Depot.cs's StoredGoods.
     public class DepotUI : MonoBehaviour
     {
         [SerializeField] private GameObject panelRoot;
@@ -25,6 +27,7 @@ namespace UI
         [SerializeField] private Transform goodsRowContainer;
         [SerializeField] private GoodsRowUI goodsRowPrefab;
         [SerializeField] private TMP_Text dollarsLabel;
+        [SerializeField] private Button depositAllButton;
         [SerializeField] private Button sellAllButton;
         [SerializeField] private TMP_Text sellAllButtonLabel;
         [SerializeField] private Button sellAllGoodsButton;
@@ -43,10 +46,12 @@ namespace UI
 
             BuildRows();
             BuildGoodsRows();
+            if (depositAllButton != null) depositAllButton.onClick.AddListener(DepositAll);
             if (sellAllButton != null) sellAllButton.onClick.AddListener(() => Depot.Instance.SellAll());
             if (sellAllGoodsButton != null) sellAllGoodsButton.onClick.AddListener(() => Depot.Instance.SellAllGoods());
             if (closeButton != null) closeButton.onClick.AddListener(Close);
 
+            RefreshDepositButton();
             if (panelRoot != null) panelRoot.SetActive(false);
         }
 
@@ -54,6 +59,7 @@ namespace UI
         {
             GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Add<DepotChangedEvent>(Refresh);
+            GameManager.EventService.Add<InventoryChangedEvent>(RefreshDepositButton);
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
             GameManager.EventService.Add<SellGoodsRequestedEvent>(OnSellGoodsRequested);
@@ -64,6 +70,7 @@ namespace UI
         {
             GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Remove<DepotChangedEvent>(Refresh);
+            GameManager.EventService.Remove<InventoryChangedEvent>(RefreshDepositButton);
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
             GameManager.EventService.Remove<SellGoodsRequestedEvent>(OnSellGoodsRequested);
@@ -125,7 +132,6 @@ namespace UI
 
         private void Open()
         {
-            Depot.Instance.Deposit(playerInventory.WithdrawAllOre());
             panelRoot.SetActive(true);
             Refresh();
         }
@@ -139,8 +145,25 @@ namespace UI
         private void OnSellRequested(SellRequestedEvent evt) => Depot.Instance.Sell(evt.Id, evt.Fraction);
         private void OnSellGoodsRequested(SellGoodsRequestedEvent evt) => Depot.Instance.SellGood(evt.Id, evt.Fraction);
 
+        // Explicit action (as opposed to an implicit side effect of opening the panel) so banking
+        // carried ore reads as an intentional player choice, distinct from selling it.
+        private void DepositAll()
+        {
+            Depot.Instance.Deposit(playerInventory.WithdrawAllOre());
+        }
+
+        private void RefreshDepositButton()
+        {
+            if (depositAllButton == null) return;
+
+            float weight = playerInventory.CurrentWeight;
+            depositAllButton.interactable = weight > 0f;
+        }
+
         private void Refresh()
         {
+            RefreshDepositButton();
+
             var totalValue = 0f;
             foreach (var kvp in rows)
             {
