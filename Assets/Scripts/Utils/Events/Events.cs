@@ -308,4 +308,8 @@ namespace Events
             NewSeed = newSeed;
         }
     }
+
+    // Dispatched by PlayerController on Escape, but only when nothing else was already blocking
+    // input - see PlayerController.Update. PauseMenuUI is the sole listener.
+    public class PauseMenuOpenRequestedEvent { }
 }

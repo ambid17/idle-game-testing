@@ -117,7 +117,15 @@ namespace Player
 
             if (keyboard.escapeKey.wasPressedThisFrame)
             {
+                // Captured before dispatch: if a full-screen modal (Control Center, Museum, the
+                // pause menu itself, ...) was already open, this Escape just closes it. Otherwise
+                // there's nothing to close, so it opens the pause menu instead.
+                bool modalWasOpen = InputBlocker.IsBlocked;
                 GameManager.EventService.Dispatch<UICloseEvent>();
+                if (!modalWasOpen)
+                {
+                    GameManager.EventService.Dispatch<PauseMenuOpenRequestedEvent>();
+                }
             }
 
             // Unlike death (which zeroes movementInput once via HandleDied), blocking can start/end
