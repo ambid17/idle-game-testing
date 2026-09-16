@@ -17,6 +17,7 @@ namespace UI
     {
         [SerializeField] private GameObject rendererRoot;
         [SerializeField] private Button resumeButton;
+        [SerializeField] private Button respawnButton;
         [SerializeField] private Button optionsButton;
         [SerializeField] private Button quitButton;
         [SerializeField] private OptionsUI optionsUI;
@@ -25,11 +26,13 @@ namespace UI
         {
             if (rendererRoot == null) Debug.LogError("PauseMenuUI.rendererRoot is not assigned.");
             if (resumeButton == null) Debug.LogError("PauseMenuUI.resumeButton is not assigned.");
+            if (respawnButton == null) Debug.LogError("PauseMenuUI.respawnButton is not assigned.");
             if (optionsButton == null) Debug.LogError("PauseMenuUI.optionsButton is not assigned.");
             if (quitButton == null) Debug.LogError("PauseMenuUI.quitButton is not assigned.");
             if (optionsUI == null) Debug.LogError("PauseMenuUI.optionsUI is not assigned.");
 
             if (resumeButton != null) resumeButton.onClick.AddListener(Close);
+            if (respawnButton != null) respawnButton.onClick.AddListener(Respawn);
             if (optionsButton != null) optionsButton.onClick.AddListener(OpenOptions);
             if (quitButton != null) quitButton.onClick.AddListener(Quit);
             if (rendererRoot != null) rendererRoot.SetActive(false);
@@ -65,6 +68,12 @@ namespace UI
         private void OpenOptions()
         {
             if (optionsUI != null) optionsUI.Open();
+        }
+
+        private void Respawn()
+        {
+            GameManager.EventService.Dispatch<PlayerDiedEvent>();
+            Close();
         }
 
         // Per the resolved scope: quitting always saves first so no progress is lost.
