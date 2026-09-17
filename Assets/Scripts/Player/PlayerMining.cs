@@ -92,16 +92,16 @@ namespace Player
 
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, targetCellX, targetCellY);
             bool blockedByFullInventory = blockType != null && blockType.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow;
+            
             if (blockedByFullInventory && Time.time - lastInventoryFullNoticeTime >= InventoryFullNoticeCooldown)
             {
                 lastInventoryFullNoticeTime = Time.time;
                 GameManager.EventService.Dispatch<InventoryFullEvent>();
-                ResetTarget();
-                return;
             }
 
             if (blockType == null
                 || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
+                || blockedByFullInventory
                 )
             {
                 if (debug) Debug.LogWarning($"PlayerMining: cannot mine target cell at (x,y,layer): ({targetCellX},{targetCellY},{layerIndex}) (blockType {(blockType == null ? "none" : blockType.name)}), inventory full {playerInventory.IsFull}, can overflow {CanOverflow})");
