@@ -23,6 +23,14 @@ namespace Player
             if (CurrentHp <= 0f) Kill();
         }
 
+        // Guards against IsDead so this can't double as a silent resurrection path outside
+        // PlayerRevivedEvent/HandleRevived's ownership of that transition.
+        public void AddHp(float amount)
+        {
+            if (amount <= 0f || IsDead) return;
+            CurrentHp = Mathf.Min(maxHp, CurrentHp + amount);
+        }
+
         // Also called directly when fuel runs out (PlayerController.UpdateFuel) - fuel and HP are
         // independent lose conditions per GameDesignDoc, both funnel into the same death event.
         public void Kill()

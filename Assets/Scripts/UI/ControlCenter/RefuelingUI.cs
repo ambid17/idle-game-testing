@@ -44,6 +44,7 @@ namespace UI
             if (fuelFillBar != null) fuelFillBar.fillAmount = Mathf.Clamp01(playerController.FuelFraction);
             if (fuelLabel != null) fuelLabel.text = $"{playerController.Fuel:0}/{playerController.FuelMax:0}";
             if (purchaseAmountSlider != null) purchaseAmountSlider.maxValue = Mathf.Max(0f, playerController.FuelMissing);
+            if (purchaseButton != null) purchaseButton.interactable = playerController.FuelMissing > 0f;
         }
 
         private void RefreshPurchaseLabel()

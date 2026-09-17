@@ -24,5 +24,8 @@ namespace Automation
         public float FuelDroneBaseFuelCapacity = 20f;
         public float FuelCostPerUnit = 5f;
         [Range(0f, 1f)] public float FuelNeedThresholdFraction = 0.10f;
+
+        [Header("Player HP Refill")]
+        public float HpCostPerUnit = 5f;
     }
 }

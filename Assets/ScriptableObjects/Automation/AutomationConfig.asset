@@ -23,3 +23,4 @@ MonoBehaviour:
   FuelDroneBaseFuelCapacity: 20
   FuelCostPerUnit: 5
   FuelNeedThresholdFraction: 0.1
+  HpCostPerUnit: 5
