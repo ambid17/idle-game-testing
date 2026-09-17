@@ -18,6 +18,15 @@ namespace MapGeneration
         [Tooltip("Placeholder default - exact base radius and Lantern-tier scaling is an open design item (see MapGenerationImplementation.md).")]
         [SerializeField] private int baseFogRevealRadius = 3;
 
+        // Invisible physical walls (BoxCollider2D, no renderer) at the grid's horizontal extent -
+        // stop the player's Rigidbody2D from walking/flying past the edge. Tall enough to cover
+        // any depth the player can reach, since layers generate on demand with no hard floor.
+        private const float BoundaryWallThickness = 1f;
+        private const float BoundaryWallHeight = 20000f;
+
+        private BoxCollider2D leftBoundaryWall;
+        private BoxCollider2D rightBoundaryWall;
+
         public MineWorld World { get; private set; }
 
         // The un-upgraded default width, used by PrestigeManager.ExecutePrestige to recompute the
@@ -29,6 +38,8 @@ namespace MapGeneration
         {
             World = new MineWorld(mapGenerationConfig.Seed, mapGenerationConfig.GridWidth);
             streamingManager.Initialize(World);
+            CreateBoundaryWalls();
+            UpdateBoundaryWalls();
         }
 
         // Swaps in a world restored from save data (SaveService.ApplyMapData), replacing the
@@ -38,6 +49,38 @@ namespace MapGeneration
         {
             World = restoredWorld;
             streamingManager.Initialize(World);
+            UpdateBoundaryWalls();
+        }
+
+        private void CreateBoundaryWalls()
+        {
+            leftBoundaryWall = CreateBoundaryWall("LeftBoundaryWall");
+            rightBoundaryWall = CreateBoundaryWall("RightBoundaryWall");
+        }
+
+        private BoxCollider2D CreateBoundaryWall(string wallName)
+        {
+            var wall = new GameObject(wallName);
+            wall.transform.SetParent(transform, false);
+
+            var collider = wall.AddComponent<BoxCollider2D>();
+            collider.size = new Vector2(BoundaryWallThickness, BoundaryWallHeight);
+            // Frictionless so the player doesn't stick to the wall while sliding down it mid-fall.
+            collider.sharedMaterial = new PhysicsMaterial2D($"{wallName}Material") { friction = 0f, bounciness = 0f };
+            return collider;
+        }
+
+        // Re-centers the two walls on the grid's current horizontal extent. Called whenever
+        // GridWidth can change (grid-width upgrade, prestige, save restore) rather than baked
+        // once, since the grid-width upgrade widens the playable area over time.
+        private void UpdateBoundaryWalls()
+        {
+            if (leftBoundaryWall == null || rightBoundaryWall == null) return;
+
+            float gridWorldWidth = World.GridWidth * mapGenerationConfig.CellSize;
+
+            leftBoundaryWall.transform.position = new Vector3(-BoundaryWallThickness * 0.5f, 0, 0f);
+            rightBoundaryWall.transform.position = new Vector3(gridWorldWidth + BoundaryWallThickness * 0.5f, 0, 0f);
         }
 
         /// <summary>
@@ -132,6 +175,10 @@ namespace MapGeneration
             streamingManager.ClearAll();
         }
 
-        public void ApplyGridWidthUpgrade(int newGridWidth) => World.SetGridWidth(newGridWidth);
+        public void ApplyGridWidthUpgrade(int newGridWidth)
+        {
+            World.SetGridWidth(newGridWidth);
+            UpdateBoundaryWalls();
+        }
     }
 }
