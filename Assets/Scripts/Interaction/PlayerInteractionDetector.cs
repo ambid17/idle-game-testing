@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Events;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -5,32 +6,65 @@ using UnityEngine.InputSystem;
 namespace Interaction
 {
     // Generic proximity prompt + E-to-interact per GameDesignDoc "Mechanics": approaching any
-    // IInteractable (buildings, chests, ...) pops up its prompt text, pressing E interacts. Only
-    // one IInteractable is ever tracked at a time, so a single E press can't fire two interactions
-    // when the player is near more than one interactable at once.
+    // IInteractable (buildings, chests, ...) pops up its prompt text, pressing E interacts.
+    // Multiple IInteractables can overlap the trigger at once (e.g. a death-drop chest spawned
+    // next to a building); the detector tracks all of them but only ever prompts/interacts with
+    // whichever one is currently closest to the player, so a single E press can't fire two
+    // interactions and the prompt always reflects the object the player is actually closest to.
     public class PlayerInteractionDetector : MonoBehaviour
     {
         [SerializeField] private LayerMask interactableLayer;
         [SerializeField] private InteractionPromptUI promptUI;
 
+        private readonly List<IInteractable> nearby = new List<IInteractable>();
         private IInteractable current;
         Keyboard keyboard => Keyboard.current;
 
         private void Update()
         {
-            // current can be a destroyed MonoBehaviour (e.g. a looted-empty Chest) without becoming
+            // Entries can be destroyed MonoBehaviours (e.g. a looted-empty Chest) without becoming
             // a C# null through the interface reference - check Unity's own null first.
-            if (current is Object obj && obj == null)
+            nearby.RemoveAll(interactable => interactable is Object obj && obj == null);
+
+            var closest = GetClosest();
+            if (closest != current)
             {
-                current = null;
-                promptUI.Hide();
-                return;
+                current = closest;
+                if (current != null)
+                {
+                    promptUI.Show(current.PromptText);
+                }
+                else
+                {
+                    promptUI.Hide();
+                }
             }
 
             if (current != null && keyboard != null && keyboard.eKey.wasPressedThisFrame)
             {
                 current.Interact();
             }
+        }
+
+        private IInteractable GetClosest()
+        {
+            IInteractable closest = null;
+            var closestSqrDistance = float.MaxValue;
+            var position = transform.position;
+
+            foreach (var interactable in nearby)
+            {
+                if (interactable is not Component component) continue;
+
+                var sqrDistance = (component.transform.position - position).sqrMagnitude;
+                if (sqrDistance < closestSqrDistance)
+                {
+                    closestSqrDistance = sqrDistance;
+                    closest = interactable;
+                }
+            }
+
+            return closest;
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -42,8 +76,10 @@ namespace Interaction
             var other = collision.GetComponent<IInteractable>();
             if (other == null) return;
 
-            current = other;
-            promptUI.Show(current.PromptText);
+            if (!nearby.Contains(other))
+            {
+                nearby.Add(other);
+            }
         }
 
         private void OnTriggerExit2D(Collider2D collision)
@@ -52,10 +88,10 @@ namespace Interaction
             {
                 return;
             }
-            if (collision.GetComponent<IInteractable>() != current) return;
+            var other = collision.GetComponent<IInteractable>();
+            if (other == null) return;
 
-            current = null;
-            promptUI.Hide();
+            nearby.Remove(other);
         }
     }
 }
