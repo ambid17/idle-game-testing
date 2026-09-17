@@ -12,7 +12,7 @@ namespace UI.Processing
     // is short), and a 1-to-max-craftable slider; active shows the running recipe + a live
     // progress bar + a Cancel button. Reads ProcessingManager.Slots directly in Update() for the
     // progress fill and the idle slider's max (both continuous, Depot-driven values), matching
-    // RefuelingUI's fill-bar approach - discrete state changes (job started/completed/cancelled)
+    // ResourceRefillUI's fill-bar approach - discrete state changes (job started/completed/cancelled)
     // are still handled by ProcessingUI via events, which calls Refresh() to swap view states.
     public class ProcessingQueueSlotUI : MonoBehaviour
     {

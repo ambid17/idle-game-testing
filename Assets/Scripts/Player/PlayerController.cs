@@ -56,7 +56,7 @@ namespace Player
         public float FuelMax => fuelMax;
         public float FuelMissing => fuelMax - Fuel;
 
-        // Used by Fuel Drones (Automation.FuelDrone) and RefuelingUI's manual purchase button -
+        // Used by Fuel Drones (Automation.FuelDrone) and ResourceRefillUI's manual purchase buttons -
         // both deposit fuel into the player through this rather than touching Fuel directly.
         public void AddFuel(float amount)
         {

@@ -34,6 +34,9 @@ In general, when a non-instantiated MonoBehaviour script needs to be accessed fr
 	
 ## Null checks
 - when performing null checks to return early, include a `Debug.LogError()`
+- check for null references in a component that references a scene object once during start
+	- Log an error if the component is null
+	- Don't re-check the null status later in the file, it makes the code harder to read
 
 # UI
 ## Panels
