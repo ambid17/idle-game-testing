@@ -1957,7 +1957,7 @@ GameObject:
   m_Component:
   - component: {fileID: 128491270}
   - component: {fileID: 128491273}
-  - component: {fileID: 128491272}
+  - component: {fileID: 128491275}
   - component: {fileID: 128491274}
   m_Layer: 0
   m_Name: CinemachineCamera
@@ -1981,25 +1981,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1450999424}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &128491272
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 128491269}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineFollow
-  TrackerSettings:
-    BindingMode: 4
-    PositionDamping: {x: 2, y: 0.5, z: 0}
-    AngularDampingMode: 0
-    RotationDamping: {x: 1, y: 1, z: 1}
-    QuaternionDamping: 1
-  FollowOffset: {x: 0, y: 0, z: -10}
 --- !u!114 &128491273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2063,6 +2044,37 @@ MonoBehaviour:
     MaxWindowSize: 0
     Padding: 0
   m_LegacyMaxWindowSize: -2
+--- !u!114 &128491275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128491269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePositionComposer
+  CameraDistance: 10
+  DeadZoneDepth: 0
+  Composition:
+    ScreenPosition: {x: 0, y: 0}
+    DeadZone:
+      Enabled: 1
+      Size: {x: 0.1, y: 0.1}
+    HardLimits:
+      Enabled: 1
+      Size: {x: 0.85, y: 0.8}
+      Offset: {x: 0, y: 0}
+  CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 2, y: 0.5, z: 0}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!1 &137051650
 GameObject:
   m_ObjectHideFlags: 0
@@ -34281,6 +34293,7 @@ MonoBehaviour:
   groundSpeed: 5
   flySpeed: 8
   jetpackForce: 15
+  moveAcceleration: 80
   fuelMax: 100
   fuelDrainPerSecond: 5
   fuelRegenPerSecondGrounded: 2
