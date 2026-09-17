@@ -227,22 +227,18 @@ namespace Events
 
     public class AutomationSettingsChangedEvent { }
 
-    // Dispatched by MiningAutomaton/StorageDrone whenever they deposit ore at the Depot - drives
-    // notification toasts and the Control Center's per-automaton earnings graph.
+    // Dispatched by MiningAutomaton/StorageDrone (via AutomationDepositService) whenever they
+    // deposit ore at the Depot - drives notification toasts and the Control Center's Miner
+    // Dashboard ore/min table.
     public class OreDepositedByAutomationEvent : IEvent
     {
         public string EntityDisplayName;
         public IReadOnlyDictionary<BlockTypeId, int> Deposited;
-        // Index of the depositing automaton for the earnings graph, or -1 for storage drones
-        // (which aren't graphed - only automaton output counts per the design doc's idle-earnings
-        // scope).
-        public int AutomatonIndex;
 
-        public OreDepositedByAutomationEvent(string entityDisplayName, IReadOnlyDictionary<BlockTypeId, int> deposited, int automatonIndex = -1)
+        public OreDepositedByAutomationEvent(string entityDisplayName, IReadOnlyDictionary<BlockTypeId, int> deposited)
         {
             EntityDisplayName = entityDisplayName;
             Deposited = deposited;
-            AutomatonIndex = automatonIndex;
         }
     }
 

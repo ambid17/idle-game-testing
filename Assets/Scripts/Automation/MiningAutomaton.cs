@@ -254,16 +254,7 @@ namespace Automation
         private void Deposit()
         {
             var withdrawn = oreInventory.WithdrawAllOre();
-            if (withdrawn.Count == 0) return;
-
-            Depot.Instance.Deposit(withdrawn);
-
-            foreach (var kvp in withdrawn)
-            {
-                if (kvp.Value > 0) IdleEarningsTracker.Instance.RecordOreDeposited(kvp.Key, kvp.Value);
-            }
-
-            GameManager.EventService.Dispatch(new OreDepositedByAutomationEvent($"Automaton #{DisplayIndex}", withdrawn, DisplayIndex));
+            AutomationDepositService.Deposit($"Automaton #{DisplayIndex}", withdrawn);
         }
     }
 }

@@ -41,5 +41,16 @@ namespace UI
         {
             if (valueLabel != null) valueLabel.text = $"${value:0.##}";
         }
+
+        // Used by MinerDashboardUI's ore/min table - same row prefab as DepotUI/InventoryUI, just
+        // fed a rate instead of a count.
+        public void SetRate(float perMinute)
+        {
+            if (countLabel != null) countLabel.text = $"{perMinute:0.#}/min";
+
+            var blockValue = blockTypeDatabase.Get((byte)BlockTypeId)?.Value ?? 0;
+            var totalValue = blockValue * perMinute;
+            if (valueLabel != null) valueLabel.text = $"${totalValue:0.##}/min";
+        }
     }
 }

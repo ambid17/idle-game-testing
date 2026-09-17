@@ -1,46 +1,65 @@
 using System.Collections.Generic;
 using Automation;
-using Economy;
 using Events;
+using MapGeneration;
 using UnityEngine;
 
 namespace UI
 {
-    // Control Center "miner automaton dashboard" tab: earnings graph only. Automaton upgrades are
+    // Control Center "miner automaton dashboard" tab: shows a live ore/min table sourced from
+    // IdleEarningsTracker (fed by both Mining Automatons and Storage Drones via
+    // AutomationDepositService) - deliberately source-agnostic, it doesn't care which entity
+    // deposited the ore, only how much of each type is coming in. Automaton upgrades are
     // purchased from MarketUI's Automation tab (UpgradeDatabase is shared, so purchases made there
     // apply here too) - no duplicate purchase UI in the Control Center.
     public class MinerDashboardUI : MonoBehaviour
     {
-        [SerializeField] private LineGraphUI earningsGraph;
+        [SerializeField] private Transform rowContainer;
+        [SerializeField] private OreRowUI rowPrefab;
+
+        private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
+        private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
+
+        private void Start() => BuildRows();
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
             GameManager.EventService.Add<OreDepositedByAutomationEvent>(OnOreDeposited);
-            RefreshGraph();
+            Refresh();
         }
 
-        private void OnDisable()
+        private void OnDisable() => GameManager.EventService.Remove<OreDepositedByAutomationEvent>(OnOreDeposited);
+
+        private void BuildRows()
         {
-            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
-            GameManager.EventService.Remove<OreDepositedByAutomationEvent>(OnOreDeposited);
-        }
-
-        private void OnUpgradePurchased(UpgradePurchasedEvent evt) => RefreshGraph(); // AutomatonCount changing shifts which series indices are shown
-
-        private void OnOreDeposited(OreDepositedByAutomationEvent evt) => RefreshGraph();
-
-        private void RefreshGraph()
-        {
-            if (earningsGraph == null) return;
-
-            int automatonCount = UpgradeManager.Instance.AutomatonCount;
-            var seriesList = new List<IReadOnlyList<float>>();
-            for (int i = 1; i <= automatonCount; i++)
+            if (rowPrefab == null || rowContainer == null)
             {
-                seriesList.Add(AutomatonEarningsTracker.Instance.RecentDollarsPerMinute(i));
+                Debug.LogError($"{nameof(MinerDashboardUI)}.BuildRows: Missing rowPrefab or rowContainer.");
+                return;
             }
-            earningsGraph.SetSeries(seriesList);
+
+            foreach (var blockType in blockTypeDatabase.BlockTypes)
+            {
+                if (blockType.Category != BlockCategory.Ore) continue;
+
+                var row = Instantiate(rowPrefab, rowContainer);
+                string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
+                row.Bind(blockType.Id, displayName);
+                row.gameObject.name = $"Row_{blockType.name}";
+                rows[blockType.Id] = row;
+            }
+        }
+
+        private void OnOreDeposited(OreDepositedByAutomationEvent evt) => Refresh();
+
+        private void Refresh()
+        {
+            var averages = IdleEarningsTracker.Instance.AveragePerMinute;
+            foreach (var kvp in rows)
+            {
+                averages.TryGetValue(kvp.Key, out var rate);
+                kvp.Value.SetRate(rate);
+            }
         }
     }
 }

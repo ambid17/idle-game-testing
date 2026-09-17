@@ -193,11 +193,7 @@ namespace Automation
         private void Deposit()
         {
             var withdrawn = oreInventory.WithdrawAllOre();
-            Depot.Instance.Deposit(withdrawn);
-            // AutomatonIndex left at its default (-1): storage-drone deposits don't feed the
-            // Control Center's per-automaton earnings graph or IdleEarningsTracker, only Mining
-            // Automatons do (per the design decision on idle-earnings scope).
-            GameManager.EventService.Dispatch(new OreDepositedByAutomationEvent($"Storage Drone #{DisplayIndex}", withdrawn));
+            AutomationDepositService.Deposit($"Storage Drone #{DisplayIndex}", withdrawn);
         }
 
         // "storage drones will repeat this process as long as there is an entity with minerals in

@@ -6,9 +6,11 @@ using UnityEngine;
 namespace Automation
 {
     // GameDesignDoc "idle": tracks a trailing rolling average of ore gained per minute, per
-    // mineral type, from Mining Automaton deposits only (not the player, not Storage/Fuel Drones).
-    // Persistence.SaveService reads AveragePerMinute to save, and multiplies it by minutes-away to
-    // compute the offline-earnings screen on load.
+    // mineral type, fed by every Depot-bound automation deposit (Mining Automatons and Storage
+    // Drones, via AutomationDepositService) - not the player, and not Fuel Drones, which never
+    // carry ore. Persistence.SaveService reads AveragePerMinute to save, and multiplies it by
+    // minutes-away to compute the offline-earnings screen on load. Also doubles as the live data
+    // source for the Control Center's Miner Dashboard ore/min table (MinerDashboardUI).
     public class IdleEarningsTracker : Singleton<IdleEarningsTracker>
     {
         private const float WindowMinutes = 2f;
