@@ -64,7 +64,7 @@ namespace UI
                 spendingCapSlider.value = percent;
                 suppressSliderEvent = false;
             }
-            if (spendingCapLabel != null) spendingCapLabel.text = $"{percent * 100f:0}%";
+            if (spendingCapLabel != null) spendingCapLabel.text = $"Spending cap:{percent * 100f:0}%";
         }
     }
 }

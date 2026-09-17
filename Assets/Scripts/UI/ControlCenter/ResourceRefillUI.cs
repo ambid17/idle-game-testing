@@ -48,24 +48,24 @@ namespace UI
             {
                 float fuelMissing = Mathf.Max(0f, playerController.FuelMissing);
 
-                if (fuelFillBar != null) fuelFillBar.fillAmount = Mathf.Clamp01(playerController.FuelFraction);
-                if (fuelLabel != null) fuelLabel.text = $"{playerController.Fuel:0}/{playerController.FuelMax:0}";
-                if (buyFuelUnitButton != null) buyFuelUnitButton.interactable = fuelMissing > 0f;
-                if (fillFuelButton != null) fillFuelButton.interactable = fuelMissing > 0f;
-                if (buyFuelUnitLabel != null) buyFuelUnitLabel.text = $"Buy 1 (${config.FuelCostPerUnit:0.##})";
-                if (fillFuelLabel != null) fillFuelLabel.text = $"Fill (${fuelMissing * config.FuelCostPerUnit:0.##})";
+                fuelFillBar.fillAmount = Mathf.Clamp01(playerController.FuelFraction);
+                fuelLabel.text = $"{playerController.Fuel:0}/{playerController.FuelMax:0}";
+                buyFuelUnitButton.interactable = fuelMissing > 0f;
+                fillFuelButton.interactable = fuelMissing > 0f;
+                buyFuelUnitLabel.text = $"Buy 1 (${config.FuelCostPerUnit:0.##})";
+                fillFuelLabel.text = $"Fill (${fuelMissing * config.FuelCostPerUnit:0.##})";
             }
 
             if (playerHealth != null)
             {
                 float hpMissing = Mathf.Max(0f, playerHealth.MaxHp - playerHealth.CurrentHp);
 
-                if (hpFillBar != null) hpFillBar.fillAmount = playerHealth.MaxHp > 0f ? Mathf.Clamp01(playerHealth.CurrentHp / playerHealth.MaxHp) : 0f;
-                if (hpLabel != null) hpLabel.text = $"{playerHealth.CurrentHp:0}/{playerHealth.MaxHp:0}";
-                if (buyHpUnitButton != null) buyHpUnitButton.interactable = hpMissing > 0f;
-                if (fillHpButton != null) fillHpButton.interactable = hpMissing > 0f;
-                if (buyHpUnitLabel != null) buyHpUnitLabel.text = $"Buy 1 (${config.HpCostPerUnit:0.##})";
-                if (fillHpLabel != null) fillHpLabel.text = $"Fill (${hpMissing * config.HpCostPerUnit:0.##})";
+                hpFillBar.fillAmount = playerHealth.MaxHp > 0f ? Mathf.Clamp01(playerHealth.CurrentHp / playerHealth.MaxHp) : 0f;
+                hpLabel.text = $"{playerHealth.CurrentHp:0}/{playerHealth.MaxHp:0}";
+                buyHpUnitButton.interactable = hpMissing > 0f;
+                fillHpButton.interactable = hpMissing > 0f;
+                buyHpUnitLabel.text = $"Buy 1 (${config.HpCostPerUnit:0.##})";
+                fillHpLabel.text = $"Fill (${hpMissing * config.HpCostPerUnit:0.##})";
             }
         }
 

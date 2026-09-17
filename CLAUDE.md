@@ -44,6 +44,12 @@ In general, when a non-instantiated MonoBehaviour script needs to be accessed fr
 	- the UI controller is attached to the Panel GameObject and is enabled/active.
 	- the Panel GameObject has a child GameObject "renderer" containing all UI elements.
 	- the UI controller code only toggles on and off the "renderer" so the monobehaviour stays active on the parent
+	
+## Tabs
+- when making a tabbed UI structure, follow these guidelines
+	- ask about if any tabs should be hidden based on some criteria
+	- color each tab based on which tab is currently active
+	
 
 ## Events
 Whenever one would use an event or action, use the EventService. This keeps the code easier to maintain.
