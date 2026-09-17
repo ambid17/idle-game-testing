@@ -1,5 +1,4 @@
 using Events;
-using MapGeneration;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +14,11 @@ namespace Player
         [SerializeField] private float groundSpeed = 5f;
         [SerializeField] private float flySpeed = 8f;
         [SerializeField] private float jetpackForce = 15f;
+        // Horizontal accel used to close the gap to target speed via AddForce. High enough to feel
+        // near-instant on open ground, but - unlike a hard rb.linearVelocity assignment - a wall's
+        // contact response can actually oppose this force instead of being overwritten every
+        // FixedUpdate, which is what let the player pop up and over walls they ran into.
+        [SerializeField] private float moveAcceleration = 80f;
 
         [Header("Jetpack Fuel")]
         [SerializeField] private float fuelMax = 100f;
@@ -30,14 +34,20 @@ namespace Player
         [SerializeField] private Vector2 groundCheckSize = new(0.9f, 0.1f);
         [SerializeField] private LayerMask groundLayer;
 
-        private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
-
         private Rigidbody2D rb;
         private CapsuleCollider2D capsuleCollider;
         private PlayerHealth health;
         private bool wasGrounded;
         private float lastFallSpeed;
         private Vector3 spawnPosition;
+
+        // Frictionless while flying only - grounded movement keeps the collider's authored
+        // (default) material so the player doesn't slide around on the ground. Without this, the
+        // AddForce-based horizontal push (see ApplyHorizontalMovementForce) presses the player into
+        // a wall hard enough that normal friction there resists the jetpack's vertical thrust too,
+        // pinning them in place instead of letting them fly up the wall.
+        private PhysicsMaterial2D flyingMaterial;
+        private PhysicsMaterial2D groundedMaterial;
 
         public bool IsGrounded { get; private set; }
         public bool IsFlying { get; private set; }
@@ -70,6 +80,9 @@ namespace Player
             groundCheckOffset = capsuleCollider.size.y * 0.5f * Vector2.down;
             groundCheckSize = new Vector2(capsuleCollider.size.x * 0.5f, 0.1f);
             keyboard = Keyboard.current;
+
+            groundedMaterial = capsuleCollider.sharedMaterial;
+            flyingMaterial = new PhysicsMaterial2D("PlayerFlyingMaterial") { friction = 0f, bounciness = 0f };
         }
 
         private void OnEnable()
@@ -162,9 +175,10 @@ namespace Player
             IsGrounded = CheckGrounded();
             IsFlying = movementInput.y > 0 && Fuel > 0f;
 
+            capsuleCollider.sharedMaterial = !IsGrounded ? flyingMaterial : groundedMaterial;
+
             float horizontalSpeed = IsFlying ? flySpeed : groundSpeed;
-            float horizontalVelocity = ClampHorizontalVelocity(movementInput.x * horizontalSpeed);
-            rb.linearVelocity = new Vector2(horizontalVelocity, rb.linearVelocity.y);
+            ApplyHorizontalMovementForce(movementInput.x * horizontalSpeed);
 
             // Jetpack pushes rather than snapping vertical velocity, so gravity still pulls
             // against it - lets the player feather W for a soft landing instead of a hard cutoff.
@@ -215,18 +229,15 @@ namespace Player
             lastFallSpeed = 0f;
         }
 
-        // Keeps the player's collider within the mine's horizontal extent. Read live off
-        // World.GridWidth rather than cached, since the grid-width upgrade widens it over time.
-        private float ClampHorizontalVelocity(float horizontalVelocity)
+        // Accelerates toward targetVelocityX via AddForce instead of snapping rb.linearVelocity.
+        // Capped by moveAcceleration so a wall's contact response can win against this force rather
+        // than being overwritten wholesale every fixed step.
+        private void ApplyHorizontalMovementForce(float targetVelocityX)
         {
-            float halfWidth = capsuleCollider.size.x * 0.5f;
-            float minX = halfWidth;
-            float maxX = mapGenerationService.World.GridWidth * mapGenerationService.CellSize - halfWidth;
-
-            float predictedX = rb.position.x + horizontalVelocity * Time.fixedDeltaTime;
-            if (predictedX < minX && horizontalVelocity < 0f) return 0f;
-            if (predictedX > maxX && horizontalVelocity > 0f) return 0f;
-            return horizontalVelocity;
+            float velocityDiff = targetVelocityX - rb.linearVelocity.x;
+            float maxForce = moveAcceleration * rb.mass;
+            float force = Mathf.Clamp(velocityDiff * rb.mass / Time.fixedDeltaTime, -maxForce, maxForce);
+            rb.AddForce(new Vector2(force, 0f), ForceMode2D.Force);
         }
 
         private bool CheckGrounded()
