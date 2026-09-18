@@ -1,3 +1,4 @@
+using Economy;
 using System;
 using TMPro;
 using UnityEngine;
@@ -14,11 +15,19 @@ namespace UI.SkillTree
         [SerializeField] private Image icon;
         [SerializeField] private TMP_Text levelBadge;
         [SerializeField] private Button button;
+        [SerializeField] private TMP_Text displayNameLabel;
+        [SerializeField] private Image currencyIcon;
+        [SerializeField] private TMP_Text costLabel;
 
+        [Header("Border Colors")]
         [SerializeField] private Color lockedColor = Color.gray;
         [SerializeField] private Color unlockedColor = Color.white;
         [SerializeField] private Color partialColor = Color.green;
         [SerializeField] private Color maxedColor = new Color(1f, 0.84f, 0f);
+
+        [Header("Cost Text Colors")]
+        [SerializeField] private Color affordableColor = Color.white;
+        [SerializeField] private Color unaffordableColor = Color.red;
 
         public SkillTreeNodeViewModel ViewModel { get; private set; }
 
@@ -30,7 +39,18 @@ namespace UI.SkillTree
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => onClicked?.Invoke(ViewModel));
             }
+
+            if(displayNameLabel != null) displayNameLabel.text = viewModel.DisplayName;
             Refresh(viewModel);
+
+            if(viewModel.Source is UpgradeDefinition)
+            {
+                currencyIcon.sprite = UpgradeManager.Instance.CurrencyIcon;
+            }
+            else
+            {
+                currencyIcon.sprite = PrestigeUpgradeManager.Instance.CurrencyIcon;
+            }
         }
 
         public void Refresh(SkillTreeNodeViewModel viewModel)
@@ -42,11 +62,33 @@ namespace UI.SkillTree
             if (levelBadge != null) levelBadge.text = $"{viewModel.Level}/{viewModel.MaxLevel}";
             if (border != null)
             {
-                border.color = !viewModel.IsUnlocked ? lockedColor
-                    : viewModel.IsMaxed ? maxedColor
-                    : viewModel.Level > 0 ? partialColor
-                    : unlockedColor;
+                if (!viewModel.IsUnlocked)
+                {
+                    border.color = lockedColor;
+                    levelBadge.color = lockedColor;
+                }
+                else if (viewModel.IsMaxed)
+                {
+                    border.color = maxedColor;
+                    levelBadge.color = maxedColor;
+                }
+                else if (viewModel.Level > 0)
+                {
+                    border.color = partialColor;
+                    levelBadge.color = partialColor;
+                }
+                else
+                {
+                    border.color = unlockedColor;
+                    levelBadge.color = unlockedColor;
+                }
             }
+
+            costLabel.gameObject.SetActive(!viewModel.IsMaxed);
+            currencyIcon.gameObject.SetActive(!viewModel.IsMaxed);
+
+            costLabel.color = viewModel.CanPurchase ? affordableColor : unaffordableColor;
+            costLabel.text = viewModel.CostLabel;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Economy
     {
         private static PrestigeUpgradeDatabase database => GameManager.PrestigeUpgradeDatabase;
 
+        public Sprite CurrencyIcon;
         private readonly Dictionary<string, int> levelsByUpgradeId = new();
 
         public int GetLevel(PrestigeUpgradeDefinition def) => def != null && levelsByUpgradeId.TryGetValue(def.Id, out var lvl) ? lvl : 0;

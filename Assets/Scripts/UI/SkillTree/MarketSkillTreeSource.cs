@@ -36,7 +36,7 @@ namespace UI.SkillTree
                     CanPurchase = manager.CanPurchase(def),
                     Source = def,
                 };
-                vm.CostLabel = vm.IsMaxed ? "MAXED" : $"${manager.GetNextCost(def):0.##}";
+                vm.CostLabel = vm.IsMaxed ? "MAXED" : $"{manager.GetNextCost(def):0.##}";
 
                 viewModels.Add(vm);
                 viewModelsByDefinition[def] = vm;

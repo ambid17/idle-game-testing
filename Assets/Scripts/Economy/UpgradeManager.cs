@@ -14,6 +14,8 @@ namespace Economy
     {
         private static UpgradeDatabase database => GameManager.UpgradeDatabase;
 
+        public Sprite CurrencyIcon;
+
         private readonly Dictionary<string, int> levelsByUpgradeName = new();
 
         // Purchased levels only - never includes a PrestigeUpgradeManager "kept tier" baseline.
