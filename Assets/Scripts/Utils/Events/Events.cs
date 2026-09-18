@@ -203,6 +203,11 @@ namespace Events
         }
     }
 
+    // Dispatched by MarketUI.Close(), after panelRoot is deactivated, so listeners can react to the
+    // Market having just been closed (e.g. Processing.ProcessingCenterRevealController's queued
+    // first-unlock reveal).
+    public class MarketPanelClosedEvent { }
+
     public class HazardTriggeredEvent : IEvent
     {
         public int LayerIndex;

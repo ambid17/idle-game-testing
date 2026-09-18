@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Economy;
 using Events;
 using MapGeneration;
@@ -34,6 +35,8 @@ namespace Processing
 
         public bool IsRecipeUnlocked(ProcessingRecipeDefinition recipe) =>
             recipe.RequiredUpgrade != null && UpgradeManager.Instance.IsMaxed(recipe.RequiredUpgrade);
+
+        public bool HasAnyRecipeUnlocked() => GameManager.ProcessingRecipeDatabase.Recipes.Any(IsRecipeUnlocked);
 
         private void EnsureSlotCapacity()
         {
