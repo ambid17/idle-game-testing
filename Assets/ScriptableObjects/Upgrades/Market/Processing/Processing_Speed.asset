@@ -21,5 +21,5 @@ MonoBehaviour:
   MaxLevel: 10
   BaseCost: 1500
   CostGrowth: 1.3
-  Prerequisite: {fileID: 0}
+  Prerequisite: {fileID: 11400000, guid: e33be1e148710034babacefe001c2780, type: 2}
   RequirePrerequisiteMaxed: 0

@@ -95,6 +95,7 @@ namespace UI
                 var slot = Instantiate(slotPrefab, slotContainer);
                 slot.Bind(i, OnSelectRecipeClicked);
                 slot.gameObject.name = $"Slot_{i}";
+                slot.SetRecipe(GetDefaultRecipe(i));
                 spawnedSlots.Add(slot);
             }
         }
@@ -104,6 +105,17 @@ namespace UI
             recipeListModal.Show(slotIndex);
         }
 
+        private ProcessingRecipeDefinition GetDefaultRecipe(int slotIndex)
+        {
+            var unlockedRecipes = GameManager.ProcessingRecipeDatabase.Recipes.FindAll(recipe => ProcessingManager.Instance.IsRecipeUnlocked(recipe));
+            for (int i = slotIndex; i < unlockedRecipes.Count; i++)
+            {
+                var recipe = unlockedRecipes[i];
+                if (ProcessingManager.Instance.IsRecipeUnlocked(recipe)) return recipe;
+            }
+
+            return unlockedRecipes.Count > 0 ? unlockedRecipes[0] : null;
+        }
         // Picking a recipe just assigns it to the slot per processingImplementation.md - the
         // slot itself now owns quantity selection and starting the job (no separate detail modal).
         private void OnRecipeSelected(int slotIndex, ProcessingRecipeDefinition recipe)
