@@ -17,14 +17,14 @@ MonoBehaviour:
   LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
   BlockHealth: 1.7
   OreTable:
+  - BlockType: {fileID: 11400000, guid: da4f65576bcec1847805830d80fd8b5f, type: 2}
+    Weight: 100
   - BlockType: {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
     Weight: 3
   - BlockType: {fileID: 11400000, guid: d529a29641331c448ac6f8f4d4209047, type: 2}
-    Weight: 4
+    Weight: 8
   - BlockType: {fileID: 11400000, guid: db0846b8ec2f6884aa974ff0b1172348, type: 2}
-    Weight: 3
-  - BlockType: {fileID: 11400000, guid: da4f65576bcec1847805830d80fd8b5f, type: 2}
-    Weight: 100
+    Weight: 8
   - BlockType: {fileID: 11400000, guid: 6ff86b5bdf2db464eb95a3b610508372, type: 2}
     Weight: 3
   HazardTable: []
