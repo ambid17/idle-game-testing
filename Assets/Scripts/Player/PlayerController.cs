@@ -1,4 +1,5 @@
 using Events;
+using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -133,14 +134,21 @@ namespace Player
 
             if (keyboard.escapeKey.wasPressedThisFrame)
             {
-                // Captured before dispatch: if a full-screen modal (Control Center, Museum, the
-                // pause menu itself, ...) was already open, this Escape just closes it. Otherwise
-                // there's nothing to close, so it opens the pause menu instead.
-                bool modalWasOpen = InputBlocker.IsBlocked;
-                GameManager.EventService.Dispatch<UICloseEvent>();
-                if (!modalWasOpen)
+                // Three tiers: a modal nested inside (or standalone atop) a panel closes first;
+                // only once none is open does Escape fall through to closing the panel itself,
+                // or - if nothing was open at all - opening the pause menu. See UI.ModalTracker.
+                if (ModalTracker.IsAnyModalOpen)
                 {
-                    GameManager.EventService.Dispatch<PauseMenuOpenRequestedEvent>();
+                    GameManager.EventService.Dispatch<ModalCloseRequestedEvent>();
+                }
+                else
+                {
+                    bool panelWasOpen = InputBlocker.IsBlocked;
+                    GameManager.EventService.Dispatch<UICloseEvent>();
+                    if (!panelWasOpen)
+                    {
+                        GameManager.EventService.Dispatch<PauseMenuOpenRequestedEvent>();
+                    }
                 }
             }
 

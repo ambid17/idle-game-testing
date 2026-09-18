@@ -33,6 +33,10 @@ namespace UI.SkillTree
             RefreshAll();
         }
 
+        // Called by the owning panel (MarketUI/MuseumUI) when it closes, so a still-open detail
+        // modal doesn't leak its ModalTracker registration or reappear pre-opened next time.
+        public void Close() => detailModal?.Close();
+
         public void RefreshAll()
         {
             if (source == null || content == null || nodePrefab == null) return;

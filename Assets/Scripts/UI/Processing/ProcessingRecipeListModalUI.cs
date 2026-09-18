@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Processing;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,8 @@ namespace UI.Processing
     // chained UpgradeDefinition. Instantiate-into-container + Bind(model, onClick) pattern copied
     // from SkillTreePanelUI, but as a flat list rather than a graph - there's no prerequisite
     // visualization need here, IsRecipeUnlocked already filters to only what's selectable.
-    public class ProcessingRecipeListModalUI : MonoBehaviour
+    // Inherits ModalBase so Escape can close just this modal before it closes ProcessingUI.
+    public class ProcessingRecipeListModalUI : ModalBase
     {
         [SerializeField] private GameObject renderer;
         [SerializeField] private Transform rowContainer;
@@ -33,12 +35,14 @@ namespace UI.Processing
         {
             this.slotIndex = slotIndex;
             renderer.SetActive(true);
+            Opened();
             BuildRows();
         }
 
-        public void Close()
+        public override void Close()
         {
             renderer.SetActive(false);
+            Closed();
         }
 
         private void BuildRows()

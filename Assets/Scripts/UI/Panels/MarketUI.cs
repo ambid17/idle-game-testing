@@ -72,6 +72,7 @@ namespace UI
             if (panelRoot == null || !panelRoot.activeSelf) return;
             InputBlocker.SetBlocked(false);
             panelRoot.SetActive(false);
+            if (skillTreePanel != null) skillTreePanel.Close();
         }
 
         private void OnPurchaseRequested(PurchaseRequestedEvent evt) => UpgradeManager.Instance.TryPurchase(evt.Definition);

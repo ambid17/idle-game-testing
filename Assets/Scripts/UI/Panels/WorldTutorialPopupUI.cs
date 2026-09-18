@@ -12,8 +12,9 @@ namespace UI
     // World Space canvas (which stays parented to the player), this GameObject lives at the scene
     // root and has its transform.position moved to the requested anchor each time it's shown, since
     // the anchor is different per trigger rather than always "above the player."
-    // See UI.Panels.TutorialModalUI for the screen-space counterpart.
-    public class WorldTutorialPopupUI : MonoBehaviour
+    // See UI.Panels.TutorialModalUI for the screen-space counterpart. Inherits ModalBase so
+    // Escape can dismiss it without also closing a panel or opening the pause menu underneath.
+    public class WorldTutorialPopupUI : ModalBase
     {
         [SerializeField] private GameObject rendererRoot;
         [SerializeField] private TMP_Text titleLabel;
@@ -31,8 +32,17 @@ namespace UI
             if (rendererRoot != null) rendererRoot.SetActive(false);
         }
 
-        private void OnEnable() => GameManager.EventService.Add<ShowTutorialEvent>(OnShowTutorial);
-        private void OnDisable() => GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            GameManager.EventService.Add<ShowTutorialEvent>(OnShowTutorial);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
+        }
 
         private void OnShowTutorial(ShowTutorialEvent evt)
         {
@@ -45,14 +55,16 @@ namespace UI
 
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
+            Opened();
         }
 
-        private void Close()
+        public override void Close()
         {
             if (rendererRoot == null || !rendererRoot.activeSelf) return;
 
             InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
+            Closed();
         }
     }
 }

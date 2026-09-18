@@ -10,8 +10,9 @@ namespace UI
     // any ShowTutorialEvent with no WorldPosition - the core-goal tutorial and each building's
     // first-open tutorial, which sit over whatever panel (or nothing yet) is already on screen.
     // Its Canvas should use a higher sort order than every other panel so it always renders on top.
-    // See UI.Panels.WorldTutorialPopupUI for the world-anchored counterpart.
-    public class TutorialModalUI : MonoBehaviour
+    // See UI.Panels.WorldTutorialPopupUI for the world-anchored counterpart. Inherits ModalBase so
+    // Escape can dismiss it without also closing a panel or opening the pause menu underneath.
+    public class TutorialModalUI : ModalBase
     {
         [SerializeField] private GameObject rendererRoot;
         [SerializeField] private TMP_Text titleLabel;
@@ -29,8 +30,17 @@ namespace UI
             if (rendererRoot != null) rendererRoot.SetActive(false);
         }
 
-        private void OnEnable() => GameManager.EventService.Add<ShowTutorialEvent>(OnShowTutorial);
-        private void OnDisable() => GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            GameManager.EventService.Add<ShowTutorialEvent>(OnShowTutorial);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
+        }
 
         private void OnShowTutorial(ShowTutorialEvent evt)
         {
@@ -42,14 +52,16 @@ namespace UI
 
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
+            Opened();
         }
 
-        private void Close()
+        public override void Close()
         {
             if (rendererRoot == null || !rendererRoot.activeSelf) return;
 
             InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
+            Closed();
         }
     }
 }

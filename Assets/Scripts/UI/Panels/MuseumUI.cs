@@ -30,20 +30,16 @@ namespace UI
 
         [Header("Prestige trigger")]
         [SerializeField] private Button prestigeNowButton;
-        [SerializeField] private GameObject confirmRoot;
-        [SerializeField] private Button confirmYesButton;
-        [SerializeField] private Button confirmNoButton;
+        [SerializeField] private MuseumPrestigeConfirmUI prestigeConfirm;
 
         private void Start()
         {
             if (closeButton != null) closeButton.onClick.AddListener(Close);
             if (prestigeNowButton != null) prestigeNowButton.onClick.AddListener(() => GameManager.EventService.Dispatch<PrestigeConfirmationRequestedEvent>());
-            if (confirmYesButton != null) confirmYesButton.onClick.AddListener(ConfirmPrestige);
-            if (confirmNoButton != null) confirmNoButton.onClick.AddListener(() => confirmRoot.SetActive(false));
+            if (prestigeConfirm != null) prestigeConfirm.Initialize(ConfirmPrestige);
 
             if (skillTreePanel != null) skillTreePanel.Initialize(new MuseumSkillTreeSource());
 
-            if (confirmRoot != null) confirmRoot.SetActive(false);
             if (rendererRoot != null) rendererRoot.SetActive(false);
         }
 
@@ -97,7 +93,8 @@ namespace UI
             if (rendererRoot == null || !rendererRoot.activeSelf) return;
             InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
-            if (confirmRoot != null) confirmRoot.SetActive(false);
+            if (skillTreePanel != null) skillTreePanel.Close();
+            if (prestigeConfirm != null) prestigeConfirm.Close();
         }
 
         private void OnPrestigePurchaseRequested(PrestigePurchaseRequestedEvent evt) => PrestigeUpgradeManager.Instance.TryPurchase(evt.Definition);
@@ -108,7 +105,7 @@ namespace UI
         // confirm, not a single misclick" requirement - PrestigeManager only requests it.
         private void OnPrestigeConfirmationRequested()
         {
-            if (confirmRoot != null) confirmRoot.SetActive(true);
+            if (prestigeConfirm != null) prestigeConfirm.Show();
         }
 
         // Auto-turns-in any remaining artifacts first so the player never silently loses banked

@@ -1,4 +1,5 @@
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,8 +8,9 @@ namespace UI.SkillTree
     // Detail popup for a clicked skill tree node: name/description/level/cost + a buy button that
     // routes into the same purchase pipeline the classic tabbed UI already uses (via
     // ISkillTreeSource.RequestPurchase -> PurchaseRequestedEvent/PrestigePurchaseRequestedEvent).
-    // This panel never purchases anything itself.
-    public class SkillTreeDetailModalUI : MonoBehaviour
+    // This panel never purchases anything itself. Inherits ModalBase so Escape can close just
+    // this modal before it closes the Market/Museum panel underneath it.
+    public class SkillTreeDetailModalUI : ModalBase
     {
         [SerializeField] private GameObject root;
         [SerializeField] private TMP_Text nameLabel;
@@ -38,6 +40,7 @@ namespace UI.SkillTree
         {
             current = viewModel;
             if (root != null) root.SetActive(true);
+            Opened();
             Refresh();
         }
 
@@ -52,10 +55,11 @@ namespace UI.SkillTree
             if (buyButton != null) buyButton.interactable = current.CanPurchase;
         }
 
-        public void Close()
+        public override void Close()
         {
             current = null;
             if (root != null) root.SetActive(false);
+            Closed();
         }
 
         private void OnBuyClicked()

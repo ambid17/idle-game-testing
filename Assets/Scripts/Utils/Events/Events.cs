@@ -66,6 +66,11 @@ namespace Events
 
     public class UICloseEvent { }
 
+    // Dispatched by PlayerController on Escape when UI.ModalTracker.IsAnyModalOpen - closes just
+    // the open modal (nested inside a panel, or a standalone tutorial popup) without touching
+    // the panel underneath it. See UICloseEvent for the panel-level version.
+    public class ModalCloseRequestedEvent { }
+
     public class PlayerInteractedEvent : IEvent
     {
         public InteractableType Type;
