@@ -52,11 +52,11 @@ namespace UI
 
         private void Update()
         {
-            if (keyboard != null && keyboard.tabKey.wasPressedThisFrame)
-            {
-                if(panelRoot.activeSelf) Close();
-                else Open();
-            }
+            //if (keyboard != null && keyboard.tabKey.wasPressedThisFrame)
+            //{
+            //    if(panelRoot.activeSelf) Close();
+            //    else Open();
+            //}
         }
 
         private void BuildRows()
