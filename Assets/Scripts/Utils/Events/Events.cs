@@ -39,9 +39,18 @@ namespace Events
 
     public class InventoryChangedEvent { }
 
-    // Dispatched by PlayerMining when it blocks a dig because PlayerInventory.IsFull (and the
-    // Overflow upgrade isn't unlocked to auto-sell instead) - drives UI.InventoryFullUI's popup.
-    public class InventoryFullEvent { }
+    // Generic HUD toast - drives UI.HudToastUI's popup. Dispatch this wherever a brief,
+    // non-blocking message should surface to the player (e.g. PlayerMining when a dig is blocked
+    // by a full inventory, PlayerController when fuel drops below half).
+    public class HudNotificationEvent : IEvent
+    {
+        public string Message;
+
+        public HudNotificationEvent(string message)
+        {
+            Message = message;
+        }
+    }
 
     // Dispatched by PlayerInventory.HandleDeath with the ore that was just withdrawn on death, so
     // Economy.ChestSpawner can drop it into a chest instead of it just being discarded.

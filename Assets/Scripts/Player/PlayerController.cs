@@ -34,6 +34,8 @@ namespace Player
         [SerializeField] private Vector2 groundCheckSize = new(0.9f, 0.1f);
         [SerializeField] private LayerMask groundLayer;
 
+        private const float LowFuelWarningFraction = 0.5f;
+
         private Rigidbody2D rb;
         private CapsuleCollider2D capsuleCollider;
         private PlayerHealth health;
@@ -212,6 +214,7 @@ namespace Player
 
         private void UpdateFuel(float dt)
         {
+            float previousFuelFraction = FuelFraction;
             if (IsFlying)
             {
                 Fuel = Mathf.Max(0f, Fuel - fuelDrainPerSecond * dt);
@@ -219,6 +222,15 @@ namespace Player
             else if (IsGrounded)
             {
                 Fuel = Mathf.Min(fuelMax, Fuel + fuelRegenPerSecondGrounded * dt);
+            }
+
+            // Edge-triggered: only fires the tick fuel first crosses at/below half, not every
+            // tick while it stays low - otherwise this would keep resetting HudToastUI's display
+            // timer and could drown out other notifications (e.g. inventory-full) sharing the
+            // same toast.
+            if (FuelFraction <= LowFuelWarningFraction && previousFuelFraction > LowFuelWarningFraction)
+            {
+                GameManager.EventService.Dispatch(new HudNotificationEvent("Fuel is running low!"));
             }
 
             if (Fuel <= 0f)

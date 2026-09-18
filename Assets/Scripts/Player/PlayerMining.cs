@@ -28,13 +28,8 @@ namespace Player
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
         private float miningProgress;
+        private bool wasBlockedByFullInventory;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
-
-        // Debounces InventoryFullEvent: without it, the full-inventory block below would fire
-        // every single frame the player holds a direction into a full ore cell (ResetTarget
-        // clears hasTarget each time, so isNewTarget is never a reliable once-per-attempt signal).
-        private const float InventoryFullNoticeCooldown = 2f;
-        private float lastInventoryFullNoticeTime = -Mathf.Infinity;
 
         private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.OverflowUnlocked;
         
@@ -55,6 +50,7 @@ namespace Player
             if (!playerController.IsGrounded || direction == null || InputBlocker.IsBlocked)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
+                wasBlockedByFullInventory = false;
                 ResetTarget();
                 return;
             }
@@ -74,6 +70,7 @@ namespace Player
             if (!mapGenerationService.TryWorldToCellInBounds(miningTargetWorldPos, out int layerIndex, out int targetCellX, out int targetCellY))
             {
                 if (debug) Debug.LogWarning($"PlayerMining: failed to resolve target cell at {miningTargetWorldPos} (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()}). Resolved Cell: ({targetCellX}, {targetCellY})");
+                wasBlockedByFullInventory = false;
                 ResetTarget();
                 return;
             }
@@ -93,11 +90,14 @@ namespace Player
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, targetCellX, targetCellY);
             bool blockedByFullInventory = blockType != null && blockType.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow;
             
-            if (blockedByFullInventory && Time.time - lastInventoryFullNoticeTime >= InventoryFullNoticeCooldown)
+            // Edge-triggered like PlayerController's low-fuel check: fires once when mining first
+            // becomes blocked, not every frame it stays blocked, so it can't drown out other HUD
+            // notifications sharing the same toast.
+            if (blockedByFullInventory && !wasBlockedByFullInventory)
             {
-                lastInventoryFullNoticeTime = Time.time;
-                GameManager.EventService.Dispatch<InventoryFullEvent>();
+                GameManager.EventService.Dispatch(new HudNotificationEvent("Inventory is full!"));
             }
+            wasBlockedByFullInventory = blockedByFullInventory;
 
             if (blockType == null
                 || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
