@@ -63,8 +63,7 @@ namespace UI
                 if (blockType == null) continue;
 
                 var row = Instantiate(rowPrefab, rowContainer);
-                string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
-                row.Bind(kvp.Key, displayName);
+                row.Bind(blockType);
                 row.SetCount(kvp.Value);
                 rows.Add(row);
             }

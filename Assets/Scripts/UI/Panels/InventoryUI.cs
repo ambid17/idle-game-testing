@@ -72,8 +72,7 @@ namespace UI
                 if (blockType == null || blockType.Category != BlockCategory.Ore) continue;
 
                 var row = Instantiate(rowPrefab, rowContainer);
-                string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.Id.ToString() : blockType.DisplayName;
-                row.Bind(blockType.Id, displayName);
+                row.Bind(blockType);
                 uiRowsByType[blockType.Id] = row;
             }
         }

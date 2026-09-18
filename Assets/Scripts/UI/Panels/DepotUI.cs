@@ -103,7 +103,7 @@ namespace UI
 
                 var row = Instantiate(rowPrefab, rowContainer);
                 string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
-                row.Bind(blockType.Id, displayName);
+                row.Bind(blockType);
                 row.gameObject.name = $"Row_{blockType.name}";
                 rows[blockType.Id] = row;
             }
@@ -123,8 +123,7 @@ namespace UI
                 if (recipe == null) continue;
 
                 var row = Instantiate(goodsRowPrefab, goodsRowContainer);
-                string displayName = string.IsNullOrEmpty(recipe.DisplayName) ? recipe.name : recipe.DisplayName;
-                row.Bind(recipe.Id, displayName);
+                row.Bind(recipe);
                 row.gameObject.name = $"Row_{recipe.name}";
                 goodsRows[recipe.Id] = row;
             }

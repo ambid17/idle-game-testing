@@ -50,6 +50,7 @@ namespace MapGeneration
         public BlockCategory Category;
         public HazardBehavior HazardBehavior = HazardBehavior.None;
         public TileBase Tile;
+        public Sprite Icon;
 
         [Tooltip("Sell value.")]
         public float Value;

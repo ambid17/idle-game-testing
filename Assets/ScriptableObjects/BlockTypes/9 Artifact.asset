@@ -17,6 +17,7 @@ MonoBehaviour:
   Category: 4
   HazardBehavior: 0
   Tile: {fileID: 11400000, guid: e33ec1993cbc7b1478a0ed2160569872, type: 2}
+  Icon: {fileID: 21300000, guid: 9f6ac16933abab144a2499151b7afd9b, type: 3}
   Value: 0
   Weight: 0
   Health: 5
