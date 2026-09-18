@@ -131,6 +131,8 @@ namespace UI
 
         private void Open()
         {
+            if (panelRoot == null || panelRoot.activeSelf) return;
+            InputBlocker.SetBlocked(true);
             panelRoot.SetActive(true);
             Refresh();
         }
@@ -138,6 +140,7 @@ namespace UI
         private void Close()
         {
             if(panelRoot == null || !panelRoot.activeSelf) return;
+            InputBlocker.SetBlocked(false);
             panelRoot.SetActive(false);
         }
 

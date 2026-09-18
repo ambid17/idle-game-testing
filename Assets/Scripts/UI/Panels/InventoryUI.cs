@@ -79,11 +79,15 @@ namespace UI
 
         private void Open()
         {
+            if (panelRoot == null || panelRoot.activeSelf) return;
+            InputBlocker.SetBlocked(true);
             panelRoot.SetActive(true);
         }
 
         private void Close()
         {
+            if (panelRoot == null || !panelRoot.activeSelf) return;
+            InputBlocker.SetBlocked(false);
             panelRoot.SetActive(false);
         }
 

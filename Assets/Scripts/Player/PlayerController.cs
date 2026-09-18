@@ -38,6 +38,7 @@ namespace Player
         private CapsuleCollider2D capsuleCollider;
         private PlayerHealth health;
         private bool wasGrounded;
+        private bool wasInputBlocked;
         private float lastFallSpeed;
         private Vector3 spawnPosition;
 
@@ -145,7 +146,19 @@ namespace Player
             // mid-motion, so it has to actively zero the stale input each frame it's active -
             // otherwise FixedUpdate would keep applying whatever direction was held when the modal
             // opened.
-            if (InputBlocker.IsBlocked)
+            bool isBlocked = InputBlocker.IsBlocked;
+            if (isBlocked != wasInputBlocked)
+            {
+                // Zeroing movementInput alone only stops new input - it doesn't stop gravity or
+                // whatever velocity the player already had (e.g. mid-fall) from continuing to
+                // integrate every FixedUpdate, which is what let a tutorial popup fly off-screen
+                // with the player before they could click it. Switching to Kinematic removes the
+                // Rigidbody2D from physics simulation entirely for the duration of the block.
+                SetPhysicsFrozen(isBlocked);
+                wasInputBlocked = isBlocked;
+            }
+
+            if (isBlocked)
             {
                 movementInput = Vector2.zero;
                 return;
@@ -170,7 +183,10 @@ namespace Player
 
         private void FixedUpdate()
         {
-            if (health.IsDead) return;
+            // The Kinematic switch in Update already removes the Rigidbody2D from physics
+            // simulation, but this also skips fuel drain/regen and fall-damage tracking so a
+            // blocked modal doesn't silently cost fuel or attribute fall damage to time spent paused.
+            if (health.IsDead || InputBlocker.IsBlocked) return;
 
             IsGrounded = CheckGrounded();
             IsFlying = movementInput.y > 0 && Fuel > 0f;
@@ -238,6 +254,20 @@ namespace Player
             float maxForce = moveAcceleration * rb.mass;
             float force = Mathf.Clamp(velocityDiff * rb.mass / Time.fixedDeltaTime, -maxForce, maxForce);
             rb.AddForce(new Vector2(force, 0f), ForceMode2D.Force);
+        }
+
+        private void SetPhysicsFrozen(bool frozen)
+        {
+            if (frozen)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+                rb.bodyType = RigidbodyType2D.Kinematic;
+            }
+            else
+            {
+                rb.bodyType = RigidbodyType2D.Dynamic;
+            }
         }
 
         private bool CheckGrounded()

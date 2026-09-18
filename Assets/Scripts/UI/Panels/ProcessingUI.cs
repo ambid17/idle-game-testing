@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Events;
 using Interaction;
+using Player;
 using Processing;
 using UI.Processing;
 using UnityEngine;
@@ -67,12 +68,16 @@ namespace UI
 
         private void Open()
         {
+            if (rendererRoot == null || rendererRoot.activeSelf) return;
+            InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
             BuildSlots();
         }
 
         private void Close()
         {
+            if (rendererRoot == null || !rendererRoot.activeSelf) return;
+            InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
             if (recipeListModal != null) recipeListModal.Close();
         }

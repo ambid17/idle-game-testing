@@ -1,6 +1,7 @@
 using Economy;
 using Events;
 using Interaction;
+using Player;
 using TMPro;
 using UI.SkillTree;
 using UnityEngine;
@@ -59,6 +60,8 @@ namespace UI
 
         private void Open()
         {
+            if (panelRoot == null || panelRoot.activeSelf) return;
+            InputBlocker.SetBlocked(true);
             panelRoot.SetActive(true);
             RefreshDollars();
             skillTreePanel.Open();
@@ -66,6 +69,8 @@ namespace UI
 
         private void Close()
         {
+            if (panelRoot == null || !panelRoot.activeSelf) return;
+            InputBlocker.SetBlocked(false);
             panelRoot.SetActive(false);
         }
 
