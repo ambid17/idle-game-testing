@@ -25,17 +25,20 @@ namespace UI
         public void Bind(BlockType blockType)
         {
             this.blockType = blockType;
-            nameLabel.text = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName; ;
-            icon.sprite = blockType.Icon;
+            if (nameLabel != null) nameLabel.text = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
+            if (icon != null) icon.sprite = blockType.Icon;
         }
 
         public void SetCount(int count)
         {
-            countLabel.text = count.ToString();
+            if (countLabel != null) countLabel.text = count.ToString();
 
-            var blockValue = blockType.Value;
-            var totalValue = blockValue * count;
-            valueLabel.text = $"${totalValue:0.##}";
+            if (valueLabel != null)
+            {
+                var blockValue = blockType.Value;
+                var totalValue = blockValue * count;
+                valueLabel.text = $"${totalValue:0.##}";
+            }
         }
 
         public void SetValue(float value)
