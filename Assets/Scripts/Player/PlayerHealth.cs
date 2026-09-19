@@ -3,6 +3,19 @@ using UnityEngine;
 
 namespace Player
 {
+    // Surfaced by DeathUI to explain the death screen's cause-of-death line.
+    public enum DeathReason
+    {
+        Unknown,
+        OutOfFuel,
+        FallDamage,
+        Explosive,
+        FallingRock,
+        GasPocket,
+        Lava,
+        ManualRespawn
+    }
+
     public class PlayerHealth : MonoBehaviour
     {
         [SerializeField] private float maxHp = 100f;
@@ -16,11 +29,11 @@ namespace Player
         private void OnEnable() => GameManager.EventService.Add<PlayerRevivedEvent>(HandleRevived);
         private void OnDisable() => GameManager.EventService.Remove<PlayerRevivedEvent>(HandleRevived);
 
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount, DeathReason reason)
         {
             if (amount <= 0f || IsDead) return;
             CurrentHp = Mathf.Max(0f, CurrentHp - amount);
-            if (CurrentHp <= 0f) Kill();
+            if (CurrentHp <= 0f) Kill(reason);
         }
 
         // Guards against IsDead so this can't double as a silent resurrection path outside
@@ -33,12 +46,12 @@ namespace Player
 
         // Also called directly when fuel runs out (PlayerController.UpdateFuel) - fuel and HP are
         // independent lose conditions per GameDesignDoc, both funnel into the same death event.
-        public void Kill()
+        public void Kill(DeathReason reason)
         {
             if (IsDead) return;
             IsDead = true;
             CurrentHp = 0f;
-            GameManager.EventService.Dispatch<PlayerDiedEvent>();
+            GameManager.EventService.Dispatch(new PlayerDiedEvent(reason));
         }
 
         private void HandleRevived()

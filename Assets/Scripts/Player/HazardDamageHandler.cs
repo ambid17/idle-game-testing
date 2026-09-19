@@ -41,7 +41,7 @@ namespace Player
             Vector3 hazardWorldPos = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
             if (Vector3.Distance(transform.position, hazardWorldPos) > hazardDamageRadius) return;
 
-            playerHealth.TakeDamage(damage);
+            playerHealth.TakeDamage(damage, ReasonFor(evt.Hazard));
         }
 
         private float DamageFor(HazardBehavior hazard) => hazard switch
@@ -51,6 +51,15 @@ namespace Player
             HazardBehavior.GasPocket => gasPocketDamage,
             HazardBehavior.Lava => lavaDamage,
             _ => 0f
+        };
+
+        private static DeathReason ReasonFor(HazardBehavior hazard) => hazard switch
+        {
+            HazardBehavior.Explosive => DeathReason.Explosive,
+            HazardBehavior.FallingRock => DeathReason.FallingRock,
+            HazardBehavior.GasPocket => DeathReason.GasPocket,
+            HazardBehavior.Lava => DeathReason.Lava,
+            _ => DeathReason.Unknown
         };
     }
 }

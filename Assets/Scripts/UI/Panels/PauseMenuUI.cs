@@ -72,7 +72,7 @@ namespace UI
 
         private void Respawn()
         {
-            GameManager.EventService.Dispatch<PlayerDiedEvent>();
+            GameManager.EventService.Dispatch(new PlayerDiedEvent(DeathReason.ManualRespawn));
             Close();
         }
 

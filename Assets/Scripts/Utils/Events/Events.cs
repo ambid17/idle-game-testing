@@ -3,6 +3,7 @@ using Automation;
 using Economy;
 using Interaction;
 using MapGeneration;
+using Player;
 using Processing;
 using Tutorial;
 using UnityEngine;
@@ -10,7 +11,17 @@ using UnityEngine;
 namespace Events
 {
     public class CurrencyUpdatedEvent { }
-    public class PlayerDiedEvent { }
+
+    public class PlayerDiedEvent : IEvent
+    {
+        public DeathReason Reason;
+
+        public PlayerDiedEvent(DeathReason reason)
+        {
+            Reason = reason;
+        }
+    }
+
     public class PlayerRevivedEvent { }
     public class PlayerHpUpdatedEvent { }
 

@@ -64,7 +64,7 @@ namespace Player
         // Death drops everything the player was carrying into a chest at the death location
         // (Economy.ChestSpawner reacts to the dispatched event) instead of just discarding it.
         // Artifacts are unaffected - they're banked in Wallet, not carried here.
-        private void HandleDeath()
+        private void HandleDeath(PlayerDiedEvent evt)
         {
             var droppedOre = oreInventory.WithdrawAllOre();
             GameManager.EventService.Dispatch<InventoryChangedEvent>();

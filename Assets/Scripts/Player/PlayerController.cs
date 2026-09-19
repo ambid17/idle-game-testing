@@ -101,7 +101,7 @@ namespace Player
             GameManager.EventService.Remove<PlayerRevivedEvent>(HandleRevived);
         }
 
-        private void HandleDied()
+        private void HandleDied(PlayerDiedEvent evt)
         {
             movementInput = Vector2.zero;
             rb.linearVelocity = Vector2.zero;
@@ -252,7 +252,7 @@ namespace Player
 
             if (Fuel <= 0f)
             {
-                health.Kill();
+                health.Kill(DeathReason.OutOfFuel);
             }
         }
 
@@ -268,7 +268,7 @@ namespace Player
 
             if (!wasGrounded && lastFallSpeed > fallDamageVelocityThreshold)
             {
-                health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * fallDamagePerExcessUnit);
+                health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * fallDamagePerExcessUnit, DeathReason.FallDamage);
             }
 
             lastFallSpeed = 0f;
