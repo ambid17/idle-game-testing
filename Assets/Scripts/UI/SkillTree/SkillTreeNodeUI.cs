@@ -29,10 +29,18 @@ namespace UI.SkillTree
         [SerializeField] private Color affordableColor = Color.white;
         [SerializeField] private Color unaffordableColor = Color.red;
 
+        // Set by the skill tree editor tool when a node is baked into the scene at edit time, so
+        // SkillTreePanelUI can match this pre-placed instance back to its view model's Source
+        // (an UpgradeDefinition/PrestigeUpgradeDefinition) on every RefreshAll without needing to
+        // recreate the node. Also kept in sync at runtime by Bind() for nodes built dynamically.
+        [SerializeField] private UnityEngine.Object boundAsset;
+        public UnityEngine.Object BoundAsset => boundAsset;
+
         public SkillTreeNodeViewModel ViewModel { get; private set; }
 
         public void Bind(SkillTreeNodeViewModel viewModel, Action<SkillTreeNodeViewModel> onClicked)
         {
+            boundAsset = viewModel.Source as UnityEngine.Object;
             gameObject.name = $"SkillTreeNode_{viewModel.DisplayName}";
             if (button != null)
             {

@@ -19,6 +19,13 @@ namespace UI.SkillTree
         private readonly List<SkillTreeNodeUI> nodes = new();
         private readonly List<SkillTreeConnectorUI> connectors = new();
 
+        // Read by the skill tree editor tool so it can bake nodes/connectors using this panel's
+        // own prefabs/layout config instead of duplicating them.
+        public RectTransform Content => content;
+        public SkillTreeNodeUI NodePrefab => nodePrefab;
+        public SkillTreeConnectorUI ConnectorPrefab => connectorPrefab;
+        public SkillTreeLayoutConfig LayoutConfig => layoutConfig;
+
         public void Initialize(ISkillTreeSource source)
         {
             this.source = source;
@@ -39,21 +46,59 @@ namespace UI.SkillTree
 
         public void RefreshAll()
         {
-            if (source == null || content == null || nodePrefab == null) return;
+            if (source == null || content == null) return;
 
             // Preserved across the rebuild below so a purchase made from the open modal rebinds
             // it to the matching freshly-built view model instead of leaving it on a stale one.
             object previousModalSource = detailModal != null ? detailModal.CurrentSource : null;
 
             var viewModels = source.BuildViewModels();
-            var layoutNodes = new List<ISkillTreeLayoutNode>(viewModels.Count);
-            foreach (var vm in viewModels) layoutNodes.Add(vm);
-            var positions = SkillTreeLayout.Compute(layoutNodes, layoutConfig, source.BranchCount);
 
-            ClearInstances();
-            AddNodes(viewModels, positions);
-            AddConnectors(viewModels, positions);
+            // A skill tree built by the editor tool already has its SkillTreeNodeUI/
+            // SkillTreeConnectorUI children baked into the scene at fixed positions - in that
+            // case just rebind the existing nodes to fresh view models instead of destroying and
+            // re-instantiating everything (which used to happen on every purchase/dollar-changed
+            // refresh). Trees with no baked nodes yet (e.g. Museum) fall back to the original
+            // dynamic build so they keep working unchanged.
+            var preplacedNodes = content.GetComponentsInChildren<SkillTreeNodeUI>(true);
+            if (preplacedNodes.Length > 0)
+            {
+                BindPreplacedNodes(preplacedNodes, viewModels);
+            }
+            else if (nodePrefab != null)
+            {
+                var layoutNodes = new List<ISkillTreeLayoutNode>(viewModels.Count);
+                foreach (var vm in viewModels) layoutNodes.Add(vm);
+                var positions = SkillTreeLayout.Compute(layoutNodes, layoutConfig, source.BranchCount);
+
+                ClearInstances();
+                AddNodes(viewModels, positions);
+                AddConnectors(viewModels, positions);
+            }
+
             RebuildDetailModal(viewModels, previousModalSource);
+        }
+
+        private void BindPreplacedNodes(SkillTreeNodeUI[] preplacedNodes, IReadOnlyList<SkillTreeNodeViewModel> viewModels)
+        {
+            foreach (var nodeUI in preplacedNodes)
+            {
+                SkillTreeNodeViewModel match = null;
+                foreach (var vm in viewModels)
+                {
+                    if (!ReferenceEquals(vm.Source, nodeUI.BoundAsset)) continue;
+                    match = vm;
+                    break;
+                }
+
+                if (match == null)
+                {
+                    Debug.LogError($"SkillTreePanelUI: pre-placed node '{nodeUI.name}' has no matching upgrade definition - was it removed from the database or never bound by the editor tool?");
+                    continue;
+                }
+
+                nodeUI.Bind(match, OnNodeClicked);
+            }
         }
 
         private void AddNodes(IReadOnlyList<SkillTreeNodeViewModel> viewModels, Dictionary<ISkillTreeLayoutNode, Vector2> positions)
