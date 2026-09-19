@@ -89,3 +89,7 @@ There's no CLI build or test runner configured yet. The practical loop today: ma
 3. Verify with `claude mcp list` from a terminal — `UnityMCP` should show as connected.
 
 If the Editor-driven tools (`Unity_ManageScene`, `Unity_ManageGameObject`, etc.) aren't available in a session, the bridge likely isn't connected — check Editor → Project Settings for the MCP bridge status before assuming the integration is broken.
+
+
+# Style
+- A vibrant pixel-art style of glowing ores, crystalline minerals, and ancient tech in a neon-lit fantasy mine, each block detailed with sci-fi textures and magical luminescence, rendered in clean anime-inspired lines with soft depth and dynamic lighting.
