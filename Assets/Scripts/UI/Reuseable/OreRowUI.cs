@@ -23,10 +23,10 @@ namespace UI
 
         private void Start()
         {
-            if(icon == null) Debug.LogError("OreRowUI.icon is not assigned.");
-            if (nameLabel == null) Debug.LogError("OreRowUI.nameLabel is not assigned.");
-            if (countLabel == null) Debug.LogError("OreRowUI.countLabel is not assigned.");
-            if (valueLabel == null) Debug.LogError("OreRowUI.valueLabel is not assigned.");
+            if(icon == null) Debug.LogError($"OreRowUI.icon is not assigned on {gameObject.name}.");
+            if (nameLabel == null) Debug.LogError($"OreRowUI.nameLabel is not assigned on {gameObject.name}.");
+            if (countLabel == null) Debug.LogError($"OreRowUI.countLabel is not assigned on {gameObject.name}.");
+            if (valueLabel == null) Debug.LogError($"OreRowUI.valueLabel is not assigned on {gameObject.name}.");
         }
 
         public void Bind(BlockType blockType)

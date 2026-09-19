@@ -5,9 +5,9 @@ namespace UI
 {
     // Base for any modal that Escape should be able to close on its own, one press before it
     // closes whatever panel is underneath (see PlayerController.Update and ModalTracker).
-    // Derived classes call Opened() right after making their root visible and Closed() right
+    // Derived classes call SetOpened() right after making their root visible and SetClosed() right
     // after hiding it (inside their own Close() override) - both are idempotent so a modal can
-    // be re-Show()n while already open (e.g. SkillTreePanelUI.RebuildDetailModal) or Close()d
+    // be re-Shown while already open (e.g. SkillTreePanelUI.RebuildDetailModal) or SetClosed()
     // twice in one frame without double-counting ModalTracker.
     public abstract class ModalBase : MonoBehaviour
     {
@@ -21,7 +21,7 @@ namespace UI
             GameManager.EventService.Remove<ModalCloseRequestedEvent>(OnModalCloseRequested);
             // Safety net: decrements the tracker even if something hid this modal's root
             // without going through its own Close() (e.g. a parent panel deactivating).
-            Closed();
+            SetClosed();
         }
 
         private void OnModalCloseRequested()
@@ -31,14 +31,14 @@ namespace UI
 
         public abstract void Close();
 
-        protected void Opened()
+        protected void SetOpened()
         {
             if (IsOpen) return;
             IsOpen = true;
             ModalTracker.SetOpen(true);
         }
 
-        protected void Closed()
+        protected void SetClosed()
         {
             if (!IsOpen) return;
             IsOpen = false;

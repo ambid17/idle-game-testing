@@ -35,14 +35,14 @@ namespace UI.Processing
         {
             this.slotIndex = slotIndex;
             renderer.SetActive(true);
-            Opened();
+            SetOpened();
             BuildRows();
         }
 
         public override void Close()
         {
             renderer.SetActive(false);
-            Closed();
+            SetClosed();
         }
 
         private void BuildRows()

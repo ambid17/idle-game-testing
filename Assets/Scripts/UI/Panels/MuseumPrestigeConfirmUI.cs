@@ -28,13 +28,13 @@ namespace UI
         public void Show()
         {
             if (root != null) root.SetActive(true);
-            Opened();
+            SetOpened();
         }
 
         public override void Close()
         {
             if (root != null) root.SetActive(false);
-            Closed();
+            SetClosed();
         }
 
         private void OnYesClicked()

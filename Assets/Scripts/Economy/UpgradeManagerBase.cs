@@ -77,7 +77,7 @@ namespace Economy
             return CurrentCurrency >= GetNextCost(def);
         }
 
-        public string GetPurchaseBlockReason(TDefinition def)
+        public string GetPurchaseBlockedReason(TDefinition def)
         {
             if (def == null)
                 return "Invalid Definition";

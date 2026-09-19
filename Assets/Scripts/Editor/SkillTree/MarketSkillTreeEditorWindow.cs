@@ -112,7 +112,7 @@ namespace EditorTools.SkillTree
 
                 var nodeUI = instance.GetComponent<SkillTreeNodeUI>();
                 var serializedNode = new SerializedObject(nodeUI);
-                serializedNode.FindProperty("boundAsset").objectReferenceValue = def;
+                serializedNode.FindProperty("upgradeDefinition").objectReferenceValue = def;
                 serializedNode.ApplyModifiedProperties();
 
                 nodeUIByDefinition[def] = nodeUI;

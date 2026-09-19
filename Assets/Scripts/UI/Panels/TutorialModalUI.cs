@@ -54,7 +54,7 @@ namespace UI
 
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
-            Opened();
+            SetOpened();
         }
 
         public override void Close()
@@ -63,7 +63,7 @@ namespace UI
 
             InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
-            Closed();
+            SetClosed();
         }
     }
 }
