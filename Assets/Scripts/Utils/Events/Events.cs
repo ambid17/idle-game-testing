@@ -338,4 +338,8 @@ namespace Events
     }
 
     public class LoadCompletedEvent { }
+
+    // Dispatched by PlayerController on backquote, only in the Editor or a Development Build (see
+    // UI.DevPanelUI). Mirrors PauseMenuOpenRequestedEvent's shape.
+    public class DevPanelOpenRequestedEvent { }
 }

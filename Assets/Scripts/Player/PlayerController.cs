@@ -152,6 +152,15 @@ namespace Player
                 }
             }
 
+            // Dev Panel hotkey (UI.DevPanelUI) - backquote matches the console log viewer's
+            // pre-existing key. Editor/Development Build only, and only when nothing else already
+            // has input blocked, matching PauseMenuOpenRequestedEvent's guard above so it never
+            // fights another open modal for the screen.
+            if (keyboard.backquoteKey.wasPressedThisFrame && (Debug.isDebugBuild || Application.isEditor) && !InputBlocker.IsBlocked)
+            {
+                GameManager.EventService.Dispatch<DevPanelOpenRequestedEvent>();
+            }
+
             // Unlike death (which zeroes movementInput once via HandleDied), blocking can start/end
             // mid-motion, so it has to actively zero the stale input each frame it's active -
             // otherwise FixedUpdate would keep applying whatever direction was held when the modal

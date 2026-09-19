@@ -89,6 +89,11 @@ namespace Tutorial
 
         public bool HasShown(TutorialId id) => shownTutorials.Contains(id);
 
+        // Dev-tool support (UI.DevPanelTimeTutorialTab): lets a tutorial that already fired once be
+        // replayed. No production code path needs this - TryShow's once-only guarantee is otherwise
+        // permanent for the session.
+        public void ResetShown(TutorialId id) => shownTutorials.Remove(id);
+
         public void RestoreFromSaveData(IEnumerable<TutorialId> savedShownTutorials)
         {
             shownTutorials.Clear();

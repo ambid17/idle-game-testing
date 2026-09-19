@@ -20,6 +20,12 @@ namespace UI
         [SerializeField] private List<Tab> tabs = new();
         [SerializeField] private int defaultTabIndex;
 
+        // Opt-in (defaults false so existing consumers like ControlCenterUI are unaffected) -
+        // UI.DevPanelUI is the first consumer to set this, per CLAUDE.md's tab-coloring rule.
+        [SerializeField] private bool colorTabs = false;
+        [SerializeField] private Color activeTabColor = Color.white;
+        [SerializeField] private Color inactiveTabColor = new(0.7f, 0.7f, 0.7f);
+
         private void Start()
         {
             for (int i = 0; i < tabs.Count; i++)
@@ -36,6 +42,11 @@ namespace UI
             for (int i = 0; i < tabs.Count; i++)
             {
                 if (tabs[i].ContentRoot != null) tabs[i].ContentRoot.SetActive(i == index);
+
+                if (colorTabs && tabs[i].Button != null && tabs[i].Button.targetGraphic != null)
+                {
+                    tabs[i].Button.targetGraphic.color = i == index ? activeTabColor : inactiveTabColor;
+                }
             }
         }
     }

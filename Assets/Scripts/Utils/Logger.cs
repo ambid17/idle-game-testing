@@ -1,14 +1,12 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
+// Console tab of UI.DevPanelUI's Developer Panel - just captures log output into logText.
+// Show/hide is owned entirely by DevPanelUI now (backquote hotkey via PlayerController).
 public class Logger : MonoBehaviour
 {
     static string myLog = "";
     [SerializeField] private TMP_Text logText;
-    [SerializeField] private GameObject renderer;
-    Keyboard keyboard => Keyboard.current;
-
 
     void OnEnable()
     {
@@ -18,15 +16,6 @@ public class Logger : MonoBehaviour
     void OnDisable()
     {
         Application.logMessageReceived -= Log;
-    }
-
-    private void Update()
-    {
-        if (keyboard == null) return;
-        if (keyboard.backquoteKey.wasPressedThisFrame)
-        {
-            renderer.SetActive(!renderer.activeSelf);
-        }
     }
 
     public void Log(string logString, string stackTrace, LogType type)
