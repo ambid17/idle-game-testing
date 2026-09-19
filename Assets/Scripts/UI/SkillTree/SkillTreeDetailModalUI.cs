@@ -26,7 +26,7 @@ namespace UI.SkillTree
 
         // Lets SkillTreePanelUI find and rebind the same node's freshly-rebuilt view model after
         // a purchase, so the open modal reflects the new level/cost instead of a stale snapshot.
-        public UpgradeDefinitionBase CurrentSource => current?.Source;
+        public UpgradeDefinitionBase CurrentSource => current?.UpgradeDefinition;
 
         private void Awake()
         {

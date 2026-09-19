@@ -1,7 +1,8 @@
-using System;
-using System.Collections.Generic;
 using Economy;
 using Events;
+using System;
+using System.Collections.Generic;
+using static UnityEditor.Profiling.HierarchyFrameDataView;
 
 namespace UI.SkillTree
 {
@@ -13,6 +14,7 @@ namespace UI.SkillTree
         private UpgradeManager manager => UpgradeManager.Instance;
 
         public int BranchCount => Enum.GetValues(typeof(UpgradeBranch)).Length;
+        public SkillTreeType SkillTreeType { get { return SkillTreeType.Upgrades; } }
 
         public IReadOnlyList<SkillTreeNodeViewModel> BuildViewModels()
         {
@@ -21,8 +23,6 @@ namespace UI.SkillTree
 
             foreach (var def in database.Upgrades)
             {
-                if (def == null) continue;
-
                 var vm = new SkillTreeNodeViewModel
                 {
                     DisplayName = def.DisplayName,
@@ -35,7 +35,7 @@ namespace UI.SkillTree
                     IsUnlocked = manager.IsUnlocked(def),
                     IsMaxed = manager.IsMaxed(def),
                     CanPurchase = manager.CanPurchase(def),
-                    Source = def,
+                    UpgradeDefinition = def,
                 };
                 vm.CostLabel = vm.IsMaxed ? "MAXED" : $"{manager.GetNextCost(def):0.##}";
 
@@ -43,19 +43,25 @@ namespace UI.SkillTree
                 viewModelsByDefinition[def] = vm;
             }
 
-            foreach (var vm in viewModels)
-            {
-                var def = (UpgradeDefinition)vm.Source;
-                if (def.Prerequisite != null && viewModelsByDefinition.TryGetValue(def.Prerequisite, out var prereqVm))
-                {
-                    vm.Prerequisite = prereqVm;
-                }
-            }
+            LinkPrerequisites(viewModels, viewModelsByDefinition);
+
 
             return viewModels;
         }
 
+        private void LinkPrerequisites(List<SkillTreeNodeViewModel> viewModels, Dictionary<UpgradeDefinition, SkillTreeNodeViewModel> viewModelsByDefinition)
+        {
+            foreach (var vm in viewModels)
+            {
+                var def = (UpgradeDefinition)vm.UpgradeDefinition;
+                if (def.Prerequisite != null && viewModelsByDefinition.TryGetValue(def.Prerequisite as UpgradeDefinition, out var prereqVm))
+                {
+                    vm.Prerequisite = prereqVm;
+                }
+            }
+        }
+
         public void RequestPurchase(SkillTreeNodeViewModel node) =>
-            GameManager.EventService.Dispatch(new PurchaseRequestedEvent((UpgradeDefinition)node.Source));
+            GameManager.EventService.Dispatch(new PurchaseRequestedEvent((UpgradeDefinition)node.UpgradeDefinition));
     }
 }

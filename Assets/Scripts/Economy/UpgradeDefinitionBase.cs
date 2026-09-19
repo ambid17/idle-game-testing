@@ -24,6 +24,8 @@ namespace Economy
 
         [Tooltip("If set, Prerequisite must be fully maxed rather than just purchased once. Used for capstones.")]
         public bool RequirePrerequisiteMaxed;
+        [Tooltip("Must be unlocked (or maxed, if Require Prerequisite Maxed) before this can be purchased. Leave empty for a branch's first tier.")]
+        public UpgradeDefinitionBase Prerequisite;
 
         public double GetCost(int currentLevel) => BaseCost * System.Math.Pow(CostGrowth, currentLevel);
     }

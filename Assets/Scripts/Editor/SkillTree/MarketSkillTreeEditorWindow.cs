@@ -87,7 +87,7 @@ namespace EditorTools.SkillTree
             }
             foreach (var def in definitions)
             {
-                if (def.Prerequisite != null && layoutNodeByDefinition.TryGetValue(def.Prerequisite, out var prereqNode))
+                if (def.Prerequisite != null && layoutNodeByDefinition.TryGetValue(def.Prerequisite as UpgradeDefinition, out var prereqNode))
                 {
                     layoutNodeByDefinition[def].Prerequisite = prereqNode;
                 }
@@ -121,9 +121,9 @@ namespace EditorTools.SkillTree
             int connectorCount = 0;
             foreach (var def in definitions)
             {
-                if (def.Prerequisite == null || !nodeUIByDefinition.ContainsKey(def.Prerequisite)) continue;
+                if (def.Prerequisite == null || !nodeUIByDefinition.ContainsKey(def.Prerequisite as UpgradeDefinition)) continue;
                 if (!positions.TryGetValue(layoutNodeByDefinition[def], out var childPos)) continue;
-                if (!positions.TryGetValue(layoutNodeByDefinition[def.Prerequisite], out var parentPos)) continue;
+                if (!positions.TryGetValue(layoutNodeByDefinition[def.Prerequisite as UpgradeDefinition], out var parentPos)) continue;
 
                 var connectorInstance = (GameObject)PrefabUtility.InstantiatePrefab(targetPanel.ConnectorPrefab.gameObject, content);
                 Undo.RegisterCreatedObjectUndo(connectorInstance, "Build Market Skill Tree Connector");

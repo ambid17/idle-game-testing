@@ -19,7 +19,7 @@ namespace Economy
         protected override string KeyOf(PrestigeUpgradeDefinition def) => def.DisplayName;
         protected override PrestigeUpgradeDefinition Find(PrestigeUpgradeEffect effect) => database.Find(effect);
         protected override PrestigeUpgradeDefinition Find(string key) => database.Find(key);
-        protected override PrestigeUpgradeDefinition PrerequisiteOf(PrestigeUpgradeDefinition def) => def.Prerequisite;
+        protected override PrestigeUpgradeDefinition PrerequisiteOf(PrestigeUpgradeDefinition def) => def.Prerequisite as PrestigeUpgradeDefinition;
         protected override void DispatchPurchased(PrestigeUpgradeDefinition def, int newLevel) =>
             GameManager.EventService.Dispatch(new PrestigeUpgradePurchasedEvent(def, newLevel));
         // DispatchLoaded intentionally left at the base default (same event as a live purchase) -

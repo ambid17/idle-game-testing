@@ -59,9 +59,6 @@ namespace Economy
         public PrestigeUpgradeBranch Branch;
         public PrestigeUpgradeEffect Effect;
 
-        [Tooltip("Must be unlocked (or maxed, if Require Prerequisite Maxed) before this can be purchased. Leave empty for a branch's first tier.")]
-        public PrestigeUpgradeDefinition Prerequisite;
-
         // Prestige perks default to a cheaper base cost / steeper growth curve than Market
         // upgrades (UpgradeDefinitionBase's defaults) - only applies to newly created assets.
         private void Reset()

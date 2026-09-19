@@ -23,9 +23,18 @@ namespace UI
 
         private void Start()
         {
-            if (closeButton != null) closeButton.onClick.AddListener(Close);
-            if (panelRoot != null) panelRoot.SetActive(false);
-            if (skillTreePanel != null) skillTreePanel.Initialize(new MarketSkillTreeSource());
+            CheckNullRefs();
+            closeButton.onClick.AddListener(Close);
+            panelRoot.SetActive(false);
+            skillTreePanel.Initialize(new MarketSkillTreeSource());
+        }
+
+        private void CheckNullRefs()
+        {
+            if (panelRoot == null) Debug.LogError($"{nameof(MarketUI)}.{nameof(panelRoot)} is not assigned in the inspector.");
+            if (dollarsLabel == null) Debug.LogError($"{nameof(MarketUI)}.{nameof(dollarsLabel)} is not assigned in the inspector.");
+            if (closeButton == null) Debug.LogError($"{nameof(MarketUI)}.{nameof(closeButton)} is not assigned in the inspector.");
+            if (skillTreePanel == null) Debug.LogError($"{nameof(MarketUI)}.{nameof(skillTreePanel)} is not assigned in the inspector.");
         }
 
         private void OnEnable()
@@ -60,7 +69,7 @@ namespace UI
 
         private void Open()
         {
-            if (panelRoot == null || panelRoot.activeSelf) return;
+            if (panelRoot.activeSelf) return;
             InputBlocker.SetBlocked(true);
             panelRoot.SetActive(true);
             RefreshDollars();
@@ -69,7 +78,7 @@ namespace UI
 
         private void Close()
         {
-            if (panelRoot == null || !panelRoot.activeSelf) return;
+            if (!panelRoot.activeSelf) return;
             InputBlocker.SetBlocked(false);
             panelRoot.SetActive(false);
             if (skillTreePanel != null) skillTreePanel.Close();

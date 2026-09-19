@@ -88,8 +88,5 @@ namespace Economy
     {
         public UpgradeBranch Branch;
         public UpgradeEffect Effect;
-
-        [Tooltip("Must be unlocked (or maxed, if Require Prerequisite Maxed) before this can be purchased. Leave empty for a branch's first tier.")]
-        public UpgradeDefinition Prerequisite;
     }
 }

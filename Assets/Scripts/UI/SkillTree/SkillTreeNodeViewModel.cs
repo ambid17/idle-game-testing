@@ -24,6 +24,6 @@ namespace UI.SkillTree
         // The underlying UpgradeDefinition/PrestigeUpgradeDefinition, shared via their common base
         // so SkillTreePanelUI can hand it back to the owning ISkillTreeSource (e.g. RequestPurchase)
         // without needing to know which concrete type it is.
-        public UpgradeDefinitionBase Source;
+        public UpgradeDefinitionBase UpgradeDefinition;
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Economy;
 using UnityEngine;
 
@@ -31,14 +32,29 @@ namespace UI.SkillTree
         public void Initialize(ISkillTreeSource source)
         {
             this.source = source;
-            if (detailModal != null) detailModal.Initialize(source);
+            detailModal.Initialize(source);
+        }
+
+        private void Start()
+        {
+            CheckNullRefs();
+        }
+
+        private void CheckNullRefs()
+        {
+            if (content == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(content)} is not assigned in the inspector.");
+            if (panZoom == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(panZoom)} is not assigned in the inspector.");
+            if (nodePrefab == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(nodePrefab)} is not assigned in the inspector.");
+            if (connectorPrefab == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(connectorPrefab)} is not assigned in the inspector.");
+            if (detailModal == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(detailModal)} is not assigned in the inspector.");
+            if (layoutConfig == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(layoutConfig)} is not assigned in the inspector.");
         }
 
         // Called by the owning panel (MarketUI/MuseumUI) whenever the tree view becomes visible -
         // resets any leftover pan/zoom from last time and rebuilds against current state.
         public void Open()
         {
-            if (panZoom != null) panZoom.ResetView();
+            panZoom.ResetView();
             RefreshAll();
         }
 
@@ -48,11 +64,11 @@ namespace UI.SkillTree
 
         public void RefreshAll()
         {
-            if (source == null || content == null) return;
+            if (source == null) return;
 
             // Preserved across the rebuild below so a purchase made from the open modal rebinds
             // it to the matching freshly-built view model instead of leaving it on a stale one.
-            UpgradeDefinitionBase previousModalSource = detailModal != null ? detailModal.CurrentSource : null;
+            UpgradeDefinitionBase previousModalSource = detailModal.CurrentSource;
 
             var viewModels = source.BuildViewModels();
 
@@ -85,13 +101,7 @@ namespace UI.SkillTree
         {
             foreach (var nodeUI in preplacedNodes)
             {
-                SkillTreeNodeViewModel match = null;
-                foreach (var vm in viewModels)
-                {
-                    if (!ReferenceEquals(vm.Source, nodeUI.BoundAsset)) continue;
-                    match = vm;
-                    break;
-                }
+                SkillTreeNodeViewModel match = viewModels.FirstOrDefault(vm => vm.UpgradeDefinition.DisplayName == nodeUI.UpgradeDefinition.DisplayName);
 
                 if (match == null)
                 {
@@ -135,13 +145,9 @@ namespace UI.SkillTree
 
         private void RebuildDetailModal(IReadOnlyList<SkillTreeNodeViewModel> viewModels, UpgradeDefinitionBase previousModalSource)
         {
-            if(detailModal == null || previousModalSource == null) return;
-            foreach (var vm in viewModels)
-            {
-                if (!ReferenceEquals(vm.Source, previousModalSource)) continue;
-                detailModal.Show(vm);
-                break;
-            }
+            if(previousModalSource == null) return;
+            var toShow = viewModels.FirstOrDefault(vm => vm.DisplayName == previousModalSource.DisplayName);
+            detailModal.Show(toShow);
         }
 
         private void OnNodeClicked(SkillTreeNodeViewModel vm) => detailModal?.Show(vm);

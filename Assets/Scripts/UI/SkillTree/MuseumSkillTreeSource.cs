@@ -14,6 +14,7 @@ namespace UI.SkillTree
         private PrestigeUpgradeManager manager => PrestigeUpgradeManager.Instance;
 
         public int BranchCount => Enum.GetValues(typeof(PrestigeUpgradeBranch)).Length;
+        public SkillTreeType SkillTreeType { get { return SkillTreeType.PrestigeUpgrades; } }
 
         public IReadOnlyList<SkillTreeNodeViewModel> BuildViewModels()
         {
@@ -36,7 +37,7 @@ namespace UI.SkillTree
                     IsUnlocked = manager.IsUnlocked(def),
                     IsMaxed = manager.IsMaxed(def),
                     CanPurchase = manager.CanPurchase(def),
-                    Source = def,
+                    UpgradeDefinition = def,
                 };
                 vm.CostLabel = vm.IsMaxed ? "MAXED" : $"{manager.GetNextCost(def):0.##} pts";
 
@@ -46,8 +47,8 @@ namespace UI.SkillTree
 
             foreach (var vm in viewModels)
             {
-                var def = (PrestigeUpgradeDefinition)vm.Source;
-                if (def.Prerequisite != null && viewModelsByDefinition.TryGetValue(def.Prerequisite, out var prereqVm))
+                var def = (PrestigeUpgradeDefinition)vm.UpgradeDefinition;
+                if (def.Prerequisite != null && viewModelsByDefinition.TryGetValue(def.Prerequisite as PrestigeUpgradeDefinition, out var prereqVm))
                 {
                     vm.Prerequisite = prereqVm;
                 }
@@ -57,6 +58,6 @@ namespace UI.SkillTree
         }
 
         public void RequestPurchase(SkillTreeNodeViewModel node) =>
-            GameManager.EventService.Dispatch(new PrestigePurchaseRequestedEvent((PrestigeUpgradeDefinition)node.Source));
+            GameManager.EventService.Dispatch(new PrestigePurchaseRequestedEvent((PrestigeUpgradeDefinition)node.UpgradeDefinition));
     }
 }

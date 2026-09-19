@@ -20,7 +20,7 @@ namespace Economy
         protected override string KeyOf(UpgradeDefinition def) => def.DisplayName;
         protected override UpgradeDefinition Find(UpgradeEffect effect) => database.Find(effect);
         protected override UpgradeDefinition Find(string key) => database.Find(key);
-        protected override UpgradeDefinition PrerequisiteOf(UpgradeDefinition def) => def.Prerequisite;
+        protected override UpgradeDefinition PrerequisiteOf(UpgradeDefinition def) => def.Prerequisite as UpgradeDefinition;
         protected override void DispatchPurchased(UpgradeDefinition def, int newLevel) =>
             GameManager.EventService.Dispatch(new UpgradePurchasedEvent(def, newLevel));
         protected override void DispatchLoaded(UpgradeDefinition def, int newLevel) =>

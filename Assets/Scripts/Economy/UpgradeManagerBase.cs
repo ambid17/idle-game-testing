@@ -77,6 +77,19 @@ namespace Economy
             return CurrentCurrency >= GetNextCost(def);
         }
 
+        public string GetPurchaseBlockReason(TDefinition def)
+        {
+            if (def == null)
+                return "Invalid Definition";
+            if (IsMaxed(def))
+                return "Maxed";
+            if(!IsUnlocked(def))
+                return $"Requires {def.Prerequisite.DisplayName}";
+            if (CurrentCurrency < GetNextCost(def))
+                return $"Insufficient Funds";
+            return null;
+        }
+
         public bool TryPurchase(TDefinition def)
         {
             if (!CanPurchase(def)) return false;
