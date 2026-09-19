@@ -94,6 +94,10 @@ If the Editor-driven tools (`Unity_ManageScene`, `Unity_ManageGameObject`, etc.)
 # Style
 - A vibrant pixel-art style of glowing ores, crystalline minerals, and ancient tech in a neon-lit fantasy mine, each block detailed with sci-fi textures and magical luminescence, rendered in clean anime-inspired lines with soft depth and dynamic lighting.
 
+## Fonts
+- for any text use the Orbitron font
+	- the file is "Orbitron-Regular SD TMP"
+
 
 ## Asset requirements
 - UI/Upgrade/Currency Icons
