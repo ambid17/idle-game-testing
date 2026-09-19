@@ -107,4 +107,4 @@ If the Editor-driven tools (`Unity_ManageScene`, `Unity_ManageGameObject`, etc.)
 	- style notes: should resemble the purpose of the building, largely mechanical with ancient/futuristic blend
 ## Asset Generation
 - Use OpenRouter to generate art assets.
-	- The API key is stored in the following file: "C:\Users\ambid\OneDrive\Desktop\openRouterApiKey.txt" 
+- Ask question relevant to saving on credits/tokens. Check if there's ways the user can give you input to save costs.
