@@ -56,8 +56,6 @@ namespace Economy
     [CreateAssetMenu(fileName = "PrestigeUpgradeDefinition", menuName = "Economy/Prestige Upgrade Definition")]
     public class PrestigeUpgradeDefinition : UpgradeDefinitionBase
     {
-        [Tooltip("Must be unique across the PrestigeUpgradeDatabase.")]
-        public string Id;
         public PrestigeUpgradeBranch Branch;
         public PrestigeUpgradeEffect Effect;
 

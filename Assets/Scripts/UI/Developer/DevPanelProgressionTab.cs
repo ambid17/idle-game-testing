@@ -56,7 +56,7 @@ namespace UI
             {
                 if (def == null) continue;
                 var row = Instantiate(prestigeUpgradeRowPrefab, prestigeUpgradeRowContainer);
-                row.Bind(def.DisplayName, () => PrestigeUpgradeManager.Instance.SetLevel(def.Id, def.MaxLevel));
+                row.Bind(def.DisplayName, () => PrestigeUpgradeManager.Instance.SetLevel(def.DisplayName, def.MaxLevel));
             }
         }
 
@@ -72,7 +72,7 @@ namespace UI
         {
             foreach (var def in GameManager.PrestigeUpgradeDatabase.Upgrades)
             {
-                if (def != null) PrestigeUpgradeManager.Instance.SetLevel(def.Id, def.MaxLevel);
+                if (def != null) PrestigeUpgradeManager.Instance.SetLevel(def.DisplayName, def.MaxLevel);
             }
         }
     }

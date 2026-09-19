@@ -16,7 +16,7 @@ namespace Economy
 
         protected override double CurrentCurrency => PrestigePoints.Instance.Points;
         protected override bool TrySpendCurrency(double amount) => PrestigePoints.Instance.TrySpend(amount);
-        protected override string KeyOf(PrestigeUpgradeDefinition def) => def.Id;
+        protected override string KeyOf(PrestigeUpgradeDefinition def) => def.DisplayName;
         protected override PrestigeUpgradeDefinition Find(PrestigeUpgradeEffect effect) => database.Find(effect);
         protected override PrestigeUpgradeDefinition Find(string key) => database.Find(key);
         protected override PrestigeUpgradeDefinition PrerequisiteOf(PrestigeUpgradeDefinition def) => def.Prerequisite;

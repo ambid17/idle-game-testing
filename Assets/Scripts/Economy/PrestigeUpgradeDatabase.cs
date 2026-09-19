@@ -37,7 +37,7 @@ namespace Economy
             {
                 if (def == null) continue;
                 upgradesByEffect[def.Effect] = def;
-                upgradesById[def.Id] = def;
+                upgradesById[def.DisplayName] = def;
             }
         }
     }
