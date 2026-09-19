@@ -7,9 +7,11 @@ public class Logger : MonoBehaviour
 {
     static string myLog = "";
     [SerializeField] private TMP_Text logText;
+    [SerializeField] private TMP_Text logLocationText;
 
     void OnEnable()
     {
+        logLocationText.text = $"<color=yellow>Log Location: {Application.persistentDataPath}</color>";
         Application.logMessageReceived += Log;
     }
 
