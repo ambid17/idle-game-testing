@@ -6,7 +6,7 @@ namespace Processing
     // inserted, since this enum serializes as an int on ProcessingRecipeDefinition/save data.
     public enum ProcessingRecipeId : byte
     {
-        Chairs,
+        ScrapPlating,
         Pillars,
         Swords,
         Bracelets,

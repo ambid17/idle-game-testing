@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
-  m_Name: Processing_UnlockWood
+  m_Name: Processing_UnlockScrap
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  DisplayName: 'Processing: Unlock Wood Recipe'
-  Description: Unlocks the Chairs recipe at the Processing Center.
+  DisplayName: 'Processing: Unlock Scrap Recipe'
+  Description: Unlocks the Scrap Plating recipe at the Processing Center.
   Icon: {fileID: 21300000, guid: 1aae0d2905aae6e4ea86d6fb32c61662, type: 3}
   Branch: 4
   Effect: 39

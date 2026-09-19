@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 90da7a1960fe0d647b71a46e0012d969, type: 3}
-  m_Name: Recipe_Chairs
+  m_Name: Recipe_ScrapPlating
   m_EditorClassIdentifier: Assembly-CSharp::Processing.ProcessingRecipeDefinition
   Id: 0
-  DisplayName: Chairs
+  DisplayName: Scrap Plating
   Icon: {fileID: 21300000, guid: accb163e9dedf344c89da869f4215210, type: 3}
   Ingredients:
   - Material: 2

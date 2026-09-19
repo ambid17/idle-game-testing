@@ -77,7 +77,7 @@ namespace Economy
         Processing_GoldRecipeUnlock,
         Processing_IronRecipeUnlock,
         Processing_StoneRecipeUnlock,
-        Processing_WoodRecipeUnlock,
+        Processing_ScrapRecipeUnlock,
     }
 
     [CreateAssetMenu(fileName = "UpgradeDefinition", menuName = "Economy/Upgrade Definition")]
