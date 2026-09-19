@@ -43,11 +43,15 @@ namespace Player
 
         private void Update()
         {
-            if (IsDead || CurrentShieldCharges >= MaxShieldCharges) return;
+            if (IsDead) return;
+            HandleShieldRegen();
+        }
 
+        private void HandleShieldRegen()
+        {
+            if (CurrentShieldCharges >= MaxShieldCharges) return;
             shieldRegenTimer += Time.deltaTime;
             if (shieldRegenTimer < shieldRegenSeconds) return;
-
             shieldRegenTimer = 0f;
             CurrentShieldCharges++;
             GameManager.EventService.Dispatch(new ShieldChargeChangedEvent(CurrentShieldCharges, MaxShieldCharges));

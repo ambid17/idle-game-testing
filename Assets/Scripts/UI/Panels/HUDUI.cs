@@ -30,14 +30,28 @@ namespace UI
             if (playerController == null) playerController = FindAnyObjectByType<PlayerController>();
             if (playerHealth == null) playerHealth = FindAnyObjectByType<PlayerHealth>();
             if (playerInventory == null) playerInventory = FindAnyObjectByType<PlayerInventory>();
+            CheckNullRefs();
+
+            RefreshDollars();
+            RefreshArtifactCount();
+            RefreshWeight();
+        }
+
+        private void CheckNullRefs()
+        {
             if (playerController == null) Debug.LogError("HUDUI: no PlayerController found in scene.");
             if (playerHealth == null) Debug.LogError("HUDUI: no PlayerHealth found in scene.");
             if (playerInventory == null) Debug.LogError("HUDUI: no PlayerInventory found in scene.");
             if (depthLabel == null) Debug.LogError("HUDUI: no depthLabel found in scene.");
 
-            RefreshDollars();
-            RefreshArtifactCount();
-            RefreshWeight();
+            if (fuelFillBar == null) Debug.LogError("HUDUI: no fuelFillBar found in scene.");
+            if (fuelLabel == null) Debug.LogError("HUDUI: no fuelLabel found in scene.");
+            if (healthFillBar == null) Debug.LogError("HUDUI: no healthFillBar found in scene.");
+            if (healthLabel == null) Debug.LogError("HUDUI: no healthLabel found in scene.");
+            if (weightFillBar == null) Debug.LogError("HUDUI: no weightFillBar found in scene.");
+            if (weightLabel == null) Debug.LogError("HUDUI: no weightLabel found in scene.");
+            if (dollarsLabel == null) Debug.LogError("HUDUI: no dollarsLabel found in scene.");
+            if (artifactCountLabel == null) Debug.LogError("HUDUI: no artifactCountLabel found in scene.");
         }
 
         private void OnEnable()
@@ -45,7 +59,7 @@ namespace UI
             GameManager.EventService.Add<DollarsChangedEvent>(RefreshDollars);
             GameManager.EventService.Add<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Add<InventoryChangedEvent>(RefreshWeight);
-            GameManager.EventService.Add<UpgradePurchasedEvent>(CheckInventoryPurchased);
+            GameManager.EventService.Add<UpgradePurchasedEvent>(HandleUpdatePurchased);
 
         }
 
@@ -54,7 +68,7 @@ namespace UI
             GameManager.EventService.Remove<DollarsChangedEvent>(RefreshDollars);
             GameManager.EventService.Remove<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Remove<InventoryChangedEvent>(RefreshWeight);
-            GameManager.EventService.Remove<UpgradePurchasedEvent>(CheckInventoryPurchased);
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(HandleUpdatePurchased);
         }
 
         private void Update()
@@ -66,49 +80,43 @@ namespace UI
 
         private void RefreshFuel()
         {
-            if (playerController == null) return;
-            if (fuelFillBar != null) fuelFillBar.fillAmount = Mathf.Clamp01(playerController.FuelFraction);
-            if (fuelLabel != null) fuelLabel.text = $"{playerController.Fuel:0}";
+            fuelFillBar.fillAmount = Mathf.Clamp01(playerController.FuelFraction);
+            fuelLabel.text = $"{playerController.Fuel:0}";
         }
 
         private void RefreshHealth()
         {
-            if (playerHealth == null) return;
             float fraction = playerHealth.MaxHp > 0f ? Mathf.Clamp01(playerHealth.CurrentHp / playerHealth.MaxHp) : 0f;
-            if (healthFillBar != null) healthFillBar.fillAmount = fraction;
-            if (healthLabel != null) healthLabel.text = $"{playerHealth.CurrentHp:0}/{playerHealth.MaxHp:0}";
+            healthFillBar.fillAmount = fraction;
+            healthLabel.text = $"{playerHealth.CurrentHp:0}/{playerHealth.MaxHp:0}";
         }
 
         private void RefreshWeight()
         {
-            if (playerInventory == null) return;
             float fraction = playerInventory.MaxWeight > 0f
                 ? Mathf.Clamp01(playerInventory.CurrentWeight / playerInventory.MaxWeight)
                 : 0f;
-            if (weightFillBar != null) weightFillBar.fillAmount = fraction;
-            if (weightLabel != null) weightLabel.text = $"{playerInventory.CurrentWeight:0}/{playerInventory.MaxWeight:0}";
+            weightFillBar.fillAmount = fraction;
+            weightLabel.text = $"{playerInventory.CurrentWeight:0}/{playerInventory.MaxWeight:0}";
         }
 
         private void RefreshDollars()
         {
-            if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
+            dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
         }
 
         private void RefreshArtifactCount()
         {
-            if (artifactCountLabel != null) artifactCountLabel.text = $"{Wallet.Instance.ArtifactCount}";
+            artifactCountLabel.text = $"{Wallet.Instance.ArtifactCount}";
         }
 
         private void RefreshDepth()
         {
-            if (depthLabel != null)
-            {
-                float depth = playerController != null ? playerController.transform.position.y : 0f;
-                depthLabel.text = $"Depth: {depth:0}m";
-            }
+            float depth = playerController.transform.position.y;
+            depthLabel.text = $"Depth: {depth:0}m";
         }
 
-        private void CheckInventoryPurchased(UpgradePurchasedEvent evt)
+        private void HandleUpdatePurchased(UpgradePurchasedEvent evt)
         {
             if (evt.Definition.Effect == UpgradeEffect.Economy_InventoryCapacity)
             {

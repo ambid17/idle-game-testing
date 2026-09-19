@@ -101,8 +101,6 @@ namespace Economy
 
         private void PopulateOreCounts()
         {
-            if (blockTypeDatabase == null) return;
-
             foreach (var blockType in blockTypeDatabase.BlockTypes)
             {
                 if (blockType.Category == BlockCategory.Ore && !oreCounts.ContainsKey(blockType.Id))

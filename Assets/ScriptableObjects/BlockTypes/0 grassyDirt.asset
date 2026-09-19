@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 0 grassyDirt
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
   Id: 0
-  DisplayName: 
+  DisplayName: Grassy Dirt
   Category: 0
   HazardBehavior: 0
   Tile: {fileID: 11400000, guid: 17680bdffa3fff645b5606f4f1ec75c3, type: 2}
