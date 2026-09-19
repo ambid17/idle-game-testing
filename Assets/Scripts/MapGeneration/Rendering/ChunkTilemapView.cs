@@ -32,7 +32,7 @@ namespace MapGeneration
 
         // Layer 0 only: fog fades in from clear at the surface (row 0) to full opacity by this
         // row, so the mine entrance doesn't open into a hard fog wall.
-        [SerializeField] private int surfaceFogGradientRows = 10;
+        [SerializeField] private int surfaceFogGradientRows = 4;
         [SerializeField] private float defaultAlpha = 0.97f;
 
         // Unrevealed cells within this many cells of any revealed cell fade in from clear
