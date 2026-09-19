@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: marketing
   DisplayName: Marketing
   Description: Increase the sale value of everything you sell.
+  Icon: {fileID: 21300000, guid: f961c3a372268be4caa2ae5524eb5fe7, type: 3}
   Branch: 1
   Effect: 14
   EffectValuePerLevel: 0.05

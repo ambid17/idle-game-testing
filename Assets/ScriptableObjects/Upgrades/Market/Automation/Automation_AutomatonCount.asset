@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Additional Automaton
   Description: Add another Mining Automaton to dig tunnels for you.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 6fa5e3a796d1d064195926f1986f9015, type: 3}
   Branch: 2
   Effect: 0
   EffectValuePerLevel: 1

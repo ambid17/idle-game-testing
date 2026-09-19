@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Additional Storage Drone
   Description: Add another Storage Drone to ferry minerals to the Depot.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 64d2ab32fb6e7da42b9bad63385ea5fd, type: 3}
   Branch: 2
   Effect: 9
   EffectValuePerLevel: 1

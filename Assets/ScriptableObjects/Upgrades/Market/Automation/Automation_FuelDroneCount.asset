@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Additional Fuel Drone
   Description: Add another Fuel Drone to keep you topped off.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 1bd9ce7314866a94cb3f21dbdf9d66bd, type: 3}
   Branch: 2
   Effect: 5
   EffectValuePerLevel: 1

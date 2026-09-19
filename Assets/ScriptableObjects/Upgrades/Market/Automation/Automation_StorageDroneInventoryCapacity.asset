@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Storage Drone Capacity
   Description: +50% Storage Drone carrying capacity per level.
+  Icon: {fileID: 21300000, guid: 31862673716298d49b7ef75699c94acc, type: 3}
   Branch: 2
   Effect: 10
   EffectValuePerLevel: 0.5

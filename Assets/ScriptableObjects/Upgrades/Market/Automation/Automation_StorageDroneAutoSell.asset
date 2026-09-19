@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Auto Sell
   Description: Storage drones automatically sell minerals they're carrying instead
     of returning them to the depot.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 8b89f394ea8de8b47b81e659810f9466, type: 3}
   Branch: 2
   Effect: 8
   EffectValuePerLevel: 1

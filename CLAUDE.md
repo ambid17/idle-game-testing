@@ -115,3 +115,4 @@ If the Editor-driven tools (`Unity_ManageScene`, `Unity_ManageGameObject`, etc.)
 ## Asset Generation
 - Use OpenRouter to generate art assets.
 - Ask question relevant to saving on credits/tokens. Check if there's ways the user can give you input to save costs.
+- when generating similar assets, attempt batching them into sprite sheet requests
