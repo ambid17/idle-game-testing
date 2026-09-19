@@ -16,7 +16,7 @@ namespace MapGeneration
         private MapGenerationConfig mapGenerationConfig => GameManager.MapGenerationConfig;
 
         [Tooltip("Placeholder default - exact base radius and Lantern-tier scaling is an open design item (see MapGenerationImplementation.md).")]
-        [SerializeField] private int baseFogRevealRadius = 3;
+        [SerializeField] private int baseFogRevealRadius = 2;
 
         // Invisible physical walls (BoxCollider2D, no renderer) at the grid's horizontal extent -
         // stop the player's Rigidbody2D from walking/flying past the edge. Tall enough to cover

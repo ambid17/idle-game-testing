@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c845b9a9e35dd1d4894d69b46a0196cb, type: 3}
+  m_Name: 10 LayerConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
+  LayerIndex: 10
+  LayerHeight: 30
+  LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
+  BlockHealth: 2.7
+  OreTable:
+  - BlockType: {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
+    Weight: 10
+  - BlockType: {fileID: 11400000, guid: 4a6696e1aebea36419409154ec9952d1, type: 2}
+    Weight: 6
+  - BlockType: {fileID: 11400000, guid: e0c298f67497ad341839a5fcc57cd0d1, type: 2}
+    Weight: 5
+  - BlockType: {fileID: 11400000, guid: 50689c48e9afafd40913588917c87dc0, type: 2}
+    Weight: 5
+  - BlockType: {fileID: 11400000, guid: cc357cec3ca14cf44b3627c423bdc1d8, type: 2}
+    Weight: 5
+  - BlockType: {fileID: 11400000, guid: 4419a2c22866bf945bf17f8f0275480a, type: 2}
+    Weight: 5
+  - BlockType: {fileID: 11400000, guid: 8d4b330439a15654ca8a101a085e31b9, type: 2}
+    Weight: 4
+  - BlockType: {fileID: 11400000, guid: 6f36a8a76c9612247b533c8c05e9489a, type: 2}
+    Weight: 3
+  - BlockType: {fileID: 11400000, guid: 1bc4141abc1bb5140aab49fbb07b3b7f, type: 2}
+    Weight: 2
+  - BlockType: {fileID: 11400000, guid: c2c1d23e93bd4ce4285e71735092624b, type: 2}
+    Weight: 2
+  - BlockType: {fileID: 11400000, guid: c361c0bfcb0abf547a4dd93cb553b4f1, type: 2}
+    Weight: 1
+  HazardTable: []
+  HazardChancePerCell: 0
+  ArtifactBonusChance: 0.1

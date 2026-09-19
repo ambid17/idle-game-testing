@@ -16,7 +16,7 @@ namespace MapGeneration
     {
         GrassyDirt = 0,
         Dirt = 1,
-        Wood = 2,
+        ScrapAlloy = 2,
         Stone = 3,
         Coal = 4,
         IronOre = 5,
@@ -24,6 +24,15 @@ namespace MapGeneration
         EmeraldOre = 7,
         DiamondOre = 8,
         Artifact = 9,
+        TitaniumAlloy = 10,
+        Voidstone = 11,
+        PlasmaQuartz = 12,
+        NaniteOre = 13,
+        GravitonShard = 14,
+        FusionCoreCrystal = 15,
+        SingularityOre = 16,
+        AetherCircuitry = 17,
+        PrecursorAlloy = 18,
     }
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)

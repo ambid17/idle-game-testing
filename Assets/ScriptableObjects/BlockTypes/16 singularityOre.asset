@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cbd43d3886532d438c39d0b0c20ee1c, type: 3}
+  m_Name: 16 singularityOre
+  m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
+  Id: 16
+  DisplayName: Singularity Ore
+  Category: 1
+  HazardBehavior: 0
+  Tile: {fileID: 11400000, guid: b7b53277877d09d488077e44946335ea, type: 2}
+  Icon: {fileID: 21300000, guid: 003571b837d1e8c478847174a3151e1d, type: 3}
+  Value: 3800
+  Weight: 9
+  Health: 1
+  Tint: {r: 1, g: 1, b: 1, a: 1}

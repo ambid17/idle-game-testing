@@ -12,15 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c845b9a9e35dd1d4894d69b46a0196cb, type: 3}
   m_Name: 5 LayerConfig
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
-  LayerIndex: 3
+  LayerIndex: 5
   LayerHeight: 30
   LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
   BlockHealth: 1.7
   OreTable:
   - BlockType: {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
-    Weight: 30
-  - BlockType: {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
-    Weight: 2
+    Weight: 32
   - BlockType: {fileID: 11400000, guid: d529a29641331c448ac6f8f4d4209047, type: 2}
     Weight: 40
   - BlockType: {fileID: 11400000, guid: db0846b8ec2f6884aa974ff0b1172348, type: 2}
