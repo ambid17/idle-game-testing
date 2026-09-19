@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: 'Processing: Unlock Stone Recipe'
   Description: Unlocks the Pillars recipe at the Processing Center.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 4b9758996e820084993fea9cba4f6cba, type: 3}
   Branch: 4
   Effect: 38
   EffectValuePerLevel: 1

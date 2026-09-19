@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Processing Sale Value
   Description: Increases the sale value of goods produced by the Processing Center.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 9573c9c1c5ac9434ca67655cfa2530a5, type: 3}
   Branch: 4
   Effect: 32
   EffectValuePerLevel: 0.1

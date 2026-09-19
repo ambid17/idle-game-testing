@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: 'Processing: Unlock Gold Recipe'
   Description: Unlocks the Bracelets recipe at the Processing Center.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 1a71d65918eecfb4bbc37dd785ca827a, type: 3}
   Branch: 4
   Effect: 36
   EffectValuePerLevel: 1

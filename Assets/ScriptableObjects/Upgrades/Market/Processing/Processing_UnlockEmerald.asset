@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: 'Processing: Unlock Emerald Recipe'
   Description: Unlocks the Earrings recipe at the Processing Center.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: b4ade65708194c741be923f8bbd8f5d5, type: 3}
   Branch: 4
   Effect: 35
   EffectValuePerLevel: 1

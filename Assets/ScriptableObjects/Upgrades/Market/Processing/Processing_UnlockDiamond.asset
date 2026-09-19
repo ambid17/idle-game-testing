@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: 'Processing: Unlock Diamond Recipe'
   Description: Unlocks the Wedding Rings recipe at the Processing Center.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: e70cc1d90d1c4a94d8dc5b9f2b41bbcd, type: 3}
   Branch: 4
   Effect: 34
   EffectValuePerLevel: 1

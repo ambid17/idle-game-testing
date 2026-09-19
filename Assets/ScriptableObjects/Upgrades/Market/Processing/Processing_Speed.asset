@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Processing Speed
   Description: Increases how quickly the Processing Center converts raw goods.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 6ea62d1be79cadc488ad20754717e830, type: 3}
   Branch: 4
   Effect: 33
   EffectValuePerLevel: 0.1

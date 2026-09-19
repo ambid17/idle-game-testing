@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Processing Queue Slots
   Description: Adds another concurrent processing queue slot.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: d97afbb071e79384386db58eb99534bd, type: 3}
   Branch: 4
   Effect: 31
   EffectValuePerLevel: 1

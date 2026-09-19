@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: 'Processing: Unlock Wood Recipe'
   Description: Unlocks the Chairs recipe at the Processing Center.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 1aae0d2905aae6e4ea86d6fb32c61662, type: 3}
   Branch: 4
   Effect: 39
   EffectValuePerLevel: 1

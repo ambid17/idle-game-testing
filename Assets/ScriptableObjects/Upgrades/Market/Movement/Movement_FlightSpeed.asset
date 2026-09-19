@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Flight Speed
   Description: Increases how fast you fly.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 70d68eb82b661134292f7560bbf78966, type: 3}
   Branch: 3
   Effect: 25
   EffectValuePerLevel: 0.1

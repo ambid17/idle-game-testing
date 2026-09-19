@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Hazard Sense
   Description: Highlights nearby environmental hazards before you reach them.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: b2b9b571e3fae694aaf122161bf05436, type: 3}
   Branch: 3
   Effect: 29
   EffectValuePerLevel: 1

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Move Speed
   Description: Increases your on-foot movement speed.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 37a488f6424f9a64e8fb21773b3ae1da, type: 3}
   Branch: 3
   Effect: 30
   EffectValuePerLevel: 0.1

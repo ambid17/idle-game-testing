@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Fall Damage Decrease
   Description: Reduces the damage you take from falling.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 2ebdf269071e1444b95ff2424198138a, type: 3}
   Branch: 3
   Effect: 24
   EffectValuePerLevel: 0.1
