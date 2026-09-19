@@ -55,7 +55,10 @@ namespace Player
         private void OnDisable()
         {
             GameManager.EventService.Remove<PlayerDiedEvent>(HandleDeath);
-            OreCarrierRegistry.Instance?.Unregister(this);
+            // HasInstance guard: teardown order across objects isn't guaranteed, so the registry's
+            // singleton may already be destroyed by the time this runs. Instance would resurrect
+            // it as a stray GameObject mid-unload - HasInstance doesn't.
+            if (OreCarrierRegistry.HasInstance) OreCarrierRegistry.Instance.Unregister(this);
         }
 
         // Death drops everything the player was carrying into a chest at the death location

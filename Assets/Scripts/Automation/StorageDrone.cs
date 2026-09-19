@@ -50,9 +50,13 @@ namespace Automation
             oreInventory.Initialize(() => config.StorageDroneBaseInventoryWeight * upgrades.StorageDroneInventoryCapacityMultiplier);
         }
 
-        // Null-conditional: teardown order across objects isn't guaranteed when Stopping the
+        // HasInstance guard: teardown order across objects isn't guaranteed when Stopping the
         // Player, so OreCarrierRegistry's singleton may already be destroyed by the time this runs.
-        private void OnDisable() => OreCarrierRegistry.Instance?.ReleaseClaim(this);
+        // (Instance would resurrect it as a stray GameObject mid-unload - HasInstance doesn't.)
+        private void OnDisable()
+        {
+            if (OreCarrierRegistry.HasInstance) OreCarrierRegistry.Instance.ReleaseClaim(this);
+        }
 
         private void Update()
         {

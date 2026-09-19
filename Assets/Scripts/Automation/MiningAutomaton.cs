@@ -65,9 +65,13 @@ namespace Automation
             RefreshCurrentCell();
             OreCarrierRegistry.Instance.Register(this);
         }
-        // Null-conditional: teardown order across objects isn't guaranteed when Stopping the
+        // HasInstance guard: teardown order across objects isn't guaranteed when Stopping the
         // Player, so OreCarrierRegistry's singleton may already be destroyed by the time this runs.
-        private void OnDisable() => OreCarrierRegistry.Instance?.Unregister(this);
+        // (Instance would resurrect it as a stray GameObject mid-unload - HasInstance doesn't.)
+        private void OnDisable()
+        {
+            if (OreCarrierRegistry.HasInstance) OreCarrierRegistry.Instance.Unregister(this);
+        }
 
         private void Update()
         {

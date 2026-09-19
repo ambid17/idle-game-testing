@@ -31,6 +31,11 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         }
     }
 
+    // True only if this singleton is already alive. Unlike Instance, checking this never creates
+    // or resurrects the GameObject - use it to guard teardown-order-dependent calls (OnDisable/
+    // OnDestroy) where recreating a torn-down singleton would spawn a stray GameObject mid-unload.
+    public static bool HasInstance => _instance != null;
+
     public static T GetInstance()
     {
         if (_isQuitting)
