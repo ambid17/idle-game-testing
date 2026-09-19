@@ -93,3 +93,18 @@ If the Editor-driven tools (`Unity_ManageScene`, `Unity_ManageGameObject`, etc.)
 
 # Style
 - A vibrant pixel-art style of glowing ores, crystalline minerals, and ancient tech in a neon-lit fantasy mine, each block detailed with sci-fi textures and magical luminescence, rendered in clean anime-inspired lines with soft depth and dynamic lighting.
+
+
+## Asset requirements
+- UI/Upgrade/Currency Icons
+	- size: 64x64
+	- style notes: flat icon style
+- Ore tiles
+	- size 128x128
+	- style notes: alpha transparency, 128 pixels per unit, 1 file per block type
+- Buildings 
+	- size 256x256
+	- style notes: should resemble the purpose of the building, largely mechanical with ancient/futuristic blend
+## Asset Generation
+- Use OpenRouter to generate art assets.
+	- The API key is stored in the following file: "C:\Users\ambid\OneDrive\Desktop\openRouterApiKey.txt" 
