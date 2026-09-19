@@ -35,8 +35,6 @@ namespace UI
 
         private void BuildRows()
         {
-            if (rowPrefab == null || rowContainer == null) return;
-
             foreach (var blockType in blockTypeDatabase.BlockTypes)
             {
                 if (blockType == null || blockType.Category != BlockCategory.Ore) continue;
@@ -44,14 +42,13 @@ namespace UI
                 var row = Instantiate(rowPrefab, rowContainer);
                 row.Bind(blockType);
                 row.gameObject.SetActive(false);
+                row.gameObject.name = $"Hud_OreRow_{blockType.DisplayName}";
                 rowsByType[blockType.Id] = row;
             }
         }
 
         private void Refresh()
         {
-            if (playerInventory == null) return;
-
             foreach (var kvp in rowsByType)
             {
                 playerInventory.OreCounts.TryGetValue(kvp.Key, out var count);

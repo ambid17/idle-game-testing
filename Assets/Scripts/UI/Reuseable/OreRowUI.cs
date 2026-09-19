@@ -21,29 +21,30 @@ namespace UI
 
         private BlockType blockType;
 
+        private void Start()
+        {
+            if(icon == null) Debug.LogError("OreRowUI.icon is not assigned.");
+            if (nameLabel == null) Debug.LogError("OreRowUI.nameLabel is not assigned.");
+            if (countLabel == null) Debug.LogError("OreRowUI.countLabel is not assigned.");
+            if (valueLabel == null) Debug.LogError("OreRowUI.valueLabel is not assigned.");
+        }
 
         public void Bind(BlockType blockType)
         {
             this.blockType = blockType;
-            if (nameLabel != null) nameLabel.text = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
-            if (icon != null) icon.sprite = blockType.Icon;
+            nameLabel.text = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
+            icon.sprite = blockType.Icon;
         }
 
-        public void SetCount(int count)
+        public float SetCount(int count)
         {
-            if (countLabel != null) countLabel.text = count.ToString();
+            countLabel.text = count.ToString();
 
-            if (valueLabel != null)
-            {
-                var blockValue = blockType.Value;
-                var totalValue = blockValue * count;
-                valueLabel.text = $"${totalValue:0.##}";
-            }
-        }
+            var blockValue = blockType.Value;
+            var totalValue = blockValue * UpgradeManager.Instance.SellValueMultiplier * count;
+            valueLabel.text = $"${totalValue:0.##}";
 
-        public void SetValue(float value)
-        {
-            if (valueLabel != null) valueLabel.text = $"${value:0.##}";
+            return totalValue;
         }
 
         // Used by MinerDashboardUI's ore/min table - same row prefab as DepotUI/InventoryUI, just

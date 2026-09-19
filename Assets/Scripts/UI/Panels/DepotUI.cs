@@ -42,17 +42,37 @@ namespace UI
 
         private void Start()
         {
+            CheckNullRefs();
+
             playerInventory = FindAnyObjectByType<PlayerInventory>();
 
-            BuildRows();
+            BuildOreRows();
             BuildGoodsRows();
-            if (depositAllButton != null) depositAllButton.onClick.AddListener(DepositAll);
-            if (sellAllButton != null) sellAllButton.onClick.AddListener(() => Depot.Instance.SellAll());
-            if (sellAllGoodsButton != null) sellAllGoodsButton.onClick.AddListener(() => Depot.Instance.SellAllGoods());
-            if (closeButton != null) closeButton.onClick.AddListener(Close);
+
+            depositAllButton.onClick.AddListener(DepositAll);
+            sellAllButton.onClick.AddListener(() => Depot.Instance.SellAll());
+            sellAllGoodsButton.onClick.AddListener(() => Depot.Instance.SellAllGoods());
+            closeButton.onClick.AddListener(Close);
 
             RefreshDepositButton();
-            if (panelRoot != null) panelRoot.SetActive(false);
+            panelRoot.SetActive(false);
+        }
+
+        private void CheckNullRefs()
+        {
+            if (panelRoot == null) Debug.LogError("DepotUI.panelRoot is not assigned.");
+            if (rowContainer == null) Debug.LogError("DepotUI.rowContainer is not assigned.");
+            if (rowPrefab == null) Debug.LogError("DepotUI.rowPrefab is not assigned.");
+            if (goodsRowContainer == null) Debug.LogError("DepotUI.goodsRowContainer is not assigned.");
+            if (goodsRowPrefab == null) Debug.LogError("DepotUI.goodsRowPrefab is not assigned.");
+            if (dollarsLabel == null) Debug.LogError("DepotUI.dollarsLabel is not assigned.");
+            if (depositAllButton == null) Debug.LogError("DepotUI.depositAllButton is not assigned.");
+            if (sellAllButton == null) Debug.LogError("DepotUI.sellAllButton is not assigned.");
+            if (sellAllButtonLabel == null) Debug.LogError("DepotUI.sellAllButtonLabel is not assigned.");
+            if (sellAllGoodsButton == null) Debug.LogError("DepotUI.sellAllGoodsButton is not assigned.");
+            if (sellAllGoodsButtonLabel == null) Debug.LogError("DepotUI.sellAllGoodsButtonLabel is not assigned.");
+            if (closeButton == null) Debug.LogError("DepotUI.closeButton is not assigned.");
+            if (recipeDatabase == null) Debug.LogError("DepotUI.recipeDatabase is not assigned.");
         }
 
         private void OnEnable()
@@ -89,14 +109,8 @@ namespace UI
             }
         }
 
-        private void BuildRows()
+        private void BuildOreRows()
         {
-            if (rowPrefab == null || rowContainer == null)
-            {
-                Debug.LogError("DepotUI.BuildRows: Missing rowPrefab, or rowContainer. Cannot build ore rows.");
-                return;
-            }
-
             foreach (var blockType in blockTypeDatabase.BlockTypes)
             {
                 if (blockType.Category != BlockCategory.Ore) continue;
@@ -104,34 +118,25 @@ namespace UI
                 var row = Instantiate(rowPrefab, rowContainer);
                 string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
                 row.Bind(blockType);
-                row.gameObject.name = $"Row_{blockType.name}";
+                row.gameObject.name = $"OreRow_{blockType.name}";
                 rows[blockType.Id] = row;
             }
         }
 
         private void BuildGoodsRows()
         {
-            if (goodsRowPrefab == null || goodsRowContainer == null) return;
-            if (recipeDatabase == null)
-            {
-                Debug.LogError("DepotUI.BuildGoodsRows: GameManager.ProcessingRecipeDatabase is not assigned.");
-                return;
-            }
-
             foreach (var recipe in recipeDatabase.Recipes)
             {
-                if (recipe == null) continue;
-
                 var row = Instantiate(goodsRowPrefab, goodsRowContainer);
                 row.Bind(recipe);
-                row.gameObject.name = $"Row_{recipe.name}";
+                row.gameObject.name = $"GoodsRow_{recipe.name}";
                 goodsRows[recipe.Id] = row;
             }
         }
 
         private void Open()
         {
-            if (panelRoot == null || panelRoot.activeSelf) return;
+            if (panelRoot.activeSelf) return;
             InputBlocker.SetBlocked(true);
             panelRoot.SetActive(true);
             Refresh();
@@ -139,7 +144,7 @@ namespace UI
 
         private void Close()
         {
-            if(panelRoot == null || !panelRoot.activeSelf) return;
+            if(!panelRoot.activeSelf) return;
             InputBlocker.SetBlocked(false);
             panelRoot.SetActive(false);
         }
@@ -156,10 +161,7 @@ namespace UI
 
         private void RefreshDepositButton()
         {
-            if (depositAllButton == null) return;
-
-            float weight = playerInventory.CurrentWeight;
-            depositAllButton.interactable = weight > 0f;
+            depositAllButton.interactable = playerInventory.CurrentWeight > 0f;
         }
 
         private void Refresh()
@@ -170,12 +172,7 @@ namespace UI
             foreach (var kvp in rows)
             {
                 Depot.Instance.StoredOres.TryGetValue(kvp.Key, out var count);
-                kvp.Value.SetCount(count);
-
-                var blockType = blockTypeDatabase.Get((byte)kvp.Key);
-                var value = blockType.Value * count;
-                kvp.Value.SetValue(value);
-                totalValue += value;
+                totalValue += kvp.Value.SetCount(count);
             }
 
             sellAllButtonLabel.text = $"Sell All (${totalValue:0.##})";
@@ -184,22 +181,17 @@ namespace UI
             foreach (var kvp in goodsRows)
             {
                 Depot.Instance.StoredGoods.TryGetValue(kvp.Key, out var count);
-                kvp.Value.SetCount(count);
-
-                var recipe = recipeDatabase != null ? recipeDatabase.Get(kvp.Key) : null;
-                var value = (recipe != null ? recipe.SaleValue : 0f) * count;
-                kvp.Value.SetValue(value);
-                totalGoodsValue += value;
+                totalGoodsValue += kvp.Value.SetCount(count);
             }
 
-            if (sellAllGoodsButtonLabel != null) sellAllGoodsButtonLabel.text = $"Sell All Goods (${totalGoodsValue:0.##})";
+            sellAllGoodsButtonLabel.text = $"Sell All Goods (${totalGoodsValue:0.##})";
 
             OnDollarsChanged();
         }
 
         private void OnDollarsChanged()
         {
-            if (dollarsLabel != null) dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
+            dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
         }
     }
 }

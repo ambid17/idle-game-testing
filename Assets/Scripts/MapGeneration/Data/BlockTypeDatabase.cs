@@ -27,5 +27,42 @@ namespace MapGeneration
         }
 
         private void OnEnable() => lookup = null;
+
+        public void Validate()
+        {
+            if (BlockTypes == null)
+            {
+                Debug.LogError("BlockTypeDatabase is not assigned in GameManager.");
+                return;
+            }
+            foreach (var blockType in BlockTypes)
+            {
+                if (blockType == null)
+                {
+                    Debug.LogError("BlockTypeDatabase contains a null BlockType.");
+                    continue;
+                }
+                if (string.IsNullOrEmpty(blockType.DisplayName))
+                {
+                    Debug.LogError($"BlockType '{blockType.name}' has an invalid display name.");
+                }
+                if (blockType.Health <= 0)
+                {
+                    Debug.LogError($"BlockType '{blockType.name}' has <= 0 health value.");
+                }
+                if (blockType.Icon == null)
+                {
+                    Debug.LogError($"BlockType '{blockType.name}' has no icon assigned.");
+                }
+                if (blockType.Tile == null)
+                {
+                    Debug.LogError($"BlockType '{blockType.name}' has no tile assigned.");
+                }
+                if (blockType.Value <= 0 && blockType.Category == BlockCategory.Ore)
+                {
+                    Debug.LogError($"BlockType '{blockType.name}' has a negative value.");
+                }
+            }
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Economy;
 using Processing;
 using TMPro;
 using UnityEngine;
@@ -19,6 +20,14 @@ namespace UI
 
         public ProcessingRecipeId RecipeId { get; private set; }
 
+        private void Start()
+        {
+            if (icon == null) Debug.LogError("GoodsRowUI: no icon Image assigned.");
+            if (nameLabel == null) Debug.LogError("GoodsRowUI: no nameLabel TMP_Text assigned.");
+            if (countLabel == null) Debug.LogError("GoodsRowUI: no countLabel TMP_Text assigned.");
+            if (valueLabel == null) Debug.LogError("GoodsRowUI: no valueLabel TMP_Text assigned.");
+        }
+
         public void Bind(ProcessingRecipeDefinition recipe)
         {
             this.recipe = recipe;
@@ -29,18 +38,15 @@ namespace UI
             nameLabel.text = displayName;
         }
 
-        public void SetCount(int count)
+        public float SetCount(int count)
         {
             countLabel.text = count.ToString();
 
             var saleValue = recipe.SaleValue;
-            var totalValue = saleValue * count;
+            var totalValue = saleValue * UpgradeManager.Instance.ProcessingGoodsSellMultiplier * count;
             valueLabel.text = $"${totalValue:0.##}";
-        }
 
-        public void SetValue(float value)
-        {
-            if (valueLabel != null) valueLabel.text = $"${value:0.##}";
+            return totalValue;
         }
     }
 }

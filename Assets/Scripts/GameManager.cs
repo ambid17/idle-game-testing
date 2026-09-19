@@ -93,6 +93,7 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.LogError("TutorialDatabase is not assigned in GameManager.");
         }
+        BlockTypeDatabase.Validate();
     }
 
     // Runs after every scene object's Awake(), so Wallet/UpgradeManager/AutomationSettings/
@@ -112,4 +113,6 @@ public class GameManager : Singleton<GameManager>
         }
         base.OnDestroy();
     }
+
+    
 }
