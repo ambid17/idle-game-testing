@@ -1,3 +1,4 @@
+using Economy;
 using TMPro;
 using UI;
 using UnityEngine;
@@ -25,7 +26,7 @@ namespace UI.SkillTree
 
         // Lets SkillTreePanelUI find and rebind the same node's freshly-rebuilt view model after
         // a purchase, so the open modal reflects the new level/cost instead of a stale snapshot.
-        public object CurrentSource => current?.Source;
+        public UpgradeDefinitionBase CurrentSource => current?.Source;
 
         private void Awake()
         {

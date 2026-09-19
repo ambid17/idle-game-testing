@@ -1,4 +1,3 @@
-using Economy;
 using System;
 using TMPro;
 using UnityEngine;
@@ -40,7 +39,7 @@ namespace UI.SkillTree
 
         public void Bind(SkillTreeNodeViewModel viewModel, Action<SkillTreeNodeViewModel> onClicked)
         {
-            boundAsset = viewModel.Source as UnityEngine.Object;
+            boundAsset = viewModel.Source;
             gameObject.name = $"SkillTreeNode_{viewModel.DisplayName}";
             if (button != null)
             {
@@ -51,14 +50,7 @@ namespace UI.SkillTree
             if(displayNameLabel != null) displayNameLabel.text = viewModel.DisplayName;
             Refresh(viewModel);
 
-            if(viewModel.Source is UpgradeDefinition)
-            {
-                currencyIcon.sprite = UpgradeManager.Instance.CurrencyIcon;
-            }
-            else
-            {
-                currencyIcon.sprite = PrestigeUpgradeManager.Instance.CurrencyIcon;
-            }
+            currencyIcon.sprite = viewModel.CurrencyIcon;
         }
 
         public void Refresh(SkillTreeNodeViewModel viewModel)

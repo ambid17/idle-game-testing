@@ -81,29 +81,12 @@ namespace Economy
     }
 
     [CreateAssetMenu(fileName = "UpgradeDefinition", menuName = "Economy/Upgrade Definition")]
-    public class UpgradeDefinition : ScriptableObject
+    public class UpgradeDefinition : UpgradeDefinitionBase
     {
-        public string DisplayName;
-        [TextArea] public string Description;
-        public Sprite Icon;
         public UpgradeBranch Branch;
         public UpgradeEffect Effect;
 
-        [Tooltip("Value added per purchased level. Meaning depends on Effect - see UpgradeManager's accessor for this Effect.")]
-        public float EffectValuePerLevel = 1f;
-
-        [Tooltip("Number of purchasable levels. Use 1 for a one-time unlock (e.g. a capstone).")]
-        public int MaxLevel = 1;
-
-        public double BaseCost = 100;
-        [Tooltip("Cost multiplier applied per level already purchased.")]
-        public float CostGrowth = 1.15f;
-
         [Tooltip("Must be unlocked (or maxed, if Require Prerequisite Maxed) before this can be purchased. Leave empty for a branch's first tier.")]
         public UpgradeDefinition Prerequisite;
-        [Tooltip("If set, Prerequisite must be fully maxed rather than just purchased once. Used for capstones.")]
-        public bool RequirePrerequisiteMaxed;
-
-        public double GetCost(int currentLevel) => BaseCost * System.Math.Pow(CostGrowth, currentLevel);
     }
 }

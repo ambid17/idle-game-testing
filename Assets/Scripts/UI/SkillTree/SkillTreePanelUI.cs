@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using Economy;
 using UnityEngine;
 
 namespace UI.SkillTree
 {
     // Reusable pannable/zoomable node-graph renderer, hosted by both MarketUI (Market upgrades)
     // and MuseumUI (prestige perks) via a small ISkillTreeSource adapter - this class never
-    // references UpgradeDefinition/PrestigeUpgradeDefinition directly.
+    // references UpgradeDefinition/PrestigeUpgradeDefinition directly, only their shared
+    // UpgradeDefinitionBase.
     public class SkillTreePanelUI : MonoBehaviour
     {
         [SerializeField] private RectTransform content;
@@ -50,7 +52,7 @@ namespace UI.SkillTree
 
             // Preserved across the rebuild below so a purchase made from the open modal rebinds
             // it to the matching freshly-built view model instead of leaving it on a stale one.
-            object previousModalSource = detailModal != null ? detailModal.CurrentSource : null;
+            UpgradeDefinitionBase previousModalSource = detailModal != null ? detailModal.CurrentSource : null;
 
             var viewModels = source.BuildViewModels();
 
@@ -131,7 +133,7 @@ namespace UI.SkillTree
             }
         }
 
-        private void RebuildDetailModal(IReadOnlyList<SkillTreeNodeViewModel> viewModels, object previousModalSource)
+        private void RebuildDetailModal(IReadOnlyList<SkillTreeNodeViewModel> viewModels, UpgradeDefinitionBase previousModalSource)
         {
             if(detailModal == null || previousModalSource == null) return;
             foreach (var vm in viewModels)

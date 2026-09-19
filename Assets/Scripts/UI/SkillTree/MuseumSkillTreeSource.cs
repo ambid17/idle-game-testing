@@ -29,6 +29,7 @@ namespace UI.SkillTree
                     DisplayName = def.DisplayName,
                     Description = def.Description,
                     Icon = def.Icon,
+                    CurrencyIcon = manager.CurrencyIcon,
                     BranchIndex = (int)def.Branch,
                     Level = manager.GetLevel(def),
                     MaxLevel = def.MaxLevel,

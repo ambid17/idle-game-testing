@@ -51,31 +51,22 @@ namespace Economy
     }
 
     [CreateAssetMenu(fileName = "PrestigeUpgradeDefinition", menuName = "Economy/Prestige Upgrade Definition")]
-    public class PrestigeUpgradeDefinition : ScriptableObject
+    public class PrestigeUpgradeDefinition : UpgradeDefinitionBase
     {
         [Tooltip("Must be unique across the PrestigeUpgradeDatabase.")]
         public string Id;
-        public string DisplayName;
-        [TextArea] public string Description;
-        public Sprite Icon;
         public PrestigeUpgradeBranch Branch;
         public PrestigeUpgradeEffect Effect;
 
-        [Tooltip("Value added per purchased level. Meaning depends on Effect - see PrestigeUpgradeManager's accessor for this Effect.")]
-        public float EffectValuePerLevel = 1f;
-
-        [Tooltip("Number of purchasable levels. Use 1 for a one-time unlock (e.g. a capstone).")]
-        public int MaxLevel = 1;
-
-        public double BaseCost = 10;
-        [Tooltip("Cost multiplier applied per level already purchased.")]
-        public float CostGrowth = 1.5f;
-
         [Tooltip("Must be unlocked (or maxed, if Require Prerequisite Maxed) before this can be purchased. Leave empty for a branch's first tier.")]
         public PrestigeUpgradeDefinition Prerequisite;
-        [Tooltip("If set, Prerequisite must be fully maxed rather than just purchased once. Used for capstones.")]
-        public bool RequirePrerequisiteMaxed;
 
-        public double GetCost(int currentLevel) => BaseCost * System.Math.Pow(CostGrowth, currentLevel);
+        // Prestige perks default to a cheaper base cost / steeper growth curve than Market
+        // upgrades (UpgradeDefinitionBase's defaults) - only applies to newly created assets.
+        private void Reset()
+        {
+            BaseCost = 10;
+            CostGrowth = 1.5f;
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Economy;
 using UnityEngine;
 
 namespace UI.SkillTree
@@ -10,6 +11,7 @@ namespace UI.SkillTree
         public string DisplayName;
         public string Description;
         public Sprite Icon;
+        public Sprite CurrencyIcon;
         public int BranchIndex { get; set; }
         public int Level;
         public int MaxLevel;
@@ -19,9 +21,9 @@ namespace UI.SkillTree
         public bool CanPurchase;
         public ISkillTreeLayoutNode Prerequisite { get; set; }
 
-        // The underlying UpgradeDefinition/PrestigeUpgradeDefinition, boxed so SkillTreePanelUI
-        // can hand it back to the owning ISkillTreeSource (e.g. RequestPurchase) without needing
-        // to know which concrete type it is.
-        public object Source;
+        // The underlying UpgradeDefinition/PrestigeUpgradeDefinition, shared via their common base
+        // so SkillTreePanelUI can hand it back to the owning ISkillTreeSource (e.g. RequestPurchase)
+        // without needing to know which concrete type it is.
+        public UpgradeDefinitionBase Source;
     }
 }
