@@ -32,13 +32,13 @@ namespace MapGeneration
 
         // Layer 0 only: fog fades in from clear at the surface (row 0) to full opacity by this
         // row, so the mine entrance doesn't open into a hard fog wall.
-        [SerializeField] private int surfaceFogGradientRows = 4;
-        [SerializeField] private float defaultAlpha = 0.97f;
+        [SerializeField] private int surfaceFogGradientRows = 1;
+        [SerializeField] private float defaultAlpha = 1;
 
         // Unrevealed cells within this many cells of any revealed cell fade in from clear
         // (adjacent to revealed) to full opacity (at/beyond this radius), so the fog edge
         // reads as a soft glow around explored ground instead of a hard boundary.
-        [SerializeField] private int revealGradientRadius = 4;
+        [SerializeField] private int revealGradientRadius = 3;
 
         public int LayerIndex { get; private set; }
 
