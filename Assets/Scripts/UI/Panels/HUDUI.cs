@@ -93,7 +93,7 @@ namespace UI
 
         private void RefreshArtifactCount()
         {
-            if (artifactCountLabel != null) artifactCountLabel.text = $"Artifacts: {Wallet.Instance.ArtifactCount}";
+            if (artifactCountLabel != null) artifactCountLabel.text = $"Stellar Credits: {Wallet.Instance.ArtifactCount}";
         }
 
         private void RefreshDepth()

@@ -103,7 +103,7 @@ namespace UI
                 ? Mathf.Clamp01(playerInventory.CurrentWeight / playerInventory.MaxWeight)
                 : 0f;
             weightLabel.text = $"{playerInventory.CurrentWeight:0}/{playerInventory.MaxWeight:0}";
-            artifactLabel.text = $"Artifacts: {Wallet.Instance.ArtifactCount}";
+            artifactLabel.text = $"Stellar Credits: {Wallet.Instance.ArtifactCount}";
         }
     }
 }
