@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Unlocks the Pillars recipe at the Processing Center.
   Icon: {fileID: 0}
   Branch: 4
-  Effect: 36
+  Effect: 35
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 1500
