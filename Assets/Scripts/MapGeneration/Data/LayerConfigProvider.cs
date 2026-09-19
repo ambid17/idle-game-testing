@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Economy;
 using UnityEngine;
 
 namespace MapGeneration
@@ -9,6 +10,9 @@ namespace MapGeneration
     [CreateAssetMenu(fileName = "LayerConfigProvider", menuName = "Map Generation/Layer Config Provider")]
     public class LayerConfigProvider : ScriptableObject
     {
+        // Floor so PrestigeUpgradeManager.LayerSizeReduction can't shrink a layer to nothing.
+        private const int MinLayerHeight = 5;
+
         public List<LayerConfig> LayerConfigs = new();
 
         public LayerConfig GetConfig(int layerIndex)
@@ -28,13 +32,26 @@ namespace MapGeneration
             return best != null ? best : LayerConfigs[0];
         }
 
+        // GameDesignDoc "Prestige > Mining > adjust layer sizes": authored LayerHeight minus the
+        // prestige perk's reduction. Deliberately never writes back to the LayerConfig asset itself
+        // (a shared ScriptableObject - mutating its fields at runtime would corrupt the authored
+        // asset), so every depth/generation calculation reads this instead of config.LayerHeight
+        // directly.
+        public int GetEffectiveLayerHeight(int layerIndex)
+        {
+            var config = GetConfig(layerIndex);
+            if (config == null) return 0;
+            int reduction = PrestigeUpgradeManager.Instance != null ? Mathf.RoundToInt(PrestigeUpgradeManager.Instance.LayerSizeReduction) : 0;
+            return Mathf.Max(MinLayerHeight, config.LayerHeight - reduction);
+        }
+
         // Depth (in blocks) at which this layer starts - inverse of GetLayerIndexAtDepth.
         public int GetLayerOffset(int layerIndex)
         {
             var yOffset = 0;
             for (int i = 0; i < layerIndex; i++)
             {
-                yOffset += GetConfig(i).LayerHeight;
+                yOffset += GetEffectiveLayerHeight(i);
             }
             return yOffset;
         }
@@ -44,12 +61,12 @@ namespace MapGeneration
             var totalLayerHeight = 0;
             for (int i = 0; i < LayerConfigs.Count; i++)
             {
-                var config = GetConfig(i);
-                if (depthInBlocks < totalLayerHeight + config.LayerHeight)
+                var layerHeight = GetEffectiveLayerHeight(i);
+                if (depthInBlocks < totalLayerHeight + layerHeight)
                 {
                     return i;
                 }
-                totalLayerHeight += config.LayerHeight;
+                totalLayerHeight += layerHeight;
             }
 
             // if we are deeper than the last configured layer, use the last layer config for all deeper layers. This is a design choice to allow for infinite depth with the last layer's configuration.
@@ -57,7 +74,8 @@ namespace MapGeneration
             {
                 var depthBeyondLastLayer = depthInBlocks - totalLayerHeight;
                 var lastLayer = LayerConfigs[LayerConfigs.Count - 1];
-                var actualLayer = (depthBeyondLastLayer / lastLayer.LayerHeight) + lastLayer.LayerIndex + 1;
+                var lastLayerHeight = GetEffectiveLayerHeight(lastLayer.LayerIndex);
+                var actualLayer = (depthBeyondLastLayer / lastLayerHeight) + lastLayer.LayerIndex + 1;
                 return actualLayer;
             }
             return 0;

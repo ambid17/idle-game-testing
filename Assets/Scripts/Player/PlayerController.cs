@@ -1,3 +1,4 @@
+using Economy;
 using Events;
 using UI;
 using UnityEngine;
@@ -44,6 +45,12 @@ namespace Player
         private bool wasInputBlocked;
         private float lastFallSpeed;
         private Vector3 spawnPosition;
+        private float baseGravityScale;
+
+        // GameDesignDoc "Survival" branch - read on demand each frame rather than cached/pushed,
+        // matching every other UpgradeManager/PrestigeUpgradeManager consumer in the project.
+        private UpgradeManager upgrades => UpgradeManager.Instance;
+        private PrestigeUpgradeManager prestigeUpgrades => PrestigeUpgradeManager.Instance;
 
         // Frictionless while flying only - grounded movement keeps the collider's authored
         // (default) material so the player doesn't slide around on the ground. Without this, the
@@ -56,16 +63,20 @@ namespace Player
         public bool IsGrounded { get; private set; }
         public bool IsFlying { get; private set; }
         public float Fuel { get; private set; }
-        public float FuelFraction => fuelMax > 0f ? Fuel / fuelMax : 0f;
-        public float FuelMax => fuelMax;
-        public float FuelMissing => fuelMax - Fuel;
+
+        // GameDesignDoc "Survival > Increase fuel cap" (Movement_FuelInventory): flat bonus added
+        // to the serialized base capacity.
+        private float EffectiveFuelMax => fuelMax + (upgrades != null ? upgrades.FuelCapacityBonus : 0f);
+        public float FuelFraction => EffectiveFuelMax > 0f ? Fuel / EffectiveFuelMax : 0f;
+        public float FuelMax => EffectiveFuelMax;
+        public float FuelMissing => EffectiveFuelMax - Fuel;
 
         // Used by Fuel Drones (Automation.FuelDrone) and ResourceRefillUI's manual purchase buttons -
         // both deposit fuel into the player through this rather than touching Fuel directly.
         public void AddFuel(float amount)
         {
             if (amount <= 0f) return;
-            Fuel = Mathf.Min(fuelMax, Fuel + amount);
+            Fuel = Mathf.Min(EffectiveFuelMax, Fuel + amount);
         }
         private Vector2 movementInput;
         public Vector2 MovementInput => movementInput;
@@ -76,8 +87,9 @@ namespace Player
         {
             rb = GetComponent<Rigidbody2D>();
             rb.WakeUp();
+            baseGravityScale = rb.gravityScale;
             health = GetComponent<PlayerHealth>();
-            Fuel = fuelMax;
+            Fuel = EffectiveFuelMax;
             spawnPosition = transform.position;
 
             capsuleCollider = GetComponent<CapsuleCollider2D>();
@@ -109,7 +121,7 @@ namespace Player
 
         private void HandleRevived()
         {
-            Fuel = fuelMax;
+            Fuel = EffectiveFuelMax;
             lastFallSpeed = 0f;
             rb.linearVelocity = Vector2.zero;
             transform.position = spawnPosition;
@@ -121,7 +133,7 @@ namespace Player
         // standing when they quit."
         public void RestoreFromSaveData(float fuel, Vector3 position)
         {
-            Fuel = Mathf.Clamp(fuel, 0f, fuelMax);
+            Fuel = Mathf.Clamp(fuel, 0f, EffectiveFuelMax);
             rb.position = position;
             transform.position = position;
             rb.linearVelocity = Vector2.zero;
@@ -212,8 +224,17 @@ namespace Player
 
             capsuleCollider.sharedMaterial = !IsGrounded ? flyingMaterial : groundedMaterial;
 
-            float horizontalSpeed = IsFlying ? flySpeed : groundSpeed;
+            // GameDesignDoc "Survival > Increase fly speed/Increase move speed": market multipliers
+            // scale the base, the prestige perk adds a further flat bonus on top.
+            float baseHorizontalSpeed = IsFlying
+                ? flySpeed * (upgrades != null ? upgrades.FlightSpeedMultiplier : 1f)
+                : groundSpeed * (upgrades != null ? upgrades.MoveSpeedMultiplier : 1f);
+            float horizontalSpeed = baseHorizontalSpeed + (prestigeUpgrades != null ? prestigeUpgrades.MoveSpeedBonus : 0f);
             ApplyHorizontalMovementForce(movementInput.x * horizontalSpeed);
+
+            // GameDesignDoc "Survival > Increase fall speed" (Movement_GravityIncrease): reset to
+            // base * multiplier rather than compounding, since this runs every FixedUpdate.
+            rb.gravityScale = baseGravityScale * (upgrades != null ? upgrades.GravityMultiplier : 1f);
 
             // Jetpack pushes rather than snapping vertical velocity, so gravity still pulls
             // against it - lets the player feather W for a soft landing instead of a hard cutoff.
@@ -234,11 +255,14 @@ namespace Player
             float previousFuelFraction = FuelFraction;
             if (IsFlying)
             {
-                Fuel = Mathf.Max(0f, Fuel - fuelDrainPerSecond * dt);
+                // GameDesignDoc "Survival > fuel efficiency": FuelEfficiencyMultiplier is a drain
+                // *reduction* (1 - upgrade), so a maxed upgrade approaches zero drain, not zero fuel.
+                float efficiency = upgrades != null ? upgrades.FuelEfficiencyMultiplier : 1f;
+                Fuel = Mathf.Max(0f, Fuel - fuelDrainPerSecond * efficiency * dt);
             }
             else if (IsGrounded)
             {
-                Fuel = Mathf.Min(fuelMax, Fuel + fuelRegenPerSecondGrounded * dt);
+                Fuel = Mathf.Min(EffectiveFuelMax, Fuel + fuelRegenPerSecondGrounded * dt);
             }
 
             // Edge-triggered: only fires the tick fuel first crosses at/below half, not every
@@ -268,7 +292,12 @@ namespace Player
 
             if (!wasGrounded && lastFallSpeed > fallDamageVelocityThreshold)
             {
-                health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * fallDamagePerExcessUnit, DeathReason.FallDamage);
+                // GameDesignDoc "Survival > Decrease fall damage": market multiplier and the
+                // prestige perk both reduce the per-unit damage, applied multiplicatively.
+                float marketReduction = upgrades != null ? upgrades.FallDamageReductionMultiplier : 1f;
+                float prestigeReduction = prestigeUpgrades != null ? Mathf.Max(0f, 1f - prestigeUpgrades.FallDamageReduction) : 1f;
+                float effectiveDamagePerUnit = fallDamagePerExcessUnit * marketReduction * prestigeReduction;
+                health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * effectiveDamagePerUnit, DeathReason.FallDamage);
             }
 
             lastFallSpeed = 0f;

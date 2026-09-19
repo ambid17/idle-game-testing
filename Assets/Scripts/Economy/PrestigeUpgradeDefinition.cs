@@ -16,17 +16,20 @@ namespace Economy
     }
 
     // What purchasing a level of this prestige perk actually does. PrestigeUpgradeManager exposes
-    // one computed property per effect. Entries marked "stub" below have no live gameplay hook yet
-    // because the system they'd plug into (Processing Center, digging-while-flying, passive layer
-    // bonus, etc.) doesn't exist in the codebase yet - see Assets/Docs/GameDesignDoc.md "# Prestige".
+    // one computed property per effect - see Assets/Docs/GameDesignDoc.md "# Prestige". Ordering
+    // here is fixed by the serialized int already baked into existing PrestigeUpgradeDefinition
+    // assets - never reorder or remove a member, only append. AutoPrestigeCapstone is the one
+    // deliberate exception left unconsumed: it's a purchasable/displayed flag with no auto-trigger,
+    // since "prestige when mathematically worth it" needs a real profitability projection that's
+    // out of scope for upgrade-application work.
     public enum PrestigeUpgradeEffect
     {
         GridWidthBonus,
-        KeepDigWhileFlying, // stub
-        CameraZoomBonus, // stub
-        LayerSizeReduction, // stub
+        KeepDigWhileFlying,
+        CameraZoomBonus,
+        LayerSizeReduction,
         MineralValueMultiplier,
-        ProcessedGoodMultiplier, // stub
+        ProcessedGoodMultiplier,
         // GameDesignDoc "Prestige > idle > auto miner" lists 4 kept-tier perks (count, speed, dig
         // speed, move speed) but the Market only has 3 distinct automaton stats besides count
         // (AutomatonMiningSpeed, AutomatonMiningRadius, AutomatonMoveSpeed) - mapped 1:1 onto those
@@ -38,16 +41,16 @@ namespace Economy
         ArtifactSpawnRateMultiplier,
         PrestigePointsPerArtifactMultiplier,
         PassivePrestigePointRate,
-        AutoPrestigeCapstone, // stub
-        OreTierOddsBonus, // stub
-        PowerUpEffectivenessBonus, // stub
-        PowerUpSpawnRateBonus, // stub
-        ShieldChargeCount, // stub
-        MoveSpeedBonus, // stub
-        FallDamageReduction, // stub
-        GasResistance, // stub
-        DoublePassiveLayerBonus, // stub
-        KeepPassiveLayerBonus // stub
+        AutoPrestigeCapstone,
+        OreTierOddsBonus,
+        PowerUpEffectivenessBonus,
+        PowerUpSpawnRateBonus,
+        ShieldChargeCount,
+        MoveSpeedBonus,
+        FallDamageReduction,
+        GasResistance,
+        DoublePassiveLayerBonus,
+        KeepPassiveLayerBonus
     }
 
     [CreateAssetMenu(fileName = "PrestigeUpgradeDefinition", menuName = "Economy/Prestige Upgrade Definition")]

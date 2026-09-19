@@ -26,6 +26,7 @@ namespace Economy
         public void ExecutePrestige()
         {
             UpgradeManager.Instance.ResetAllLevels();
+            LayerBonusTracker.Instance.ClearUnlessKept();
             Wallet.Instance.SetDollars(0);
             Depot.Instance.ClearAll();
             if (playerInventory != null) playerInventory.ClearOreOnly();

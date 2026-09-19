@@ -47,7 +47,10 @@ namespace Player
         {
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
             Vector2Int? direction = ResolveDirection();
-            if (!playerController.IsGrounded || direction == null || InputBlocker.IsBlocked)
+            // GameDesignDoc "Prestige > Mining": the KeepDigWhileFlying perk lifts the normal
+            // grounded-only mining restriction.
+            bool canMine = playerController.IsGrounded || (PrestigeUpgradeManager.Instance != null && PrestigeUpgradeManager.Instance.KeepDigWhileFlyingUnlocked);
+            if (!canMine || direction == null || InputBlocker.IsBlocked)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
                 wasBlockedByFullInventory = false;
@@ -116,8 +119,11 @@ namespace Player
             var canInstaMine = isNewTarget && upgradeManager != null && upgradeManager.InstaMineChance > 0f && Random.value < upgradeManager.InstaMineChance;
             // GameDesignDoc "the final upgrade makes dirt/stone an instant mine".
             var canInstaMineDirt = blockType.Category == BlockCategory.Dirt && upgradeManager != null && upgradeManager.InstantMineDirt;
+            // Mining_WoodInstaMine's capstone - see UpgradeManager.InstantMineScrapAlloy for the
+            // "Wood" naming gap.
+            var canInstaMineScrapAlloy = blockType.Id == BlockTypeId.ScrapAlloy && upgradeManager != null && upgradeManager.InstantMineScrapAlloy;
             var finishedMining =  miningProgress >= targetBlockHealth;
-            if (canInstaMine || canInstaMineDirt || finishedMining)
+            if (canInstaMine || canInstaMineDirt || canInstaMineScrapAlloy || finishedMining)
             {
                 if (debug) Debug.Log($"PlayerMining: finishing mine at (x,y,layer): ({targetCellX},{targetCellY},{layerIndex})");
                 MineTarget(layerIndex, targetCellX, targetCellY, blockType);
@@ -153,11 +159,11 @@ namespace Player
         {
             if (!mapGenerationService.MineCell(layerIndex, x, y)) return;
 
-            CollectMinedBlock(blockType);
+            CollectMinedBlock(blockType, layerIndex);
             MineAreaBonusCells(layerIndex, x, y);
         }
 
-        private void CollectMinedBlock(BlockType blockType)
+        private void CollectMinedBlock(BlockType blockType, int layerIndex)
         {
             if (blockType.Category == BlockCategory.Artifact)
             {
@@ -165,6 +171,8 @@ namespace Player
                 return;
             }
             if (blockType.Category != BlockCategory.Ore) return;
+
+            ApplyLayerBonus(blockType, layerIndex);
 
             if (playerInventory.IsFull && CanOverflow)
             {
@@ -176,6 +184,21 @@ namespace Player
             {
                 playerInventory.AddOre(blockType);
             }
+        }
+
+        // GameDesignDoc "Passive upgrades": credits the bonus portion of the layer's value
+        // multiplier immediately as Dollars - the base ore value still flows through the normal
+        // carry-to-Depot-then-sell path untouched (see Economy.LayerBonusTracker).
+        private void ApplyLayerBonus(BlockType blockType, int layerIndex)
+        {
+            var tracker = LayerBonusTracker.Instance;
+            if (tracker == null) return;
+
+            float tierMultiplier = tracker.CurrentTierMultiplier(layerIndex);
+            if (tierMultiplier <= 1f) return;
+
+            double bonus = blockType.Value * (tierMultiplier - 1f);
+            if (bonus > 0 && Wallet.Instance != null) Wallet.Instance.Add(bonus);
         }
 
         // GameDesignDoc "Market Upgrades > Mining > Increase mining size": each unlocked offset
@@ -197,7 +220,7 @@ namespace Player
 
                 if (!mapGenerationService.MineCell(layerIndex, x, y)) continue;
 
-                CollectMinedBlock(bonusBlock);
+                CollectMinedBlock(bonusBlock, layerIndex);
             }
         }
     }

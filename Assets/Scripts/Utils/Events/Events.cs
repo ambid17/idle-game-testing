@@ -25,6 +25,20 @@ namespace Events
     public class PlayerRevivedEvent { }
     public class PlayerHpUpdatedEvent { }
 
+    // Dispatched by PlayerHealth whenever a shield charge (PrestigeUpgradeEffect.ShieldChargeCount)
+    // is consumed or regenerated.
+    public class ShieldChargeChangedEvent : IEvent
+    {
+        public int Current;
+        public int Max;
+
+        public ShieldChargeChangedEvent(int current, int max)
+        {
+            Current = current;
+            Max = max;
+        }
+    }
+
     public class DidCraftUpgradeEvent { }
 
     public class ClosedCraftingUiEvent { }
@@ -227,6 +241,25 @@ namespace Events
             X = x;
             Y = y;
             Hazard = hazard;
+        }
+    }
+
+    // Dispatched by MapGenerationService.MineCell alongside HazardTriggeredEvent, but for a mined
+    // cell whose Category is PowerUp rather than Hazard - reuses the same HazardBehavior enum
+    // (TreasureChest/SightPotion), which already anticipates this dual use (see BlockType.cs).
+    public class PowerUpTriggeredEvent : IEvent
+    {
+        public int LayerIndex;
+        public int X;
+        public int Y;
+        public HazardBehavior Behavior;
+
+        public PowerUpTriggeredEvent(int layerIndex, int x, int y, HazardBehavior behavior)
+        {
+            LayerIndex = layerIndex;
+            X = x;
+            Y = y;
+            Behavior = behavior;
         }
     }
 

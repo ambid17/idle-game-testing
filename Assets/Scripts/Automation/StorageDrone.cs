@@ -198,6 +198,19 @@ namespace Automation
         {
             var withdrawn = oreInventory.WithdrawAllOre();
             AutomationDepositService.Deposit($"Storage Drone #{DisplayIndex}", withdrawn);
+
+            // GameDesignDoc "Automation > Drone delivery > Market Sense" capstone. Sells exactly
+            // what this delivery just added (fraction of the now-current total), not any ore
+            // already banked, which might be reserved for a Processing Center recipe.
+            if (upgrades.StorageDroneAutoSellUnlocked)
+            {
+                foreach (var kvp in withdrawn)
+                {
+                    if (kvp.Value <= 0) continue;
+                    if (!Depot.Instance.StoredOres.TryGetValue(kvp.Key, out var currentStored) || currentStored <= 0) continue;
+                    Depot.Instance.Sell(kvp.Key, (float)kvp.Value / currentStored);
+                }
+            }
         }
 
         // "storage drones will repeat this process as long as there is an entity with minerals in

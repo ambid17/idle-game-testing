@@ -1,3 +1,4 @@
+using Economy;
 using Events;
 using UnityEngine;
 
@@ -19,19 +20,52 @@ namespace Player
     public class PlayerHealth : MonoBehaviour
     {
         [SerializeField] private float maxHp = 100f;
+        [SerializeField] private float shieldRegenSeconds = 30f;
 
         public float MaxHp => maxHp;
         public float CurrentHp { get; private set; }
         public bool IsDead { get; private set; }
 
-        private void Awake() => CurrentHp = maxHp;
+        // GameDesignDoc "Prestige > Survival": one-time shield charges that regenerate over time
+        // and fully absorb a hit instead of it reducing CurrentHp.
+        public int CurrentShieldCharges { get; private set; }
+        private float shieldRegenTimer;
+        private int MaxShieldCharges => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.ShieldChargeCount : 0;
+
+        private void Awake()
+        {
+            CurrentHp = maxHp;
+            CurrentShieldCharges = MaxShieldCharges;
+        }
 
         private void OnEnable() => GameManager.EventService.Add<PlayerRevivedEvent>(HandleRevived);
         private void OnDisable() => GameManager.EventService.Remove<PlayerRevivedEvent>(HandleRevived);
 
+        private void Update()
+        {
+            if (IsDead || CurrentShieldCharges >= MaxShieldCharges) return;
+
+            shieldRegenTimer += Time.deltaTime;
+            if (shieldRegenTimer < shieldRegenSeconds) return;
+
+            shieldRegenTimer = 0f;
+            CurrentShieldCharges++;
+            GameManager.EventService.Dispatch(new ShieldChargeChangedEvent(CurrentShieldCharges, MaxShieldCharges));
+        }
+
         public void TakeDamage(float amount, DeathReason reason)
         {
             if (amount <= 0f || IsDead) return;
+
+            if (CurrentShieldCharges > 0)
+            {
+                CurrentShieldCharges--;
+                shieldRegenTimer = 0f;
+                GameManager.EventService.Dispatch(new ShieldChargeChangedEvent(CurrentShieldCharges, MaxShieldCharges));
+                GameManager.EventService.Dispatch(new HudNotificationEvent("Shield absorbed the hit!"));
+                return;
+            }
+
             CurrentHp = Mathf.Max(0f, CurrentHp - amount);
             if (CurrentHp <= 0f) Kill(reason);
         }
@@ -58,6 +92,8 @@ namespace Player
         {
             IsDead = false;
             CurrentHp = maxHp;
+            CurrentShieldCharges = MaxShieldCharges;
+            shieldRegenTimer = 0f;
         }
 
         // Restore for SaveService - always resolves alive (resuming into a dead state on load is

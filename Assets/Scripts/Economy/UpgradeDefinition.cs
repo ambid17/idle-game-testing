@@ -3,9 +3,7 @@ using UnityEngine;
 namespace Economy
 {
     // Branch grouping per GameDesignDoc "Market Upgrades" (Mining / Economy / Automation /
-    // Progression) and Assets/Docs/UpgradeIdeas.pdf. Some Economy/Progression effects are stubs
-    // (see UpgradeEffect) since their gameplay systems (Processing Center, player movement hooks)
-    // don't exist yet.
+    // Progression) and Assets/Docs/UpgradeIdeas.pdf.
     public enum UpgradeBranch
     {
         Mining,
@@ -16,14 +14,12 @@ namespace Economy
     }
 
     // What purchasing a level of this upgrade actually does. UpgradeManager exposes one computed
-    // property per effect that the relevant system (PlayerMining, PlayerInventory, Depot,
-    // MapGenerationService) reads on demand.
+    // property per effect that the relevant system (PlayerMining, PlayerController, PlayerInventory,
+    // Depot, MapGenerationService, ChunkGenerator, ...) reads on demand. Ordering here is fixed by
+    // the serialized int already baked into existing UpgradeDefinition assets - never reorder or
+    // remove a member, only append.
     public enum UpgradeEffect
     {
-        // Assets/Docs/UpgradeIdeas.pdf entries with no live gameplay hook yet - SO assets exist so
-        // the skill tree is exhaustive per the doc, matching the "stub" convention already used
-        // throughout PrestigeUpgradeEffect for the same reason (system doesn't exist yet).
-
         // Automation
         Automation_AutomatonCount,
         Automation_AutomatonInventoryCapacity,
@@ -33,14 +29,17 @@ namespace Economy
         Automation_FuelDroneCount,
         Automation_FuelDroneInventoryCapacity,
         Automation_FuelDroneMoveSpeed,
-        Automation_StorageDroneAutoSellUnlock, // stub
+        // "Drone delivery > Market Sense" capstone - StorageDrone auto-sells on delivery once maxed.
+        Automation_StorageDroneAutoSellUnlock,
         Automation_StorageDroneCount,
         Automation_StorageDroneInventoryCapacity,
         Automation_StorageDroneMoveSpeed,
 
 
         // Economy
-        Economy_GridWidthBonus, // stub
+        // Dollar-purchased counterpart to PrestigeUpgradeEffect.GridWidthBonus - applied
+        // immediately by MapGenerationService rather than waiting for the next prestige.
+        Economy_GridWidthBonus,
         Economy_InventoryCapacity,
         Economy_MarketingSellMultiplier,
         Economy_Overflow,
@@ -48,30 +47,34 @@ namespace Economy
         // Mining
         Mining_AreaSize,
         Mining_BaseInstaMineChance,
-        Mining_CameraZoom, // stub
-        // Real effect (Dirt block category already exists) - appended after the stubs, out of
-        // branch order, so every earlier member keeps its serialized int stable in existing
-        // UpgradeDefinition assets. Drives UpgradeManager.InstantMineDirt.
+        // "Lantern capstones > zoom, enhance" - drives CameraControl.CameraZoomController.
+        Mining_CameraZoom,
+        // Real effect (Dirt block category already exists) - appended out of branch order so
+        // every earlier member keeps its serialized int stable in existing UpgradeDefinition
+        // assets. Drives UpgradeManager.InstantMineDirt.
         Mining_DirtInstaMine,
         Mining_LanternRadius,
         Mining_Speed,
         Mining_TrueSight,
-        Mining_WoodInstaMine, // stub
+        // Current BlockTypeId set has no "Wood" block - targets ScrapAlloy instead (see
+        // UpgradeManager.InstantMineScrapAlloy).
+        Mining_WoodInstaMine,
 
 
         // Movement
-        Movement_FallDamageReduction, // stub
-        Movement_FlightSpeed, // stub
-        Movement_FuelEfficiency, // stub
-        Movement_FuelInventory, // stub
-        Movement_GravityIncrease, // stub
-        Movement_HazardSense, // stub
-        Movement_MoveSpeed, // stub
+        Movement_FallDamageReduction,
+        Movement_FlightSpeed,
+        Movement_FuelEfficiency,
+        Movement_FuelInventory,
+        Movement_GravityIncrease,
+        // "Lantern capstones > hazard sense" - drives ChunkTilemapView's hazard tile tint.
+        Movement_HazardSense,
+        Movement_MoveSpeed,
 
         // Processing
         Processing_QueueSlots,
-        Processing_SaleValueMultiplier, // stub - Processing Center doesn't exist yet
-        Processing_SpeedMultiplier, // stub - Processing Center doesn't exist yet
+        Processing_SaleValueMultiplier,
+        Processing_SpeedMultiplier,
         Processing_DiamondRecipeUnlock,
         Processing_EmeraldRecipeUnlock,
         Processing_GoldRecipeUnlock,

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Economy;
 using UnityEngine;
 
 namespace MapGeneration
@@ -27,7 +28,11 @@ namespace MapGeneration
             //Debug.Log($"Generating chunk for layer {layerIndex}");
 
             var config = configProvider != null ? configProvider.GetConfig(layerIndex) : null;
-            chunk = ChunkGenerator.Generate(Seed, layerIndex, GridWidth, config);
+            int layerHeight = configProvider != null ? configProvider.GetEffectiveLayerHeight(layerIndex) : (config != null ? config.LayerHeight : 0);
+            float artifactSpawnRateMultiplier = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.ArtifactSpawnRateMultiplier : 1f;
+            float oreTierOddsBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.OreTierOddsBonus : 0f;
+            float powerUpSpawnRateBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.PowerUpSpawnRateBonus : 0f;
+            chunk = ChunkGenerator.Generate(Seed, layerIndex, GridWidth, config, layerHeight, artifactSpawnRateMultiplier, oreTierOddsBonus, powerUpSpawnRateBonus);
             chunksByLayer[layerIndex] = chunk;
             return chunk;
         }
@@ -78,7 +83,7 @@ namespace MapGeneration
             var chunk = GetOrGenerateChunk(layerIndex);
             if (centerY - radius < 0 && layerIndex > 0)
             {
-                int prevHeight = configProvider != null ? configProvider.GetConfig(layerIndex - 1).LayerHeight : chunk.Height;
+                int prevHeight = configProvider != null ? configProvider.GetEffectiveLayerHeight(layerIndex - 1) : chunk.Height;
                 RevealFogAcrossBoundary(layerIndex - 1, -1, centerX, centerY + prevHeight, radius, revealedByLayer);
             }
             if (centerY + radius >= chunk.Height)
@@ -100,7 +105,7 @@ namespace MapGeneration
 
             if (direction < 0 && centerY - radius < 0 && layerIndex > 0)
             {
-                int prevHeight = configProvider != null ? configProvider.GetConfig(layerIndex - 1).LayerHeight : chunk.Height;
+                int prevHeight = configProvider != null ? configProvider.GetEffectiveLayerHeight(layerIndex - 1) : chunk.Height;
                 RevealFogAcrossBoundary(layerIndex - 1, direction, centerX, centerY + prevHeight, radius, revealedByLayer);
             }
             else if (direction > 0 && centerY + radius >= chunk.Height)

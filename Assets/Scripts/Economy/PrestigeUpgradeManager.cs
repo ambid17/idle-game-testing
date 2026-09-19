@@ -1,78 +1,50 @@
-using System.Collections.Generic;
 using Events;
 using UnityEngine;
 
 namespace Economy
 {
     // Tracks purchased levels for every PrestigeUpgradeDefinition in GameManager.PrestigeUpgradeDatabase.
-    // Mirrors UpgradeManager's shape exactly, but levelsByUpgradeId is NEVER cleared by
+    // Mirrors UpgradeManager's shape (via UpgradeManagerBase), but levels are NEVER cleared by
     // PrestigeManager.ExecutePrestige - that's the entire point of this being a separate manager
     // from UpgradeManager: prestige perks are the "meta" progression that survives every hard reset.
     // Singleton so it needs no scene wiring, matching UpgradeManager/Wallet/Depot.
-    public class PrestigeUpgradeManager : Singleton<PrestigeUpgradeManager>
+    public class PrestigeUpgradeManager : UpgradeManagerBase<PrestigeUpgradeManager, PrestigeUpgradeDefinition, PrestigeUpgradeEffect>
     {
         private static PrestigeUpgradeDatabase database => GameManager.PrestigeUpgradeDatabase;
 
         public Sprite CurrencyIcon;
-        private readonly Dictionary<string, int> levelsByUpgradeId = new();
 
-        public int GetLevel(PrestigeUpgradeDefinition def) => def != null && levelsByUpgradeId.TryGetValue(def.Id, out var lvl) ? lvl : 0;
-
-        public bool IsMaxed(PrestigeUpgradeDefinition def) => def != null && GetLevel(def) >= def.MaxLevel;
-
-        public bool IsUnlocked(PrestigeUpgradeDefinition def)
-        {
-            if (def == null) return false;
-            if (def.Prerequisite == null) return true;
-            return def.RequirePrerequisiteMaxed ? IsMaxed(def.Prerequisite) : GetLevel(def.Prerequisite) > 0;
-        }
-
-        public double GetNextCost(PrestigeUpgradeDefinition def) => def.GetCost(GetLevel(def));
-
-        public bool CanPurchase(PrestigeUpgradeDefinition def)
-        {
-            if (def == null || IsMaxed(def) || !IsUnlocked(def)) return false;
-            return PrestigePoints.Instance.Points >= GetNextCost(def);
-        }
-
-        public bool TryPurchase(PrestigeUpgradeDefinition def)
-        {
-            if (!CanPurchase(def)) return false;
-
-            double cost = GetNextCost(def);
-            if (!PrestigePoints.Instance.TrySpend(cost)) return false;
-
-            int newLevel = GetLevel(def) + 1;
-            levelsByUpgradeId[def.Id] = newLevel;
+        protected override double CurrentCurrency => PrestigePoints.Instance.Points;
+        protected override bool TrySpendCurrency(double amount) => PrestigePoints.Instance.TrySpend(amount);
+        protected override string KeyOf(PrestigeUpgradeDefinition def) => def.Id;
+        protected override PrestigeUpgradeDefinition Find(PrestigeUpgradeEffect effect) => database.Find(effect);
+        protected override PrestigeUpgradeDefinition Find(string key) => database.Find(key);
+        protected override PrestigeUpgradeDefinition PrerequisiteOf(PrestigeUpgradeDefinition def) => def.Prerequisite;
+        protected override void DispatchPurchased(PrestigeUpgradeDefinition def, int newLevel) =>
             GameManager.EventService.Dispatch(new PrestigeUpgradePurchasedEvent(def, newLevel));
-            return true;
-        }
+        // DispatchLoaded intentionally left at the base default (same event as a live purchase) -
+        // every listener (e.g. MuseumUI) reacts identically whether a level came from a purchase or
+        // a save file.
 
-        private int LevelOf(PrestigeUpgradeEffect effect) => GetLevel(database.Find(effect));
-
-        private float EffectValuePerLevelOf(PrestigeUpgradeEffect effect)
-        {
-            var def = database.Find(effect);
-            if (def == null)
-            {
-                Debug.LogError($"PrestigeUpgradeManager.EffectValuePerLevelOf: No PrestigeUpgradeDefinition found for effect {effect}. Check that the PrestigeUpgradeDatabase is properly populated.");
-                return 0;
-            }
-            return def.EffectValuePerLevel;
-        }
+        // Kept as its previous public name since UI/other systems already call this directly.
+        public int GetLevel(PrestigeUpgradeDefinition def) => EffectiveLevel(def);
 
         // GameDesignDoc "Prestige > Mining > Increase grid size": added to the base grid width in
         // MapGenerationService before every prestige's map regeneration.
         public int GridWidthBonus => Mathf.RoundToInt(LevelOf(PrestigeUpgradeEffect.GridWidthBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.GridWidthBonus));
 
-        // Stubs - no camera zoom control or layer-size-based generation exists yet to consume these.
+        // GameDesignDoc "Prestige > Mining > view": combined with UpgradeManager.CameraZoomBonus by
+        // CameraZoomController.
         public float CameraZoomBonus => LevelOf(PrestigeUpgradeEffect.CameraZoomBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.CameraZoomBonus);
+
+        // GameDesignDoc "Prestige > Mining > adjust layer sizes": subtracted from LayerConfig's
+        // authored LayerHeight once per prestige, for not-yet-generated layers only.
         public float LayerSizeReduction => LevelOf(PrestigeUpgradeEffect.LayerSizeReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.LayerSizeReduction);
 
         // GameDesignDoc "Prestige > Economy": mineral value multiplier.
         public float MineralValueMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.MineralValueMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.MineralValueMultiplier);
 
-        // Stub - no Processing Center system exists yet to consume this.
+        // GameDesignDoc "Prestige > Economy > processing": processed good production multiplier.
         public float ProcessedGoodMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.ProcessedGoodMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.ProcessedGoodMultiplier);
 
         // GameDesignDoc "Prestige > idle": the purchased level of each "keep tier" perk directly
@@ -88,39 +60,28 @@ namespace Economy
         public float PrestigePointsPerArtifactMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.PrestigePointsPerArtifactMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.PrestigePointsPerArtifactMultiplier);
         public float PassivePrestigePointRate => LevelOf(PrestigeUpgradeEffect.PassivePrestigePointRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.PassivePrestigePointRate);
 
-        // Stub - no "is it mathematically worth it" projection exists yet; purchasable, no auto-trigger.
+        // GameDesignDoc "Prestige > Prestige" capstone: "auto-prestige when it's mathematically
+        // worth it" - intentionally left as a purchasable/displayed flag with no auto-trigger; a
+        // real profitability projection is a separate feature, not upgrade-application.
         public bool AutoPrestigeUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.AutoPrestigeCapstone));
 
-        // Stubs below - purchasable/persisted/displayed, but no consumer system exists yet.
+        // GameDesignDoc "Prestige > Progression".
         public float OreTierOddsBonus => LevelOf(PrestigeUpgradeEffect.OreTierOddsBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.OreTierOddsBonus);
         public float PowerUpEffectivenessBonus => LevelOf(PrestigeUpgradeEffect.PowerUpEffectivenessBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.PowerUpEffectivenessBonus);
         public float PowerUpSpawnRateBonus => LevelOf(PrestigeUpgradeEffect.PowerUpSpawnRateBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.PowerUpSpawnRateBonus);
+
+        // GameDesignDoc "Prestige > Survival".
         public int ShieldChargeCount => LevelOf(PrestigeUpgradeEffect.ShieldChargeCount);
         public float MoveSpeedBonus => LevelOf(PrestigeUpgradeEffect.MoveSpeedBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.MoveSpeedBonus);
         public float FallDamageReduction => LevelOf(PrestigeUpgradeEffect.FallDamageReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.FallDamageReduction);
         public float GasResistance => LevelOf(PrestigeUpgradeEffect.GasResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.GasResistance);
+
+        // GameDesignDoc "Prestige > Economy" capstones on the passive layer bonus (see
+        // Economy.LayerBonusTracker for the base mechanic these modify).
         public bool DoublePassiveLayerBonusUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.DoublePassiveLayerBonus));
         public bool KeepPassiveLayerBonusUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.KeepPassiveLayerBonus));
+
+        // GameDesignDoc "Prestige > Mining": keep "digging while flying" between prestige runs.
         public bool KeepDigWhileFlyingUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.KeepDigWhileFlying));
-
-        // Bulk restore for SaveService. Dispatches the same PrestigeUpgradePurchasedEvent
-        // TryPurchase fires, so every listener (e.g. MuseumUI) reacts identically whether a level
-        // came from a purchase or a save file - same convention as UpgradeManager.SetLevel.
-        public void SetLevel(string upgradeId, int level)
-        {
-            if (string.IsNullOrEmpty(upgradeId) || level < 0) return;
-
-            var def = database.Find(upgradeId);
-            if (def == null)
-            {
-                Debug.LogError($"PrestigeUpgradeManager.SetLevel: no PrestigeUpgradeDefinition found for Id '{upgradeId}'. Save data may be stale (renamed/removed upgrade) - level discarded.");
-                return;
-            }
-
-            levelsByUpgradeId[upgradeId] = level;
-            GameManager.EventService.Dispatch(new PrestigeUpgradePurchasedEvent(def, GetLevel(def)));
-        }
-
-        public IEnumerable<KeyValuePair<string, int>> AllLevels => levelsByUpgradeId;
     }
 }

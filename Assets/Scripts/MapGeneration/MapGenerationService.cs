@@ -42,6 +42,32 @@ namespace MapGeneration
             UpdateBoundaryWalls();
         }
 
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradeChanged);
+            GameManager.EventService.Add<UpgradeLoadedEvent>(OnUpgradeLoaded);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradeChanged);
+            GameManager.EventService.Remove<UpgradeLoadedEvent>(OnUpgradeLoaded);
+        }
+
+        private void OnUpgradeChanged(UpgradePurchasedEvent evt) => ApplyGridWidthIfRelevant(evt.Definition);
+        private void OnUpgradeLoaded(UpgradeLoadedEvent evt) => ApplyGridWidthIfRelevant(evt.Definition);
+
+        // Economy_GridWidthBonus is Dollar-purchased, so - unlike the Prestige grid-width perk,
+        // which only reapplies once per ExecutePrestige - it needs to widen the live world the
+        // instant it's bought (or restored from a save). Safe to call mid-run: it only affects
+        // World.GridWidth (used by future chunk generation) and the boundary walls' position, never
+        // already-generated chunks.
+        private void ApplyGridWidthIfRelevant(UpgradeDefinition def)
+        {
+            if (def == null || def.Effect != UpgradeEffect.Economy_GridWidthBonus) return;
+            ApplyGridWidthUpgrade(BaseGridWidth + UpgradeManager.Instance.EconomyGridWidthBonus + PrestigeUpgradeManager.Instance.GridWidthBonus);
+        }
+
         // Swaps in a world restored from save data (SaveService.ApplyMapData), replacing the
         // throwaway default one created in Awake(), and forces the streaming manager to rebind its
         // view window to the new world's chunks.
@@ -101,8 +127,17 @@ namespace MapGeneration
             {
                 GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.HazardBehavior));
             }
+            else if (block != null && block.Category == BlockCategory.PowerUp)
+            {
+                GameManager.EventService.Dispatch(new PowerUpTriggeredEvent(layerIndex, x, y, block.HazardBehavior));
+            }
             return true;
         }
+
+        // Called by MapGeneration.PowerUpEffectResolver for a SightPotion's reveal burst - same
+        // underlying World.RevealFog + streaming notification as a normal mine, just triggered
+        // externally with an explicit radius rather than from MineCell itself.
+        public void RevealAround(int layerIndex, int x, int y, int radius) => HandleFogUpdate(layerIndex, x, y, radius);
 
         private void HandleFogUpdate(int layerIndex, int x, int y, int fogRadiusOverride = -1)
         {

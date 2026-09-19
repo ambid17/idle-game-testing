@@ -27,8 +27,13 @@ namespace MapGeneration
 
         public List<WeightedBlockEntry> OreTable = new();
         public List<WeightedBlockEntry> HazardTable = new();
+        public List<WeightedBlockEntry> PowerUpTable = new();
 
         [Range(0f, 1f)] public float HazardChancePerCell = 0.01f;
+
+        // GameDesignDoc "Randomness blocks > positive" (treasure chest / sight potion). Defaults to
+        // 0 so existing authored layers stay unaffected until a PowerUpTable is populated.
+        [Range(0f, 1f)] public float PowerUpChancePerCell = 0f;
 
         [Tooltip("Chance to place an additional artifact beyond the 1 guaranteed per layer. " +
                  "Re-rolled after every success, so it's really a geometric distribution of bonus artifacts.")]

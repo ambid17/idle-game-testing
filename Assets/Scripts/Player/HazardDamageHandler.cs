@@ -1,3 +1,4 @@
+using Economy;
 using Events;
 using MapGeneration;
 using UnityEngine;
@@ -40,6 +41,14 @@ namespace Player
 
             Vector3 hazardWorldPos = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
             if (Vector3.Distance(transform.position, hazardWorldPos) > hazardDamageRadius) return;
+
+            // GameDesignDoc "Prestige > Survival > gas resistance": only reduces GasPocket damage,
+            // every other hazard is unaffected.
+            if (evt.Hazard == HazardBehavior.GasPocket && PrestigeUpgradeManager.Instance != null)
+            {
+                damage *= Mathf.Max(0f, 1f - PrestigeUpgradeManager.Instance.GasResistance);
+                if (damage <= 0f) return;
+            }
 
             playerHealth.TakeDamage(damage, ReasonFor(evt.Hazard));
         }

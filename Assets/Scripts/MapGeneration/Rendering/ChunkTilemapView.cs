@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Economy;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -39,6 +40,9 @@ namespace MapGeneration
         // (adjacent to revealed) to full opacity (at/beyond this radius), so the fog edge
         // reads as a soft glow around explored ground instead of a hard boundary.
         [SerializeField] private int revealGradientRadius = 3;
+
+        // GameDesignDoc "Lantern capstones > hazard sense: highlights hazard blocks".
+        [SerializeField] private Color hazardSenseTint = new(1f, 0.4f, 0.4f);
 
         public int LayerIndex { get; private set; }
 
@@ -92,8 +96,7 @@ namespace MapGeneration
             int h = chunk.Height;
             int count = w * h;
 
-            var terrainPositions = new Vector3Int[count];
-            var terrainTiles = new TileBase[count];
+            var terrainChanges = new TileChangeData[count];
             var fogChanges = new TileChangeData[count];
 
             int n = 0;
@@ -104,16 +107,14 @@ namespace MapGeneration
                     var cell = chunk.Cells[chunk.Index(x, y)];
                     var pos = new Vector3Int(x, -y, 0);
 
-                    terrainPositions[n] = pos;
-                    terrainTiles[n] = cell.Mined ? null : ResolveTile(cell.BlockTypeId);
-
+                    terrainChanges[n] = BuildTerrainChange(pos, cell);
                     fogChanges[n] = BuildFogChange(pos, x, y, cell.Revealed);
 
                     n++;
                 }
             }
 
-            terrainTilemap.SetTiles(terrainPositions, terrainTiles);
+            terrainTilemap.SetTiles(terrainChanges, true);
             fogTilemap.SetTiles(fogChanges, true);
         }
 
@@ -121,8 +122,7 @@ namespace MapGeneration
         {
             var expandedCoords = ExpandForFogGradient(localCoords);
             int count = expandedCoords.Count;
-            var terrainPositions = new Vector3Int[count];
-            var terrainTiles = new TileBase[count];
+            var terrainChanges = new TileChangeData[count];
             var fogChanges = new TileChangeData[count];
 
             for (int i = 0; i < count; i++)
@@ -132,14 +132,27 @@ namespace MapGeneration
                 var cell = chunk.Cells[chunk.Index(x, y)];
                 var pos = new Vector3Int(x, -y, 0);
 
-                terrainPositions[i] = pos;
-                terrainTiles[i] = cell.Mined ? null : ResolveTile(cell.BlockTypeId);
-
+                terrainChanges[i] = BuildTerrainChange(pos, cell);
                 fogChanges[i] = BuildFogChange(pos, x, y, cell.Revealed);
             }
 
-            terrainTilemap.SetTiles(terrainPositions, terrainTiles);
+            terrainTilemap.SetTiles(terrainChanges, true);
             fogTilemap.SetTiles(fogChanges, true);
+        }
+
+        // Tints a revealed Hazard-category cell once Movement_HazardSense is unlocked, otherwise
+        // paints the block's tile at full white (no tint).
+        private TileChangeData BuildTerrainChange(Vector3Int pos, CellData cell)
+        {
+            if (cell.Mined) return new TileChangeData(pos, null, Color.white, Matrix4x4.identity);
+
+            var blockType = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
+            var tile = blockType != null ? blockType.Tile : null;
+
+            bool highlightHazard = cell.Revealed && blockType != null && blockType.Category == BlockCategory.Hazard
+                && UpgradeManager.Instance != null && UpgradeManager.Instance.HazardSenseUnlocked;
+
+            return new TileChangeData(pos, tile, highlightHazard ? hazardSenseTint : Color.white, Matrix4x4.identity);
         }
 
         // A cell's reveal-distance fade (see BuildFogChange) depends on its neighbors' Revealed
@@ -235,12 +248,6 @@ namespace MapGeneration
             }
 
             return nearestSq <= maxRadius * (float)maxRadius ? Mathf.Sqrt(nearestSq) : -1f;
-        }
-
-        private TileBase ResolveTile(byte blockTypeId)
-        {
-            var blockType = blockTypes != null ? blockTypes.Get(blockTypeId) : null;
-            return blockType != null ? blockType.Tile : null;
         }
 
 #if UNITY_EDITOR

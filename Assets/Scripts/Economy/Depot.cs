@@ -86,7 +86,7 @@ namespace Economy
                 Debug.LogError($"Depot.Sell: BlockTypeDatabase missing or BlockTypeId {id} not found. Cannot sell.");
                 return 0;
             }
-            double value = blockType.Value * UpgradeManager.Instance.SellValueMultiplier * amountToSell;
+            double value = blockType.Value * UpgradeManager.Instance.SellValueMultiplier * PrestigeUpgradeManager.Instance.MineralValueMultiplier * amountToSell;
 
             int remaining = current - amountToSell;
             storedOres[id] = Mathf.Max(0, remaining);
@@ -133,7 +133,7 @@ namespace Economy
                 Debug.LogError($"Depot.SellGood: ProcessingRecipeDatabase missing or ProcessingRecipeId {id} not found. Cannot sell.");
                 return 0;
             }
-            double value = recipe.SaleValue * UpgradeManager.Instance.ProcessingGoodsSellMultiplier * amountToSell;
+            double value = recipe.SaleValue * UpgradeManager.Instance.ProcessingGoodsSellMultiplier * PrestigeUpgradeManager.Instance.ProcessedGoodMultiplier * amountToSell;
 
             int remaining = current - amountToSell;
             storedGoods[id] = Mathf.Max(0, remaining);
