@@ -701,6 +701,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: dbd2d19b5bdedb74d95cd650a5b3cdb9, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Flight Speed
@@ -3559,11 +3599,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 504.17764
+      value: 653.1019
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 4
+      value: 8.0895
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3579,7 +3619,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8459309
+      value: 0.89687276
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.x
@@ -3591,15 +3631,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.53329253
+      value: 0.4422886
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 402.5929
+      value: 482.15564
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 631.95746
+      value: 669.5786
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3611,7 +3651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 52.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4521,6 +4561,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 6cdc361d8cd52954eb1ecf16b648add8, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Dirt Insta-Mine
@@ -4999,6 +5079,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: a320841f2c6a444418b30f6b85343069, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Storage Drone Capacity
@@ -5286,8 +5406,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 729, y: -444.99997}
-  m_SizeDelta: {x: 1438, y: 869.99994}
+  m_AnchoredPosition: {x: 737.5, y: -444.99997}
+  m_SizeDelta: {x: 1455, y: 869.99994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &148726738
 MonoBehaviour:
@@ -6158,6 +6278,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: fae3e5a0bdaa417409887c7d197d852d, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Additional Automaton
@@ -12405,6 +12565,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: d8d2ae2e42c355d4b823d901bac66e01, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Processing Sale Value
@@ -12619,6 +12819,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 049e5453df056604daf55e145da5ac51, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Auto Sell
@@ -13697,6 +13937,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: edd658680fde1884fb0b7608bd6058fe, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Hazard Sense
@@ -17914,6 +18194,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 5e443dc143ca9b34591e4ac0a35181c5, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Storage Drone Speed
@@ -17980,11 +18300,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1041.6937
+      value: 1256
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2272.636
+      value: 2194
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -18015,6 +18335,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 29f1a4b962c55e0469b2ab9342ca37f2, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: 'SkillTreeNode_Processing: Unlock Iron Recipe'
@@ -19487,6 +19847,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 3c92dbad6e54d8046a7636cc252ecc13, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Processing Speed
@@ -20022,6 +20422,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 66d8b3292ed5e004d98a35b24d7b6ba4, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Automaton Mining Speed
@@ -20088,11 +20528,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 785.31696
+      value: 918.52
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 619.09393
+      value: 459
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -23258,6 +23698,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 7c5df66e927e4414db0c92d78b0bf3dd, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: 'SkillTreeNode_Processing: Unlock Emerald Recipe'
@@ -25068,6 +25548,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: f018278ce44ea1f499d4eef01b675b09, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Additional Fuel Drone
@@ -29170,6 +29690,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: d7c6fdb4de778bd479039a3957da5ca8, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Fuel Inventory
@@ -29383,6 +29943,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: cbbe5189960036741a8f8447bf8840a9, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Wood Insta-Mine
@@ -29907,6 +30507,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 444cbac6d43f35942b9d27256eb74723, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Increase Mining Size
@@ -30224,6 +30864,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 87a388f7ed91bdd4baab0d93a4fa3e2d, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Larger Grid
@@ -31972,6 +32652,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: b62349feda8534e4abcb2d3a26cf11ef, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Automaton Inventory
@@ -32375,7 +33095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8832422
+      value: 0.92652863
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.x
@@ -32387,15 +33107,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.46891716
+      value: 0.37622422
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 662.3345
+      value: 731
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1618.955
+      value: 1603
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -32407,7 +33127,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 44.2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -32733,6 +33453,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: b4910e8a519fd2244bb6b6a5ed7e3db0, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Fall Damage Decrease
@@ -33202,6 +33962,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 13c4f0d69c43bbf4f8ce1897b3b0615d, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: 'SkillTreeNode_Processing: Unlock Diamond Recipe'
@@ -35821,7 +36621,7 @@ MonoBehaviour:
   content: {fileID: 2062135263}
   zoomSpeed: 0.01
   minZoom: 0.1
-  maxZoom: 1.5
+  maxZoom: 2
   maxPanRadius: 1600
   defaultScale: 0.5
 --- !u!114 &1068692440
@@ -35874,6 +36674,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 26e34a0a82f15b6438744507ee599d52, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Inventory
@@ -36465,6 +37305,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 224fb85d00361e643826da3e906a72fd, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Processing Queue Slots
@@ -38479,6 +39359,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 967f85a4e0f53e049959bc7880ebd322, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Marketing
@@ -39028,6 +39948,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 0ead90cceab9b2e4798d968a028fc2b5, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Fuel Efficiency
@@ -39478,6 +40438,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 701f886870997c24fb9a8c2cb06f139b, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Automaton Move Speed
@@ -39544,11 +40544,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 659.3458
+      value: 831.8
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 751.83984
+      value: 725.55
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -39677,6 +40677,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: d4eac15f8e1865740a113e111d4bcdf8, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_True Sight
@@ -40739,6 +41779,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: c2ec71ca1102d7a4f9028c1b9ce9d7b8, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Gravity Increase
@@ -41955,7 +43035,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
+    rgba: 4282137660
   m_fontColor: {r: 0.23529412, g: 0.23529412, b: 0.23529412, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -44476,7 +45556,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 4
+      value: 2.7097
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -44492,7 +45572,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7456391
+      value: 0.65934587
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.x
@@ -44504,15 +45584,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.66635007
+      value: 0.7518398
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 547.78406
+      value: 491.36035
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1661.2148
+      value: 1663.9158
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -44524,7 +45604,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 97.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -46006,6 +47086,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: b6234e36b72e4ed41ac0aa38eafa186e, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Increase Mining Speed
@@ -47285,6 +48405,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: bb7b5896c9d169848b273e8cc848f4d3, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Automaton Mining Radius
@@ -47351,11 +48511,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 511.29312
+      value: 677.17
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 859.40643
+      value: 938.19
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -48620,6 +49780,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 2666a9bed0c60cf4897f2d1aa753cec0, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Additional Storage Drone
@@ -48686,11 +49886,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 805.49335
+      value: 956
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1830.6229
+      value: 1787
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -48964,6 +50164,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: c79681fc2787e9745988d2e749d8388d, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Zoom Out Camera
@@ -49202,6 +50442,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: a132b936007421a4199da91f9c87f931, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Fuel Drone Speed
@@ -50112,6 +51392,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: e33be1e148710034babacefe001c2780, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: 'SkillTreeNode_Processing: Unlock Scrap Recipe'
@@ -50970,7 +52290,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4294177796
   m_fontColor: {r: 0.015686275, g: 0.9568628, b: 0.95294124, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -51695,6 +53015,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 8cc2346cc779d18408cc6898848f7fcd, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: 'SkillTreeNode_Processing: Unlock Gold Recipe'
@@ -52280,6 +53640,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: e91066c7d0a0ce94d87efef6ea1ac374, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Move Speed
@@ -55076,6 +56476,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: e0d4bff0c9e8b5d4f835451f64498b8a, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Overflow
@@ -55771,7 +57211,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.85770124
+      value: 0.89879405
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.x
@@ -55783,15 +57223,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.5141484
+      value: 0.4383711
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 923.5935
+      value: 1107
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2051.6294
+      value: 1991
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -55803,7 +57243,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 52
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -56888,6 +58328,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 3df9500009b0e5340a61d174164fcb9f, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Global Insta Mine
@@ -57808,6 +59288,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: eb6a7263731ab1842827c642d624a422, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Lantern
@@ -58334,6 +59854,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: c0d690c2ce4f5b447a7305b9c06e6b7a, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: 'SkillTreeNode_Processing: Unlock Stone Recipe'
@@ -58572,6 +60132,46 @@ PrefabInstance:
       propertyPath: boundAsset
       value: 
       objectReference: {fileID: 11400000, guid: 80ab94be530960a4cb913415dd76265d, type: 2}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.7275
+      objectReference: {fileID: 0}
+    - target: {fileID: 565724947628177926, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 140.545
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 129.72751
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370215897858898312, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -30
+      objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
       value: SkillTreeNode_Fuel Drone Capacity
@@ -58638,11 +60238,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 576.39246
+      value: 433.89
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1915.1428
+      value: 1920
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -60636,7 +62236,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.81604224
+      value: 0.7187333
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.x
@@ -60648,15 +62248,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.57799226
+      value: 0.69528586
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 888.6491
+      value: 951
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2067.0054
+      value: 2045
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -60668,7 +62268,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 88.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
