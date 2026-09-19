@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Wood blocks are always mined instantly, no matter your mining speed.
   Icon: {fileID: 21300000, guid: a052e763a74c2f04b9b346c538c2cb5e, type: 3}
   Branch: 0
-  Effect: 20
+  Effect: 23
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 1200

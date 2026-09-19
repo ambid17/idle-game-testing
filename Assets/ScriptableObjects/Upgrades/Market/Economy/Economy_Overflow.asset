@@ -17,7 +17,7 @@ MonoBehaviour:
     instead of blocking you from mining.
   Icon: {fileID: 0}
   Branch: 1
-  Effect: 7
+  Effect: 15
   EffectValuePerLevel: 0.5
   MaxLevel: 1
   BaseCost: 2000

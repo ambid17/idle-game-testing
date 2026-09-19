@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Reduces the damage you take from falling.
   Icon: {fileID: 0}
   Branch: 3
-  Effect: 27
+  Effect: 24
   EffectValuePerLevel: 0.1
   MaxLevel: 5
   BaseCost: 600

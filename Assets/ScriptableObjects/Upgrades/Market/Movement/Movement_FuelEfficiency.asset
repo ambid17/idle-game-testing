@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Reduces how much fuel you burn while flying.
   Icon: {fileID: 0}
   Branch: 3
-  Effect: 32
+  Effect: 26
   EffectValuePerLevel: 0.1
   MaxLevel: 5
   BaseCost: 650

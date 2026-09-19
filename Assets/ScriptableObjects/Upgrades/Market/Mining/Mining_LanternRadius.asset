@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Reveals more of the fog of war around your mine shaft as you dig.
   Icon: {fileID: 21300000, guid: abbf0d3234a4e524bae6e7e7d8607ec0, type: 3}
   Branch: 0
-  Effect: 3
+  Effect: 20
   EffectValuePerLevel: 1
   MaxLevel: 5
   BaseCost: 200

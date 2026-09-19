@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Increases the gravity strength that affects your flight control.
   Icon: {fileID: 0}
   Branch: 3
-  Effect: 30
+  Effect: 28
   EffectValuePerLevel: 0.1
   MaxLevel: 5
   BaseCost: 700

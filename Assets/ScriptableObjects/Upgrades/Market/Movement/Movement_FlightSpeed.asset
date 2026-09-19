@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Increases how fast you fly.
   Icon: {fileID: 0}
   Branch: 3
-  Effect: 29
+  Effect: 25
   EffectValuePerLevel: 0.1
   MaxLevel: 8
   BaseCost: 350

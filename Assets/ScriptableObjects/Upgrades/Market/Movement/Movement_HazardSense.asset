@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Highlights nearby environmental hazards before you reach them.
   Icon: {fileID: 0}
   Branch: 3
-  Effect: 33
+  Effect: 29
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 900

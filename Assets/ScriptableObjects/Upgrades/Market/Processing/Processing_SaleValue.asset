@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Increases the sale value of goods produced by the Processing Center.
   Icon: {fileID: 0}
   Branch: 4
-  Effect: 23
+  Effect: 32
   EffectValuePerLevel: 0.1
   MaxLevel: 10
   BaseCost: 1000

@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Increases the amount of fuel you can carry for flight.
   Icon: {fileID: 0}
   Branch: 3
-  Effect: 31
+  Effect: 27
   EffectValuePerLevel: 1
   MaxLevel: 6
   BaseCost: 300

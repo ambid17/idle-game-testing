@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Unlocks the Bracelets recipe at the Processing Center.
   Icon: {fileID: 0}
   Branch: 4
-  Effect: 37
+  Effect: 36
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 10000

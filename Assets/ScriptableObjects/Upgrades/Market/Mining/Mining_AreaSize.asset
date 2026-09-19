@@ -17,7 +17,7 @@ MonoBehaviour:
     then repeats one block farther out.
   Icon: {fileID: 21300000, guid: 701d1cd338a2cc0459e885559bda2a95, type: 3}
   Branch: 0
-  Effect: 0
+  Effect: 16
   EffectValuePerLevel: 1
   MaxLevel: 12
   BaseCost: 150

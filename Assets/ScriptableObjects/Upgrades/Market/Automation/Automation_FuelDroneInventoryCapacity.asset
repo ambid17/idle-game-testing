@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Fuel Drone Capacity
   Description: +50% Fuel Drone fuel capacity per level.
   Branch: 2
-  Effect: 18
+  Effect: 6
   EffectValuePerLevel: 0.5
   MaxLevel: 3
   BaseCost: 250

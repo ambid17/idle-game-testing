@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Increases your on-foot movement speed.
   Icon: {fileID: 0}
   Branch: 3
-  Effect: 28
+  Effect: 30
   EffectValuePerLevel: 0.1
   MaxLevel: 8
   BaseCost: 250

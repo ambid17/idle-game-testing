@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Automaton Move Speed
   Description: +10% Automaton movement speed per level.
   Branch: 2
-  Effect: 10
+  Effect: 4
   EffectValuePerLevel: 0.1
   MaxLevel: 10
   BaseCost: 120

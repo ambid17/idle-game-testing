@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Increases the width of the mineable area generated for this run.
   Icon: {fileID: 0}
   Branch: 1
-  Effect: 22
+  Effect: 12
   EffectValuePerLevel: 2
   MaxLevel: 8
   BaseCost: 600

@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Add another Storage Drone to ferry minerals to the Depot.
   Icon: {fileID: 0}
   Branch: 2
-  Effect: 13
+  Effect: 9
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 500

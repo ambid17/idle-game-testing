@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Storage Drone Capacity
   Description: +50% Storage Drone carrying capacity per level.
   Branch: 2
-  Effect: 15
+  Effect: 10
   EffectValuePerLevel: 0.5
   MaxLevel: 3
   BaseCost: 250

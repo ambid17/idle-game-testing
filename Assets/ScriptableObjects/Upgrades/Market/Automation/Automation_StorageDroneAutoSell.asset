@@ -17,7 +17,7 @@ MonoBehaviour:
     of returning them to the depot.
   Icon: {fileID: 0}
   Branch: 2
-  Effect: 21
+  Effect: 8
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 1500

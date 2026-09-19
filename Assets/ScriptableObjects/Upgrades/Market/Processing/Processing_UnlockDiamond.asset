@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Unlocks the Wedding Rings recipe at the Processing Center.
   Icon: {fileID: 0}
   Branch: 4
-  Effect: 39
+  Effect: 34
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 60000

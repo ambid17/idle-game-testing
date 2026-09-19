@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Fuel Drone Speed
   Description: +10% Fuel Drone movement speed per level.
   Branch: 2
-  Effect: 17
+  Effect: 7
   EffectValuePerLevel: 0.1
   MaxLevel: 10
   BaseCost: 120

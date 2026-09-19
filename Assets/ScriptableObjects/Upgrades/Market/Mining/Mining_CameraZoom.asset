@@ -17,7 +17,7 @@ MonoBehaviour:
     you.
   Icon: {fileID: 21300000, guid: 1668eb36c3b9d414b8854c6d432baf52, type: 3}
   Branch: 0
-  Effect: 19
+  Effect: 18
   EffectValuePerLevel: 1
   MaxLevel: 5
   BaseCost: 800

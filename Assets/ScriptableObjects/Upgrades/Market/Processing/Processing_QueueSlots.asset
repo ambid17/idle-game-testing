@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Adds another concurrent processing queue slot.
   Icon: {fileID: 0}
   Branch: 4
-  Effect: 40
+  Effect: 31
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 5000

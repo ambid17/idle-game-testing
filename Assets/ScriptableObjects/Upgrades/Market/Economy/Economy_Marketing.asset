@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Marketing
   Description: Increase the sale value of everything you sell.
   Branch: 1
-  Effect: 6
+  Effect: 14
   EffectValuePerLevel: 0.05
   MaxLevel: 10
   BaseCost: 150

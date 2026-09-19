@@ -17,7 +17,7 @@ MonoBehaviour:
   Description: Increase how much weight you can carry before you need to visit the
     Depot.
   Branch: 1
-  Effect: 5
+  Effect: 13
   EffectValuePerLevel: 25
   MaxLevel: 10
   BaseCost: 80

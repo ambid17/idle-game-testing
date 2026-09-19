@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Add another Fuel Drone to keep you topped off.
   Icon: {fileID: 0}
   Branch: 2
-  Effect: 16
+  Effect: 5
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 500

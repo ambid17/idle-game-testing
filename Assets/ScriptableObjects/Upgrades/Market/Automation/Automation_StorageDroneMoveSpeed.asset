@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Storage Drone Speed
   Description: +10% Storage Drone movement speed per level.
   Branch: 2
-  Effect: 14
+  Effect: 11
   EffectValuePerLevel: 0.1
   MaxLevel: 10
   BaseCost: 120

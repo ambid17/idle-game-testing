@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Increases how quickly the Processing Center converts raw goods.
   Icon: {fileID: 0}
   Branch: 4
-  Effect: 25
+  Effect: 33
   EffectValuePerLevel: 0.1
   MaxLevel: 10
   BaseCost: 1500
