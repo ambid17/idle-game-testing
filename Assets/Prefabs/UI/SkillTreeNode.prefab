@@ -868,3 +868,4 @@ MonoBehaviour:
   maxedColor: {r: 1, g: 0.84, b: 0, a: 1}
   affordableColor: {r: 1, g: 1, b: 1, a: 1}
   unaffordableColor: {r: 1, g: 0, b: 0, a: 1}
+  boundAsset: {fileID: 0}
