@@ -181,6 +181,29 @@ namespace Persistence
             }
         }
 
+        public void DeleteSaveData()
+        {
+            Debug.Log($"SaveService.DeleteSaveData: deleting save file at {SavePath} and map file at {MapSavePath}");
+
+            try
+            {
+                if (File.Exists(SavePath)) File.Delete(SavePath);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"SaveService.DeleteSaveData: failed to delete save file at {SavePath}: {e}");
+            }
+
+            try
+            {
+                if (File.Exists(MapSavePath)) File.Delete(MapSavePath);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"SaveService.DeleteSaveData: failed to delete map file at {MapSavePath}: {e}");
+            }
+        }
+
         // Null if no save file exists yet (first run).
         public GameSaveData Load()
         {
