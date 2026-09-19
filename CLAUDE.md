@@ -101,7 +101,10 @@ If the Editor-driven tools (`Unity_ManageScene`, `Unity_ManageGameObject`, etc.)
 	- style notes: flat icon style
 - Ore tiles
 	- size 128x128
-	- style notes: alpha transparency, 128 pixels per unit, 1 file per block type
+	- style notes: 
+		- alpha transparency
+		- 128 pixels per unit
+		- flat, top-down square textures meant to tile edge-to-edge on a Tilemap — like a Minecraft texture pack
 - Buildings 
 	- size 256x256
 	- style notes: should resemble the purpose of the building, largely mechanical with ancient/futuristic blend
