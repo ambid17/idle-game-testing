@@ -41,7 +41,7 @@ namespace UI.SkillTree
         {
             current = viewModel;
             if (root != null) root.SetActive(true);
-            Opened();
+            SetOpened();
             Refresh();
         }
 
@@ -60,7 +60,7 @@ namespace UI.SkillTree
         {
             current = null;
             if (root != null) root.SetActive(false);
-            Closed();
+            SetClosed();
         }
 
         private void OnBuyClicked()
