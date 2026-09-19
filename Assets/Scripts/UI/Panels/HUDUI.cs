@@ -45,6 +45,8 @@ namespace UI
             GameManager.EventService.Add<DollarsChangedEvent>(RefreshDollars);
             GameManager.EventService.Add<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Add<InventoryChangedEvent>(RefreshWeight);
+            GameManager.EventService.Add<UpgradePurchasedEvent>(CheckInventoryPurchased);
+
         }
 
         private void OnDisable()
@@ -52,6 +54,7 @@ namespace UI
             GameManager.EventService.Remove<DollarsChangedEvent>(RefreshDollars);
             GameManager.EventService.Remove<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Remove<InventoryChangedEvent>(RefreshWeight);
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(CheckInventoryPurchased);
         }
 
         private void Update()
@@ -102,6 +105,14 @@ namespace UI
             {
                 float depth = playerController != null ? playerController.transform.position.y : 0f;
                 depthLabel.text = $"Depth: {depth:0}m";
+            }
+        }
+
+        private void CheckInventoryPurchased(UpgradePurchasedEvent evt)
+        {
+            if (evt.Definition.Effect == UpgradeEffect.Economy_InventoryCapacity)
+            {
+                RefreshWeight();
             }
         }
     }

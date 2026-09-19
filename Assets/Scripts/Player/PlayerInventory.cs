@@ -20,7 +20,7 @@ namespace Player
     // player - registers with OreCarrierRegistry alongside its existing PlayerDiedEvent subscription.
     public class PlayerInventory : MonoBehaviour, IOreCarrier
     {
-        [SerializeField] private float baseMaxWeight = 100f;
+        private float baseMaxWeight = 100f;
 
         private OreInventory oreInventory;
 
@@ -49,6 +49,7 @@ namespace Player
         private void OnEnable()
         {
             GameManager.EventService.Add<PlayerDiedEvent>(HandleDeath);
+
             OreCarrierRegistry.Instance.Register(this);
         }
 
