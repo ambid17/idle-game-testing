@@ -223,6 +223,7 @@ namespace Persistence
             if (data == null)
             {
                 hasLoadedData = true;
+                GameManager.EventService.Dispatch<LoadCompletedEvent>();
                 return;
             }
 

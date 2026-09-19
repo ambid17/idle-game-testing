@@ -1,28 +1,24 @@
 using System.Linq;
 using Buildings;
 using Events;
+using Tutorial;
 using UnityEngine;
 
 namespace Processing
 {
     // Keeps the Processing Center building hidden and non-interactable until the player unlocks
-    // their first processing recipe, then hands off to Buildings.BuildingRevealCinematicPlayer for
-    // the shared reveal cinematic (player frozen, camera pans in, materializes through a portal,
-    // bottom-screen text, click to continue). Mirrors Economy.MuseumRevealController's shape - each
-    // owns only its own unlock trigger, building reference, and description text; the cinematic
-    // player itself already waits out whatever panel the unlock happened in (e.g. the Market panel
-    // an upgrade was just bought in) before it starts, so no panel-close event is needed here.
-    // Scene-placed singleton for the same reason MuseumRevealController is - it needs an
+    // their first processing recipe, then routes through
+    // Tutorial.TutorialManager.TryShow(TutorialId.ProcessingReveal) for the persisted once-only
+    // guarantee, and hands off to Buildings.BuildingRevealCinematicPlayer for the shared reveal
+    // cinematic (player frozen, camera pans in, materializes through a portal, bottom-screen text,
+    // click to continue) when that ShowTutorialEvent comes back around. Mirrors
+    // Economy.MuseumRevealController's shape - each owns only its own unlock trigger and building
+    // reference; the description text lives in GameManager.TutorialDatabase like every other
+    // tutorial. Scene-placed singleton for the same reason MuseumRevealController is - it needs an
     // Inspector-wired reference to the Processing Center building.
     public class ProcessingCenterRevealController : Singleton<ProcessingCenterRevealController>
     {
         [SerializeField] private GameObject processingCenterBuilding;
-
-        [SerializeField, TextArea]
-        private string processingCenterDescription =
-            "The Processing Center turns raw ore into refined goods you can sell for more at the Market.";
-
-        private bool hasUnlockedFirstRecipe;
 
         protected override void Initialize()
         {
@@ -37,29 +33,39 @@ namespace Processing
         {
             GameManager.EventService.Add<LoadCompletedEvent>(OnLoadCompleted);
             GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Add<ShowTutorialEvent>(OnShowTutorial);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<LoadCompletedEvent>(OnLoadCompleted);
             GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
         }
 
         private void OnLoadCompleted()
         {
-            hasUnlockedFirstRecipe = ProcessingManager.Instance.HasAnyRecipeUnlocked();
-            processingCenterBuilding.SetActive(hasUnlockedFirstRecipe);
+            bool alreadyUnlocked = ProcessingManager.Instance.HasAnyRecipeUnlocked();
+            // Self-heals saves from before TutorialManager tracked this moment, so the building
+            // doesn't stay stuck hidden for players who already unlocked it.
+            if (alreadyUnlocked) TutorialManager.Instance.TryShow(TutorialId.ProcessingReveal);
+            processingCenterBuilding.SetActive(TutorialManager.Instance.HasShown(TutorialId.ProcessingReveal));
         }
 
         private void OnUpgradePurchased(UpgradePurchasedEvent evt)
         {
-            if (hasUnlockedFirstRecipe) return;
+            if (TutorialManager.Instance.HasShown(TutorialId.ProcessingReveal)) return;
 
             bool unlocksARecipe = GameManager.ProcessingRecipeDatabase.Recipes.Any(r => r.RequiredUpgrade == evt.Definition);
             if (!unlocksARecipe) return;
 
-            hasUnlockedFirstRecipe = true;
-            BuildingRevealCinematicPlayer.Instance.Reveal(processingCenterBuilding, processingCenterDescription);
+            TutorialManager.Instance.TryShow(TutorialId.ProcessingReveal);
+        }
+
+        private void OnShowTutorial(ShowTutorialEvent evt)
+        {
+            if (evt.Entry.Id != TutorialId.ProcessingReveal) return;
+            BuildingRevealCinematicPlayer.Instance.Reveal(processingCenterBuilding, evt.Entry.Body);
         }
     }
 }

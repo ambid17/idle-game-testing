@@ -1,14 +1,16 @@
 using Events;
 using Player;
 using TMPro;
+using Tutorial;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
     // Screen-space overlay half of the tutorial popup system (Tutorial.TutorialManager). Shown for
-    // any ShowTutorialEvent with no WorldPosition - the core-goal tutorial and each building's
-    // first-open tutorial, which sit over whatever panel (or nothing yet) is already on screen.
+    // any ShowTutorialEvent whose Entry.DisplayType is Modal - the core-goal tutorial and each
+    // building's first-open tutorial, which sit over whatever panel (or nothing yet) is already on
+    // screen.
     // Its Canvas should use a higher sort order than every other panel so it always renders on top.
     // See UI.Panels.WorldTutorialPopupUI for the world-anchored counterpart. Inherits ModalBase so
     // Escape can dismiss it without also closing a panel or opening the pause menu underneath.
@@ -44,7 +46,7 @@ namespace UI
 
         private void OnShowTutorial(ShowTutorialEvent evt)
         {
-            if (evt.WorldPosition.HasValue) return;
+            if (evt.Entry.DisplayType != TutorialDisplayType.Modal) return;
             if (rendererRoot == null || titleLabel == null || bodyLabel == null) return;
 
             titleLabel.text = evt.Entry.Title;

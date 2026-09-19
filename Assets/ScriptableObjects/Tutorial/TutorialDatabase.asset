@@ -14,33 +14,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.TutorialDatabase
   Entries:
   - Id: 0
+    DisplayType: 0
     Title: Welcome!
     Body: Dig down, get rich. Mine ore and sell it at the Depot for Dollars, spend
       Dollars at the Market on upgrades and automation, and keep an eye out for rare
-      Artifacts - turn them in at the Museum for Prestige Points and permanent bonuses.
+      Artifacts.
   - Id: 1
-    Title: You found an Artifact!
-    Body: Artifacts can't be sold or stored at the Depot. Carry them to the Museum
-      and turn them in for Prestige Points, which unlock permanent upgrades that
-      survive a Prestige reset.
-  - Id: 2
+    DisplayType: 0
     Title: Storage Depot
-    Body: Deposit the ore you're carrying here, then sell it for Dollars. Ores stored
-      here can also be used in the Processing Center to trade time for extra money!
-  - Id: 3
+    Body: Deposit the ore you're carrying here, then sell it. Ores stored here can
+      also be used in the Processing Center to trade time for extra money!
+  - Id: 2
+    DisplayType: 0
     Title: Market
-    Body: Spend Dollars here on permanent upgrades - better mining, more inventory
-      space, faster automatons - and repair your fuel or health. These upgrades are
-      lost when prestiging.
-  - Id: 4
+    Body: Spend money here on upgrades. These upgrades are lost when prestiging.
+  - Id: 3
+    DisplayType: 0
     Title: Museum
     Body: Turn in the Artifacts you've found here for Prestige Points, then spend
       those points on permanent Prestige upgrades that carry across resets.
-  - Id: 5
+  - Id: 4
+    DisplayType: 0
     Title: Processing Center
     Body: Combine raw ore into finished goods worth more than the raw materials.
-      Finished goods show up back at the Depot, ready to sell.
-  - Id: 6
+      Finished goods show up back at the Depot, ready to sell. Utilizes ores stored
+      in the Depot.
+  - Id: 5
+    DisplayType: 0
     Title: Control Center
-    Body: Monitor your automatons and drones, adjust their settings, and refuel yourself
-      here.
+    Body: 'Refuel/Repair yourself here. Once unlocked: monitor your automatons and
+      drones and adjust their settings.'
+  - Id: 6
+    DisplayType: 2
+    Title: Museum
+    Body: The Museum is where you turn in Artifacts for Prestige Points, spent on
+      permanent perks that you only earn after prestige. Prestige resets everything
+      including money and upgrades, but your next run will be faster!
+  - Id: 7
+    DisplayType: 2
+    Title: Processing Center
+    Body: The Processing Center turns raw ore into refined goods you can sell for
+      more at the Market.

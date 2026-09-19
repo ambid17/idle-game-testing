@@ -25421,7 +25421,7 @@ Transform:
   m_GameObject: {fileID: 1150534566}
   serializedVersion: 2
   m_LocalRotation: {x: -4.6565474e-10, y: 0.000000029816878, z: 1.388437e-17, w: 1}
-  m_LocalPosition: {x: 20.549696, y: 2.1699998, z: -10}
+  m_LocalPosition: {x: 20.553505, y: 2.1699998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26258,8 +26258,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Economy.MuseumRevealController
   museumBuilding: {fileID: 6608359771647986207}
-  museumDescription: You have found an Artifact! The Museum is where you turn in
-    Artifacts for Prestige Points, spent on permanent perks.
 --- !u!4 &1215310626
 Transform:
   m_ObjectHideFlags: 0
@@ -31132,8 +31130,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Processing.ProcessingCenterRevealController
   processingCenterBuilding: {fileID: 1040669719519187262}
-  processingCenterDescription: The Processing Center turns raw ore into refined goods
-    you can sell for more at the Market.
 --- !u!4 &1465579895
 Transform:
   m_ObjectHideFlags: 0
@@ -43951,7 +43947,7 @@ MonoBehaviour:
   materializeDuration: 1.5
   portalCooldownSeconds: 0.5
   cameraPanOutSeconds: 1
-  textPromptDelaySeconds: 3
+  textPromptDelaySeconds: 1
   materializeCurve:
     serializedVersion: 2
     m_Curve:

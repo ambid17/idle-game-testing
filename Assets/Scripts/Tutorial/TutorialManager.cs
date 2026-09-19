@@ -11,11 +11,14 @@ namespace Tutorial
     // Drives the tutorial popup system: listens for the trigger events for first-Artifact-mined and
     // first-open-of-each-building-UI, and - the first time only, tracked by TutorialId and persisted
     // via RestoreFromSaveData/ShownTutorials - dispatches ShowTutorialEvent with that tutorial's copy
-    // from GameManager.TutorialDatabase.
+    // from GameManager.TutorialDatabase. TryShow is public so any system with its own display
+    // mechanism (e.g. Economy.MuseumRevealController/Processing.ProcessingCenterRevealController's
+    // building-reveal cinematic) can still get the same persisted once-only guarantee.
     //
-    // Both UI.Panels.TutorialModalUI (screen overlay) and UI.Panels.WorldTutorialPopupUI (world
-    // popup) listen for the same ShowTutorialEvent and each decide from WorldPosition whether it's
-    // theirs to show - see ShowTutorialEvent's own comment in Events.cs.
+    // UI.Panels.TutorialModalUI (screen overlay), UI.Panels.WorldTutorialPopupUI (world popup), and
+    // the building-reveal controllers all listen for the same ShowTutorialEvent and each decide from
+    // TutorialEntry.DisplayType whether it's theirs to show - see ShowTutorialEvent's own comment in
+    // Events.cs.
     public class TutorialManager : Singleton<TutorialManager>
     {
         [SerializeField] private PlayerController playerController;
@@ -34,14 +37,12 @@ namespace Tutorial
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<ArtifactCountChangedEvent>(OnArtifactCountChanged);
             GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Add<LoadCompletedEvent>(OnLoadCompleted);
         }
 
         private void OnDisable()
         {
-            GameManager.EventService.Remove<ArtifactCountChangedEvent>(OnArtifactCountChanged);
             GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Remove<LoadCompletedEvent>(OnLoadCompleted);
         }
@@ -51,17 +52,9 @@ namespace Tutorial
             TryShow(TutorialId.CoreGoal);
         }
 
-        private void OnArtifactCountChanged()
-        {
-            // ensure no artifacts have ever been gained
-            if (Wallet.Instance.ArtifactCount <= 0 && PrestigePoints.Instance.Points <= 0 || !SaveService.Instance.HasLoadedData) return;
-
-            Vector3? anchor = playerController != null ? playerController.transform.position + new Vector3(0, 2, 0) : null;
-            TryShow(TutorialId.FirstArtifact, anchor);
-        }
-
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
+            // attempt to show a tutorial for the building type interacted with
             var id = ToTutorialId(evt.Type);
             if (id.HasValue) TryShow(id.Value);
         }
@@ -79,9 +72,9 @@ namespace Tutorial
             }
         }
 
-        private void TryShow(TutorialId id, Vector3? worldPosition = null)
+        public void TryShow(TutorialId id, Vector3? worldPosition = null)
         {
-            if (shownTutorials.Contains(id)) return;
+            if (HasShown(id)) return;
 
             var database = GameManager.TutorialDatabase;
             if (database == null || !database.TryGet(id, out var entry))
@@ -93,6 +86,8 @@ namespace Tutorial
             shownTutorials.Add(id);
             GameManager.EventService.Dispatch(new ShowTutorialEvent(entry, worldPosition));
         }
+
+        public bool HasShown(TutorialId id) => shownTutorials.Contains(id);
 
         public void RestoreFromSaveData(IEnumerable<TutorialId> savedShownTutorials)
         {

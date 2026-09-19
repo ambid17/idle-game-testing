@@ -1,17 +1,19 @@
 using Events;
 using Player;
 using TMPro;
+using Tutorial;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
     // World-space half of the tutorial popup system (Tutorial.TutorialManager). Shown for any
-    // ShowTutorialEvent that carries a WorldPosition - currently just the first-Artifact tutorial,
-    // anchored at the player's position when it was mined. Unlike Interaction.InteractionPromptUI's
-    // World Space canvas (which stays parented to the player), this GameObject lives at the scene
-    // root and has its transform.position moved to the requested anchor each time it's shown, since
-    // the anchor is different per trigger rather than always "above the player."
+    // ShowTutorialEvent whose Entry.DisplayType is WorldPopup - currently just the first-Artifact
+    // tutorial, anchored at the player's position when it was mined. Unlike
+    // Interaction.InteractionPromptUI's World Space canvas (which stays parented to the player),
+    // this GameObject lives at the scene root and has its transform.position moved to the requested
+    // anchor each time it's shown, since the anchor is different per trigger rather than always
+    // "above the player."
     // See UI.Panels.TutorialModalUI for the screen-space counterpart. Inherits ModalBase so
     // Escape can dismiss it without also closing a panel or opening the pause menu underneath.
     public class WorldTutorialPopupUI : ModalBase
@@ -46,7 +48,7 @@ namespace UI
 
         private void OnShowTutorial(ShowTutorialEvent evt)
         {
-            if (!evt.WorldPosition.HasValue) return;
+            if (evt.Entry.DisplayType != TutorialDisplayType.WorldPopup) return;
             if (rendererRoot == null || titleLabel == null || bodyLabel == null) return;
 
             transform.position = evt.WorldPosition.Value;
