@@ -11,7 +11,7 @@ namespace Automation
         // Straight-line "fly" movement, ignoring the grid entirely - per the design doc, both
         // Storage/Fuel Drones always fly this way and Mining Automatons switch to it only on the
         // return trip to the Depot. Returns true once arrived.
-        public bool StepDirect(Transform t, Vector3 destination, float speed, float arriveThreshold = 0.05f)
+        public bool StepDirect(Transform t, Vector3 destination, float speed, float arriveThreshold = 0.5f)
         {
             t.position = Vector3.MoveTowards(t.position, destination, speed * Time.deltaTime);
             return (t.position - destination).sqrMagnitude <= arriveThreshold * arriveThreshold;
