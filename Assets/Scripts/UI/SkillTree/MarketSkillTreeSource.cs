@@ -61,7 +61,22 @@ namespace UI.SkillTree
             }
         }
 
-        public void RequestPurchase(SkillTreeNodeViewModel node) =>
-            GameManager.EventService.Dispatch(new PurchaseRequestedEvent((UpgradeDefinition)node.UpgradeDefinition));
+        public void RequestPurchase(UpgradeDefinitionBase definition) =>
+            GameManager.EventService.Dispatch(new PurchaseRequestedEvent((UpgradeDefinition)definition));
+
+        public SkillTreeNodeDetails GetDetails(UpgradeDefinitionBase definition)
+        {
+            var def = (UpgradeDefinition)definition;
+            return new SkillTreeNodeDetails
+            {
+                DisplayName = def.DisplayName,
+                Description = def.Description,
+                Level = manager.GetLevelIncludingPrestige(def),
+                MaxLevel = def.MaxLevel,
+                CostLabel = manager.IsMaxed(def) ? "MAXED" : $"{manager.GetNextCost(def):0.##}",
+                CanPurchase = manager.CanPurchase(def),
+                PurchaseBlockedReason = manager.GetPurchaseBlockedReason(def)
+            };
+        }
     }
 }

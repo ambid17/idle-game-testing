@@ -20,53 +20,72 @@ namespace UI.SkillTree
         [SerializeField] private TMP_Text costLabel;
         [SerializeField] private Button buyButton;
         [SerializeField] private Button closeButton;
+        [SerializeField] private TMP_Text purchaseBlockReasonLabel;
 
-        private SkillTreeNodeViewModel current;
-        private ISkillTreeSource source;
-
-        // Lets SkillTreePanelUI find and rebind the same node's freshly-rebuilt view model after
-        // a purchase, so the open modal reflects the new level/cost instead of a stale snapshot.
-        public UpgradeDefinitionBase CurrentSource => current?.UpgradeDefinition;
+        // Just the definition identity - never a cached snapshot of its level/cost/affordability.
+        // Refresh() re-queries source.GetDetails(current) live every time, so this can't go stale.
+        private UpgradeDefinitionBase upgradeDefinition;
+        private ISkillTreeSource skillTreeSource;
 
         private void Awake()
         {
-            if (buyButton != null) buyButton.onClick.AddListener(OnBuyClicked);
-            if (closeButton != null) closeButton.onClick.AddListener(Close);
-            if (root != null) root.SetActive(false);
+            buyButton.onClick.AddListener(OnBuyClicked);
+            closeButton.onClick.AddListener(Close);
+            root.SetActive(false);
         }
 
-        public void Initialize(ISkillTreeSource source) => this.source = source;
-
-        public void Show(SkillTreeNodeViewModel viewModel)
+        private void Start()
         {
-            current = viewModel;
-            if (root != null) root.SetActive(true);
+            CheckNullRefs();
+        }
+
+        private void CheckNullRefs()
+        {
+            if (root == null) Debug.LogError($"{nameof(SkillTreeDetailModalUI)}.{nameof(root)} is not assigned in the inspector.");
+            if (nameLabel == null) Debug.LogError($"{nameof(SkillTreeDetailModalUI)}.{nameof(nameLabel)} is not assigned in the inspector.");
+            if (descriptionLabel == null) Debug.LogError($"{nameof(SkillTreeDetailModalUI)}.{nameof(descriptionLabel)} is not assigned in the inspector.");
+            if (levelLabel == null) Debug.LogError($"{nameof(SkillTreeDetailModalUI)}.{nameof(levelLabel)} is not assigned in the inspector.");
+            if (costLabel == null) Debug.LogError($"{nameof(SkillTreeDetailModalUI)}.{nameof(costLabel)} is not assigned in the inspector.");
+            if (buyButton == null) Debug.LogError($"{nameof(SkillTreeDetailModalUI)}.{nameof(buyButton)} is not assigned in the inspector.");
+            if (closeButton == null) Debug.LogError($"{nameof(SkillTreeDetailModalUI)}.{nameof(closeButton)} is not assigned in the inspector.");
+            if (purchaseBlockReasonLabel  == null) Debug.LogError($"{nameof(SkillTreeDetailModalUI)}.{nameof(purchaseBlockReasonLabel)} is not assigned in the inspector.");
+
+        }
+
+        public void Initialize(ISkillTreeSource source) => this.skillTreeSource = source;
+
+        public void Show(UpgradeDefinitionBase definition)
+        {
+            upgradeDefinition = definition;
+            root.SetActive(true);
             SetOpened();
             Refresh();
         }
 
         public void Refresh()
         {
-            if (current == null || root == null || !root.activeSelf) return;
+            if (upgradeDefinition == null || skillTreeSource == null || !root.activeSelf) return;
 
-            if (nameLabel != null) nameLabel.text = current.DisplayName;
-            if (descriptionLabel != null) descriptionLabel.text = current.Description;
-            if (levelLabel != null) levelLabel.text = $"{current.Level}/{current.MaxLevel}";
-            if (costLabel != null) costLabel.text = current.CostLabel;
-            if (buyButton != null) buyButton.interactable = current.CanPurchase;
+            var details = skillTreeSource.GetDetails(upgradeDefinition);
+            nameLabel.text = details.DisplayName;
+            descriptionLabel.text = details.Description;
+            levelLabel.text = $"{details.Level}/{details.MaxLevel}";
+            costLabel.text = details.CostLabel;
+            buyButton.interactable = details.CanPurchase;
+            purchaseBlockReasonLabel.text = details.CanPurchase ? "" : details.PurchaseBlockedReason;
         }
 
         public override void Close()
         {
-            current = null;
-            if (root != null) root.SetActive(false);
+            upgradeDefinition = null;
+            root.SetActive(false);
             SetClosed();
         }
 
         private void OnBuyClicked()
         {
-            if (current == null || source == null) return;
-            source.RequestPurchase(current);
+            if (upgradeDefinition == null || skillTreeSource == null) return;
+            skillTreeSource.RequestPurchase(upgradeDefinition);
         }
     }
 }

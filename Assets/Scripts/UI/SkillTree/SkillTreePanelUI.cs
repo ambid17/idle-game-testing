@@ -66,10 +66,6 @@ namespace UI.SkillTree
         {
             if (source == null) return;
 
-            // Preserved across the rebuild below so a purchase made from the open modal rebinds
-            // it to the matching freshly-built view model instead of leaving it on a stale one.
-            UpgradeDefinitionBase previousModalSource = detailModal.CurrentSource;
-
             var viewModels = source.BuildViewModels();
 
             // A skill tree built by the editor tool already has its SkillTreeNodeUI/
@@ -94,7 +90,9 @@ namespace UI.SkillTree
                 AddConnectors(viewModels, positions);
             }
 
-            RebuildDetailModal(viewModels, previousModalSource);
+            // The open modal (if any) holds the definition itself, not a view model, so it just
+            // re-queries the source for fresh data - no need to look anything up here.
+            detailModal.Refresh();
         }
 
         private void BindPreplacedNodes(SkillTreeNodeUI[] preplacedNodes, IReadOnlyList<SkillTreeNodeViewModel> viewModels)
@@ -143,14 +141,7 @@ namespace UI.SkillTree
             }
         }
 
-        private void RebuildDetailModal(IReadOnlyList<SkillTreeNodeViewModel> viewModels, UpgradeDefinitionBase previousModalSource)
-        {
-            if(previousModalSource == null) return;
-            var toShow = viewModels.FirstOrDefault(vm => vm.DisplayName == previousModalSource.DisplayName);
-            detailModal.Show(toShow);
-        }
-
-        private void OnNodeClicked(SkillTreeNodeViewModel vm) => detailModal?.Show(vm);
+        private void OnNodeClicked(SkillTreeNodeViewModel vm) => detailModal?.Show(vm.UpgradeDefinition);
 
         private void ClearInstances()
         {

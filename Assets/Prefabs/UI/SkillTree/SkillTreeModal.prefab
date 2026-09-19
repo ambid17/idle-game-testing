@@ -852,7 +852,7 @@ MonoBehaviour:
   costLabel: {fileID: 3959014951314787446}
   buyButton: {fileID: 7871679944761431028}
   closeButton: {fileID: 2806833953058435685}
-  cantPurchaseLabel: {fileID: 4183558591460707606}
+  purchaseBlockReasonLabel: {fileID: 4183558591460707606}
 --- !u!1 &3685880675465011461
 GameObject:
   m_ObjectHideFlags: 0
@@ -929,7 +929,7 @@ GameObject:
   - component: {fileID: 6425208432431000621}
   - component: {fileID: 4183558591460707606}
   m_Layer: 0
-  m_Name: CantPurchaseText
+  m_Name: PurchaseBlockedLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -982,7 +982,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Maxed
+  m_text: Requires Mining Speed Increase
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
