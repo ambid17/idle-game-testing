@@ -73,7 +73,6 @@ namespace UI
             InputBlocker.SetBlocked(false);
             panelRoot.SetActive(false);
             if (skillTreePanel != null) skillTreePanel.Close();
-            GameManager.EventService.Dispatch<MarketPanelClosedEvent>();
         }
 
         private void OnPurchaseRequested(PurchaseRequestedEvent evt) => UpgradeManager.Instance.TryPurchase(evt.Definition);
