@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: +50% Automaton carrying capacity per level.
   Icon: {fileID: 0}
   Branch: 2
-  Effect: 12
+  Effect: 1
   EffectValuePerLevel: 0.5
   MaxLevel: 3
   BaseCost: 300

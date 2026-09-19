@@ -57,7 +57,7 @@ namespace Automation
         private void OnUpgradePurchased(UpgradePurchasedEvent evt)
         {
             var effect = evt.Definition.Effect;
-            if (effect == Economy.UpgradeEffect.AutomatonCount || effect == Economy.UpgradeEffect.StorageDroneCount || effect == Economy.UpgradeEffect.FuelDroneCount)
+            if (effect == Economy.UpgradeEffect.Automation_AutomatonCount || effect == Economy.UpgradeEffect.Automation_StorageDroneCount || effect == Economy.UpgradeEffect.Automation_FuelDroneCount)
             {
                 ReconcileAll();
             }
@@ -66,7 +66,7 @@ namespace Automation
         private void OnUpgradeLoaded(UpgradeLoadedEvent evt)
         {
             var effect = evt.Definition.Effect;
-            if (effect == Economy.UpgradeEffect.AutomatonCount || effect == Economy.UpgradeEffect.StorageDroneCount || effect == Economy.UpgradeEffect.FuelDroneCount)
+            if (effect == Economy.UpgradeEffect.Automation_AutomatonCount || effect == Economy.UpgradeEffect.Automation_StorageDroneCount || effect == Economy.UpgradeEffect.Automation_FuelDroneCount)
             {
                 ReconcileAll();
             }

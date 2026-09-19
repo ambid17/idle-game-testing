@@ -67,10 +67,10 @@ namespace Economy
             var prestige = PrestigeUpgradeManager.Instance;
             return def.Effect switch
             {
-                UpgradeEffect.AutomatonCount => prestige.KeptAutomatonCountBaseline,
-                UpgradeEffect.AutomatonMiningSpeed => prestige.KeptAutomatonMiningSpeedBaseline,
-                UpgradeEffect.AutomatonMiningRadius => prestige.KeptAutomatonMiningRadiusBaseline,
-                UpgradeEffect.AutomatonMoveSpeed => prestige.KeptAutomatonMoveSpeedBaseline,
+                UpgradeEffect.Automation_AutomatonCount => prestige.KeptAutomatonCountBaseline,
+                UpgradeEffect.Automation_AutomatonMiningSpeed => prestige.KeptAutomatonMiningSpeedBaseline,
+                UpgradeEffect.Automation_AutomatonMiningRadius => prestige.KeptAutomatonMiningRadiusBaseline,
+                UpgradeEffect.Automation_AutomatonMoveSpeed => prestige.KeptAutomatonMoveSpeedBaseline,
                 _ => 0
             };
         }
@@ -123,75 +123,75 @@ namespace Economy
         #region Utils
         // GameDesignDoc "Mining > Increase mining size": current cumulative upgrade level: fed
         // into MiningAreaPattern.GetOffsets by PlayerMining to know which extra cells to mine.
-        public int MiningAreaLevel => LevelOf(UpgradeEffect.MiningAreaRadius);
+        public int MiningAreaLevel => LevelOf(UpgradeEffect.Mining_AreaSize);
 
         // GameDesignDoc "Mining > Increase mining speed": "each tier adds 10% mining speed".
-        public float MiningSpeedMultiplier => 1f + LevelOf(UpgradeEffect.MiningSpeed) * EffectValuePerLevelOf(UpgradeEffect.MiningSpeed);
+        public float MiningSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Mining_Speed) * EffectValuePerLevelOf(UpgradeEffect.Mining_Speed);
 
         // GameDesignDoc "Mining > Increase mining speed": "the final upgrade makes dirt/stone an
         // instant mine" - interpreted as the Dirt category (the valueless filler blocks), since
         // the Ore-category "Stone" block is a sellable mineral, not filler. Its own capstone
         // (Mining_DirtInstaMine), not a side effect of maxing Mining Speed.
-        public bool InstantMineDirt => IsMaxedEffect(UpgradeEffect.DirtInstaMineUnlock);
+        public bool InstantMineDirt => IsMaxedEffect(UpgradeEffect.Mining_DirtInstaMine);
 
         // GameDesignDoc "Mining > Insta-mine chance".
-        public float InstaMineChance => LevelOf(UpgradeEffect.InstaMineChance) * EffectValuePerLevelOf(UpgradeEffect.InstaMineChance);
+        public float InstaMineChance => LevelOf(UpgradeEffect.Mining_BaseInstaMineChance) * EffectValuePerLevelOf(UpgradeEffect.Mining_BaseInstaMineChance);
 
         // GameDesignDoc "Mining > Lantern": extra fog-of-war reveal radius on top of the base.
-        public int LanternFogRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.LanternFogRadius) * EffectValuePerLevelOf(UpgradeEffect.LanternFogRadius));
+        public int LanternFogRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Mining_LanternRadius) * EffectValuePerLevelOf(UpgradeEffect.Mining_LanternRadius));
 
         // GameDesignDoc "Lantern capstones > true sight: reveals all fog of war".
-        public bool TrueSightUnlocked => IsMaxedEffect(UpgradeEffect.LanternTrueSight);
+        public bool TrueSightUnlocked => IsMaxedEffect(UpgradeEffect.Mining_TrueSight);
 
         // GameDesignDoc "Economy > Inventory: increase the player's max carrying weight".
-        public float InventoryCapacityBonus => LevelOf(UpgradeEffect.InventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.InventoryCapacity);
+        public float InventoryCapacityBonus => LevelOf(UpgradeEffect.Economy_InventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.Economy_InventoryCapacity);
 
         // GameDesignDoc "Economy > Marketing: increase sales value of minerals".
-        public float SellValueMultiplier => 1f + LevelOf(UpgradeEffect.MarketingSellMultiplier) * EffectValuePerLevelOf(UpgradeEffect.MarketingSellMultiplier);
+        public float SellValueMultiplier => 1f + LevelOf(UpgradeEffect.Economy_MarketingSellMultiplier) * EffectValuePerLevelOf(UpgradeEffect.Economy_MarketingSellMultiplier);
 
         // GameDesignDoc "Economy > Overflow: once inventory is full, you can continue to mine and
         // ores will auto-sell at a reduced value".
-        public bool OverflowUnlocked => IsMaxedEffect(UpgradeEffect.Overflow);
+        public bool OverflowUnlocked => IsMaxedEffect(UpgradeEffect.Economy_Overflow);
 
         public float OverflowSellFraction
         {
             get
             {
-                var def = database != null ? database.Find(UpgradeEffect.Overflow) : null;
+                var def = database != null ? database.Find(UpgradeEffect.Economy_Overflow) : null;
                 return def != null ? def.EffectValuePerLevel : 0f;
             }
         }
 
         // GameDesignDoc "Automation > Mining Automaton": level 0 = no automatons owned, matching
         // every other UpgradeManager effect - the first purchased level buys the first unit.
-        public int AutomatonCount => LevelOf(UpgradeEffect.AutomatonCount);
-        public float AutomatonMiningSpeedMultiplier => 1f + LevelOf(UpgradeEffect.AutomatonMiningSpeed) * EffectValuePerLevelOf(UpgradeEffect.AutomatonMiningSpeed);
-        public float AutomatonMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.AutomatonMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.AutomatonMoveSpeed);
-        public int AutomatonMiningRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.AutomatonMiningRadius) * EffectValuePerLevelOf(UpgradeEffect.AutomatonMiningRadius));
-        public float AutomatonInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.AutomatonInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.AutomatonInventoryCapacity);
+        public int AutomatonCount => LevelOf(UpgradeEffect.Automation_AutomatonCount);
+        public float AutomatonMiningSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Automation_AutomatonMiningSpeed) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonMiningSpeed);
+        public float AutomatonMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Automation_AutomatonMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonMoveSpeed);
+        public int AutomatonMiningRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Automation_AutomatonMiningRadius) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonMiningRadius));
+        public float AutomatonInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.Automation_AutomatonInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonInventoryCapacity);
 
         // GameDesignDoc "Automation > Storage Drone".
-        public int StorageDroneCount => LevelOf(UpgradeEffect.StorageDroneCount);
-        public float StorageDroneMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.StorageDroneMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.StorageDroneMoveSpeed);
-        public float StorageDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.StorageDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.StorageDroneInventoryCapacity);
+        public int StorageDroneCount => LevelOf(UpgradeEffect.Automation_StorageDroneCount);
+        public float StorageDroneMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Automation_StorageDroneMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.Automation_StorageDroneMoveSpeed);
+        public float StorageDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.Automation_StorageDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.Automation_StorageDroneInventoryCapacity);
 
         // GameDesignDoc "Automation > Fuel Drone".
-        public int FuelDroneCount => LevelOf(UpgradeEffect.FuelDroneCount);
-        public float FuelDroneMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.FuelDroneMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.FuelDroneMoveSpeed);
-        public float FuelDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.FuelDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.FuelDroneInventoryCapacity);
+        public int FuelDroneCount => LevelOf(UpgradeEffect.Automation_FuelDroneCount);
+        public float FuelDroneMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Automation_FuelDroneMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.Automation_FuelDroneMoveSpeed);
+        public float FuelDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.Automation_FuelDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.Automation_FuelDroneInventoryCapacity);
 
         // GameDesignDoc processingImplementation.md "Upgrades > processing time": "multiplicatively
         // reduces the duration of all recipe crafting" - divides ProcessingManager's computed
         // duration, mirrors MiningSpeedMultiplier's shape.
-        public float ProcessingSpeedMultiplier => 1f + LevelOf(UpgradeEffect.ProcessingSpeedMultiplier) * EffectValuePerLevelOf(UpgradeEffect.ProcessingSpeedMultiplier);
+        public float ProcessingSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Processing_SpeedMultiplier) * EffectValuePerLevelOf(UpgradeEffect.Processing_SpeedMultiplier);
 
         // "Upgrades > processed good sale value": mirrors SellValueMultiplier but only applies to
         // Depot.SellGood, kept independent of the ore MarketingSellMultiplier.
-        public float ProcessingGoodsSellMultiplier => 1f + LevelOf(UpgradeEffect.ProcessingSaleValueMultiplier) * EffectValuePerLevelOf(UpgradeEffect.ProcessingSaleValueMultiplier);
+        public float ProcessingGoodsSellMultiplier => 1f + LevelOf(UpgradeEffect.Processing_SaleValueMultiplier) * EffectValuePerLevelOf(UpgradeEffect.Processing_SaleValueMultiplier);
 
         // "Upgrades > processing queue": "allows multiple recipes to be running at once" - added on
         // top of ProcessingManager's 1 free base slot.
-        public int ProcessingQueueSlotCount => LevelOf(UpgradeEffect.ProcessingQueueSlots);
+        public int ProcessingQueueSlotCount => LevelOf(UpgradeEffect.Processing_QueueSlots);
         #endregion
     }
 }

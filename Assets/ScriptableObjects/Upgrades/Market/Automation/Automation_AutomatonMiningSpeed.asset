@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Automaton Mining Speed
   Description: +30% Automaton mining speed per level.
+  Icon: {fileID: 0}
   Branch: 2
-  Effect: 9
+  Effect: 3
   EffectValuePerLevel: 0.3
   MaxLevel: 10
   BaseCost: 150

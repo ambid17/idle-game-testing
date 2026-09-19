@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Add another Mining Automaton to dig tunnels for you.
   Icon: {fileID: 0}
   Branch: 2
-  Effect: 8
+  Effect: 0
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 500

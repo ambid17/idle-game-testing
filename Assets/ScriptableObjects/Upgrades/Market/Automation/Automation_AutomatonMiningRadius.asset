@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Automatons mine an extra block alongside every dig.
   Icon: {fileID: 0}
   Branch: 2
-  Effect: 11
+  Effect: 2
   EffectValuePerLevel: 1
   MaxLevel: 2
   BaseCost: 1000

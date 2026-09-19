@@ -20,61 +20,64 @@ namespace Economy
     // MapGenerationService) reads on demand.
     public enum UpgradeEffect
     {
-        MiningAreaRadius,
-        MiningSpeed,
-        InstaMineChance,
-        LanternFogRadius,
-        LanternTrueSight,
-        InventoryCapacity,
-        MarketingSellMultiplier,
-        Overflow,
-        AutomatonCount,
-        AutomatonMiningSpeed,
-        AutomatonMoveSpeed,
-        AutomatonMiningRadius,
-        AutomatonInventoryCapacity,
-        StorageDroneCount,
-        StorageDroneMoveSpeed,
-        StorageDroneInventoryCapacity,
-        FuelDroneCount,
-        FuelDroneMoveSpeed,
-        FuelDroneInventoryCapacity,
-
         // Assets/Docs/UpgradeIdeas.pdf entries with no live gameplay hook yet - SO assets exist so
         // the skill tree is exhaustive per the doc, matching the "stub" convention already used
         // throughout PrestigeUpgradeEffect for the same reason (system doesn't exist yet).
-        CameraZoomBonus, // stub
-        WoodInstaMineUnlock, // stub
-        StorageDroneAutoSellUnlock, // stub
-        GridWidthBonus, // stub
-        ProcessingSaleValueMultiplier, // stub - Processing Center doesn't exist yet
-        ProcessingRecipeUnlock, // stub - Processing Center doesn't exist yet
-        ProcessingSpeedMultiplier, // stub - Processing Center doesn't exist yet
-        FallDamageReductionBonus, // stub
-        PlayerMoveSpeedBonus, // stub
-        FlightSpeedBonus, // stub
-        GravityBonus, // stub
-        FuelInventoryCapacity, // stub
-        FuelEfficiencyBonus, // stub
-        HazardSenseUnlock, // stub
 
+        // Automation
+        Automation_AutomatonCount,
+        Automation_AutomatonInventoryCapacity,
+        Automation_AutomatonMiningRadius,
+        Automation_AutomatonMiningSpeed,
+        Automation_AutomatonMoveSpeed,
+        Automation_FuelDroneCount,
+        Automation_FuelDroneInventoryCapacity,
+        Automation_FuelDroneMoveSpeed,
+        Automation_StorageDroneAutoSellUnlock, // stub
+        Automation_StorageDroneCount,
+        Automation_StorageDroneInventoryCapacity,
+        Automation_StorageDroneMoveSpeed,
+
+
+        // Economy
+        Economy_GridWidthBonus, // stub
+        Economy_InventoryCapacity,
+        Economy_MarketingSellMultiplier,
+        Economy_Overflow,
+
+        // Mining
+        Mining_AreaSize,
+        Mining_BaseInstaMineChance,
+        Mining_CameraZoom, // stub
         // Real effect (Dirt block category already exists) - appended after the stubs, out of
         // branch order, so every earlier member keeps its serialized int stable in existing
         // UpgradeDefinition assets. Drives UpgradeManager.InstantMineDirt.
-        DirtInstaMineUnlock,
+        Mining_DirtInstaMine,
+        Mining_LanternRadius,
+        Mining_Speed,
+        Mining_TrueSight,
+        Mining_WoodInstaMine, // stub
 
-        // Processing Center (Assets/Docs/processingImplementation.md), appended here rather than
-        // replacing the stub above for the same reason as DirtInstaMineUnlock: every earlier
-        // member must keep its serialized int. ProcessingRecipeUnlock above is superseded/unused -
-        // each recipe gets its own one-time (MaxLevel 1) unlock effect, chained via Prerequisite,
-        // since UpgradeDatabase.Find(UpgradeEffect) only supports one definition per effect.
-        ProcessingWoodRecipeUnlock,
-        ProcessingStoneRecipeUnlock,
-        ProcessingIronRecipeUnlock,
-        ProcessingGoldRecipeUnlock,
-        ProcessingEmeraldRecipeUnlock,
-        ProcessingDiamondRecipeUnlock,
-        ProcessingQueueSlots
+
+        // Movement
+        Movement_FallDamageReduction, // stub
+        Movement_FlightSpeed, // stub
+        Movement_FuelEfficiency, // stub
+        Movement_FuelInventory, // stub
+        Movement_GravityIncrease, // stub
+        Movement_HazardSense, // stub
+        Movement_MoveSpeed, // stub
+
+        // Processing
+        Processing_QueueSlots,
+        Processing_SaleValueMultiplier, // stub - Processing Center doesn't exist yet
+        Processing_SpeedMultiplier, // stub - Processing Center doesn't exist yet
+        Processing_DiamondRecipeUnlock,
+        Processing_EmeraldRecipeUnlock,
+        Processing_GoldRecipeUnlock,
+        Processing_IronRecipeUnlock,
+        Processing_StoneRecipeUnlock,
+        Processing_WoodRecipeUnlock,
     }
 
     [CreateAssetMenu(fileName = "UpgradeDefinition", menuName = "Economy/Upgrade Definition")]
