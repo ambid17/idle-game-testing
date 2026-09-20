@@ -25,20 +25,31 @@ namespace MapGeneration
         private const float BoundaryWallHeight = 20000f;
 
         // Invisible one-way platform spanning the grid at the top of row 0 (surface level) -
-        // QoL so the player can drive across the surface once the row beneath it is dug out
-        // (see CLAUDE.md UI note: no design doc entry, requested directly). A PlatformEffector2D
-        // lets the player fly up through it from below but catches them on the way back down
-        // instead of falling into the gaps; PlayerController.DropThroughSurfaceFloor briefly
-        // disables it when the player presses S to intentionally descend back into the mine.
-        private const float SurfaceFloorThickness = 0.01f;
+        // QoL so the player can drive across the surface once a column has been dug deep enough
+        // to leave a real gap (see CLAUDE.md UI note: no design doc entry, requested directly).
+        // A PlatformEffector2D lets the player fly up through it from below but catches them on
+        // the way back down instead of falling into the gaps.
+        //
+        // One BoxCollider2D per row-0 column (all as sibling components on one GameObject
+        // alongside the single PlatformEffector2D - multiple Collider2D per GameObject is
+        // supported, so this stays one object instead of one per column), enabled only once that
+        // column's row-1 cell (the tile directly below the surface) has been mined - digging out
+        // just the top row still leaves row 1 as solid ground, so there's nothing to catch yet;
+        // once row 1 is gone too there's an actual multi-tile drop, and that's when the gate
+        // should hold the player up. UpdateSurfaceFloorSegmentEnabled is the single source of
+        // truth for a segment's enabled state, driven off World's own mined data rather than a
+        // separate tracked flag. PlayerController.DropThroughSurfaceFloor briefly disables every
+        // segment when the player presses S to intentionally descend back into the mine.
+        private const float SurfaceFloorThickness = 0.1f;
         private const float SurfaceFloorDropThroughDuration = 0.5f;
 
         private BoxCollider2D leftBoundaryWall;
         private BoxCollider2D rightBoundaryWall;
-        private BoxCollider2D surfaceFloorCollider;
+        private GameObject surfaceFloorObject;
+        private readonly Dictionary<int, BoxCollider2D> surfaceFloorSegmentsByX = new();
         private Coroutine surfaceFloorDropThroughRoutine;
 
-        public Collider2D SurfaceFloorCollider => surfaceFloorCollider;
+        public GameObject SurfaceFloorObject => surfaceFloorObject;
 
         public MineWorld World { get; private set; }
 
@@ -54,7 +65,7 @@ namespace MapGeneration
             CreateBoundaryWalls();
             CreateSurfaceFloor();
             UpdateBoundaryWalls();
-            UpdateSurfaceFloor();
+            RebuildSurfaceFloorSegments();
 
             // HazardEffectResolver is a pure event listener with no scene reference pointing at
             // it (same shape as PowerUpEffectResolver) - nothing else ever touches .Instance, so
@@ -98,7 +109,7 @@ namespace MapGeneration
             World = restoredWorld;
             streamingManager.Initialize(World);
             UpdateBoundaryWalls();
-            UpdateSurfaceFloor();
+            RebuildSurfaceFloorSegments();
         }
 
         private void CreateBoundaryWalls()
@@ -134,51 +145,87 @@ namespace MapGeneration
 
         private void CreateSurfaceFloor()
         {
-            var floorObject = new GameObject("SurfaceFloorGate");
-            floorObject.transform.SetParent(transform, false);
+            surfaceFloorObject = new GameObject("SurfaceFloorGate");
+            surfaceFloorObject.transform.SetParent(transform, false);
+            // World-space (0,0,0) regardless of this service's own transform, since every
+            // segment's Collider2D.offset below is an absolute world coordinate.
+            surfaceFloorObject.transform.position = Vector3.zero;
             // Ground layer so PlayerController's ground check (and IsGrounded-gated systems like
             // PlayerMining) treat standing on this the same as standing on real terrain.
-            floorObject.layer = LayerMask.NameToLayer("Ground");
+            surfaceFloorObject.layer = LayerMask.NameToLayer("Ground");
 
-            surfaceFloorCollider = floorObject.AddComponent<BoxCollider2D>();
-            surfaceFloorCollider.usedByEffector = true;
-
-            var effector = floorObject.AddComponent<PlatformEffector2D>();
+            var effector = surfaceFloorObject.AddComponent<PlatformEffector2D>();
             effector.useOneWay = true;
         }
 
-        // Re-centers the floor on the grid's current horizontal extent (mirrors UpdateBoundaryWalls)
-        // and sits its bottom edge flush with the top of row 0 - the surface plane buildings and
-        // the grassy dirt row already occupy - so crossing between real ground and the invisible
-        // gate reads as one continuous level instead of a step.
-        private void UpdateSurfaceFloor()
+        // Rebuilds one segment per row-0 column and sets its enabled state from World's current
+        // row-1 mined data. Called on world init, restore, prestige reset, and grid-width
+        // upgrades - the places GridWidth or the mined state can change out from under the
+        // existing segments all at once; a single mined tile is instead handled incrementally by
+        // UpdateSurfaceFloorSegmentEnabled.
+        private void RebuildSurfaceFloorSegments()
         {
-            if (surfaceFloorCollider == null) return;
+            foreach (var segment in surfaceFloorSegmentsByX.Values)
+            {
+                if (segment != null) Destroy(segment);
+            }
+            surfaceFloorSegmentsByX.Clear();
 
             float cellSize = mapGenerationConfig.CellSize;
-            float gridWorldWidth = World.GridWidth * cellSize;
-            float surfaceTopY = CellToWorldCenter(0, 0, 0).y + cellSize * 0.5f;
+            float segmentY = CellToWorldCenter(0, 0, 0).y + cellSize * 0.5f + SurfaceFloorThickness * 0.5f;
 
-            surfaceFloorCollider.size = new Vector2(gridWorldWidth, SurfaceFloorThickness);
-            surfaceFloorCollider.transform.position = new Vector3(gridWorldWidth * 0.5f, surfaceTopY + SurfaceFloorThickness * 0.5f, 0f);
+            for (int x = 0; x < World.GridWidth; x++)
+            {
+                CreateSurfaceFloorSegment(x, cellSize, segmentY);
+                UpdateSurfaceFloorSegmentEnabled(x);
+            }
+        }
+
+        private void CreateSurfaceFloorSegment(int x, float cellSize, float segmentY)
+        {
+            var segment = surfaceFloorObject.AddComponent<BoxCollider2D>();
+            segment.usedByEffector = true;
+            segment.size = new Vector2(cellSize, SurfaceFloorThickness);
+            segment.offset = new Vector2((x + 0.5f) * cellSize, segmentY);
+            surfaceFloorSegmentsByX[x] = segment;
+        }
+
+        // Single source of truth for whether a column's gate segment should be solid: on once
+        // that column's row-1 cell has been mined, off otherwise. Called after mining row 1 (see
+        // MineCell) and whenever segments are rebuilt.
+        private void UpdateSurfaceFloorSegmentEnabled(int x)
+        {
+            if (!surfaceFloorSegmentsByX.TryGetValue(x, out var segment) || segment == null) return;
+
+            var chunk = World.GetOrGenerateChunk(0);
+            segment.enabled = chunk.Cells[chunk.Index(x, 1)].Mined;
         }
 
         // Called by PlayerController when the player presses S while standing on the surface
-        // floor gate - briefly disables its collider so gravity carries them back down into the
-        // mine instead of the one-way platform catching them again immediately.
+        // floor gate - briefly disables every currently-solid segment so gravity carries them
+        // back down into the mine instead of the one-way platform catching them again immediately.
         public void DropThroughSurfaceFloor()
         {
-            if (surfaceFloorCollider == null) return;
-
             if (surfaceFloorDropThroughRoutine != null) StopCoroutine(surfaceFloorDropThroughRoutine);
             surfaceFloorDropThroughRoutine = StartCoroutine(SurfaceFloorDropThroughRoutine());
         }
 
         private System.Collections.IEnumerator SurfaceFloorDropThroughRoutine()
         {
-            surfaceFloorCollider.enabled = false;
+            foreach (var segment in surfaceFloorSegmentsByX.Values)
+            {
+                if (segment != null) segment.enabled = false;
+            }
+
             yield return new WaitForSeconds(SurfaceFloorDropThroughDuration);
-            surfaceFloorCollider.enabled = true;
+
+            // Re-derive from World rather than blindly re-enabling: a column mined mid-wait
+            // should end up in whatever state UpdateSurfaceFloorSegmentEnabled would give it, not
+            // necessarily back on.
+            foreach (var x in surfaceFloorSegmentsByX.Keys)
+            {
+                UpdateSurfaceFloorSegmentEnabled(x);
+            }
             surfaceFloorDropThroughRoutine = null;
         }
 
@@ -194,6 +241,10 @@ namespace MapGeneration
         {
             // Can't mine if: already mined, or target is a building support
             if (!World.TryMineCell(layerIndex, x, y, out var block)) return false;
+
+            // Digging out row 1 (the tile beneath the surface) is what actually opens a fall-
+            // through gap at that column - see the SurfaceFloor* fields' comment above.
+            if (layerIndex == 0 && y == 1) UpdateSurfaceFloorSegmentEnabled(x);
 
             HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);
             if (block != null && block.Category == BlockCategory.Hazard)
@@ -296,13 +347,14 @@ namespace MapGeneration
         {
             World.ResetForPrestige(newSeed);
             streamingManager.ClearAll();
+            RebuildSurfaceFloorSegments();
         }
 
         public void ApplyGridWidthUpgrade(int newGridWidth)
         {
             World.SetGridWidth(newGridWidth);
             UpdateBoundaryWalls();
-            UpdateSurfaceFloor();
+            RebuildSurfaceFloorSegments();
         }
     }
 }

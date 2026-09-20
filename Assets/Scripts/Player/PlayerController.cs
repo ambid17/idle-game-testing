@@ -233,8 +233,10 @@ namespace Player
 
             // S drops the player through MapGenerationService's invisible surface floor gate when
             // they're standing on it specifically (not just any ground) - lets them re-enter the
-            // mine on foot instead of having to fly down through a dug-out gap.
-            if (keyboard.sKey.wasPressedThisFrame && IsGrounded && groundCollider == GameManager.MapGenerationService.SurfaceFloorCollider)
+            // mine on foot instead of having to fly down through a dug-out gap. The gate is built
+            // from several sibling colliders on one GameObject, so compare owning GameObject
+            // rather than the specific collider instance.
+            if (keyboard.sKey.wasPressedThisFrame && IsGrounded && groundCollider.gameObject == GameManager.MapGenerationService.SurfaceFloorObject)
             {
                 GameManager.MapGenerationService.DropThroughSurfaceFloor();
             }
