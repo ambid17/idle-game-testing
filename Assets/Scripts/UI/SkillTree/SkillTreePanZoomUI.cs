@@ -19,6 +19,7 @@ namespace UI.SkillTree
         [SerializeField] private float keyboardPanSpeed = 800f;
 
         private Keyboard keyboard;
+        private Canvas canvas;
 
         private void Awake()
         {
@@ -26,6 +27,12 @@ namespace UI.SkillTree
             if (keyboard == null)
             {
                 Debug.LogError("SkillTreePanZoomUI: no keyboard found, WASD panning disabled.");
+            }
+
+            canvas = GetComponentInParent<Canvas>();
+            if (canvas == null)
+            {
+                Debug.LogError("SkillTreePanZoomUI: no parent Canvas found, zoom-to-cursor will be inaccurate.");
             }
         }
 
@@ -53,7 +60,22 @@ namespace UI.SkillTree
         public void OnScroll(PointerEventData eventData)
         {
             if (content == null) return;
-            float next = Mathf.Clamp(content.localScale.x + eventData.scrollDelta.y * zoomSpeed, minZoom, maxZoom);
+            float current = content.localScale.x;
+            float next = Mathf.Clamp(current + eventData.scrollDelta.y * zoomSpeed, minZoom, maxZoom);
+            if (Mathf.Approximately(next, current)) return;
+
+            // Keep the point under the cursor fixed on screen: find where the cursor lands in
+            // the content's parent space, then re-derive anchoredPosition so that same parent-
+            // space point still corresponds to the same spot in content-local space at the new
+            // scale (standard zoom-to-cursor math for a scaled RectTransform).
+            var parent = content.parent as RectTransform;
+            Camera cam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
+            if (parent != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, eventData.position, cam, out Vector2 localPoint))
+            {
+                Vector2 contentSpacePoint = (localPoint - content.anchoredPosition) / current;
+                content.anchoredPosition = localPoint - contentSpacePoint * next;
+            }
+
             content.localScale = new Vector3(next, next, 1f);
         }
 
