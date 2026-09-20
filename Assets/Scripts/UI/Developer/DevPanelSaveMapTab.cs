@@ -1,3 +1,4 @@
+using Events;
 using MapGeneration;
 using Persistence;
 using TMPro;
@@ -42,6 +43,8 @@ namespace UI
                 ? parsed
                 : Random.Range(int.MinValue, int.MaxValue);
             GameManager.MapGenerationService.PrestigeReset(seed);
+            // ensure player doesn't get stuck under the map
+            GameManager.EventService.Dispatch<PlayerRevivedEvent>();
         }
 
         private void OnDeleteSaveClicked()
