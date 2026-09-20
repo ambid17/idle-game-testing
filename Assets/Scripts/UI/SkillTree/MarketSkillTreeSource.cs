@@ -37,7 +37,7 @@ namespace UI.SkillTree
                     CanPurchase = manager.CanPurchase(def),
                     UpgradeDefinition = def,
                 };
-                vm.CostLabel = vm.IsMaxed ? "MAXED" : $"{manager.GetNextCost(def):0.##}";
+                vm.CostLabel = vm.IsMaxed ? "MAXED" : $"{manager.GetNextCost(def):0}";
 
                 viewModels.Add(vm);
                 viewModelsByDefinition[def] = vm;
@@ -73,7 +73,7 @@ namespace UI.SkillTree
                 Description = def.Description,
                 Level = manager.GetLevelIncludingPrestige(def),
                 MaxLevel = def.MaxLevel,
-                CostLabel = manager.IsMaxed(def) ? "MAXED" : $"{manager.GetNextCost(def):0.##}",
+                CostLabel = manager.IsMaxed(def) ? "MAXED" : $"{manager.GetNextCost(def):0}",
                 CanPurchase = manager.CanPurchase(def),
                 PurchaseBlockedReason = manager.GetPurchaseBlockedReason(def)
             };

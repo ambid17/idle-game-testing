@@ -42,7 +42,7 @@ namespace UI
 
             var blockValue = blockType.Value;
             var totalValue = blockValue * UpgradeManager.Instance.SellValueMultiplier * count;
-            valueLabel.text = $"${totalValue:0.##}";
+            valueLabel.text = $"${totalValue:0}";
 
             return totalValue;
         }
@@ -55,7 +55,7 @@ namespace UI
 
             var blockValue = blockType.Value;
             var totalValue = blockValue * perMinute;
-            if (valueLabel != null) valueLabel.text = $"${totalValue:0.##}/min";
+            if (valueLabel != null) valueLabel.text = $"${totalValue:0}/min";
         }
     }
 }

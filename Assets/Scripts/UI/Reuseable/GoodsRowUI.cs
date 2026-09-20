@@ -44,7 +44,7 @@ namespace UI
 
             var saleValue = recipe.SaleValue;
             var totalValue = saleValue * UpgradeManager.Instance.ProcessingGoodsSellMultiplier * count;
-            valueLabel.text = $"${totalValue:0.##}";
+            valueLabel.text = $"${totalValue:0}";
 
             return totalValue;
         }

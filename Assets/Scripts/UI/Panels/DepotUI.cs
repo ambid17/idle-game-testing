@@ -192,7 +192,7 @@ namespace UI
                 totalValue += kvp.Value.SetCount(count);
             }
 
-            sellAllButtonLabel.text = $"Sell All (${totalValue:0.##})";
+            sellAllButtonLabel.text = $"Sell All (${totalValue:0})";
 
             var totalGoodsValue = 0f;
             foreach (var kvp in goodsRows)
@@ -201,14 +201,14 @@ namespace UI
                 totalGoodsValue += kvp.Value.SetCount(count);
             }
 
-            sellAllGoodsButtonLabel.text = $"Sell All Goods (${totalGoodsValue:0.##})";
+            sellAllGoodsButtonLabel.text = $"Sell All Goods (${totalGoodsValue:0})";
 
             OnDollarsChanged();
         }
 
         private void OnDollarsChanged()
         {
-            dollarsLabel.text = $"${Wallet.Instance.Dollars:0.##}";
+            dollarsLabel.text = $"${Wallet.Instance.Dollars:0}";
         }
     }
 }

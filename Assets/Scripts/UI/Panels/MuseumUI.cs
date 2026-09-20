@@ -126,7 +126,7 @@ namespace UI
 
         private void RefreshNonTreeUI()
         {
-            if (prestigePointsLabel != null) prestigePointsLabel.text = $"{PrestigePoints.Instance.Points:0.##} pts";
+            if (prestigePointsLabel != null) prestigePointsLabel.text = $"{PrestigePoints.Instance.Points:0} pts";
             RefreshArtifactCount();
         }
 

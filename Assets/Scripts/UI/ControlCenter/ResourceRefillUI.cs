@@ -50,8 +50,8 @@ namespace UI
             fuelLabel.text = $"{playerController.Fuel:0}/{playerController.FuelMax:0}";
             buyFuelUnitButton.interactable = fuelMissing > 0f;
             fillFuelButton.interactable = fuelMissing > 0f;
-            buyFuelUnitLabel.text = $"Buy 1 (${config.FuelCostPerUnit:0.##})";
-            fillFuelLabel.text = $"Fill (${fuelMissing * config.FuelCostPerUnit:0.##})";
+            buyFuelUnitLabel.text = $"Buy 1 (${config.FuelCostPerUnit:0})";
+            fillFuelLabel.text = $"Fill (${fuelMissing * config.FuelCostPerUnit:0})";
 
             float hpMissing = Mathf.Max(0f, playerHealth.MaxHp - playerHealth.CurrentHp);
 
@@ -59,8 +59,8 @@ namespace UI
             hpLabel.text = $"{playerHealth.CurrentHp:0}/{playerHealth.MaxHp:0}";
             buyHpUnitButton.interactable = hpMissing > 0f;
             fillHpButton.interactable = hpMissing > 0f;
-            buyHpUnitLabel.text = $"Buy 1 (${config.HpCostPerUnit:0.##})";
-            fillHpLabel.text = $"Fill (${hpMissing * config.HpCostPerUnit:0.##})";
+            buyHpUnitLabel.text = $"Buy 1 (${config.HpCostPerUnit:0})";
+            fillHpLabel.text = $"Fill (${hpMissing * config.HpCostPerUnit:0})";
         }
 
         private void BuyFuelUnit()
