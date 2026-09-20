@@ -54,7 +54,11 @@ namespace UI.SkillTree
         public void OnDrag(PointerEventData eventData)
         {
             if (content == null) return;
-            content.anchoredPosition = content.anchoredPosition + eventData.delta / content.localScale.x;
+            // anchoredPosition is a translation in the parent's space, not scaled by content's
+            // own localScale, so adding the raw screen-space delta keeps the dragged point
+            // glued to the cursor at any zoom level - dividing by scale would make drags feel
+            // slower zoomed in and faster zoomed out.
+            content.anchoredPosition = content.anchoredPosition + eventData.delta;
         }
 
         public void OnScroll(PointerEventData eventData)
