@@ -62,7 +62,7 @@ namespace UI
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
-            if (evt.Type == InteractableType.Building_Processing) Open();
+            if (evt.InteractableType == InteractableType.Building_Processing) Open();
             else Close();
         }
 

@@ -54,8 +54,9 @@ namespace Tutorial
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
+            if(evt.InteractionType != InteractionType.Primary) return;
             // attempt to show a tutorial for the building type interacted with
-            var id = ToTutorialId(evt.Type);
+            var id = ToTutorialId(evt.InteractableType);
             if (id.HasValue) TryShow(id.Value);
         }
 

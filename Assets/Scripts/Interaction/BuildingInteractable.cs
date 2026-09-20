@@ -10,16 +10,7 @@ namespace Interaction
 
     public class BuildingInteractable : MonoBehaviour, IInteractable
     {
-        [SerializeField] private string promptText = "Press E to interact";
         [SerializeField] private InteractableType interactableType;
         public InteractableType InteractableType { get { return interactableType; } }
-
-        public string PromptText => promptText;
-
-
-        public void Interact()
-        {
-            GameManager.EventService.Dispatch(new PlayerInteractedEvent(interactableType));
-        }
     }
 }

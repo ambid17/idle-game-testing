@@ -69,7 +69,7 @@ namespace UI
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
-            if (evt.Type == InteractableType.Building_Museum)
+            if (evt.InteractableType == InteractableType.Building_Museum)
             {
                 Open();
             }

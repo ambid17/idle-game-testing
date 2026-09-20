@@ -44,61 +44,73 @@ namespace UI
 
         private void Update()
         {
-            if (playerController != null)
-            {
-                float fuelMissing = Mathf.Max(0f, playerController.FuelMissing);
+            float fuelMissing = Mathf.Max(0f, playerController.FuelMissing);
 
-                fuelFillBar.fillAmount = Mathf.Clamp01(playerController.FuelFraction);
-                fuelLabel.text = $"{playerController.Fuel:0}/{playerController.FuelMax:0}";
-                buyFuelUnitButton.interactable = fuelMissing > 0f;
-                fillFuelButton.interactable = fuelMissing > 0f;
-                buyFuelUnitLabel.text = $"Buy 1 (${config.FuelCostPerUnit:0.##})";
-                fillFuelLabel.text = $"Fill (${fuelMissing * config.FuelCostPerUnit:0.##})";
-            }
+            fuelFillBar.fillAmount = Mathf.Clamp01(playerController.FuelFraction);
+            fuelLabel.text = $"{playerController.Fuel:0}/{playerController.FuelMax:0}";
+            buyFuelUnitButton.interactable = fuelMissing > 0f;
+            fillFuelButton.interactable = fuelMissing > 0f;
+            buyFuelUnitLabel.text = $"Buy 1 (${config.FuelCostPerUnit:0.##})";
+            fillFuelLabel.text = $"Fill (${fuelMissing * config.FuelCostPerUnit:0.##})";
 
-            if (playerHealth != null)
-            {
-                float hpMissing = Mathf.Max(0f, playerHealth.MaxHp - playerHealth.CurrentHp);
+            float hpMissing = Mathf.Max(0f, playerHealth.MaxHp - playerHealth.CurrentHp);
 
-                hpFillBar.fillAmount = playerHealth.MaxHp > 0f ? Mathf.Clamp01(playerHealth.CurrentHp / playerHealth.MaxHp) : 0f;
-                hpLabel.text = $"{playerHealth.CurrentHp:0}/{playerHealth.MaxHp:0}";
-                buyHpUnitButton.interactable = hpMissing > 0f;
-                fillHpButton.interactable = hpMissing > 0f;
-                buyHpUnitLabel.text = $"Buy 1 (${config.HpCostPerUnit:0.##})";
-                fillHpLabel.text = $"Fill (${hpMissing * config.HpCostPerUnit:0.##})";
-            }
+            hpFillBar.fillAmount = playerHealth.MaxHp > 0f ? Mathf.Clamp01(playerHealth.CurrentHp / playerHealth.MaxHp) : 0f;
+            hpLabel.text = $"{playerHealth.CurrentHp:0}/{playerHealth.MaxHp:0}";
+            buyHpUnitButton.interactable = hpMissing > 0f;
+            fillHpButton.interactable = hpMissing > 0f;
+            buyHpUnitLabel.text = $"Buy 1 (${config.HpCostPerUnit:0.##})";
+            fillHpLabel.text = $"Fill (${hpMissing * config.HpCostPerUnit:0.##})";
         }
 
         private void BuyFuelUnit()
         {
-            if (playerController == null || playerController.FuelMissing <= 0f) return;
+            if (playerController.FuelMissing <= 0f) return;
             if (!Wallet.Instance.TrySpend(config.FuelCostPerUnit)) return;
             playerController.AddFuel(1f);
         }
 
         private void FillFuel()
         {
-            if (playerController == null) return;
             float units = playerController.FuelMissing;
             if (units <= 0f) return;
             if (!Wallet.Instance.TrySpend(units * config.FuelCostPerUnit)) return;
             playerController.AddFuel(units);
         }
 
+        
+
         private void BuyHpUnit()
         {
-            if (playerHealth == null || playerHealth.MaxHp - playerHealth.CurrentHp <= 0f) return;
+            if (playerHealth.MaxHp - playerHealth.CurrentHp <= 0f) return;
             if (!Wallet.Instance.TrySpend(config.HpCostPerUnit)) return;
             playerHealth.AddHp(1f);
         }
 
         private void FillHp()
         {
-            if (playerHealth == null) return;
             float units = playerHealth.MaxHp - playerHealth.CurrentHp;
             if (units <= 0f) return;
             if (!Wallet.Instance.TrySpend(units * config.HpCostPerUnit)) return;
             playerHealth.AddHp(units);
+        }
+
+
+        public void TryFillFuel()
+        {
+            if (playerController.FuelMissing <= 0f) return;
+
+            var maxPurchaseableUnits = Mathf.FloorToInt((float)(Wallet.Instance.Dollars / config.FuelCostPerUnit));
+            if (!Wallet.Instance.TrySpend(maxPurchaseableUnits * config.FuelCostPerUnit)) return;
+            playerController.AddFuel(maxPurchaseableUnits);
+        }
+
+        public void TryFillHp()
+        {
+            if(playerHealth.CurrentHp >=playerHealth.MaxHp) return;
+            var maxPurchaseableUnits = Mathf.FloorToInt((float)(Wallet.Instance.Dollars / config.HpCostPerUnit));
+            if (!Wallet.Instance.TrySpend(maxPurchaseableUnits * config.HpCostPerUnit)) return;
+            playerHealth.AddHp(maxPurchaseableUnits);
         }
     }
 }

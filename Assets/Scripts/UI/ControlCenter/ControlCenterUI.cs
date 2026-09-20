@@ -17,11 +17,21 @@ namespace UI
         [SerializeField] private GameObject rendererRoot;
         [SerializeField] private Button closeButton;
         [SerializeField] private Button droneTabButton;
+        [SerializeField] private ResourceRefillUI resourceRefillUI;
 
         private void Start()
         {
-            if (closeButton != null) closeButton.onClick.AddListener(Close);
-            if (rendererRoot != null) rendererRoot.SetActive(false);
+            CheckNullRefs();
+            closeButton.onClick.AddListener(Close);
+            rendererRoot.SetActive(false);
+        }
+
+        private void CheckNullRefs()
+        {
+            if (rendererRoot == null) Debug.LogError("ControlCenterUI: rendererRoot not assigned in the Inspector.");
+            if (closeButton == null) Debug.LogError("ControlCenterUI: closeButton not assigned in the Inspector.");
+            if (droneTabButton == null) Debug.LogError("ControlCenterUI: droneTabButton not assigned in the Inspector.");
+            if (resourceRefillUI == null) Debug.LogError("ControlCenterUI: resourceRefillUI not assigned in the Inspector.");
         }
 
         private void OnEnable() {
@@ -50,26 +60,46 @@ namespace UI
 
         private void RefreshDroneTabGate()
         {
-            if (droneTabButton == null) { Debug.LogError("ControlCenterUI: droneTabButton not assigned."); return; }
             droneTabButton.gameObject.SetActive(UpgradeManager.Instance.AutomatonCount > 0);
         }
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
-            if (evt.Type == InteractableType.Building_ControlCenter) Open();
-            else Close();
+            if (evt.InteractableType != InteractableType.Building_ControlCenter) {
+                Close();
+                return;
+            }
+
+            switch(evt.InteractionType )
+            {
+                case InteractionType.Primary:
+                    Open();
+                    break;
+                case InteractionType.Secondary:
+                    resourceRefillUI.TryFillFuel();
+                    // TODO: show toast with money spent, and animation of the HUD bar refill
+                    break;
+                case InteractionType.Tertiary:
+                    resourceRefillUI.TryFillHp();
+                    // TODO: show toast with money spent, and animation of the HUD bar refill
+                    break;
+                default:
+                    Close();
+                    break;
+            }
+            
         }
 
         private void Open()
         {
-            if (rendererRoot == null || rendererRoot.activeSelf) return;
+            if (rendererRoot.activeSelf) return;
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
         }
 
         private void Close()
         {
-            if (rendererRoot == null || !rendererRoot.activeSelf) return;
+            if (!rendererRoot.activeSelf) return;
             InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
         }

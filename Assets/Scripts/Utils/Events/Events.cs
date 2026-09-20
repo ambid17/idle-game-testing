@@ -114,11 +114,13 @@ namespace Events
 
     public class PlayerInteractedEvent : IEvent
     {
-        public InteractableType Type;
+        public InteractableType InteractableType;
+        public InteractionType InteractionType;
 
-        public PlayerInteractedEvent(InteractableType type)
+        public PlayerInteractedEvent(InteractableType interactableType, InteractionType interactionType)
         {
-            Type = type;
+            InteractableType = interactableType;
+            InteractionType = interactionType;
         }
     }
 

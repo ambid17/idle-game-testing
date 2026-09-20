@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Events;
 using Interaction;
 using MapGeneration;
 using Player;
@@ -38,13 +39,18 @@ namespace Economy
             if (playerInventory == null) Debug.LogError("Chest: no PlayerInventory found in scene.");
         }
 
-        private void OnEnable() => ChestRegistry.Instance.Register(this);
+        private void OnEnable()
+        {
+            ChestRegistry.Instance.Register(this);
+            GameManager.EventService.Add<PlayerInteractedEvent>(OnPlayerInteracted);
+        }
         // HasInstance guard: teardown order across objects isn't guaranteed when Stopping the
         // Player, so ChestRegistry's singleton may already be destroyed by the time this runs.
         // (Instance would resurrect it as a stray GameObject mid-unload - HasInstance doesn't.)
         private void OnDisable()
         {
             if (ChestRegistry.HasInstance) ChestRegistry.Instance.Unregister(this);
+            GameManager.EventService.Remove<PlayerInteractedEvent>(OnPlayerInteracted);
         }
 
         // Called immediately after Instantiate by ChestSpawner to seed the dropped ore.
@@ -54,6 +60,14 @@ namespace Economy
             var currentWeight = oreInventory.CurrentWeight;
             oreInventory.Initialize(() => currentWeight);
             RefreshWeightBar();
+        }
+
+        private void OnPlayerInteracted(PlayerInteractedEvent e)
+        {
+            if (e.InteractableType == InteractableType.Chest && e.InteractionType == InteractionType.Primary)
+            {
+                Interact();
+            }
         }
 
         public void Interact()

@@ -99,14 +99,31 @@ namespace UI
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
-            if(evt.Type == InteractableType.Building_Depot)
-            {
-                Open();
-            }
-            else
+            if (evt.InteractableType != InteractableType.Building_Depot)
             {
                 Close();
+                return;
             }
+
+            switch (evt.InteractionType)
+            {
+                case InteractionType.Primary:
+                    Open();
+                    break;
+                case InteractionType.Secondary:
+                    DepositAll();
+                    // TODO: show toast with ore deposited, and animate inventory weight bar emptying
+                    break;
+                case InteractionType.Tertiary:
+                    DepositAll();
+                    Depot.Instance.SellAll();
+                    // TODO: show toast with ore deposited, animate inventory weight bar emptying, and money made from selling it
+                    break;
+                default:
+                    Close();
+                    break;
+            }
+
         }
 
         private void BuildOreRows()

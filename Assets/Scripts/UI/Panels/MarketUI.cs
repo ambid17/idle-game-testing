@@ -57,7 +57,7 @@ namespace UI
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
-            if (evt.Type == InteractableType.Building_Market)
+            if (evt.InteractableType == InteractableType.Building_Market)
             {
                 Open();
             }

@@ -40,9 +40,27 @@ namespace Interaction
                 }
             }
 
-            if (current != null && keyboard != null && keyboard.eKey.wasPressedThisFrame)
+            if (current != null && keyboard != null)
             {
-                current.Interact();
+                var interactionType = InteractionType.None;
+
+                if (keyboard.eKey.wasPressedThisFrame)
+                {
+                    interactionType = InteractionType.Primary;
+                }
+                if (keyboard.rKey.wasPressedThisFrame)
+                {
+                    interactionType = InteractionType.Secondary;
+                }
+                if (keyboard.fKey.wasPressedThisFrame)
+                {
+                    interactionType = InteractionType.Tertiary;
+                }
+
+                if (interactionType != InteractionType.None)
+                {
+                    GameManager.EventService.Dispatch(new PlayerInteractedEvent(current.InteractableType, interactionType));
+                }
             }
         }
 

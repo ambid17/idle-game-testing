@@ -9,10 +9,17 @@ namespace Interaction
         Building_ControlCenter,
         Chest,
     }
+
+    public enum InteractionType
+    {
+        None,
+        Primary,
+        Secondary,
+        Tertiary
+    }
+
     public interface IInteractable
     {
         InteractableType InteractableType { get; }
-        string PromptText { get; }
-        void Interact();
     }
 }
