@@ -145,8 +145,6 @@ namespace Automation
                 return;
             }
 
-            crackIndicator.Hide();
-
             var accessible = AutomatonReachability.GetAccessibleTiles(mapGenerationService, currentLayer, currentCell.x, currentCell.y, config.AutomatonWanderRadius);
             miningProgress = 0f;
 
@@ -194,7 +192,6 @@ namespace Automation
             // player is simply facing the target rather than fully "arrived."
             if (pathIndex < path.Count - 1)
             {
-                crackIndicator.Hide();
                 return;
             }
 
@@ -310,7 +307,6 @@ namespace Automation
 
         private void UpdateFlyingToDepot()
         {
-            crackIndicator.Hide();
             fuelSystem.ConsumeFlying(Time.deltaTime);
 
             float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
@@ -318,6 +314,12 @@ namespace Automation
             if (!arrived) return;
 
             Deposit();
+
+            if(fuelSystem.FuelFraction < 0.5f)
+            {
+                state = State.ReturningToRefuel;
+                return;
+            }
             state = State.PickingTarget;
         }
 
@@ -331,8 +333,6 @@ namespace Automation
         // rather than a separate refuel destination - there's only the one Control Center.
         private void UpdateReturningToRefuel()
         {
-            crackIndicator.Hide();
-
             float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, _depotLocation, speed);
             if (!arrived) return;
@@ -340,7 +340,17 @@ namespace Automation
             PurchaseFuel();
             // If funds ran out, stay parked here rather than bouncing back to PickingTarget only to
             // immediately re-trigger this same state - wait for more money or a passing Fuel Drone.
-            if (!fuelSystem.IsEmpty) state = State.PickingTarget;
+            if (!fuelSystem.IsEmpty)
+            {
+                if(oreInventory.CurrentWeight > 0f)
+                {
+                    state = State.FlyingToDepot;
+                }
+                else
+                {
+                    state = State.PickingTarget;
+                }
+            }
         }
 
         // Mirrors UI.ResourceRefillUI.TryFillFuel's player-facing purchase - buys as much of the
