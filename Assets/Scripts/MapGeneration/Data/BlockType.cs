@@ -33,6 +33,12 @@ namespace MapGeneration
         SingularityOre = 16,
         AetherCircuitry = 17,
         PrecursorAlloy = 18,
+        // Hazard block types (Category.Hazard) - one BlockTypeId per HazardBehavior below, backing
+        // the hazard deepening pass. Append-only, same rule as every id above.
+        Explosive = 19,
+        FallingRock = 20,
+        GasPocket = 21,
+        Lava = 22,
     }
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)
