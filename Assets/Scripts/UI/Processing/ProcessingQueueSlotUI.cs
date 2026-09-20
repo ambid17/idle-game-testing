@@ -1,6 +1,7 @@
 using Economy;
 using Events;
 using Processing;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -115,7 +116,14 @@ namespace UI.Processing
             recipeSizeSlider.maxValue = Mathf.Max(1, maxCraftable);
             if (recipeSizeSlider.value > recipeSizeSlider.maxValue) recipeSizeSlider.value = recipeSizeSlider.maxValue;
 
-            ingredientsLabel.text = FormatIngredients(selectedRecipe);
+            if (maxCraftable == 0)
+            {
+                ingredientsLabel.text = $"<color=red>Insufficient materials available</color>";
+            }
+            else
+            {
+                ingredientsLabel.text = FormatIngredients(selectedRecipe);
+            }
             actionButton.interactable = maxCraftable >= 1;
 
             recipeSizeLabel.text = $"{recipeSizeSlider.value:0}/{recipeSizeSlider.maxValue:0}";
@@ -160,13 +168,13 @@ namespace UI.Processing
 
         private string FormatIngredients(ProcessingRecipeDefinition recipe)
         {
-            var parts = new string[recipe.Ingredients.Count];
-            for (int i = 0; i < recipe.Ingredients.Count; i++)
+            var parts = new List<string>();
+            parts.Add("Cost:");
+            foreach (var ingredient in recipe.Ingredients)
             {
-                var ingredient = recipe.Ingredients[i];
                 var ingredientCount = ingredient.Count * (int)recipeSizeSlider.value;
                 string line = $"- {ingredientCount} {ingredient.Material}";
-                parts[i] = line;
+                parts.Add(line);
             }
             return string.Join("\n", parts);
         }
