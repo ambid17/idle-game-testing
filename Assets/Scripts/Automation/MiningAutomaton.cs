@@ -36,6 +36,7 @@ namespace Automation
         private FuelSystem fuelSystem;
         private readonly GridPathMover mover = new();
         [SerializeField] private State state = State.PickingTarget;
+        [SerializeField] private MiningCrackIndicator crackIndicator;
 
         private int currentLayer;
         [SerializeField] private Vector2Int currentCell;
@@ -71,6 +72,8 @@ namespace Automation
 
             fuelSystem = GetComponent<FuelSystem>();
             if (fuelSystem == null) fuelSystem = gameObject.AddComponent<FuelSystem>();
+
+            if (crackIndicator == null) Debug.LogError($"{nameof(MiningAutomaton)} on {name} is missing its crackIndicator reference.");
         }
 
         private void Start()
@@ -134,6 +137,8 @@ namespace Automation
                 return;
             }
 
+            crackIndicator.Hide();
+
             var accessible = AutomatonReachability.GetAccessibleTiles(mapGenerationService, currentLayer, currentCell.x, currentCell.y, config.AutomatonWanderRadius);
             miningProgress = 0f;
 
@@ -179,12 +184,17 @@ namespace Automation
             // The final waypoint is the dig target cell itself (unmined) - mine it in place once
             // that's the active waypoint, mirroring PlayerMining accruing progress while the
             // player is simply facing the target rather than fully "arrived."
-            if (pathIndex < path.Count - 1) return;
+            if (pathIndex < path.Count - 1)
+            {
+                crackIndicator.Hide();
+                return;
+            }
 
             var blockType = mapGenerationService.GetBlockTypeAt(digTargetLayer, digTargetCell.x, digTargetCell.y);
             if (blockType == null)
             {
                 // Already mined out from under us (e.g. the player got there first) - move on.
+                crackIndicator.Hide();
                 state = State.PickingTarget;
                 return;
             }
@@ -193,8 +203,13 @@ namespace Automation
             miningProgress += Time.deltaTime * miningSpeed;
             fuelSystem.ConsumeMining(Time.deltaTime);
             float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(digTargetLayer);
-            if (miningProgress < targetHealth) return;
+            if (miningProgress < targetHealth)
+            {
+                crackIndicator.Show(mapGenerationService.CellToWorldCenter(digTargetLayer, digTargetCell.x, digTargetCell.y), miningProgress / targetHealth);
+                return;
+            }
 
+            crackIndicator.Hide();
             MineTargetAndBonusCells(digTargetLayer, digTargetCell, blockType);
             state = State.PickingTarget;
         }
@@ -217,6 +232,7 @@ namespace Automation
             if (blockType == null)
             {
                 // Already-open ground directly below - step down into it and keep descending.
+                crackIndicator.Hide();
                 float moveSpeed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
                 transform.position = Vector3.MoveTowards(transform.position, mapGenerationService.CellToWorldCenter(layer, x, y), moveSpeed * Time.deltaTime);
                 return;
@@ -226,8 +242,13 @@ namespace Automation
             miningProgress += Time.deltaTime * miningSpeed;
             fuelSystem.ConsumeMining(Time.deltaTime);
             float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layer);
-            if (miningProgress < targetHealth) return;
+            if (miningProgress < targetHealth)
+            {
+                crackIndicator.Show(mapGenerationService.CellToWorldCenter(layer, x, y), miningProgress / targetHealth);
+                return;
+            }
 
+            crackIndicator.Hide();
             MineTargetAndBonusCells(layer, new Vector2Int(x, y), blockType);
             state = State.PickingTarget;
         }
@@ -281,6 +302,7 @@ namespace Automation
 
         private void UpdateFlyingToDepot()
         {
+            crackIndicator.Hide();
             fuelSystem.ConsumeFlying(Time.deltaTime);
 
             float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;

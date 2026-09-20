@@ -85,8 +85,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 42a0c3070bd721f488a1eacec5e5a9eb, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 1235984715, guid: 48ec1ffa380f0ec4eac415d25a3434a2, type: 3}
+  m_Color: {r: 1, g: 0.9725427, b: 0.3160377, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -121,6 +121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Automation.MiningAutomaton
   state: 0
+  crackIndicator: {fileID: 1432108228072147455}
   currentCell: {x: 0, y: 0}
   path: []
   pathIndex: 0
