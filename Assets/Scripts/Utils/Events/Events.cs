@@ -77,6 +77,22 @@ namespace Events
         }
     }
 
+    // Dispatched by PlayerMining.CollectMinedBlock whenever the player personally mines an
+    // Ore-category block (whether it lands in the inventory or gets auto-sold via Overflow) -
+    // drives the HUD's ore-mined toast (UI.OreMinedToastUI). Distinct from
+    // OreDepositedByAutomationEvent, which is for automaton/drone deposits at the Depot.
+    public class OreMinedEvent : IEvent
+    {
+        public BlockTypeId Id;
+        public int Amount;
+
+        public OreMinedEvent(BlockTypeId id, int amount)
+        {
+            Id = id;
+            Amount = amount;
+        }
+    }
+
     // Dispatched by PlayerInventory.HandleDeath with the ore that was just withdrawn on death, so
     // Economy.ChestSpawner can drop it into a chest instead of it just being discarded.
     public class PlayerInventoryDroppedEvent : IEvent

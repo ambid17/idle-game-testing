@@ -172,6 +172,8 @@ namespace Player
             }
             if (blockType.Category != BlockCategory.Ore) return;
 
+            GameManager.EventService.Dispatch(new OreMinedEvent(blockType.Id, 1));
+
             ApplyLayerBonus(blockType, layerIndex);
 
             if (playerInventory.IsFull && CanOverflow)
