@@ -48,5 +48,42 @@ namespace Economy
                 upgradesByName[def.DisplayName] = def;
             }
         }
+
+        public void Validate()
+        {
+            if (Upgrades == null)
+            {
+                Debug.LogError("UpgradeDatabase is not assigned in GameManager.");
+                return;
+            }
+            foreach (var upgrade in Upgrades)
+            {
+                if (upgrade == null)
+                {
+                    Debug.LogError("UpgradeDatabase contains a null UpgradeDefinition.");
+                    continue;
+                }
+                if (string.IsNullOrEmpty(upgrade.DisplayName))
+                {
+                    Debug.LogError($"UpgradeDefinition '{upgrade.name}' has an invalid display name.");
+                }
+                if (upgrade.Icon == null)
+                {
+                    Debug.LogError($"UpgradeDefinition '{upgrade.name}' has no icon assigned.");
+                }
+                if (upgrade.MaxLevel <= 0)
+                {
+                    Debug.LogError($"UpgradeDefinition '{upgrade.name}' has an invalid MaxLevel.");
+                }
+                if (upgrade.BaseCost <= 0)
+                {
+                    Debug.LogError($"UpgradeDefinition '{upgrade.name}' has an invalid BaseCost.");
+                }
+                if (upgrade.Prerequisite == upgrade)
+                {
+                    Debug.LogError($"UpgradeDefinition '{upgrade.name}' lists itself as its own Prerequisite.");
+                }
+            }
+        }
     }
 }

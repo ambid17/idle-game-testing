@@ -94,6 +94,13 @@ public class GameManager : Singleton<GameManager>
             Debug.LogError("TutorialDatabase is not assigned in GameManager.");
         }
         BlockTypeDatabase.Validate();
+        LayerConfigProvider.Validate();
+        MapGenerationConfig.Validate();
+        UpgradeDatabase.Validate();
+        PrestigeUpgradeDatabase.Validate();
+        AutomationConfig.Validate();
+        ProcessingRecipeDatabase.Validate();
+        TutorialDatabase.Validate();
     }
 
     // Runs after every scene object's Awake(), so Wallet/UpgradeManager/AutomationSettings/

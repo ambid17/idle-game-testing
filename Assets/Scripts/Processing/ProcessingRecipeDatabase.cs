@@ -29,5 +29,42 @@ namespace Processing
         }
 
         private void OnEnable() => lookup = null;
+
+        public void Validate()
+        {
+            if (Recipes == null)
+            {
+                Debug.LogError("ProcessingRecipeDatabase has no recipes.");
+                return;
+            }
+            foreach (var recipe in Recipes)
+            {
+                if (recipe == null)
+                {
+                    Debug.LogError("ProcessingRecipeDatabase contains a null ProcessingRecipeDefinition.");
+                    continue;
+                }
+                if (string.IsNullOrEmpty(recipe.DisplayName))
+                {
+                    Debug.LogError($"ProcessingRecipeDefinition '{recipe.name}' has an invalid display name.");
+                }
+                if (recipe.Icon == null)
+                {
+                    Debug.LogError($"ProcessingRecipeDefinition '{recipe.name}' has no icon assigned.");
+                }
+                if (recipe.Ingredients == null || recipe.Ingredients.Count == 0)
+                {
+                    Debug.LogError($"ProcessingRecipeDefinition '{recipe.name}' has no ingredients.");
+                }
+                if (recipe.SaleValue <= 0)
+                {
+                    Debug.LogError($"ProcessingRecipeDefinition '{recipe.name}' has an invalid SaleValue.");
+                }
+                if (recipe.DurationPerUnit <= 0)
+                {
+                    Debug.LogError($"ProcessingRecipeDefinition '{recipe.name}' has an invalid DurationPerUnit.");
+                }
+            }
+        }
     }
 }

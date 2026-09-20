@@ -27,5 +27,31 @@ namespace Automation
 
         [Header("Player HP Refill")]
         public float HpCostPerUnit = 5f;
+
+        public void Validate()
+        {
+            if (AutomatonBaseMiningSpeed <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonBaseMiningSpeed.");
+            if (AutomatonBaseMoveSpeed <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonBaseMoveSpeed.");
+            if (AutomatonBaseMiningRadius <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonBaseMiningRadius.");
+            if (AutomatonBaseInventoryWeight <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonBaseInventoryWeight.");
+            if (AutomatonWanderRadius <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonWanderRadius.");
+            if (StorageDroneBaseMoveSpeed <= 0)
+                Debug.LogError("AutomationConfig has an invalid StorageDroneBaseMoveSpeed.");
+            if (StorageDroneBaseInventoryWeight <= 0)
+                Debug.LogError("AutomationConfig has an invalid StorageDroneBaseInventoryWeight.");
+            if (FuelDroneBaseMoveSpeed <= 0)
+                Debug.LogError("AutomationConfig has an invalid FuelDroneBaseMoveSpeed.");
+            if (FuelDroneBaseFuelCapacity <= 0)
+                Debug.LogError("AutomationConfig has an invalid FuelDroneBaseFuelCapacity.");
+            if (FuelCostPerUnit <= 0)
+                Debug.LogError("AutomationConfig has an invalid FuelCostPerUnit.");
+            if (HpCostPerUnit <= 0)
+                Debug.LogError("AutomationConfig has an invalid HpCostPerUnit.");
+        }
     }
 }

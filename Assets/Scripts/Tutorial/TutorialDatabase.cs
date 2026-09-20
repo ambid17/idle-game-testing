@@ -27,5 +27,30 @@ namespace Tutorial
                 entriesById[entry.Id] = entry;
             }
         }
+
+        public void Validate()
+        {
+            if (Entries == null)
+            {
+                Debug.LogError("TutorialDatabase has no entries.");
+                return;
+            }
+            foreach (var entry in Entries)
+            {
+                if (entry == null)
+                {
+                    Debug.LogError("TutorialDatabase contains a null TutorialEntry.");
+                    continue;
+                }
+                if (string.IsNullOrEmpty(entry.Title))
+                {
+                    Debug.LogError($"TutorialEntry '{entry.Id}' has an invalid title.");
+                }
+                if (string.IsNullOrEmpty(entry.Body))
+                {
+                    Debug.LogError($"TutorialEntry '{entry.Id}' has an invalid body.");
+                }
+            }
+        }
     }
 }

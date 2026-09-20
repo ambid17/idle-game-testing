@@ -96,5 +96,30 @@ namespace MapGeneration
             //Debug.Log($"GetLayerIndexAtWorldY: worldY={(int)worldY}, cellSize={cellSize.ToString("F1")}, layerIndex={layerIndex}");
             return layerIndex;
         }
+
+        public void Validate()
+        {
+            if (LayerConfigs == null || LayerConfigs.Count == 0)
+            {
+                Debug.LogError("LayerConfigProvider has no LayerConfigs assigned.");
+                return;
+            }
+            foreach (var layer in LayerConfigs)
+            {
+                if (layer == null)
+                {
+                    Debug.LogError("LayerConfigProvider contains a null LayerConfig.");
+                    continue;
+                }
+                if (layer.LayerHeight <= 0)
+                {
+                    Debug.LogError($"LayerConfig '{layer.name}' has an invalid LayerHeight.");
+                }
+                if (layer.OreTable == null || layer.OreTable.Count == 0)
+                {
+                    Debug.LogError($"LayerConfig '{layer.name}' has no OreTable entries.");
+                }
+            }
+        }
     }
 }

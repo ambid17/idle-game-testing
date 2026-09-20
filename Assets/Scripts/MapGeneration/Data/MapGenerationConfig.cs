@@ -21,5 +21,21 @@ namespace MapGeneration
         /// The number of layers above and below the current focus layer to keep loaded in the streaming manager.
         /// </summary>
         public int WindowRadius => windowRadius;
+
+        public void Validate()
+        {
+            if (gridWidth <= 0)
+            {
+                Debug.LogError("MapGenerationConfig has an invalid GridWidth.");
+            }
+            if (cellSize <= 0)
+            {
+                Debug.LogError("MapGenerationConfig has an invalid CellSize.");
+            }
+            if (windowRadius <= 0)
+            {
+                Debug.LogError("MapGenerationConfig has an invalid WindowRadius.");
+            }
+        }
     }
 }
