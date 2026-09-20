@@ -48,6 +48,7 @@ namespace Player
         private PlayerHealth health;
         private FuelSystem fuelSystem;
         private bool wasGrounded;
+        private Collider2D groundCollider;
         private bool wasInputBlocked;
         private float lastFallSpeed;
         private Vector3 spawnPosition;
@@ -230,6 +231,13 @@ namespace Player
             if (dHeld) horizontalInput += 1f;
             movementInput = new Vector2(horizontalInput, wHeld ? 1f : 0f);
 
+            // S drops the player through MapGenerationService's invisible surface floor gate when
+            // they're standing on it specifically (not just any ground) - lets them re-enter the
+            // mine on foot instead of having to fly down through a dug-out gap.
+            if (keyboard.sKey.wasPressedThisFrame && IsGrounded && groundCollider == GameManager.MapGenerationService.SurfaceFloorCollider)
+            {
+                GameManager.MapGenerationService.DropThroughSurfaceFloor();
+            }
         }
 
         private void FixedUpdate()
@@ -346,8 +354,8 @@ namespace Player
         private bool CheckGrounded()
         {
             Vector2 origin = (Vector2)transform.position + groundCheckOffset;
-            var collided = Physics2D.OverlapBox(origin, groundCheckSize, 0f, groundLayer);
-            return collided != null;
+            groundCollider = Physics2D.OverlapBox(origin, groundCheckSize, 0f, groundLayer);
+            return groundCollider != null;
         }
 
         // Draw ground check

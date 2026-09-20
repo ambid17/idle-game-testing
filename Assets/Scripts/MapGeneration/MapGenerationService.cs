@@ -24,8 +24,21 @@ namespace MapGeneration
         private const float BoundaryWallThickness = 1f;
         private const float BoundaryWallHeight = 20000f;
 
+        // Invisible one-way platform spanning the grid at the top of row 0 (surface level) -
+        // QoL so the player can drive across the surface once the row beneath it is dug out
+        // (see CLAUDE.md UI note: no design doc entry, requested directly). A PlatformEffector2D
+        // lets the player fly up through it from below but catches them on the way back down
+        // instead of falling into the gaps; PlayerController.DropThroughSurfaceFloor briefly
+        // disables it when the player presses S to intentionally descend back into the mine.
+        private const float SurfaceFloorThickness = 0.01f;
+        private const float SurfaceFloorDropThroughDuration = 0.5f;
+
         private BoxCollider2D leftBoundaryWall;
         private BoxCollider2D rightBoundaryWall;
+        private BoxCollider2D surfaceFloorCollider;
+        private Coroutine surfaceFloorDropThroughRoutine;
+
+        public Collider2D SurfaceFloorCollider => surfaceFloorCollider;
 
         public MineWorld World { get; private set; }
 
@@ -39,7 +52,9 @@ namespace MapGeneration
             World = new MineWorld(mapGenerationConfig.Seed, mapGenerationConfig.GridWidth);
             streamingManager.Initialize(World);
             CreateBoundaryWalls();
+            CreateSurfaceFloor();
             UpdateBoundaryWalls();
+            UpdateSurfaceFloor();
 
             // HazardEffectResolver is a pure event listener with no scene reference pointing at
             // it (same shape as PowerUpEffectResolver) - nothing else ever touches .Instance, so
@@ -83,6 +98,7 @@ namespace MapGeneration
             World = restoredWorld;
             streamingManager.Initialize(World);
             UpdateBoundaryWalls();
+            UpdateSurfaceFloor();
         }
 
         private void CreateBoundaryWalls()
@@ -114,6 +130,56 @@ namespace MapGeneration
 
             leftBoundaryWall.transform.position = new Vector3(-BoundaryWallThickness * 0.5f, 0, 0f);
             rightBoundaryWall.transform.position = new Vector3(gridWorldWidth + BoundaryWallThickness * 0.5f, 0, 0f);
+        }
+
+        private void CreateSurfaceFloor()
+        {
+            var floorObject = new GameObject("SurfaceFloorGate");
+            floorObject.transform.SetParent(transform, false);
+            // Ground layer so PlayerController's ground check (and IsGrounded-gated systems like
+            // PlayerMining) treat standing on this the same as standing on real terrain.
+            floorObject.layer = LayerMask.NameToLayer("Ground");
+
+            surfaceFloorCollider = floorObject.AddComponent<BoxCollider2D>();
+            surfaceFloorCollider.usedByEffector = true;
+
+            var effector = floorObject.AddComponent<PlatformEffector2D>();
+            effector.useOneWay = true;
+        }
+
+        // Re-centers the floor on the grid's current horizontal extent (mirrors UpdateBoundaryWalls)
+        // and sits its bottom edge flush with the top of row 0 - the surface plane buildings and
+        // the grassy dirt row already occupy - so crossing between real ground and the invisible
+        // gate reads as one continuous level instead of a step.
+        private void UpdateSurfaceFloor()
+        {
+            if (surfaceFloorCollider == null) return;
+
+            float cellSize = mapGenerationConfig.CellSize;
+            float gridWorldWidth = World.GridWidth * cellSize;
+            float surfaceTopY = CellToWorldCenter(0, 0, 0).y + cellSize * 0.5f;
+
+            surfaceFloorCollider.size = new Vector2(gridWorldWidth, SurfaceFloorThickness);
+            surfaceFloorCollider.transform.position = new Vector3(gridWorldWidth * 0.5f, surfaceTopY + SurfaceFloorThickness * 0.5f, 0f);
+        }
+
+        // Called by PlayerController when the player presses S while standing on the surface
+        // floor gate - briefly disables its collider so gravity carries them back down into the
+        // mine instead of the one-way platform catching them again immediately.
+        public void DropThroughSurfaceFloor()
+        {
+            if (surfaceFloorCollider == null) return;
+
+            if (surfaceFloorDropThroughRoutine != null) StopCoroutine(surfaceFloorDropThroughRoutine);
+            surfaceFloorDropThroughRoutine = StartCoroutine(SurfaceFloorDropThroughRoutine());
+        }
+
+        private System.Collections.IEnumerator SurfaceFloorDropThroughRoutine()
+        {
+            surfaceFloorCollider.enabled = false;
+            yield return new WaitForSeconds(SurfaceFloorDropThroughDuration);
+            surfaceFloorCollider.enabled = true;
+            surfaceFloorDropThroughRoutine = null;
         }
 
         /// <summary>
@@ -236,6 +302,7 @@ namespace MapGeneration
         {
             World.SetGridWidth(newGridWidth);
             UpdateBoundaryWalls();
+            UpdateSurfaceFloor();
         }
     }
 }
