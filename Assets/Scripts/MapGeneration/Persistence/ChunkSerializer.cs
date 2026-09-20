@@ -11,6 +11,7 @@ namespace MapGeneration
                 Height = chunk.Height,
                 MinedBits = PackMined(chunk),
                 RevealedBits = PackRevealed(chunk),
+                HazardousBits = PackHazardous(chunk),
             };
 
             return save;
@@ -20,6 +21,7 @@ namespace MapGeneration
         {
             UnpackMined(save.MinedBits, chunk);
             UnpackRevealed(save.RevealedBits, chunk);
+            UnpackHazardous(save.HazardousBits, chunk);
         }
 
         private static byte[] PackMined(ChunkData chunk)
@@ -41,6 +43,19 @@ namespace MapGeneration
             for (int i = 0; i < chunk.Cells.Length; i++)
             {
                 if (chunk.Cells[i].Revealed)
+                {
+                    bytes[i / 8] |= (byte)(1 << (i % 8));
+                }
+            }
+            return bytes;
+        }
+
+        private static byte[] PackHazardous(ChunkData chunk)
+        {
+            var bytes = new byte[(chunk.Cells.Length + 7) / 8];
+            for (int i = 0; i < chunk.Cells.Length; i++)
+            {
+                if (chunk.Cells[i].HazardousSurface)
                 {
                     bytes[i / 8] |= (byte)(1 << (i % 8));
                 }
@@ -77,6 +92,21 @@ namespace MapGeneration
 
                 var cell = chunk.Cells[i];
                 cell.Revealed = true;
+                chunk.Cells[i] = cell;
+            }
+        }
+
+        private static void UnpackHazardous(byte[] bits, ChunkData chunk)
+        {
+            if (bits == null) return;
+
+            for (int i = 0; i < chunk.Cells.Length; i++)
+            {
+                bool hazardous = (bits[i / 8] & (1 << (i % 8))) != 0;
+                if (!hazardous) continue;
+
+                var cell = chunk.Cells[i];
+                cell.HazardousSurface = true;
                 chunk.Cells[i] = cell;
             }
         }

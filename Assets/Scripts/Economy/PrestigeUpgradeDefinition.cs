@@ -50,7 +50,10 @@ namespace Economy
         FallDamageReduction,
         GasResistance,
         DoublePassiveLayerBonus,
-        KeepPassiveLayerBonus
+        KeepPassiveLayerBonus,
+        BlastResistance,
+        FallingRockResistance,
+        LavaResistance
     }
 
     [CreateAssetMenu(fileName = "PrestigeUpgradeDefinition", menuName = "Economy/Prestige Upgrade Definition")]

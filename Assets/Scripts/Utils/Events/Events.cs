@@ -263,6 +263,46 @@ namespace Events
         }
     }
 
+    // Dispatched by MapGeneration.FallingRockHazardEffect once its telegraph delay elapses -
+    // Player.HazardDamageHandler listens for this (not HazardTriggeredEvent) so the damage window
+    // lands at impact, not at the moment the block was mined.
+    public class FallingRockImpactEvent : IEvent
+    {
+        public int LayerIndex;
+        public int X;
+        public int Y;
+        public float Radius;
+
+        public FallingRockImpactEvent(int layerIndex, int x, int y, float radius)
+        {
+            LayerIndex = layerIndex;
+            X = x;
+            Y = y;
+            Radius = radius;
+        }
+    }
+
+    // Dispatched repeatedly by MapGeneration.GasCloudHazardEffect on a tick interval while
+    // the player overlaps its current radius - lets the cloud be a lingering damage-over-time
+    // effect rather than a single hit at trigger time. Per-tick damage amount is Player.
+    // HazardDamageHandler's own concern (mirrors how it already owns explosiveDamage/
+    // fallingRockDamage/lavaDamage), not something the effect dictates.
+    public class GasCloudDamageTickEvent : IEvent
+    {
+        public int LayerIndex;
+        public int X;
+        public int Y;
+        public float Radius;
+
+        public GasCloudDamageTickEvent(int layerIndex, int x, int y, float radius)
+        {
+            LayerIndex = layerIndex;
+            X = x;
+            Y = y;
+            Radius = radius;
+        }
+    }
+
     // Automation (automationImplementation.md) events below.
 
     public class SetStorageDroneTargetModeRequestedEvent : IEvent

@@ -1,3 +1,4 @@
+using System;
 using Economy;
 using Events;
 using MapGeneration;
@@ -5,23 +6,26 @@ using UnityEngine;
 
 namespace Player
 {
-    // Listens for HazardTriggeredEvent regardless of who mined the hazard cell - the player
-    // triggering their own hazard, or (per automationImplementation.md) a Mining Automaton
-    // triggering one nearby - and damages the player if they're within hazardDamageRadius of it.
-    // No hazard-damage system existed anywhere before this; this is the single source of hazard
-    // damage for both cases. Only implements simple proximity damage - richer per-hazard mechanics
-    // (explosion block destruction, gas chain-ignition, falling-rock physics, water flooding) don't
-    // exist anywhere in the codebase yet and are out of scope here.
+    // Single source of hazard damage for every HazardBehavior, regardless of who mined the cell -
+    // the player triggering their own hazard, or (per automationImplementation.md) a Mining
+    // Automaton triggering one nearby (automatons never take damage themselves, only the player
+    // does - see MapGeneration.HazardEffectResolver). Explosive resolves straight off
+    // HazardTriggeredEvent (the blast is instant); FallingRock/GasPocket listen for the delayed/
+    // lingering events HazardEffectResolver's spawned effects dispatch once their own telegraph/
+    // lifetime elapses; Lava is a per-frame contact check against CellData.HazardousSurface, since
+    // it has no further trigger moment after the cell is mined.
     public class HazardDamageHandler : MonoBehaviour
     {
         [SerializeField] private float hazardDamageRadius = 3f;
         [SerializeField] private float explosiveDamage = 25f;
         [SerializeField] private float fallingRockDamage = 20f;
-        [SerializeField] private float gasPocketDamage = 15f;
-        [SerializeField] private float lavaDamage = 15f;
+        [SerializeField] private float gasCloudTickDamage = 8f;
+        [SerializeField] private float lavaDamage = 10f;
+        [SerializeField] private float lavaDamageTickSeconds = 1f;
 
         private PlayerHealth playerHealth;
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
+        private float lavaDamageTimer;
 
         private void Awake()
         {
@@ -29,46 +33,78 @@ namespace Player
             if (playerHealth == null) Debug.LogError($"{nameof(HazardDamageHandler)} on {name} requires a PlayerHealth component.");
         }
 
-        private void OnEnable() => GameManager.EventService.Add<HazardTriggeredEvent>(OnHazardTriggered);
-        private void OnDisable() => GameManager.EventService.Remove<HazardTriggeredEvent>(OnHazardTriggered);
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<HazardTriggeredEvent>(OnHazardTriggered);
+            GameManager.EventService.Add<FallingRockImpactEvent>(OnFallingRockImpact);
+            GameManager.EventService.Add<GasCloudDamageTickEvent>(OnGasCloudDamageTick);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<HazardTriggeredEvent>(OnHazardTriggered);
+            GameManager.EventService.Remove<FallingRockImpactEvent>(OnFallingRockImpact);
+            GameManager.EventService.Remove<GasCloudDamageTickEvent>(OnGasCloudDamageTick);
+        }
+
+        private void Update()
+        {
+            if (playerHealth == null || playerHealth.IsDead || mapGenerationService == null) return;
+            HandleLavaContact();
+        }
 
         private void OnHazardTriggered(HazardTriggeredEvent evt)
         {
-            if (playerHealth == null || playerHealth.IsDead) return;
-
-            float damage = DamageFor(evt.Hazard);
-            if (damage <= 0f) return;
-
-            Vector3 hazardWorldPos = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
-            if (Vector3.Distance(transform.position, hazardWorldPos) > hazardDamageRadius) return;
-
-            // GameDesignDoc "Prestige > Survival > gas resistance": only reduces GasPocket damage,
-            // every other hazard is unaffected.
-            if (evt.Hazard == HazardBehavior.GasPocket && PrestigeUpgradeManager.Instance != null)
-            {
-                damage *= Mathf.Max(0f, 1f - PrestigeUpgradeManager.Instance.GasResistance);
-                if (damage <= 0f) return;
-            }
-
-            playerHealth.TakeDamage(damage, ReasonFor(evt.Hazard));
+            if (evt.Hazard != HazardBehavior.Explosive) return;
+            TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, hazardDamageRadius, explosiveDamage, DeathReason.Explosive, BlastResistanceOf);
         }
 
-        private float DamageFor(HazardBehavior hazard) => hazard switch
-        {
-            HazardBehavior.Explosive => explosiveDamage,
-            HazardBehavior.FallingRock => fallingRockDamage,
-            HazardBehavior.GasPocket => gasPocketDamage,
-            HazardBehavior.Lava => lavaDamage,
-            _ => 0f
-        };
+        private void OnFallingRockImpact(FallingRockImpactEvent evt) =>
+            TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, evt.Radius, fallingRockDamage, DeathReason.FallingRock, FallingRockResistanceOf);
 
-        private static DeathReason ReasonFor(HazardBehavior hazard) => hazard switch
+        private void OnGasCloudDamageTick(GasCloudDamageTickEvent evt) =>
+            TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, evt.Radius, gasCloudTickDamage, DeathReason.GasPocket, GasResistanceOf);
+
+        private void TryApplyRadiusDamage(int layerIndex, int x, int y, float radius, float baseDamage, DeathReason reason, Func<float> resistanceOf)
         {
-            HazardBehavior.Explosive => DeathReason.Explosive,
-            HazardBehavior.FallingRock => DeathReason.FallingRock,
-            HazardBehavior.GasPocket => DeathReason.GasPocket,
-            HazardBehavior.Lava => DeathReason.Lava,
-            _ => DeathReason.Unknown
-        };
+            if (playerHealth == null || playerHealth.IsDead || mapGenerationService == null) return;
+
+            Vector3 hazardWorldPos = mapGenerationService.CellToWorldCenter(layerIndex, x, y);
+            if (Vector3.Distance(transform.position, hazardWorldPos) > radius) return;
+
+            float damage = baseDamage * Mathf.Max(0f, 1f - resistanceOf());
+            if (damage <= 0f) return;
+
+            playerHealth.TakeDamage(damage, reason);
+        }
+
+        // Per-frame contact check against the player's current cell rather than an event - Lava's
+        // only trigger moment is the initial mining (HazardEffectResolver already marks
+        // CellData.HazardousSurface then), everything after that is "is the player standing on/in
+        // an already-mined lava cell right now".
+        private void HandleLavaContact()
+        {
+            if (!mapGenerationService.TryWorldToCellInBounds(transform.position, out int layerIndex, out int x, out int y)) return;
+            if (!mapGenerationService.IsHazardousSurface(layerIndex, x, y))
+            {
+                lavaDamageTimer = 0f;
+                return;
+            }
+
+            lavaDamageTimer += Time.deltaTime;
+            if (lavaDamageTimer < lavaDamageTickSeconds) return;
+            lavaDamageTimer = 0f;
+
+            float damage = lavaDamage * Mathf.Max(0f, 1f - LavaResistanceOf());
+            if (damage <= 0f) return;
+            playerHealth.TakeDamage(damage, DeathReason.Lava);
+        }
+
+        // GameDesignDoc "Prestige > Survival": one resistance perk per hazard, same shape as the
+        // pre-existing GasResistance (level * per-level value, multiplicatively reduces damage).
+        private static float BlastResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.BlastResistance : 0f;
+        private static float FallingRockResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.FallingRockResistance : 0f;
+        private static float GasResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.GasResistance : 0f;
+        private static float LavaResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.LavaResistance : 0f;
     }
 }

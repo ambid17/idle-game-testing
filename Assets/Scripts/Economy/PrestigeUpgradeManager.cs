@@ -76,6 +76,12 @@ namespace Economy
         public float FallDamageReduction => LevelOf(PrestigeUpgradeEffect.FallDamageReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.FallDamageReduction);
         public float GasResistance => LevelOf(PrestigeUpgradeEffect.GasResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.GasResistance);
 
+        // Deepened hazards pass: one resistance perk each for the other 3 hazards that now do more
+        // than flat proximity damage (Explosive/FallingRock/Lava), same shape as GasResistance.
+        public float BlastResistance => LevelOf(PrestigeUpgradeEffect.BlastResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.BlastResistance);
+        public float FallingRockResistance => LevelOf(PrestigeUpgradeEffect.FallingRockResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.FallingRockResistance);
+        public float LavaResistance => LevelOf(PrestigeUpgradeEffect.LavaResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.LavaResistance);
+
         // GameDesignDoc "Prestige > Economy" capstones on the passive layer bonus (see
         // Economy.LayerBonusTracker for the base mechanic these modify).
         public bool DoublePassiveLayerBonusUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.DoublePassiveLayerBonus));
