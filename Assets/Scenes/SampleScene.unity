@@ -60527,7 +60527,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: ce4e76fd683f6ad4eb92031acb91a3b2, type: 3}
+  m_Sprite: {fileID: 1235984715, guid: 48ec1ffa380f0ec4eac415d25a3434a2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -60551,6 +60551,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerMining
   crackIndicator: {fileID: 2066554865}
+  miningFuelDrainPerSecond: 3
   debug: 0
 --- !u!114 &2055974193
 MonoBehaviour:
@@ -60569,8 +60570,8 @@ MonoBehaviour:
   jetpackForce: 15
   moveAcceleration: 80
   fuelMax: 100
-  fuelDrainPerSecond: 5
-  fuelRegenPerSecondGrounded: 2
+  idleFuelDrainPerSecond: 1
+  flyingFuelDrainPerSecond: 5
   fallDamageVelocityThreshold: 12
   fallDamagePerExcessUnit: 5
   groundCheckOffset: {x: 0, y: -0.35}
@@ -64493,7 +64494,6 @@ MonoBehaviour:
   automatonPrefab: {fileID: 2669522597533096345, guid: f9c4b5ddd07799a48b2305434bc96e82, type: 3}
   storageDronePrefab: {fileID: 2305454244209700005, guid: a3294852577618a48b9ef2b850e82674, type: 3}
   fuelDronePrefab: {fileID: 6528800220871837331, guid: af1474b0de443ba43ab03804582ddb39, type: 3}
-  player: {fileID: 2055974193}
   automatonSpawn: {fileID: 5514890621698381499}
   depotDepositLocation: {fileID: 3034906858440814901}
 --- !u!1 &1866668968074114240
