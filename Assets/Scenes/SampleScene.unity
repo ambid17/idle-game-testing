@@ -60454,6 +60454,7 @@ GameObject:
   - component: {fileID: 2055974198}
   - component: {fileID: 2055974199}
   - component: {fileID: 2055974200}
+  - component: {fileID: 2055974201}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -60551,7 +60552,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerMining
   crackIndicator: {fileID: 2066554865}
-  miningFuelDrainPerSecond: 3
   debug: 0
 --- !u!114 &2055974193
 MonoBehaviour:
@@ -60569,9 +60569,6 @@ MonoBehaviour:
   flySpeed: 8
   jetpackForce: 15
   moveAcceleration: 80
-  fuelMax: 100
-  idleFuelDrainPerSecond: 1
-  flyingFuelDrainPerSecond: 5
   fallDamageVelocityThreshold: 12
   fallDamagePerExcessUnit: 5
   groundCheckOffset: {x: 0, y: -0.35}
@@ -60716,6 +60713,22 @@ MonoBehaviour:
   gasCloudTickDamage: 8
   lavaDamage: 15
   lavaDamageTickSeconds: 1
+--- !u!114 &2055974201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055974188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91068377042612040b26677fc8cac34d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.FuelSystem
+  baseMaxFuel: 100
+  idleDrainPerSecond: 0
+  flyingDrainPerSecond: 5
+  miningDrainPerSecond: 3
 --- !u!1 &2056435485
 GameObject:
   m_ObjectHideFlags: 0

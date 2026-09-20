@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1784373790797273759}
   - component: {fileID: -3497412490887838188}
   - component: {fileID: 2669522597533096345}
+  - component: {fileID: 2136513860447419880}
   m_Layer: 0
   m_Name: MiningAutomaton
   m_TagString: Untagged
@@ -127,6 +128,22 @@ MonoBehaviour:
   digTargetCell: {x: 0, y: 0}
   miningProgress: 0
   _depotLocation: {x: 0, y: 0, z: 0}
+--- !u!114 &2136513860447419880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2727616407142579150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91068377042612040b26677fc8cac34d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.FuelSystem
+  baseMaxFuel: 50
+  idleDrainPerSecond: 0
+  flyingDrainPerSecond: 5
+  miningDrainPerSecond: 3
 --- !u!1 &6818912752937629481
 GameObject:
   m_ObjectHideFlags: 0

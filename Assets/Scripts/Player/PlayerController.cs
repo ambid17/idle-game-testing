@@ -4,7 +4,6 @@ using Events;
 using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Player
 {
@@ -13,10 +12,13 @@ namespace Player
     // higher horizontal speed than grounded movement, and un-slowed falls deal fall damage.
     //
     // Fuel is shared bookkeeping (Economy.FuelSystem, also used by Automation.MiningAutomaton) -
-    // self-heals the component rather than [RequireComponent] so the existing Player scene object
-    // doesn't need a manual Editor step to pick up the new shared component (see PlayerInventory's
-    // OreInventory for the same trick). Also implements IFuelConsumer so Fuel Drones can target the
-    // player alongside automatons - registers with FuelConsumerRegistry in OnEnable.
+    // all the tunable numbers (capacity, drain rates) live on that component's own Inspector, not
+    // here. Self-heals the component rather than [RequireComponent] so the existing Player scene
+    // object doesn't need a manual Editor step to pick up the new shared component (see
+    // PlayerInventory's OreInventory for the same trick) - it's also explicitly added to the Player
+    // scene object with tuned values, so self-heal is just a defensive fallback. Also implements
+    // IFuelConsumer so Fuel Drones can target the player alongside automatons - registers with
+    // FuelConsumerRegistry in OnEnable.
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerController : MonoBehaviour, IFuelConsumer
     {
@@ -29,14 +31,6 @@ namespace Player
         // contact response can actually oppose this force instead of being overwritten every
         // FixedUpdate, which is what let the player pop up and over walls they ran into.
         [SerializeField] private float moveAcceleration = 80f;
-
-        [Header("Fuel")]
-        [SerializeField] private float fuelMax = 100f;
-        // Drains constantly regardless of activity - the new design has no passive regen, fuel
-        // only ever goes back up via AddFuel (Fuel Drones / ResourceRefillUI purchases).
-        [SerializeField] private float idleFuelDrainPerSecond = 1f;
-        [FormerlySerializedAs("fuelDrainPerSecond")]
-        [SerializeField] private float flyingFuelDrainPerSecond = 20f;
 
         [Header("Fall Damage")]
         [SerializeField] private float fallDamageVelocityThreshold = 12f;
@@ -89,7 +83,7 @@ namespace Player
         public void AddFuel(float amount) => fuelSystem.AddFuel(amount);
 
         // Used by PlayerMining so mining also draws from the same tank as flying/idle drain.
-        public void ConsumeFuel(float amount) => fuelSystem.Consume(amount);
+        public void ConsumeMiningFuel(float dt) => fuelSystem.ConsumeMining(dt);
 
         private Vector2 movementInput;
         public Vector2 MovementInput => movementInput;
@@ -108,7 +102,11 @@ namespace Player
             // Initialized here (not Start) so it's already valid before SaveService.RestoreFromSaveData
             // can run from GameManager.Start - Unity guarantees every Awake before any Start, matching
             // how this field used to seed Fuel directly in Awake.
-            fuelSystem.Initialize(() => fuelMax + (upgrades != null ? upgrades.FuelCapacityBonus : 0f));
+            // GameDesignDoc "Survival > fuel efficiency": FuelEfficiencyMultiplier is a drain
+            // *reduction* (1 - upgrade), so a maxed upgrade approaches zero drain, not zero fuel.
+            fuelSystem.Initialize(
+                () => upgrades != null ? upgrades.FuelCapacityBonus : 0f,
+                () => upgrades != null ? upgrades.FuelEfficiencyMultiplier : 1f);
 
             spawnPosition = transform.position;
 
@@ -277,13 +275,10 @@ namespace Player
             float previousFuelFraction = FuelFraction;
 
             // Idle drain always applies (no passive regen), flying drain stacks on top of it while
-            // airborne - mining drain is charged separately by PlayerMining via ConsumeFuel, since
-            // it can happen simultaneously with flying (Prestige "keep dig while flying" perk).
-            // GameDesignDoc "Survival > fuel efficiency": FuelEfficiencyMultiplier is a drain
-            // *reduction* (1 - upgrade), so a maxed upgrade approaches zero drain, not zero fuel.
-            float efficiency = upgrades != null ? upgrades.FuelEfficiencyMultiplier : 1f;
-            float drainPerSecond = idleFuelDrainPerSecond + (IsFlying ? flyingFuelDrainPerSecond : 0f);
-            fuelSystem.Consume(drainPerSecond * efficiency * dt);
+            // airborne - mining drain is charged separately by PlayerMining via ConsumeMiningFuel,
+            // since it can happen simultaneously with flying (Prestige "keep dig while flying" perk).
+            fuelSystem.ConsumeIdle(dt);
+            if (IsFlying) fuelSystem.ConsumeFlying(dt);
 
             // Edge-triggered: only fires the tick fuel first crosses at/below half, not every
             // tick while it stays low - otherwise this would keep resetting HudToastUI's display
