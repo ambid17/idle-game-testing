@@ -15,7 +15,6 @@ namespace UI.SkillTree
         [SerializeField] private float zoomSpeed = 0.1f;
         [SerializeField] private float minZoom = 0.4f;
         [SerializeField] private float maxZoom = 1.5f;
-        [SerializeField] private float maxPanRadius = 1600f;
         [SerializeField] private float defaultScale = 0.5f;
         [SerializeField] private float keyboardPanSpeed = 800f;
 
@@ -41,14 +40,14 @@ namespace UI.SkillTree
             if (keyboard.dKey.isPressed) move.x -= 1f;
             if (move == Vector2.zero) return;
 
-            content.anchoredPosition = ClampPan(content.anchoredPosition
-                + move * (keyboardPanSpeed * Time.deltaTime / content.localScale.x));
+            content.anchoredPosition = content.anchoredPosition
+                + move * (keyboardPanSpeed * Time.deltaTime / content.localScale.x);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
             if (content == null) return;
-            content.anchoredPosition = ClampPan(content.anchoredPosition + eventData.delta / content.localScale.x);
+            content.anchoredPosition = content.anchoredPosition + eventData.delta / content.localScale.x;
         }
 
         public void OnScroll(PointerEventData eventData)
@@ -57,8 +56,6 @@ namespace UI.SkillTree
             float next = Mathf.Clamp(content.localScale.x + eventData.scrollDelta.y * zoomSpeed, minZoom, maxZoom);
             content.localScale = new Vector3(next, next, 1f);
         }
-
-        private Vector2 ClampPan(Vector2 position) => Vector2.ClampMagnitude(position, maxPanRadius);
 
         // Recenters and resets zoom - called by SkillTreePanelUI whenever the tree view is
         // opened, so a pan/zoom left over from last time doesn't strand the player looking at
