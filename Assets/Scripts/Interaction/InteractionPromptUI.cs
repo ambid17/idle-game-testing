@@ -14,7 +14,7 @@ namespace Interaction
         private void Start()
         {
             if(promptRoot == null) Debug.LogError("InteractionPromptUI.promptRoot is not assigned.");
-            allRows = GetComponentsInChildren<InteractionPromptRow>().ToList();
+            allRows = GetComponentsInChildren<InteractionPromptRow>(true).ToList();
         }
 
         public void Show(InteractableType interactableType)
