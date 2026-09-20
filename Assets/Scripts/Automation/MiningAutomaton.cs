@@ -260,5 +260,44 @@ namespace Automation
             var withdrawn = oreInventory.WithdrawAllOre();
             AutomationDepositService.Deposit($"Automaton #{DisplayIndex}", withdrawn);
         }
+
+#if UNITY_EDITOR
+        // Editor-only inspection aid (see EditorTools.Automation.MiningAutomatonEditor for the
+        // Inspector-side counterpart): draws the current path, dig target, and depot leg in the
+        // Scene view when this automaton is selected, so its behavior can be observed without
+        // temporary Debug.Log calls.
+        private void OnDrawGizmosSelected()
+        {
+            if (path != null && path.Count > 1)
+            {
+                Gizmos.color = Color.cyan;
+                for (int i = 0; i < path.Count - 1; i++)
+                    Gizmos.DrawLine(path[i], path[i + 1]);
+
+                for (int i = 0; i < path.Count; i++)
+                {
+                    Gizmos.color = i == pathIndex ? Color.yellow : Color.cyan;
+                    Gizmos.DrawSphere(path[i], i == pathIndex ? 0.18f : 0.1f);
+                }
+            }
+
+            if (state == State.MovingAndDigging || state == State.Descending)
+            {
+                Gizmos.color = Color.red;
+                Vector3 targetWorld = mapGenerationService.CellToWorldCenter(digTargetLayer, digTargetCell.x, digTargetCell.y);
+                Gizmos.DrawWireCube(targetWorld, Vector3.one * mapGenerationService.CellSize);
+            }
+
+            if (state == State.FlyingToDepot)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(transform.position, _depotLocation);
+                Gizmos.DrawWireSphere(_depotLocation, 0.3f);
+            }
+
+            UnityEditor.Handles.color = Color.white;
+            UnityEditor.Handles.Label(transform.position + Vector3.up * 0.5f, state.ToString());
+        }
+#endif
     }
 }
