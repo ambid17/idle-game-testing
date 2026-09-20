@@ -1,6 +1,9 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Events;
 using MapGeneration;
+using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,21 +16,16 @@ namespace UI
     // fires this often enough that a strict per-mine queue would just pile up.
     public class OreMinedToastUI : MonoBehaviour
     {
-        private const float DisplaySeconds = 1.5f;
+        [SerializeField] ToastItemUI toastItemUI;
 
-        [SerializeField] private GameObject rendererRoot;
-        [SerializeField] private Image iconImage;
-        [SerializeField] private TMP_Text nameLabel;
-
-        private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
-        private Coroutine hideRoutine;
+        List<ToastItemUI> toastItemPool = new List<ToastItemUI>();
 
         private void Start()
         {
-            if (rendererRoot == null) Debug.LogError("OreMinedToastUI.rendererRoot is not assigned.");
-            if (iconImage == null) Debug.LogError("OreMinedToastUI.iconImage is not assigned.");
-            if (nameLabel == null) Debug.LogError("OreMinedToastUI.nameLabel is not assigned.");
-            if (rendererRoot != null) rendererRoot.SetActive(false);
+            if (toastItemUI == null) Debug.LogError("OreMinedToastUI.toastItemUI is not assigned.");
+            var firstToast = Instantiate(toastItemUI, transform);
+            toastItemPool.Add(firstToast);
+            firstToast.gameObject.SetActive(false);
         }
 
         private void OnEnable() => GameManager.EventService.Add<OreMinedEvent>(Open);
@@ -35,28 +33,14 @@ namespace UI
 
         private void Open(OreMinedEvent evt)
         {
-            if (rendererRoot == null) return;
-
-            var blockType = blockTypeDatabase.Get((byte)evt.Id);
-            if (blockType == null)
+            var firstAvailableToast = toastItemPool.FirstOrDefault(t => t.gameObject.activeSelf == false);
+            if(firstAvailableToast == null)
             {
-                Debug.LogError($"OreMinedToastUI: no BlockType registered for {evt.Id}.");
-                return;
+                firstAvailableToast = Instantiate(toastItemUI, transform);
+                toastItemPool.Add(firstAvailableToast);
             }
+            firstAvailableToast.Open(evt);
 
-            if (iconImage != null) iconImage.sprite = blockType.Icon;
-            if (nameLabel != null) nameLabel.text = $"+{evt.Amount} {blockType.DisplayName}";
-
-            rendererRoot.SetActive(true);
-            if (hideRoutine != null) StopCoroutine(hideRoutine);
-            hideRoutine = StartCoroutine(HideAfterDelay());
-        }
-
-        private IEnumerator HideAfterDelay()
-        {
-            yield return new WaitForSeconds(DisplaySeconds);
-            if (rendererRoot != null) rendererRoot.SetActive(false);
-            hideRoutine = null;
         }
     }
 }

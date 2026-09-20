@@ -12,6 +12,7 @@ namespace UI
     // change on discrete earn/spend actions so that stays event-driven off DollarsChangedEvent.
     public class HUDUI : MonoBehaviour
     {
+        [SerializeField] private GameObject renderer;
         [SerializeField] private PlayerController playerController;
         [SerializeField] private PlayerHealth playerHealth;
         [SerializeField] private PlayerInventory playerInventory;
@@ -32,6 +33,7 @@ namespace UI
             if (playerInventory == null) playerInventory = FindAnyObjectByType<PlayerInventory>();
             CheckNullRefs();
 
+            renderer.SetActive(true);
             RefreshDollars();
             RefreshArtifactCount();
             RefreshWeight();
@@ -39,6 +41,7 @@ namespace UI
 
         private void CheckNullRefs()
         {
+            if (renderer == null) Debug.LogError("HUDUI: no renderer found in scene.");
             if (playerController == null) Debug.LogError("HUDUI: no PlayerController found in scene.");
             if (playerHealth == null) Debug.LogError("HUDUI: no PlayerHealth found in scene.");
             if (playerInventory == null) Debug.LogError("HUDUI: no PlayerInventory found in scene.");
