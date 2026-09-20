@@ -10,11 +10,19 @@ namespace Automation
     // GameDesignDoc "Automation > Mining Automatons": autonomous entity that wanders the mine,
     // digs like the player (down/left/right, through MapGenerationService.MineCell - the same
     // single mining codepath PlayerMining uses), fills its own OreInventory, and flies to the
-    // Depot to deposit once full. No health/fuel per the doc; hazard interactions are handled
+    // Depot to deposit once full. No health per the doc; hazard interactions are handled
     // generically by Player.HazardDamageHandler listening for HazardTriggeredEvent regardless of
     // who mined the cell, so this script needs no hazard-specific code.
+    //
+    // Burns fuel (Economy.FuelSystem, shared with Player.PlayerController) - idle drain always,
+    // flying/mining drain stack on top while those states are active. An empty tank stalls the
+    // automaton in place (Update's early-out below) until a Fuel Drone tops it back off; it never
+    // "dies" the way the player can. FuelSystem self-heals rather than [RequireComponent] so the
+    // existing prefab doesn't need a manual Editor step (see PlayerInventory's OreInventory for the
+    // same trick). Also implements IFuelConsumer + registers with FuelConsumerRegistry so Fuel
+    // Drones can find it.
     [RequireComponent(typeof(OreInventory))]
-    public class MiningAutomaton : MonoBehaviour, IOreCarrier
+    public class MiningAutomaton : MonoBehaviour, IOreCarrier, IFuelConsumer
     {
         private enum State { PickingTarget, MovingAndDigging, Descending, FlyingToDepot }
 
@@ -24,6 +32,7 @@ namespace Automation
         private ChunkStreamingManager streamingManager => GameManager.ChunkStreamingManager;
 
         private OreInventory oreInventory;
+        private FuelSystem fuelSystem;
         private readonly GridPathMover mover = new();
         [SerializeField] private State state = State.PickingTarget;
 
@@ -40,6 +49,12 @@ namespace Automation
         public Transform CarrierTransform => transform;
         public OreInventory Inventory => oreInventory;
 
+        // IFuelConsumer - lets Fuel Drones find and refuel this automaton.
+        public Transform FuelTransform => transform;
+        public float FuelMissing => fuelSystem.FuelMissing;
+        public float FuelMax => fuelSystem.MaxFuel;
+        public void AddFuel(float amount) => fuelSystem.AddFuel(amount);
+
         // Assigned by AutomationSpawner - used for notification text ("Automaton #2") and the
         // Control Center earnings graph's per-automaton series.
         public void Configure(int displayIndex, Vector3 depotPosition)
@@ -52,11 +67,15 @@ namespace Automation
         {
             oreInventory = GetComponent<OreInventory>();
             if (oreInventory == null) Debug.LogError($"{nameof(MiningAutomaton)} on {name} is missing its required OreInventory component.");
+
+            fuelSystem = GetComponent<FuelSystem>();
+            if (fuelSystem == null) fuelSystem = gameObject.AddComponent<FuelSystem>();
         }
 
         private void Start()
         {
             oreInventory.Initialize(() => config.AutomatonBaseInventoryWeight * upgrades.AutomatonInventoryCapacityMultiplier);
+            fuelSystem.Initialize(() => config.AutomatonBaseFuelCapacity);
             RefreshCurrentCell();
         }
 
@@ -64,6 +83,7 @@ namespace Automation
         {
             RefreshCurrentCell();
             OreCarrierRegistry.Instance.Register(this);
+            FuelConsumerRegistry.Instance.Register(this);
         }
         // HasInstance guard: teardown order across objects isn't guaranteed when Stopping the
         // Player, so OreCarrierRegistry's singleton may already be destroyed by the time this runs.
@@ -71,26 +91,35 @@ namespace Automation
         private void OnDisable()
         {
             if (OreCarrierRegistry.HasInstance) OreCarrierRegistry.Instance.Unregister(this);
+            if (FuelConsumerRegistry.HasInstance) FuelConsumerRegistry.Instance.Unregister(this);
         }
 
         private void Update()
         {
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
-            switch (state)
+
+            fuelSystem.Consume(config.AutomatonIdleFuelDrainPerSecond * Time.deltaTime);
+            if (!fuelSystem.IsEmpty)
             {
-                case State.PickingTarget:
-                    UpdatePickingTarget();
-                    break;
-                case State.MovingAndDigging:
-                    UpdateMovingAndDigging();
-                    break;
-                case State.Descending:
-                    UpdateDescending();
-                    break;
-                case State.FlyingToDepot:
-                    UpdateFlyingToDepot();
-                    break;
+                switch (state)
+                {
+                    case State.PickingTarget:
+                        UpdatePickingTarget();
+                        break;
+                    case State.MovingAndDigging:
+                        UpdateMovingAndDigging();
+                        break;
+                    case State.Descending:
+                        UpdateDescending();
+                        break;
+                    case State.FlyingToDepot:
+                        UpdateFlyingToDepot();
+                        break;
+                }
             }
+            // Empty tank: stall in place (no movement/digging/flying) until a Fuel Drone refuels it -
+            // the state machine simply resumes from wherever it was, no separate "stalled" state needed.
+
             RefreshCurrentCell();
         }
 
@@ -159,6 +188,7 @@ namespace Automation
 
             float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.AutomatonMiningSpeedMultiplier;
             miningProgress += Time.deltaTime * miningSpeed;
+            fuelSystem.Consume(config.AutomatonMiningFuelDrainPerSecond * Time.deltaTime);
             float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(digTargetLayer);
             if (miningProgress < targetHealth) return;
 
@@ -191,6 +221,7 @@ namespace Automation
 
             float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.AutomatonMiningSpeedMultiplier;
             miningProgress += Time.deltaTime * miningSpeed;
+            fuelSystem.Consume(config.AutomatonMiningFuelDrainPerSecond * Time.deltaTime);
             float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layer);
             if (miningProgress < targetHealth) return;
 
@@ -247,6 +278,8 @@ namespace Automation
 
         private void UpdateFlyingToDepot()
         {
+            fuelSystem.Consume(config.AutomatonFlyingFuelDrainPerSecond * Time.deltaTime);
+
             float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, _depotLocation, speed);
             if (!arrived) return;

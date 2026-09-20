@@ -15,6 +15,15 @@ namespace Automation
         public float AutomatonBaseInventoryWeight = 50f;
         public int AutomatonWanderRadius = 3;
 
+        [Header("Mining Automaton Fuel")]
+        public float AutomatonBaseFuelCapacity = 50f;
+        // Drains constantly, flying/mining drain stack on top while those activities happen - see
+        // Economy.FuelSystem/MiningAutomaton.Update. An empty tank stalls the automaton in place
+        // until a Fuel Drone tops it back off.
+        public float AutomatonIdleFuelDrainPerSecond = 0.5f;
+        public float AutomatonFlyingFuelDrainPerSecond = 5f;
+        public float AutomatonMiningFuelDrainPerSecond = 3f;
+
         [Header("Storage Drone")]
         public float StorageDroneBaseMoveSpeed = 4f;
         public float StorageDroneBaseInventoryWeight = 20f;
@@ -40,6 +49,14 @@ namespace Automation
                 Debug.LogError("AutomationConfig has an invalid AutomatonBaseInventoryWeight.");
             if (AutomatonWanderRadius <= 0)
                 Debug.LogError("AutomationConfig has an invalid AutomatonWanderRadius.");
+            if (AutomatonBaseFuelCapacity <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonBaseFuelCapacity.");
+            if (AutomatonIdleFuelDrainPerSecond <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonIdleFuelDrainPerSecond.");
+            if (AutomatonFlyingFuelDrainPerSecond <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonFlyingFuelDrainPerSecond.");
+            if (AutomatonMiningFuelDrainPerSecond <= 0)
+                Debug.LogError("AutomationConfig has an invalid AutomatonMiningFuelDrainPerSecond.");
             if (StorageDroneBaseMoveSpeed <= 0)
                 Debug.LogError("AutomationConfig has an invalid StorageDroneBaseMoveSpeed.");
             if (StorageDroneBaseInventoryWeight <= 0)

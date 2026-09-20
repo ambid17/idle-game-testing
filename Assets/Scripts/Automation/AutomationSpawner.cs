@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Events;
-using Player;
 using UnityEngine;
 
 namespace Automation
@@ -17,7 +16,6 @@ namespace Automation
         [SerializeField] private MiningAutomaton automatonPrefab;
         [SerializeField] private StorageDrone storageDronePrefab;
         [SerializeField] private FuelDrone fuelDronePrefab;
-        [SerializeField] private PlayerController player;
         [SerializeField] private Transform automatonSpawn;
         [SerializeField] private Transform depotDepositLocation;
 
@@ -31,8 +29,6 @@ namespace Automation
             if (automatonPrefab == null) Debug.LogError($"AutomationSpawner is missing automatonPrefab.");
             if (storageDronePrefab == null) Debug.LogError($"AutomationSpawner is missing storageDronePrefab.");
             if (fuelDronePrefab == null) Debug.LogError($"AutomationSpawner is missing fuelDronePrefab.");
-            if (player == null) player = FindAnyObjectByType<PlayerController>();
-            if (player == null) Debug.LogError($"AutomationSpawner on {name}: no PlayerController found in scene.");
         }
 
         private void Start()
@@ -83,7 +79,7 @@ namespace Automation
             var upgrades = Economy.UpgradeManager.Instance;
             Reconcile(automatons, automatonPrefab, upgrades.AutomatonCount, (instance, index) => instance.Configure(index, depotDepositLocation.position));
             Reconcile(storageDrones, storageDronePrefab, upgrades.StorageDroneCount, (instance, index) => instance.Configure(depotDepositLocation.position, index));
-            Reconcile(fuelDrones, fuelDronePrefab, upgrades.FuelDroneCount, (instance, _) => instance.Configure(transform.position, player));
+            Reconcile(fuelDrones, fuelDronePrefab, upgrades.FuelDroneCount, (instance, _) => instance.Configure(transform.position));
         }
 
         private void Reconcile<T>(List<T> instances, T prefab, int targetCount, Action<T, int> configure) where T : Component

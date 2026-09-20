@@ -36,6 +36,9 @@ namespace EditorTools.Automation
 
             EditorGUILayout.LabelField("Weight", $"{inventory.CurrentWeight:0.0} / {inventory.MaxWeight:0.0}{(inventory.IsFull ? "  (FULL)" : "")}");
 
+            float currentFuel = automaton.FuelMax - automaton.FuelMissing;
+            EditorGUILayout.LabelField("Fuel", $"{currentFuel:0.0} / {automaton.FuelMax:0.0}{(currentFuel <= 0f ? "  (STALLED)" : "")}");
+
             var blockTypeDatabase = GameManager.BlockTypeDatabase;
             foreach (var kvp in inventory.OreCounts.Where(kvp => kvp.Value > 0))
             {

@@ -1,15 +1,21 @@
+using System.Linq;
 using Economy;
 using Player;
 using UnityEngine;
 
 namespace Automation
 {
-    // GameDesignDoc "Automation > Fuel Drones": flies to a target (today only the player has a
-    // fuel meter - automatons/drones explicitly don't per the doc, so "fullest inventory"
-    // targeting is a no-op until a future fuel-consuming entity exists) and tops it off, buying
-    // more fuel for itself at the Control Center within the player-set spending cap. Per the
-    // resolved design decision, a drone delivers up to its full (upgradeable) capacity per visit
-    // rather than a separate flat amount - "10 units" in the doc is just the level-0 base capacity.
+    // GameDesignDoc "Automation > Fuel Drones": flies to whichever IFuelConsumer needs fuel (the
+    // player or a Mining Automaton - see FuelConsumerRegistry) and tops it off, buying more fuel
+    // for itself at the Control Center within the player-set spending cap. Per the resolved design
+    // decision, a drone delivers up to its full (upgradeable) capacity per visit rather than a
+    // separate flat amount - "10 units" in the doc is just the level-0 base capacity.
+    //
+    // Targeting mirrors StorageDrone/OreCarrierRegistry: PlayerAlways only ever considers the
+    // player, FullestInventory (reused here as "whoever is neediest") picks the consumer missing
+    // the most fuel, falling back to nearest-with-need if the neediest one is already claimed by
+    // another drone. FuelConsumerRegistry's claim system stops two drones converging on the same
+    // target.
     public class FuelDrone : MonoBehaviour
     {
         private enum State { IdleAtControlCenter, FlyingToTarget, Depositing, FlyingToControlCenter }
@@ -24,18 +30,16 @@ namespace Automation
         private State state = State.IdleAtControlCenter;
 
         private Vector3 controlCenterPosition;
-        private PlayerController targetPlayer;
+        private IFuelConsumer currentTarget;
         private float payload;
         private float idleRepollTimer;
 
         public float Capacity => config.FuelDroneBaseFuelCapacity * upgrades.FuelDroneInventoryCapacityMultiplier;
 
         // Assigned by AutomationSpawner.
-        public void Configure(Vector3 controlCenterPos, PlayerController player)
+        public void Configure(Vector3 controlCenterPos)
         {
             controlCenterPosition = controlCenterPos;
-            targetPlayer = player;
-            if (targetPlayer == null) Debug.LogError($"{nameof(FuelDrone)} on {name} was configured without a PlayerController target.");
         }
 
         private void Update()
@@ -50,7 +54,66 @@ namespace Automation
         }
 
         // "they will repeat this step as long as any entity is missing at least 10% of their fuel."
-        private bool AnyoneNeedsFuel() => targetPlayer != null && targetPlayer.FuelMissing >= targetPlayer.FuelMax * config.FuelNeedThresholdFraction;
+        private bool NeedsFuel(IFuelConsumer consumer) => consumer.FuelMissing >= consumer.FuelMax * config.FuelNeedThresholdFraction;
+
+        private IFuelConsumer FindTarget()
+        {
+            if (settings.FuelDroneTargetMode == TargetMode.PlayerAlways)
+            {
+                foreach (var consumer in FuelConsumerRegistry.Instance.Consumers)
+                {
+                    if (consumer is PlayerController && NeedsFuel(consumer)) return consumer;
+                }
+                return null;
+            }
+
+            return FindNeediestUnclaimedConsumer() ?? FindNearestUnclaimedConsumerNeedingFuel();
+        }
+
+        private IFuelConsumer FindNeediestUnclaimedConsumer()
+        {
+            IFuelConsumer best = null;
+            float bestMissing = 0f;
+
+            foreach (var consumer in FuelConsumerRegistry.Instance.Consumers)
+            {
+                if (FuelConsumerRegistry.Instance.IsClaimed(consumer)) continue;
+                if (!NeedsFuel(consumer)) continue;
+                if (consumer.FuelMissing <= bestMissing) continue;
+
+                bestMissing = consumer.FuelMissing;
+                best = consumer;
+            }
+
+            if (best != null) FuelConsumerRegistry.Instance.TryClaim(this, best);
+            return best;
+        }
+
+        // Fallback used when the neediest consumer is already claimed by another drone.
+        private IFuelConsumer FindNearestUnclaimedConsumerNeedingFuel()
+        {
+            IFuelConsumer nearest = null;
+            float nearestDistSq = float.MaxValue;
+
+            foreach (var consumer in FuelConsumerRegistry.Instance.Consumers)
+            {
+                if (FuelConsumerRegistry.Instance.IsClaimed(consumer) || !NeedsFuel(consumer)) continue;
+
+                float distSq = (consumer.FuelTransform.position - transform.position).sqrMagnitude;
+                if (distSq >= nearestDistSq) continue;
+
+                nearestDistSq = distSq;
+                nearest = consumer;
+            }
+
+            if (nearest != null) FuelConsumerRegistry.Instance.TryClaim(this, nearest);
+            return nearest;
+        }
+
+        // Guards against a target that was destroyed/unregistered mid-flight (Unregister removes
+        // it from the registry's list, which survives Unity's fake-null quirk on interface refs) -
+        // mirrors StorageDrone.IsValidTarget.
+        private bool IsValidTarget(IFuelConsumer consumer) => consumer != null && FuelConsumerRegistry.Instance.Consumers.Contains(consumer);
 
         private void UpdateIdle()
         {
@@ -58,10 +121,17 @@ namespace Automation
             if (idleRepollTimer < IdleRepollInterval) return;
             idleRepollTimer = 0f;
 
-            if (!AnyoneNeedsFuel()) return;
+            currentTarget = FindTarget();
+            if (currentTarget == null) return;
 
             RefuelSelfWithinSpendingCap();
-            if (payload <= 0f) return; // couldn't afford any fuel within the cap - stay idle and retry later
+            if (payload <= 0f)
+            {
+                // Couldn't afford any fuel within the cap - release the claim and stay idle.
+                FuelConsumerRegistry.Instance.ReleaseClaim(this);
+                currentTarget = null;
+                return;
+            }
 
             state = State.FlyingToTarget;
         }
@@ -82,32 +152,40 @@ namespace Automation
 
         private void UpdateFlyingToTarget()
         {
-            if (targetPlayer == null)
+            if (!IsValidTarget(currentTarget))
             {
-                state = State.FlyingToControlCenter;
+                ReleaseAndReturnToIdle();
                 return;
             }
 
             float speed = config.FuelDroneBaseMoveSpeed * upgrades.FuelDroneMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, targetPlayer.transform.position, speed);
+            bool arrived = mover.StepDirect(transform, currentTarget.FuelTransform.position, speed);
             if (arrived) state = State.Depositing;
         }
 
         private void UpdateDepositing()
         {
-            if (targetPlayer != null && payload > 0f)
+            if (IsValidTarget(currentTarget) && payload > 0f)
             {
-                float amountToGive = Mathf.Min(payload, targetPlayer.FuelMissing);
+                float amountToGive = Mathf.Min(payload, currentTarget.FuelMissing);
                 if (amountToGive > 0f)
                 {
-                    targetPlayer.AddFuel(amountToGive);
+                    currentTarget.AddFuel(amountToGive);
                     payload -= amountToGive;
                 }
             }
 
-            // Only the player consumes fuel today, so there's never another needy target to chain
-            // remaining payload to - head back regardless of what's left in the tank.
+            FuelConsumerRegistry.Instance.ReleaseClaim(this);
+            currentTarget = null;
             state = State.FlyingToControlCenter;
+        }
+
+        private void ReleaseAndReturnToIdle()
+        {
+            FuelConsumerRegistry.Instance.ReleaseClaim(this);
+            currentTarget = null;
+            state = State.IdleAtControlCenter;
+            idleRepollTimer = IdleRepollInterval; // retry immediately
         }
 
         private void UpdateFlyingToControlCenter()

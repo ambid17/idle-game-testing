@@ -20,6 +20,7 @@ namespace Player
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private ChunkStreamingManager streamingManager => GameManager.ChunkStreamingManager;
         [SerializeField] private MiningCrackIndicator crackIndicator;
+        [SerializeField] private float miningFuelDrainPerSecond = 3f;
         [SerializeField] private bool debug;
 
         private PlayerController playerController;
@@ -48,8 +49,9 @@ namespace Player
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
             Vector2Int? direction = ResolveDirection();
             // GameDesignDoc "Prestige > Mining": the KeepDigWhileFlying perk lifts the normal
-            // grounded-only mining restriction.
-            bool canMine = playerController.IsGrounded || (PrestigeUpgradeManager.Instance != null && PrestigeUpgradeManager.Instance.KeepDigWhileFlyingUnlocked);
+            // grounded-only mining restriction. Mining also burns fuel per tick (same tank as
+            // flying/idle drain - see PlayerController.ConsumeFuel), so an empty tank blocks it too.
+            bool canMine = (playerController.IsGrounded || (PrestigeUpgradeManager.Instance != null && PrestigeUpgradeManager.Instance.KeepDigWhileFlyingUnlocked)) && playerController.HasFuel;
             if (!canMine || direction == null || InputBlocker.IsBlocked)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
@@ -113,6 +115,7 @@ namespace Player
             }
 
             miningProgress += Time.deltaTime * upgradeManager.MiningSpeedMultiplier;
+            playerController.ConsumeFuel(miningFuelDrainPerSecond * Time.deltaTime);
             float targetBlockHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
 
             // GameDesignDoc "Insta-mine chance": rolled once per newly-acquired target.
