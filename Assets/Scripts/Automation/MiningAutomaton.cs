@@ -25,7 +25,7 @@ namespace Automation
     [RequireComponent(typeof(OreInventory))]
     public class MiningAutomaton : MonoBehaviour, IOreCarrier, IFuelConsumer
     {
-        private enum State { PickingTarget, MovingAndDigging, Descending, FlyingToDepot }
+        private enum State { PickingTarget, MovingAndDigging, Descending, FlyingToDepot, ReturningToRefuel }
 
         private static MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private static AutomationConfig config => GameManager.AutomationConfig;
@@ -105,26 +105,34 @@ namespace Automation
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
 
             fuelSystem.ConsumeIdle(Time.deltaTime);
-            if (!fuelSystem.IsEmpty)
+
+            // Empty tank: abandon whatever it was doing and head for the Control Center to buy more,
+            // rather than stalling in place waiting for a Fuel Drone to happen by. Consume() no-ops at
+            // 0 fuel, so the trip home costs nothing further - it's running on fumes.
+            if (fuelSystem.IsEmpty && state != State.ReturningToRefuel)
             {
-                switch (state)
-                {
-                    case State.PickingTarget:
-                        UpdatePickingTarget();
-                        break;
-                    case State.MovingAndDigging:
-                        UpdateMovingAndDigging();
-                        break;
-                    case State.Descending:
-                        UpdateDescending();
-                        break;
-                    case State.FlyingToDepot:
-                        UpdateFlyingToDepot();
-                        break;
-                }
+                crackIndicator.Hide();
+                state = State.ReturningToRefuel;
             }
-            // Empty tank: stall in place (no movement/digging/flying) until a Fuel Drone refuels it -
-            // the state machine simply resumes from wherever it was, no separate "stalled" state needed.
+
+            switch (state)
+            {
+                case State.PickingTarget:
+                    UpdatePickingTarget();
+                    break;
+                case State.MovingAndDigging:
+                    UpdateMovingAndDigging();
+                    break;
+                case State.Descending:
+                    UpdateDescending();
+                    break;
+                case State.FlyingToDepot:
+                    UpdateFlyingToDepot();
+                    break;
+                case State.ReturningToRefuel:
+                    UpdateReturningToRefuel();
+                    break;
+            }
 
             RefreshCurrentCell();
         }
@@ -319,6 +327,37 @@ namespace Automation
             AutomationDepositService.Deposit($"Automaton #{DisplayIndex}", withdrawn);
         }
 
+        // Reuses _depotLocation (the Control Center's deposit point, same spot Fuel Drones idle at)
+        // rather than a separate refuel destination - there's only the one Control Center.
+        private void UpdateReturningToRefuel()
+        {
+            crackIndicator.Hide();
+
+            float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
+            bool arrived = mover.StepDirect(transform, _depotLocation, speed);
+            if (!arrived) return;
+
+            PurchaseFuel();
+            // If funds ran out, stay parked here rather than bouncing back to PickingTarget only to
+            // immediately re-trigger this same state - wait for more money or a passing Fuel Drone.
+            if (!fuelSystem.IsEmpty) state = State.PickingTarget;
+        }
+
+        // Mirrors UI.ResourceRefillUI.TryFillFuel's player-facing purchase - buys as much of the
+        // missing fuel as the wallet can afford, same per-unit price.
+        private void PurchaseFuel()
+        {
+            float unitsNeeded = fuelSystem.FuelMissing;
+            if (unitsNeeded <= 0f) return;
+
+            float unitsAffordable = Mathf.FloorToInt((float)(Wallet.Instance.Dollars / config.FuelCostPerUnit));
+            float unitsToBuy = Mathf.Min(unitsNeeded, unitsAffordable);
+            if (unitsToBuy <= 0f) return;
+
+            if (!Wallet.Instance.TrySpend(unitsToBuy * config.FuelCostPerUnit)) return;
+            fuelSystem.AddFuel(unitsToBuy);
+        }
+
 #if UNITY_EDITOR
         // Editor-only inspection aid (see EditorTools.Automation.MiningAutomatonEditor for the
         // Inspector-side counterpart): draws the current path, dig target, and depot leg in the
@@ -349,6 +388,13 @@ namespace Automation
             if (state == State.FlyingToDepot)
             {
                 Gizmos.color = Color.green;
+                Gizmos.DrawLine(transform.position, _depotLocation);
+                Gizmos.DrawWireSphere(_depotLocation, 0.3f);
+            }
+
+            if (state == State.ReturningToRefuel)
+            {
+                Gizmos.color = Color.magenta;
                 Gizmos.DrawLine(transform.position, _depotLocation);
                 Gizmos.DrawWireSphere(_depotLocation, 0.3f);
             }
