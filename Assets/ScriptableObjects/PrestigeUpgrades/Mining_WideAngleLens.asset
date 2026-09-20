@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Mining_WideAngleLens
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: mining_camera_zoom
   DisplayName: Wide-Angle Lens
   Description: Zooms the camera out further, letting you see more of the mineable
     area at once.
-  Branch: 0
-  Effect: 2
+  Icon: {fileID: 21300000, guid: 10435bf93c58b764ca3472021982674e, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 5
   BaseCost: 25
   CostGrowth: 1.4
-  Prerequisite: {fileID: 11400000, guid: e2d6b7b4034a31b4681479ba1b0ffd2f, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: e2d6b7b4034a31b4681479ba1b0ffd2f, type: 2}
+  Branch: 0
+  Effect: 2

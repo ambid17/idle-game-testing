@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Prestige_CuratorsEye
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: prestige_points_per_artifact
   DisplayName: Curator's Eye
   Description: Increases how many Prestige points each artifact is worth when turned
     in.
-  Branch: 3
-  Effect: 11
+  Icon: {fileID: 21300000, guid: 16e74fa692ba16c42bc519cfa7e16396, type: 3}
   EffectValuePerLevel: 0.15
   MaxLevel: 10
   BaseCost: 20
   CostGrowth: 1.4
-  Prerequisite: {fileID: 11400000, guid: 5ad109ea1d47ac3409843c9ad360c66e, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 5ad109ea1d47ac3409843c9ad360c66e, type: 2}
+  Branch: 3
+  Effect: 11

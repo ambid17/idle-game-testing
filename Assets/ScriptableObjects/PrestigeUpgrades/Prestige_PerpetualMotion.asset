@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Prestige_PerpetualMotion
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: prestige_auto_prestige_capstone
   DisplayName: Perpetual Motion
   Description: 'Capstone: automatically triggers a prestige once it''s mathematically
     worth it.'
-  Branch: 3
-  Effect: 13
+  Icon: {fileID: 21300000, guid: 35495add7663f8143b6b7bf10c753336, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 500
   CostGrowth: 1
-  Prerequisite: {fileID: 11400000, guid: 19ce06fa6d9b8ee4eb01397caac4baae, type: 2}
   RequirePrerequisiteMaxed: 1
+  Prerequisite: {fileID: 11400000, guid: 19ce06fa6d9b8ee4eb01397caac4baae, type: 2}
+  Branch: 3
+  Effect: 13

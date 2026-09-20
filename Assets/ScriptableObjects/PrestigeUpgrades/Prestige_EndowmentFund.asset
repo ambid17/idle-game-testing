@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Prestige_EndowmentFund
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: prestige_passive_point_rate
   DisplayName: Endowment Fund
   Description: Passively generates Prestige points over time, even while not turning
     in artifacts.
-  Branch: 3
-  Effect: 12
+  Icon: {fileID: 21300000, guid: cad77876f0e00ae4096cfde34337a88f, type: 3}
   EffectValuePerLevel: 0.02
   MaxLevel: 10
   BaseCost: 40
   CostGrowth: 1.5
-  Prerequisite: {fileID: 11400000, guid: 3099549f0ef322c439fdcabf5816326a, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 3099549f0ef322c439fdcabf5816326a, type: 2}
+  Branch: 3
+  Effect: 12

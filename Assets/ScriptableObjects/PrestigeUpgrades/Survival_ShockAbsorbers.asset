@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Survival_ShockAbsorbers
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: survival_fall_damage_reduction
   DisplayName: Shock Absorbers
   Description: Reduces fall damage taken.
-  Branch: 5
-  Effect: 19
+  Icon: {fileID: 21300000, guid: 665e0c33baa4a574385ccbc3f13ccf68, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8
   BaseCost: 20
   CostGrowth: 1.4
-  Prerequisite: {fileID: 11400000, guid: 581dfc2a572845d4687fe17a08da4030, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 581dfc2a572845d4687fe17a08da4030, type: 2}
+  Branch: 5
+  Effect: 19

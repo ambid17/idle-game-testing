@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Survival_LightBoots
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: survival_move_speed
   DisplayName: Light Boots
   Description: Increases your move speed.
-  Branch: 5
-  Effect: 18
+  Icon: {fileID: 21300000, guid: f832037ebbebfb044a02f2d60826559d, type: 3}
   EffectValuePerLevel: 0.05
   MaxLevel: 10
   BaseCost: 15
   CostGrowth: 1.4
-  Prerequisite: {fileID: 11400000, guid: 3b462ae4ff26b39499e295079a31d2c1, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 3b462ae4ff26b39499e295079a31d2c1, type: 2}
+  Branch: 5
+  Effect: 18

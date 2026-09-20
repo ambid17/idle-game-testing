@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Progression_ProspectorsInstinct
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: progression_ore_tier_odds
   DisplayName: Prospector's Instinct
   Description: Increases the odds of finding higher-tier ore, including in upper
     layers.
-  Branch: 4
-  Effect: 14
+  Icon: {fileID: 21300000, guid: 7d5239f94093a4c43be1fc9330796a2c, type: 3}
   EffectValuePerLevel: 0.05
   MaxLevel: 10
   BaseCost: 15
   CostGrowth: 1.4
-  Prerequisite: {fileID: 0}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 0}
+  Branch: 4
+  Effect: 14

@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Survival_FilteredLungs
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: survival_gas_resistance
   DisplayName: Filtered Lungs
   Description: Increases resistance to harmful gas.
-  Branch: 5
-  Effect: 20
+  Icon: {fileID: 21300000, guid: a4bc5e3ddc48de543a56cf8f806bb561, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8
   BaseCost: 25
   CostGrowth: 1.4
-  Prerequisite: {fileID: 11400000, guid: b15182af204f22d4d94717f25744dfe6, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: b15182af204f22d4d94717f25744dfe6, type: 2}
+  Branch: 5
+  Effect: 20

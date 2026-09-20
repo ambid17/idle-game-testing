@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Idle_SeasonedDrills
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  Id: idle_keep_automaton_mining_speed
   DisplayName: Seasoned Drills
   Description: Keep 1 tier of automaton mining speed from the start of every future
     run.
-  Branch: 2
-  Effect: 7
+  Icon: {fileID: 21300000, guid: 4a517d7e27cc61a4888933c96943df95, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 25
   CostGrowth: 1.6
-  Prerequisite: {fileID: 11400000, guid: 4f0e48a60b860c84cb3e04ba194935d0, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 4f0e48a60b860c84cb3e04ba194935d0, type: 2}
+  Branch: 2
+  Effect: 7
