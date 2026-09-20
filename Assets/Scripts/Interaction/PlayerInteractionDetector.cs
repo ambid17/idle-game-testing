@@ -32,7 +32,7 @@ namespace Interaction
                 current = closest;
                 if (current != null)
                 {
-                    promptUI.Show(current.PromptText);
+                    promptUI.Show(current.InteractableType);
                 }
                 else
                 {
