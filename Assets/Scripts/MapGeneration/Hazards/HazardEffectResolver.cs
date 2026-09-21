@@ -6,9 +6,12 @@ namespace MapGeneration
 {
     // Resolves the world-side effects of GameDesignDoc "Randomness blocks > hazardous" beyond flat
     // proximity damage - Player.HazardDamageHandler still owns all player damage. This is block
-    // destruction (Explosive), spawning a local telegraphed/lingering effect (FallingRock/
-    // GasPocket), and marking a persistent surface (Lava). Singleton, event-only coupling, matching
-    // PowerUpEffectResolver's structure for the PowerUp side of the same HazardBehavior enum.
+    // destruction (Explosive) and spawning a local telegraphed/lingering effect (FallingRock/
+    // GasPocket). Lava needs no world-side resolution at all - mining it clears the cell like any
+    // other block (MapGenerationService.MineCell), and its damage (both the instant mining hit and
+    // the per-frame underfoot tick) is entirely owned by Player.HazardDamageHandler. Singleton,
+    // event-only coupling, matching PowerUpEffectResolver's structure for the PowerUp side of the
+    // same HazardBehavior enum.
     public class HazardEffectResolver : Singleton<HazardEffectResolver>
     {
         [SerializeField] private int explosiveBlastRadius = 2;
@@ -31,7 +34,6 @@ namespace MapGeneration
                 case CustomBehavior.Explosive: ResolveExplosive(evt); break;
                 case CustomBehavior.FallingRock: SpawnFallingRock(evt); break;
                 case CustomBehavior.GasPocket: SpawnGasCloud(evt); break;
-                case CustomBehavior.Lava: ResolveLava(evt); break;
             }
         }
 
@@ -100,11 +102,5 @@ namespace MapGeneration
             effect.transform.position = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
             effect.Begin(evt.LayerIndex, evt.X, evt.Y);
         }
-
-        // GameDesignDoc "Lava: shows up more as you get deeper, damages the player, worth no
-        // money" - the mined cell becomes a persistent hazardous surface. Player.HazardDamageHandler
-        // applies contact damage-over-time by reading CellData.HazardousSurface directly each
-        // frame; no event needed for that part.
-        private void ResolveLava(HazardTriggeredEvent evt) => mapGenerationService.MarkHazardousSurface(evt.LayerIndex, evt.X, evt.Y);
     }
 }

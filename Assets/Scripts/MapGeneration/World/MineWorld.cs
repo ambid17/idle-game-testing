@@ -170,28 +170,6 @@ namespace MapGeneration
             else revealedByLayer[layerIndex] = revealed;
         }
 
-        // Marks a mined cell as a persistent Lava surface (see CellData.HazardousSurface). Only
-        // meaningful on an already-mined cell; the caller (HazardEffectResolver) always calls this
-        // right after the cell was mined by MapGenerationService.MineCell.
-        public bool TrySetHazardousSurface(int layerIndex, int x, int y)
-        {
-            var chunk = GetOrGenerateChunk(layerIndex);
-            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) return false;
-
-            int idx = chunk.Index(x, y);
-            var cell = chunk.Cells[idx];
-            cell.HazardousSurface = true;
-            chunk.Cells[idx] = cell;
-            return true;
-        }
-
-        public bool IsHazardousSurface(int layerIndex, int x, int y)
-        {
-            var chunk = GetOrGenerateChunk(layerIndex);
-            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) return false;
-
-            return chunk.Cells[chunk.Index(x, y)].HazardousSurface;
-        }
 
         public void UnloadChunk(int layerIndex) => chunksByLayer.Remove(layerIndex);
 

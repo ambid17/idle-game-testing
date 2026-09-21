@@ -13,7 +13,6 @@ namespace MapGeneration
         // Dense bit arrays (1 bit/cell) - a few hundred bytes per chunk even fully mined.
         public byte[] MinedBits;
         public byte[] RevealedBits;
-        public byte[] HazardousBits;
     }
 
     [Serializable]

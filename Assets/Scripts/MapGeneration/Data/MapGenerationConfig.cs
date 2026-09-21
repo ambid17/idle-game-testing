@@ -9,7 +9,6 @@ namespace MapGeneration
     [CreateAssetMenu(fileName = "MapGenerationConfig", menuName = "Map Generation/Map Generation Config")]
     public class MapGenerationConfig : ScriptableObject
     {
-        [SerializeField] private int seed = 12345;
         [SerializeField] private int gridWidth = 30;
         [SerializeField] private float cellSize = 1f;
         [SerializeField] private int windowRadius = 1;

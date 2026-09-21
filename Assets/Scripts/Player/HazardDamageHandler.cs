@@ -9,21 +9,24 @@ namespace Player
     // Single source of hazard damage for every HazardBehavior, regardless of who mined the cell -
     // the player triggering their own hazard, or (per automationImplementation.md) a Mining
     // Automaton triggering one nearby (automatons never take damage themselves, only the player
-    // does - see MapGeneration.HazardEffectResolver). Explosive resolves straight off
-    // HazardTriggeredEvent (the blast is instant); FallingRock/GasPocket listen for the delayed/
-    // lingering events HazardEffectResolver's spawned effects dispatch once their own telegraph/
-    // lifetime elapses; Lava is a per-frame contact check against CellData.HazardousSurface, since
-    // it has no further trigger moment after the cell is mined.
+    // does - see MapGeneration.HazardEffectResolver). Explosive/Lava resolve straight off
+    // HazardTriggeredEvent (an instant hit the moment the block is mined); FallingRock/GasPocket
+    // listen for the delayed/lingering events HazardEffectResolver's spawned effects dispatch once
+    // their own telegraph/lifetime elapses. Lava additionally gets a per-frame check for the player
+    // standing on top of a still-unmined Lava block - once mined it behaves like any other block
+    // (see MapGenerationService.MineCell), no lingering hazard.
     public class HazardDamageHandler : MonoBehaviour
     {
         [SerializeField] private float hazardDamageRadius = 3f;
         [SerializeField] private float explosiveDamage = 25f;
         [SerializeField] private float fallingRockDamage = 20f;
         [SerializeField] private float gasCloudTickDamage = 8f;
+        [SerializeField] private float lavaMineDamage = 15f;
         [SerializeField] private float lavaDamage = 10f;
         [SerializeField] private float lavaDamageTickSeconds = 1f;
 
         private PlayerHealth playerHealth;
+        private PlayerController playerController;
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private float lavaDamageTimer;
 
@@ -31,6 +34,9 @@ namespace Player
         {
             playerHealth = GetComponent<PlayerHealth>();
             if (playerHealth == null) Debug.LogError($"{nameof(HazardDamageHandler)} on {name} requires a PlayerHealth component.");
+
+            playerController = GetComponent<PlayerController>();
+            if (playerController == null) Debug.LogError($"{nameof(HazardDamageHandler)} on {name} requires a PlayerController component.");
         }
 
         private void OnEnable()
@@ -50,13 +56,20 @@ namespace Player
         private void Update()
         {
             if (playerHealth == null || playerHealth.IsDead || mapGenerationService == null) return;
-            HandleLavaContact();
+            HandleLavaUnderfoot();
         }
 
         private void OnHazardTriggered(HazardTriggeredEvent evt)
         {
-            if (evt.Hazard != CustomBehavior.Explosive) return;
-            TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, hazardDamageRadius, explosiveDamage, DeathReason.Explosive, BlastResistanceOf);
+            switch (evt.Hazard)
+            {
+                case CustomBehavior.Explosive:
+                    TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, hazardDamageRadius, explosiveDamage, DeathReason.Explosive, BlastResistanceOf);
+                    break;
+                case CustomBehavior.Lava:
+                    TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, hazardDamageRadius, lavaMineDamage, DeathReason.Lava, LavaResistanceOf);
+                    break;
+            }
         }
 
         private void OnFallingRockImpact(FallingRockImpactEvent evt) =>
@@ -78,14 +91,28 @@ namespace Player
             playerHealth.TakeDamage(damage, reason);
         }
 
-        // Per-frame contact check against the player's current cell rather than an event - Lava's
-        // only trigger moment is the initial mining (HazardEffectResolver already marks
-        // CellData.HazardousSurface then), everything after that is "is the player standing on/in
-        // an already-mined lava cell right now".
-        private void HandleLavaContact()
+        // Per-frame check rather than an event - Lava has no trigger moment while standing on it,
+        // just "is there a still-unmined Lava block directly underfoot right now" (same below-cell
+        // resolution FallingRockHazardEffect.Fall uses to check what it's landing on).
+        private void HandleLavaUnderfoot()
         {
-            if (!mapGenerationService.TryWorldToCellInBounds(transform.position, out int layerIndex, out int x, out int y)) return;
-            if (!mapGenerationService.IsHazardousSurface(layerIndex, x, y))
+            if (playerController == null || !playerController.IsGrounded)
+            {
+                lavaDamageTimer = 0f;
+                return;
+            }
+
+            if (!mapGenerationService.TryWorldToCellInBounds(transform.position, out int layerIndex, out int x, out int y))
+            {
+                lavaDamageTimer = 0f;
+                return;
+            }
+
+            Vector3 belowWorldPos = mapGenerationService.CellToWorldCenter(layerIndex, x, y) + Vector3.down * mapGenerationService.CellSize;
+            bool belowResolved = mapGenerationService.TryWorldToCellInBounds(belowWorldPos, out int belowLayer, out int belowX, out int belowY);
+            var belowBlock = belowResolved ? mapGenerationService.GetBlockTypeAt(belowLayer, belowX, belowY) : null;
+
+            if (belowBlock == null || belowBlock.CustomBehavior != CustomBehavior.Lava)
             {
                 lavaDamageTimer = 0f;
                 return;

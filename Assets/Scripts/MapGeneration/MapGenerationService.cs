@@ -349,18 +349,6 @@ namespace MapGeneration
 
         public float GetBlockHealthMultiplier(int layerIndex) => layerConfigProvider.GetConfig(layerIndex).BlockHealth;
 
-        public bool IsHazardousSurface(int layerIndex, int x, int y) => World.IsHazardousSurface(layerIndex, x, y);
-
-        // Marks a just-mined Lava cell as a persistent hazardous surface and repaints it - separate
-        // from MineCell's own repaint (which already ran before HazardEffectResolver's
-        // HazardTriggeredEvent handler gets a chance to flag the cell), so a follow-up repaint is
-        // needed here rather than relying on MineCell's.
-        public void MarkHazardousSurface(int layerIndex, int x, int y)
-        {
-            if (!World.TrySetHazardousSurface(layerIndex, x, y)) return;
-            RefreshCellVisual(layerIndex, x, y);
-        }
-
         public void RefreshCellVisual(int layerIndex, int x, int y) =>
             streamingManager.NotifyCellMined(layerIndex, x, y, System.Array.Empty<Vector2Int>());
 

@@ -44,11 +44,6 @@ namespace MapGeneration
         // GameDesignDoc "Lantern capstones > hazard sense: highlights hazard blocks".
         [SerializeField] private Color hazardSenseTint = new(1f, 0.4f, 0.4f);
 
-        // GameDesignDoc "Randomness blocks > hazardous > Lava": a mined Lava cell stays a
-        // persistent damaging surface instead of clearing to empty space - tint stands in for a
-        // dedicated molten-surface tile until one is generated (see CLAUDE.md asset-generation).
-        [SerializeField] private Color hazardousSurfaceTint = new(1f, 0.35f, 0.1f);
-
         public int LayerIndex { get; private set; }
 
         private ChunkData chunk;
@@ -149,16 +144,7 @@ namespace MapGeneration
         // paints the block's tile at full white (no tint).
         private TileChangeData BuildTerrainChange(Vector3Int pos, CellData cell)
         {
-            if (cell.Mined)
-            {
-                if (!cell.HazardousSurface) return new TileChangeData(pos, null, Color.white, Matrix4x4.identity);
-
-                // Repaint the mined-out Lava cell's own tile (BlockTypeId survives mining, only the
-                // Mined flag is set) tinted, instead of clearing it like a normal mined cell.
-                var lavaBlockType = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
-                var lavaTile = lavaBlockType != null ? lavaBlockType.Tile : null;
-                return new TileChangeData(pos, lavaTile, hazardousSurfaceTint, Matrix4x4.identity);
-            }
+            if (cell.Mined) return new TileChangeData(pos, null, Color.white, Matrix4x4.identity);
 
             var blockType = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
             var tile = blockType != null ? blockType.Tile : null;
