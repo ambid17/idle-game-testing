@@ -48726,7 +48726,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16d61352a09cb8d44bad808159d43352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeManager
-  CurrencyIcon: {fileID: 21300000, guid: a1b325b8c4d97da4c96c8f5393b2d6f1, type: 3}
+  CurrencyIcon: {fileID: 21300000, guid: 3b84cf5ec1b2b4d43aec6a03e9781dbe, type: 3}
 --- !u!4 &1622996567
 Transform:
   m_ObjectHideFlags: 0
