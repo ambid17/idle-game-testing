@@ -16,7 +16,7 @@ MonoBehaviour:
   DisplayName: Dirt
   Category: 0
   HazardBehavior: 0
-  Tile: {fileID: 11400000, guid: 1da5f4819c7a7b8429b43e421bb0b1a6, type: 2}
+  Tile: {fileID: 11400000, guid: 2178924eeeafaaf4ba4d3c6d130b898a, type: 2}
   Icon: {fileID: 21300000, guid: 3f65d70b6b1bae5498316a30dd7d2a47, type: 3}
   Value: 0
   Weight: 0
