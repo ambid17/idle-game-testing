@@ -22088,7 +22088,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.HazardEffectResolver
   explosiveBlastRadius: 2
   fallingRockEffectPrefab: {fileID: 1608046206515764736, guid: 34d7bbf171d65974cb341d036c7e2358, type: 3}
-  gasCloudEffectPrefab: {fileID: 0}
+  gasCloudEffectPrefab: {fileID: 7024855636632672245, guid: c31a77df5784083478d399b8819b9ec3, type: 3}
 --- !u!1 &531858249
 GameObject:
   m_ObjectHideFlags: 0
