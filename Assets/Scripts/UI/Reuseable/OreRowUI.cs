@@ -20,6 +20,10 @@ namespace UI
         [SerializeField] private TMP_Text valueLabel;
 
         private BlockType blockType;
+        // Optional - only present on prefab variants that want the count/value to tick towards
+        // new numbers instead of snapping. Null is a valid "not wired up" state, not an error.
+        private AnimatedCounter countAnimator;
+        private AnimatedCounter valueAnimator;
 
         private void Start()
         {
@@ -27,6 +31,10 @@ namespace UI
             if (nameLabel == null) Debug.LogError($"OreRowUI.nameLabel is not assigned on {gameObject.name}.");
             if (countLabel == null) Debug.LogError($"OreRowUI.countLabel is not assigned on {gameObject.name}.");
             if (valueLabel == null) Debug.LogError($"OreRowUI.valueLabel is not assigned on {gameObject.name}.");
+
+            countAnimator = countLabel != null ? countLabel.GetComponent<AnimatedCounter>() : null;
+            valueAnimator = valueLabel != null ? valueLabel.GetComponent<AnimatedCounter>() : null;
+            valueAnimator?.SetFormatter(v => $"${v:0}");
         }
 
         public void Bind(BlockType blockType)
@@ -38,11 +46,13 @@ namespace UI
 
         public float SetCount(int count)
         {
-            countLabel.text = count.ToString();
+            if (countAnimator != null) countAnimator.SetValue(count);
+            else countLabel.text = count.ToString();
 
             var blockValue = blockType.Value;
             var totalValue = blockValue * UpgradeManager.Instance.SellValueMultiplier * count;
-            valueLabel.text = $"${totalValue:0}";
+            if (valueAnimator != null) valueAnimator.SetValue(totalValue);
+            else valueLabel.text = $"${totalValue:0}";
 
             return totalValue;
         }

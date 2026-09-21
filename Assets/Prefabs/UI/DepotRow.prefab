@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5708941242982738147}
   - component: {fileID: 8076230942209509406}
   - component: {fileID: 4358012251464176088}
+  - component: {fileID: 4585521995816042245}
   m_Layer: 5
   m_Name: ValueText
   m_TagString: Untagged
@@ -158,6 +159,21 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &4585521995816042245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703252703430500500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ef877a4d596bc4fa5ca2bf178d656a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.AnimatedCounter
+  countsPerSecond: 60
+  minDuration: 0.15
+  maxDuration: 0.75
 --- !u!1 &3009921380317340817
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,6 +297,7 @@ GameObject:
   - component: {fileID: 6309296913072723744}
   - component: {fileID: 3592106389128030114}
   - component: {fileID: 6697496971646911227}
+  - component: {fileID: 361246071155737140}
   m_Layer: 5
   m_Name: CountText
   m_TagString: Untagged
@@ -427,6 +444,21 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &361246071155737140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4008986536425531460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ef877a4d596bc4fa5ca2bf178d656a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.AnimatedCounter
+  countsPerSecond: 60
+  minDuration: 0.15
+  maxDuration: 0.75
 --- !u!1 &4250284700538517117
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 403070597853447101}
   - component: {fileID: 7311126570210403558}
   - component: {fileID: 1663706997283794311}
+  - component: {fileID: 2786079466264654347}
   m_Layer: 0
   m_Name: ValueLabel
   m_TagString: Untagged
@@ -137,6 +138,21 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2786079466264654347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2240761037681635254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ef877a4d596bc4fa5ca2bf178d656a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.AnimatedCounter
+  countsPerSecond: 60
+  minDuration: 0.15
+  maxDuration: 0.75
 --- !u!1 &4816164374134575108
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +165,7 @@ GameObject:
   - component: {fileID: 4992442373058126270}
   - component: {fileID: 7000889460954491388}
   - component: {fileID: 6269216627922374913}
+  - component: {fileID: 9135880651031446972}
   m_Layer: 0
   m_Name: CountLabel
   m_TagString: Untagged
@@ -297,6 +314,21 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &9135880651031446972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4816164374134575108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6ef877a4d596bc4fa5ca2bf178d656a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.AnimatedCounter
+  countsPerSecond: 60
+  minDuration: 0.15
+  maxDuration: 0.75
 --- !u!1 &7459131155025248880
 GameObject:
   m_ObjectHideFlags: 0
