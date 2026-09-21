@@ -272,14 +272,14 @@ namespace Events
         }
     }
 
-    public class HazardTriggeredEvent : IEvent
+    public class CustomBlockTriggeredEvent : IEvent
     {
         public int LayerIndex;
         public int X;
         public int Y;
         public CustomBehavior Hazard;
 
-        public HazardTriggeredEvent(int layerIndex, int x, int y, CustomBehavior hazard)
+        public CustomBlockTriggeredEvent(int layerIndex, int x, int y, CustomBehavior hazard)
         {
             LayerIndex = layerIndex;
             X = x;
@@ -325,6 +325,25 @@ namespace Events
             X = x;
             Y = y;
             Radius = radius;
+        }
+    }
+
+    // Dispatched by MapGeneration.ExplosiveHazardEffect once its jiggle/flash telegraph finishes -
+    // the actual moment the blast radius gets destroyed and the player takes damage, not the
+    // instant the block was mined (see HazardTriggeredEvent). Player.HazardDamageHandler and
+    // HazardEffectResolver both listen for this instead of HazardTriggeredEvent for the Explosive
+    // case specifically, so the delay is felt by both damage and destruction together.
+    public class ExplosiveDetonatedEvent : IEvent
+    {
+        public int LayerIndex;
+        public int X;
+        public int Y;
+
+        public ExplosiveDetonatedEvent(int layerIndex, int x, int y)
+        {
+            LayerIndex = layerIndex;
+            X = x;
+            Y = y;
         }
     }
 

@@ -27,18 +27,29 @@ namespace MapGeneration
 
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
 
-        private void OnEnable() => GameManager.EventService.Add<HazardTriggeredEvent>(OnHazardTriggered);
-        private void OnDisable() => GameManager.EventService.Remove<HazardTriggeredEvent>(OnHazardTriggered);
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<CustomBlockTriggeredEvent>(OnHazardTriggered);
+            GameManager.EventService.Add<ExplosiveDetonatedEvent>(OnExplosiveDetonated);
+        }
 
-        private void OnHazardTriggered(HazardTriggeredEvent evt)
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<CustomBlockTriggeredEvent>(OnHazardTriggered);
+            GameManager.EventService.Remove<ExplosiveDetonatedEvent>(OnExplosiveDetonated);
+        }
+
+        private void OnHazardTriggered(CustomBlockTriggeredEvent evt)
         {
             switch (evt.Hazard)
             {
-                case CustomBehavior.Explosive: ResolveExplosive(evt); break;
+                case CustomBehavior.Explosive: SpawnExplosiveEffect(evt); break;
                 case CustomBehavior.FallingRock: SpawnFallingRock(evt); break;
                 case CustomBehavior.GasPocket: SpawnGasCloud(evt); break;
             }
         }
+
+        private void OnExplosiveDetonated(ExplosiveDetonatedEvent evt) => ResolveExplosive(evt.LayerIndex, evt.X, evt.Y);
 
         // GameDesignDoc "explosive: destroys blocks in a radius... you get to collect the minerals
         // destroyed by the explosion" - destroying a cell reuses MapGenerationService.MineCell, so
@@ -47,12 +58,11 @@ namespace MapGeneration
         // extra code, naturally bounded since TryMineCell refuses an already-mined cell). Destroyed
         // ore is auto-credited straight to Wallet rather than added to inventory - there's no
         // guarantee the player (or the automaton that triggered this) is standing close enough to
-        // physically collect it.
-        private void ResolveExplosive(HazardTriggeredEvent evt)
+        // physically collect it. Runs off ExplosiveDetonatedEvent, not HazardTriggeredEvent - see
+        // ExplosiveHazardEffect's jiggle/flash telegraph for why the two are a second apart.
+        private void ResolveExplosive(int layerIndex, int originX, int originY)
         {
             if (mapGenerationService == null) return;
-
-            SpawnExplosiveEffect(evt);
 
             for (int dy = -explosiveBlastRadius; dy <= explosiveBlastRadius; dy++)
             {
@@ -61,24 +71,26 @@ namespace MapGeneration
                     if (dx == 0 && dy == 0) continue;
                     if (dx * dx + dy * dy > explosiveBlastRadius * explosiveBlastRadius) continue;
 
-                    int x = evt.X + dx;
-                    int y = evt.Y + dy;
-                    var blockType = mapGenerationService.GetBlockTypeAt(evt.LayerIndex, x, y);
+                    int x = originX + dx;
+                    int y = originY + dy;
+                    var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
                     if (blockType == null) continue;
 
-                    if (!mapGenerationService.MineCell(evt.LayerIndex, x, y)) continue;
+                    if (!mapGenerationService.MineCell(layerIndex, x, y)) continue;
                     if (blockType.Category == BlockCategory.Ore) CreditOreValue(blockType);
                 }
             }
         }
 
-        private void SpawnExplosiveEffect(HazardTriggeredEvent evt)
+        private void SpawnExplosiveEffect(CustomBlockTriggeredEvent evt)
         {
+            if (mapGenerationService == null) return;
+
             var effect = explosiveEffectPrefab != null
                 ? Instantiate(explosiveEffectPrefab)
                 : new GameObject("ExplosiveHazardEffect").AddComponent<ExplosiveHazardEffect>();
             effect.transform.position = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
-            effect.Begin();
+            effect.Begin(evt.LayerIndex, evt.X, evt.Y);
         }
 
         private static void CreditOreValue(BlockType blockType)
@@ -92,7 +104,7 @@ namespace MapGeneration
         // GameDesignDoc "falling rocks: mining the terrain under them causes them to fall, damaging
         // the player if they are below it" - telegraph-then-impact is fully owned by the spawned
         // effect; this just places it and lets it run.
-        private void SpawnFallingRock(HazardTriggeredEvent evt)
+        private void SpawnFallingRock(CustomBlockTriggeredEvent evt)
         {
             if (mapGenerationService == null) return;
 
@@ -106,7 +118,7 @@ namespace MapGeneration
         // GameDesignDoc "gas pockets: mining releases a damaging/flammable gas cloud" - chain-
         // ignition into Lava/Explosive is deferred to a follow-up pass (real cross-hazard scope);
         // this ships as a standalone expanding/lingering/dissipating damage-over-time cloud.
-        private void SpawnGasCloud(HazardTriggeredEvent evt)
+        private void SpawnGasCloud(CustomBlockTriggeredEvent evt)
         {
             if (mapGenerationService == null) return;
 

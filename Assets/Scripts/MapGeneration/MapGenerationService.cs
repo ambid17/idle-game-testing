@@ -249,7 +249,7 @@ namespace MapGeneration
             HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);
             if (block != null && (block.Category == BlockCategory.Hazard || block.Category == BlockCategory.PowerUp))
             {
-                GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.CustomBehavior));
+                GameManager.EventService.Dispatch(new CustomBlockTriggeredEvent(layerIndex, x, y, block.CustomBehavior));
             }
 
             TryTriggerFallingRockAbove(layerIndex, x, y);
@@ -270,7 +270,7 @@ namespace MapGeneration
             var aboveBlock = GetBlockTypeAt(aboveLayer, aboveX, aboveY);
             if (aboveBlock == null || aboveBlock.Id != BlockTypeId.FallingRock) return;
 
-            GameManager.EventService.Dispatch(new HazardTriggeredEvent(aboveLayer, aboveX, aboveY, CustomBehavior.FallingRock));
+            GameManager.EventService.Dispatch(new CustomBlockTriggeredEvent(aboveLayer, aboveX, aboveY, CustomBehavior.FallingRock));
         }
 
         // Called by MapGeneration.PowerUpEffectResolver for a SightPotion's reveal burst - same

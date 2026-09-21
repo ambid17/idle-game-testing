@@ -41,14 +41,16 @@ namespace Player
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<HazardTriggeredEvent>(OnHazardTriggered);
+            GameManager.EventService.Add<CustomBlockTriggeredEvent>(OnHazardTriggered);
+            GameManager.EventService.Add<ExplosiveDetonatedEvent>(OnExplosiveDetonated);
             GameManager.EventService.Add<FallingRockImpactEvent>(OnFallingRockImpact);
             GameManager.EventService.Add<GasCloudDamageTickEvent>(OnGasCloudDamageTick);
         }
 
         private void OnDisable()
         {
-            GameManager.EventService.Remove<HazardTriggeredEvent>(OnHazardTriggered);
+            GameManager.EventService.Remove<CustomBlockTriggeredEvent>(OnHazardTriggered);
+            GameManager.EventService.Remove<ExplosiveDetonatedEvent>(OnExplosiveDetonated);
             GameManager.EventService.Remove<FallingRockImpactEvent>(OnFallingRockImpact);
             GameManager.EventService.Remove<GasCloudDamageTickEvent>(OnGasCloudDamageTick);
         }
@@ -59,18 +61,21 @@ namespace Player
             HandleLavaUnderfoot();
         }
 
-        private void OnHazardTriggered(HazardTriggeredEvent evt)
+        private void OnHazardTriggered(CustomBlockTriggeredEvent evt)
         {
             switch (evt.Hazard)
             {
-                case CustomBehavior.Explosive:
-                    TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, hazardDamageRadius, explosiveDamage, DeathReason.Explosive, BlastResistanceOf);
-                    break;
                 case CustomBehavior.Lava:
                     TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, hazardDamageRadius, lavaMineDamage, DeathReason.Lava, LavaResistanceOf);
                     break;
             }
         }
+
+        // Fires off ExplosiveDetonatedEvent rather than HazardTriggeredEvent - see
+        // MapGeneration.ExplosiveHazardEffect's jiggle/flash telegraph for why damage lands a
+        // second after the block was actually mined.
+        private void OnExplosiveDetonated(ExplosiveDetonatedEvent evt) =>
+            TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, hazardDamageRadius, explosiveDamage, DeathReason.Explosive, BlastResistanceOf);
 
         private void OnFallingRockImpact(FallingRockImpactEvent evt) =>
             TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, evt.Radius, fallingRockDamage, DeathReason.FallingRock, FallingRockResistanceOf);
