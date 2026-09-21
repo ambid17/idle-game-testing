@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 13
   DisplayName: Nanite Ore
   Category: 1
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 7a0cc6fd32f6373468eedb757f89dcb8, type: 2}
   Icon: {fileID: 21300000, guid: fb82d5a488c8670429276e4a31096d11, type: 3}
   Value: 950

@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 5
   DisplayName: Iron
   Category: 1
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 4eb9a04682e98e249a51d1205ddaaff1, type: 2}
   Icon: {fileID: 21300000, guid: e93b691a82c388b44a162331fff4fa73, type: 3}
   Value: 25

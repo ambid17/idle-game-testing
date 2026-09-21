@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 15
   DisplayName: Fusion Core Crystal
   Category: 1
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 6d3ee3c2f5576fa4f9fb9815d782cb57, type: 2}
   Icon: {fileID: 21300000, guid: aad9da2c93ffbf54d8443b92e425dc88, type: 3}
   Value: 2400

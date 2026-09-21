@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 11
   DisplayName: Voidstone
   Category: 1
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 7c41680748ce75c4daa1bba20f8ff2d9, type: 2}
   Icon: {fileID: 21300000, guid: b912f1ed87b34f8478f7d6f28c3e3899, type: 3}
   Value: 380

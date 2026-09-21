@@ -294,9 +294,11 @@ namespace Events
         }
     }
 
-    // Dispatched by MapGeneration.FallingRockHazardEffect once its telegraph delay elapses -
-    // Player.HazardDamageHandler listens for this (not HazardTriggeredEvent) so the damage window
-    // lands at impact, not at the moment the block was mined.
+    // Dispatched by MapGeneration.FallingRockHazardEffect after its jiggle warning: once per cell
+    // it passes through while falling (small Radius - "touches the player mid-fall") and once
+    // more, with a wider Radius, when it lands. Player.HazardDamageHandler listens for this (not
+    // HazardTriggeredEvent) so the damage window lands at contact/impact, not at the moment the
+    // rock's support was mined.
     public class FallingRockImpactEvent : IEvent
     {
         public int LayerIndex;

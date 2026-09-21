@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 20
   DisplayName: Falling Rock
   Category: 2
-  HazardBehavior: 2
+  CustomBehavior: 2
   Tile: {fileID: 11400000, guid: 20cdf9d7110cd654796413bb677677fe, type: 2}
   Icon: {fileID: 21300000, guid: 9c01699f25c33e5478d61df96980102a, type: 3}
   Value: 0

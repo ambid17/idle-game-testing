@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 0
   DisplayName: Grassy Dirt
   Category: 0
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 17680bdffa3fff645b5606f4f1ec75c3, type: 2}
   Icon: {fileID: 21300000, guid: 2f5658b10bf892849bccc550d98a1d8b, type: 3}
   Value: 0

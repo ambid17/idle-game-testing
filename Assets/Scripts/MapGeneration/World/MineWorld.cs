@@ -57,6 +57,13 @@ namespace MapGeneration
                 //Debug.LogWarning($"TryMineCell: can't mine grassy dirt tiles, they support buildings");
                 return false;
             }
+            if (cell.BlockTypeId == (byte)BlockTypeId.FallingRock)
+            {
+                // Never directly mineable - it only comes loose once the block beneath it is
+                // mined out (see MapGenerationService.MineCell's "check above" hook and
+                // MapGeneration.FallingRockHazardEffect).
+                return false;
+            }
             if (cell.Mined)
             {
                 //Debug.LogWarning($"TryMineCell: cell already mined for layer {layerIndex}: ({x}, {y})");
@@ -67,6 +74,24 @@ namespace MapGeneration
             chunk.MinedCount++;
 
             minedBlock = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
+            return true;
+        }
+
+        // Bypasses the mineable checks in TryMineCell above - used only by
+        // FallingRockHazardEffect to remove a rock's own cell the instant it starts falling (it
+        // can never reach here through TryMineCell itself, since FallingRock is refused there).
+        public bool ForceClearCell(int layerIndex, int x, int y)
+        {
+            var chunk = GetOrGenerateChunk(layerIndex);
+            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) return false;
+
+            int idx = chunk.Index(x, y);
+            var cell = chunk.Cells[idx];
+            if (cell.Mined) return false;
+
+            cell.Mined = true;
+            chunk.Cells[idx] = cell;
+            chunk.MinedCount++;
             return true;
         }
 

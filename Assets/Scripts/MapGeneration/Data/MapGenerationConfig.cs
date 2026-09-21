@@ -14,7 +14,6 @@ namespace MapGeneration
         [SerializeField] private float cellSize = 1f;
         [SerializeField] private int windowRadius = 1;
 
-        public int Seed => seed;
         public int GridWidth => gridWidth;
         public float CellSize => cellSize;
         /// <summary>

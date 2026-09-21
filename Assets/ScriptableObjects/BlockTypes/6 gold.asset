@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 6
   DisplayName: Gold
   Category: 1
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 2d5697d7975fe534a8a29d2d3047291b, type: 2}
   Icon: {fileID: 21300000, guid: 43df9dc395cca1e4ba87ec2076a68035, type: 3}
   Value: 40

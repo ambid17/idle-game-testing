@@ -60,7 +60,7 @@ namespace MapGeneration
 
         private void Awake()
         {
-            World = new MineWorld(mapGenerationConfig.Seed, mapGenerationConfig.GridWidth);
+            World = new MineWorld(Random.Range(int.MinValue, int.MaxValue), mapGenerationConfig.GridWidth);
             streamingManager.Initialize(World);
             CreateBoundaryWalls();
             CreateSurfaceFloor();
@@ -251,7 +251,26 @@ namespace MapGeneration
             {
                 GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.CustomBehavior));
             }
+
+            TryTriggerFallingRockAbove(layerIndex, x, y);
             return true;
+        }
+
+        // GameDesignDoc "falling rocks: mining the terrain under them causes them to fall" -
+        // FallingRock is never mineable directly (see MineWorld.TryMineCell), so this (called from
+        // both MineCell and ClearFallingRockOrigin) is the only way a fall ever starts: whatever
+        // cell was just vacated - by mining or by another rock falling away - check directly above
+        // it for a still-standing FallingRock and trigger it there. Reuses the same
+        // HazardTriggeredEvent/HazardEffectResolver pipeline as every other hazard, just addressed
+        // at the rock's own cell rather than the cell that was actually vacated.
+        private void TryTriggerFallingRockAbove(int layerIndex, int x, int y)
+        {
+            if (!TryGetCellAbove(layerIndex, x, y, out int aboveLayer, out int aboveX, out int aboveY)) return;
+
+            var aboveBlock = GetBlockTypeAt(aboveLayer, aboveX, aboveY);
+            if (aboveBlock == null || aboveBlock.Id != BlockTypeId.FallingRock) return;
+
+            GameManager.EventService.Dispatch(new HazardTriggeredEvent(aboveLayer, aboveX, aboveY, CustomBehavior.FallingRock));
         }
 
         // Called by MapGeneration.PowerUpEffectResolver for a SightPotion's reveal burst - same
@@ -309,6 +328,13 @@ namespace MapGeneration
 
         public float CellSize => mapGenerationConfig.CellSize;
 
+        // Resolves the cell directly "above" (x,y) in world space - layer-agnostic like
+        // TryWorldToCellInBounds itself, so it transparently crosses into the layer above when
+        // (x,y) sits at the top row of its own chunk. Used by TryTriggerFallingRockAbove and by
+        // FallingRockHazardEffect's fall loop (mirrored downward).
+        public bool TryGetCellAbove(int layerIndex, int x, int y, out int aboveLayer, out int aboveX, out int aboveY) =>
+            TryWorldToCellInBounds(CellToWorldCenter(layerIndex, x, y) + Vector3.up * CellSize, out aboveLayer, out aboveX, out aboveY);
+
         // Null if out of bounds or already mined - both mean "nothing here to mine".
         public BlockType GetBlockTypeAt(int layerIndex, int x, int y)
         {
@@ -337,6 +363,20 @@ namespace MapGeneration
 
         public void RefreshCellVisual(int layerIndex, int x, int y) =>
             streamingManager.NotifyCellMined(layerIndex, x, y, System.Array.Empty<Vector2Int>());
+
+        // Clears a FallingRock's own cell out of the map the instant it starts falling (see
+        // FallingRockHazardEffect.Run) - bypasses MineCell/TryMineCell's normal mineable checks
+        // (FallingRock is never player/automaton-mineable) since this is the engine removing the
+        // block programmatically, not something being mined. Also re-runs the same "check above"
+        // hook MineCell uses, so a stack of FallingRocks cascades: the moment this one starts
+        // falling and vacates its cell, whatever FallingRock was resting directly on top of it (if
+        // any) loses its own support and starts falling too.
+        public void ClearFallingRockOrigin(int layerIndex, int x, int y)
+        {
+            if (!World.ForceClearCell(layerIndex, x, y)) return;
+            RefreshCellVisual(layerIndex, x, y);
+            TryTriggerFallingRockAbove(layerIndex, x, y);
+        }
 
         // New seed, all tunnels wiped; grid width upgrade level is left untouched so it carries over.
         public void PrestigeReset(int newSeed)

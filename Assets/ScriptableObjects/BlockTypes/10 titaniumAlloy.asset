@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 10
   DisplayName: Titanium Alloy
   Category: 1
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 52468cdff473c5541bf46135282bc498, type: 2}
   Icon: {fileID: 21300000, guid: b79727d3388face4a90072d4eb4ffa37, type: 3}
   Value: 240

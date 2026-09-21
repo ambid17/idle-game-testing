@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 19
   DisplayName: Explosive
   Category: 2
-  HazardBehavior: 1
+  CustomBehavior: 1
   Tile: {fileID: 11400000, guid: c9af8f27a506a2f41b90553c52c62c2e, type: 2}
   Icon: {fileID: 21300000, guid: dd212d0529a3ada45a612c746cd39680, type: 3}
   Value: 0

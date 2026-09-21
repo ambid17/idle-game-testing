@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 18
   DisplayName: Precursor Alloy
   Category: 1
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 34f762d62fb7d58409a476fe5668cd5a, type: 2}
   Icon: {fileID: 21300000, guid: faee38f681499f140a83acbbf4b1ba6d, type: 3}
   Value: 9500

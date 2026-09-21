@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: 17
   DisplayName: Aether Circuitry
   Category: 1
-  HazardBehavior: 0
+  CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 5af1c4e17744a2346b2e82fce5887d08, type: 2}
   Icon: {fileID: 21300000, guid: d934b7b14a2d91e4b9577b60a0c250d7, type: 3}
   Value: 6000

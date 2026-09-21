@@ -106,6 +106,7 @@ namespace Player
 
             if (blockType == null
                 || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
+                || blockType.Id == BlockTypeId.FallingRock
                 || blockedByFullInventory
                 )
             {

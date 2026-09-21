@@ -27,10 +27,10 @@ MonoBehaviour:
   - BlockType: {fileID: 11400000, guid: 9a07d8f2100e20341b44ac6fe2e68fb7, type: 2}
     Weight: 8
   - BlockType: {fileID: 11400000, guid: 37f9cb9390fb28a4a9b17770045b99c9, type: 2}
-    Weight: 8
+    Weight: 61.65
   - BlockType: {fileID: 11400000, guid: 4640d795a487d634684e857c330c5a2a, type: 2}
     Weight: 6
   PowerUpTable: []
-  HazardChancePerCell: 0.005
+  HazardChancePerCell: 0.483
   PowerUpChancePerCell: 0
   ArtifactBonusChance: 0.1
