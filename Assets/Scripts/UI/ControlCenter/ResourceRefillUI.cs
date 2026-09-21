@@ -101,16 +101,18 @@ namespace UI
             if (playerController.FuelMissing <= 0f) return;
 
             var maxPurchaseableUnits = Mathf.FloorToInt((float)(Wallet.Instance.Dollars / config.FuelCostPerUnit));
-            if (!Wallet.Instance.TrySpend(maxPurchaseableUnits * config.FuelCostPerUnit)) return;
-            playerController.AddFuel(maxPurchaseableUnits);
+            var unitsToFill = Mathf.Min(maxPurchaseableUnits, Mathf.FloorToInt(playerController.FuelMissing));
+            if (!Wallet.Instance.TrySpend(unitsToFill * config.FuelCostPerUnit)) return;
+            playerController.AddFuel(unitsToFill);
         }
 
         public void TryFillHp()
         {
             if(playerHealth.CurrentHp >=playerHealth.MaxHp) return;
             var maxPurchaseableUnits = Mathf.FloorToInt((float)(Wallet.Instance.Dollars / config.HpCostPerUnit));
-            if (!Wallet.Instance.TrySpend(maxPurchaseableUnits * config.HpCostPerUnit)) return;
-            playerHealth.AddHp(maxPurchaseableUnits);
+            var unitsToFill = Mathf.Min(maxPurchaseableUnits, Mathf.FloorToInt(playerHealth.MaxHp - playerHealth.CurrentHp));
+            if (!Wallet.Instance.TrySpend(unitsToFill * config.HpCostPerUnit)) return;
+            playerHealth.AddHp(unitsToFill);
         }
     }
 }
