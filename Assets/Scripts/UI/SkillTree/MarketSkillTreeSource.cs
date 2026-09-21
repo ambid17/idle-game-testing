@@ -2,7 +2,6 @@ using Economy;
 using Events;
 using System;
 using System.Collections.Generic;
-using static UnityEditor.Profiling.HierarchyFrameDataView;
 
 namespace UI.SkillTree
 {
