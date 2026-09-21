@@ -172,6 +172,11 @@ namespace Automation
 
             OreCarrierRegistry.Instance.ReleaseClaim(this);
 
+            if (currentTarget is PlayerInventory)
+            {
+                GameManager.EventService.Dispatch<InventoryChangedEvent>();
+            }
+
             // Doc: "if the entity they fly to doesn't have enough to fill their inventory, they
             // will fly to the next closest entity with items in their inventory."
             state = oreInventory.IsFull ? State.FlyingToDepot : State.SelectingTarget;
