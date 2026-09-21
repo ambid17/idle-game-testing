@@ -71,6 +71,7 @@ namespace Player
             }
 
             CurrentHp = Mathf.Max(0f, CurrentHp - amount);
+            GameManager.EventService.Dispatch(new PlayerDamagedEvent(amount));
             if (CurrentHp <= 0f) Kill(reason);
         }
 

@@ -17,6 +17,9 @@ namespace MapGeneration
         [SerializeField] private int explosiveBlastRadius = 2;
 
         [Tooltip("Optional - if unset, a bare GameObject + component is created at runtime instead.")]
+        [SerializeField] private ExplosiveHazardEffect explosiveEffectPrefab;
+
+        [Tooltip("Optional - if unset, a bare GameObject + component is created at runtime instead.")]
         [SerializeField] private FallingRockHazardEffect fallingRockEffectPrefab;
 
         [Tooltip("Optional - if unset, a bare GameObject + component is created at runtime instead.")]
@@ -49,6 +52,8 @@ namespace MapGeneration
         {
             if (mapGenerationService == null) return;
 
+            SpawnExplosiveEffect(evt);
+
             for (int dy = -explosiveBlastRadius; dy <= explosiveBlastRadius; dy++)
             {
                 for (int dx = -explosiveBlastRadius; dx <= explosiveBlastRadius; dx++)
@@ -65,6 +70,15 @@ namespace MapGeneration
                     if (blockType.Category == BlockCategory.Ore) CreditOreValue(blockType);
                 }
             }
+        }
+
+        private void SpawnExplosiveEffect(HazardTriggeredEvent evt)
+        {
+            var effect = explosiveEffectPrefab != null
+                ? Instantiate(explosiveEffectPrefab)
+                : new GameObject("ExplosiveHazardEffect").AddComponent<ExplosiveHazardEffect>();
+            effect.transform.position = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
+            effect.Begin();
         }
 
         private static void CreditOreValue(BlockType blockType)

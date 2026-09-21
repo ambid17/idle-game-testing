@@ -25,6 +25,19 @@ namespace Events
     public class PlayerRevivedEvent { }
     public class PlayerHpUpdatedEvent { }
 
+    // Dispatched by PlayerHealth.TakeDamage whenever a hit actually reduces CurrentHp (not when a
+    // shield charge absorbs it instead - that already has its own HudNotificationEvent). Drives
+    // UI.DamageScreenEffectUI's full-screen flash.
+    public class PlayerDamagedEvent : IEvent
+    {
+        public float Amount;
+
+        public PlayerDamagedEvent(float amount)
+        {
+            Amount = amount;
+        }
+    }
+
     // Dispatched by PlayerHealth whenever a shield charge (PrestigeUpgradeEffect.ShieldChargeCount)
     // is consumed or regenerated.
     public class ShieldChargeChangedEvent : IEvent
