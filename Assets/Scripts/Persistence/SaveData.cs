@@ -95,6 +95,9 @@ namespace Persistence
         // independent lifecycle.
         public List<GoodsCountEntry> DepotGoods = new();
         public List<ProcessingJobSaveEntry> ProcessingJobs = new();
+        // ProcessingManager.UncollectedCompletions - jobs that finished but the player hasn't
+        // opened the Processing panel since, so the completion badge survives a save/reload.
+        public int ProcessingUncollectedCompletions;
         public PlayerSaveData Player = new();
         // Chests still active (unlooted) at save time - see Economy.ChestRegistry.
         public List<ChestSaveEntry> Chests = new();

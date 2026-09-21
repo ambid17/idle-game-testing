@@ -127,6 +127,8 @@ namespace Persistence
                 });
             }
 
+            data.ProcessingUncollectedCompletions = ProcessingManager.Instance.UncollectedCompletions;
+
             if (playerController != null)
             {
                 data.Player = new PlayerSaveData
@@ -291,7 +293,7 @@ namespace Persistence
             // idle ore average below - any job that would have finished while the game was closed
             // completes immediately (goods deposited, no popup).
             float elapsedSeconds = ComputeMinutesAway(data.LastActiveUtcTimestamp) * 60f;
-            ProcessingManager.Instance.RestoreFromSaveData(data.ProcessingJobs, elapsedSeconds);
+            ProcessingManager.Instance.RestoreFromSaveData(data.ProcessingJobs, elapsedSeconds, data.ProcessingUncollectedCompletions);
 
             if (data.Player != null)
             {

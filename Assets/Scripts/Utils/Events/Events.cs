@@ -234,6 +234,19 @@ namespace Events
         }
     }
 
+    // Fired whenever ProcessingManager.UncollectedCompletions changes - a completion badge above
+    // the Processing Center listens for this rather than polling. Count is 0 right after the
+    // player opens the Processing panel (ProcessingUI.Open clears it).
+    public class ProcessingCompletionCountChangedEvent : IEvent
+    {
+        public int Count;
+
+        public ProcessingCompletionCountChangedEvent(int count)
+        {
+            Count = count;
+        }
+    }
+
     public class SellGoodsRequestedEvent : IEvent
     {
         public ProcessingRecipeId Id;

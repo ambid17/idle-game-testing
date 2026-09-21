@@ -72,6 +72,7 @@ namespace UI
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
             BuildSlots();
+            ProcessingManager.Instance.ClearUncollectedCompletions();
         }
 
         private void Close()

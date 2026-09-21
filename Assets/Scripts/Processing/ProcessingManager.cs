@@ -33,6 +33,35 @@ namespace Processing
         public int SlotCount => 1 + UpgradeManager.Instance.ProcessingQueueSlotCount;
         public IReadOnlyList<ProcessingJob> Slots => slots;
 
+        // Guarantees `slots` covers at least the 1 free base slot immediately, not just after the
+        // first StartJob/RestoreFromSaveData call. Without this, a brand-new game (no save file
+        // yet, so SaveService.ApplyLoadedData never calls RestoreFromSaveData) leaves `slots` at
+        // Count == 0 while SlotCount == 1, and the first Processing panel open throws
+        // ArgumentOutOfRangeException indexing Slots[0] before the player ever gets to start a job.
+        protected override void Initialize()
+        {
+            base.Initialize();
+            EnsureSlotCapacity();
+        }
+
+        // Jobs that finished (auto-deposited) since the player last opened the Processing panel -
+        // drives the completion badge above the building. ProcessingUI.Open() clears this.
+        private int uncollectedCompletions;
+        public int UncollectedCompletions => uncollectedCompletions;
+
+        public void ClearUncollectedCompletions()
+        {
+            if (uncollectedCompletions == 0) return;
+            uncollectedCompletions = 0;
+            GameManager.EventService.Dispatch(new ProcessingCompletionCountChangedEvent(uncollectedCompletions));
+        }
+
+        private void MarkCompletionUncollected()
+        {
+            uncollectedCompletions++;
+            GameManager.EventService.Dispatch(new ProcessingCompletionCountChangedEvent(uncollectedCompletions));
+        }
+
         public bool IsRecipeUnlocked(ProcessingRecipeDefinition recipe) =>
             recipe.RequiredUpgrade != null && UpgradeManager.Instance.IsMaxed(recipe.RequiredUpgrade);
 
@@ -41,6 +70,27 @@ namespace Processing
         private void EnsureSlotCapacity()
         {
             while (slots.Count < SlotCount) slots.Add(null);
+        }
+
+        // Without this, buying the Processing Queue Slots upgrade raises SlotCount immediately but
+        // leaves the backing `slots` list at its old (smaller) size - EnsureSlotCapacity was only
+        // ever called from StartJob/RestoreFromSaveData. ProcessingUI.BuildSlots() then spawns one
+        // ProcessingQueueSlotUI per SlotCount and indexes Slots[slotIndex] for each, throwing
+        // ArgumentOutOfRangeException on the freshly-purchased slot until some job elsewhere
+        // happened to grow the list first.
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
+        }
+
+        private void OnUpgradePurchased(UpgradePurchasedEvent evt)
+        {
+            if (evt.Definition.Effect == UpgradeEffect.Processing_QueueSlots) EnsureSlotCapacity();
         }
 
         public bool StartJob(int slotIndex, ProcessingRecipeDefinition recipe, int quantity)
@@ -110,6 +160,7 @@ namespace Processing
             Depot.Instance.DepositGood(job.Recipe.Id, job.Quantity);
             slots[slotIndex] = null;
             GameManager.EventService.Dispatch(new ProcessingJobCompletedEvent(slotIndex, job.Recipe, job.Quantity));
+            MarkCompletionUncollected();
         }
 
         private static Dictionary<BlockTypeId, int> ScaleIngredients(ProcessingRecipeDefinition recipe, int quantity)
@@ -130,10 +181,11 @@ namespace Processing
         // rebuilds ConsumedIngredients for correct Cancel-refund behavior without consuming
         // anything again. elapsedSeconds (real time since last save) is subtracted from each job's
         // remaining time; anything that would have finished completes immediately.
-        public void RestoreFromSaveData(IReadOnlyList<ProcessingJobSaveEntry> savedJobs, float elapsedSeconds)
+        public void RestoreFromSaveData(IReadOnlyList<ProcessingJobSaveEntry> savedJobs, float elapsedSeconds, int savedUncollectedCompletions)
         {
             slots.Clear();
             EnsureSlotCapacity();
+            uncollectedCompletions = savedUncollectedCompletions;
             if (savedJobs == null) return;
 
             var database = GameManager.ProcessingRecipeDatabase;
@@ -153,6 +205,7 @@ namespace Processing
                 {
                     Depot.Instance.DepositGood(recipe.Id, entry.Quantity);
                     GameManager.EventService.Dispatch(new ProcessingJobCompletedEvent(entry.SlotIndex, recipe, entry.Quantity));
+                    MarkCompletionUncollected();
                     continue;
                 }
 
