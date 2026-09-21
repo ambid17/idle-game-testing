@@ -50,7 +50,8 @@ namespace MapGeneration
                 {
                     Debug.LogError($"BlockType '{blockType.name}' has <= 0 health value.");
                 }
-                if (blockType.Icon == null)
+                // Only Ore blocks should have an icon as they will be displayed in the UI. Other block types are not meant to be displayed in the UI and therefore do not require an icon.
+                if (blockType.Icon == null && blockType.Category == BlockCategory.Ore)
                 {
                     Debug.LogError($"BlockType '{blockType.name}' has no icon assigned.");
                 }
