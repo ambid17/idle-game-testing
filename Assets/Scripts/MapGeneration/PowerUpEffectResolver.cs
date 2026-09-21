@@ -24,8 +24,8 @@ namespace MapGeneration
         {
             switch (evt.Behavior)
             {
-                case HazardBehavior.TreasureChest: ResolveTreasureChest(evt); break;
-                case HazardBehavior.SightPotion: ResolveSightPotion(evt); break;
+                case CustomBehavior.TreasureChest: ResolveTreasureChest(evt); break;
+                case CustomBehavior.SightPotion: ResolveSightPotion(evt); break;
             }
         }
 

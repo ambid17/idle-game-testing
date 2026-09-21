@@ -28,10 +28,10 @@ namespace MapGeneration
         {
             switch (evt.Hazard)
             {
-                case HazardBehavior.Explosive: ResolveExplosive(evt); break;
-                case HazardBehavior.FallingRock: SpawnFallingRock(evt); break;
-                case HazardBehavior.GasPocket: SpawnGasCloud(evt); break;
-                case HazardBehavior.Lava: ResolveLava(evt); break;
+                case CustomBehavior.Explosive: ResolveExplosive(evt); break;
+                case CustomBehavior.FallingRock: SpawnFallingRock(evt); break;
+                case CustomBehavior.GasPocket: SpawnGasCloud(evt); break;
+                case CustomBehavior.Lava: ResolveLava(evt); break;
             }
         }
 

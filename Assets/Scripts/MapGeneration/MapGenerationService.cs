@@ -247,13 +247,9 @@ namespace MapGeneration
             if (layerIndex == 0 && y == 1) UpdateSurfaceFloorSegmentEnabled(x);
 
             HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);
-            if (block != null && block.Category == BlockCategory.Hazard)
+            if (block != null && (block.Category == BlockCategory.Hazard || block.Category == BlockCategory.PowerUp))
             {
-                GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.HazardBehavior));
-            }
-            else if (block != null && block.Category == BlockCategory.PowerUp)
-            {
-                GameManager.EventService.Dispatch(new PowerUpTriggeredEvent(layerIndex, x, y, block.HazardBehavior));
+                GameManager.EventService.Dispatch(new HazardTriggeredEvent(layerIndex, x, y, block.CustomBehavior));
             }
             return true;
         }

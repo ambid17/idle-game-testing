@@ -264,9 +264,9 @@ namespace Events
         public int LayerIndex;
         public int X;
         public int Y;
-        public HazardBehavior Hazard;
+        public CustomBehavior Hazard;
 
-        public HazardTriggeredEvent(int layerIndex, int x, int y, HazardBehavior hazard)
+        public HazardTriggeredEvent(int layerIndex, int x, int y, CustomBehavior hazard)
         {
             LayerIndex = layerIndex;
             X = x;
@@ -283,9 +283,9 @@ namespace Events
         public int LayerIndex;
         public int X;
         public int Y;
-        public HazardBehavior Behavior;
+        public CustomBehavior Behavior;
 
-        public PowerUpTriggeredEvent(int layerIndex, int x, int y, HazardBehavior behavior)
+        public PowerUpTriggeredEvent(int layerIndex, int x, int y, CustomBehavior behavior)
         {
             LayerIndex = layerIndex;
             X = x;

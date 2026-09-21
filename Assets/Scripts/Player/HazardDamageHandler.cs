@@ -55,7 +55,7 @@ namespace Player
 
         private void OnHazardTriggered(HazardTriggeredEvent evt)
         {
-            if (evt.Hazard != HazardBehavior.Explosive) return;
+            if (evt.Hazard != CustomBehavior.Explosive) return;
             TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, hazardDamageRadius, explosiveDamage, DeathReason.Explosive, BlastResistanceOf);
         }
 

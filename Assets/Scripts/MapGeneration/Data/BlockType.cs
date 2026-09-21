@@ -43,7 +43,7 @@ namespace MapGeneration
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)
     // react to this when a cell with a matching category is mined.
-    public enum HazardBehavior
+    public enum CustomBehavior
     {
         None = 0,
         Explosive = 1,
@@ -63,7 +63,7 @@ namespace MapGeneration
         public BlockTypeId Id;
         public string DisplayName;
         public BlockCategory Category;
-        public HazardBehavior HazardBehavior = HazardBehavior.None;
+        public CustomBehavior CustomBehavior = CustomBehavior.None;
         public TileBase Tile;
         public Sprite Icon;
 
