@@ -271,7 +271,7 @@ namespace Player
             if (IsFlying)
             {
                 var force = rb.linearVelocityY > 0f ? jetpackForce : jetpackForce * 2;
-                rb.AddForce(Vector2.up * force, ForceMode2D.Force);
+                rb.AddForce(Vector2.up * force * upgrades.GravityMultiplier, ForceMode2D.Force);
             }
 
             UpdateFuel(Time.fixedDeltaTime);
