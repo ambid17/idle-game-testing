@@ -110,13 +110,9 @@ The value and weight scales as you go down the tiers. Value scales faster than w
 # Market Upgrades
 Upgrades will be a skill tree that fans out and requires the player to unlock the previous tier.
 - Mining
-	- Increase mining size: this will add 1 block radius to the player's mining around them.
-		- each upgrade mines 1 more block in one direction.
-			- the first upgrade mines a block the left on each dig
-			- second upgrade mines a block to the right
-			- third upgrade mines a block down and to the left
-			- fourth upgrade mines a block down and to the right
-			- fifth+ upgrade, repeat the cycle, adding another block of distance from the player
+	- Increase mining size (vein mining): mining an ore block chains into adjacent ore blocks for free.
+		- only triggers when the block you mined is an ore (mining dirt/stone never chains).
+		- each level lets the chain reach 1 more ore block, spreading outward through connected ore (not a fixed direction) - so a level-3 upgrade clears up to 3 extra ore blocks if there's an ore vein to chain through, fewer if the vein is smaller.
 	- Increase mining speed: this will increase the rate at which the player mines blocks
 		- each tier adds 10% mining speed. 
 		- the final upgrade makes dirt/stone an instant mine

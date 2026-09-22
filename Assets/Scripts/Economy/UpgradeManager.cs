@@ -63,8 +63,9 @@ namespace Economy
         public void ResetAllLevels() => ClearLevels();
 
         #region Utils
-        // GameDesignDoc "Mining > Increase mining size": current cumulative upgrade level: fed
-        // into MiningAreaPattern.GetOffsets by PlayerMining to know which extra cells to mine.
+        // GameDesignDoc "Mining > Increase mining size" (vein mining): current cumulative upgrade
+        // level: fed into Player.VeinMiningPattern.GetChainCells by PlayerMining to know how many
+        // connected Ore cells the free chain can reach.
         public int MiningAreaLevel => LevelOf(UpgradeEffect.Mining_AreaSize);
 
         // GameDesignDoc "Mining > Increase mining speed": "each tier adds 10% mining speed".

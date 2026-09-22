@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Mining_AreaSize
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Increase Mining Size
-  Description: Mine an extra block on every dig. Cycles left, right, down-left, down-right,
-    then repeats one block farther out.
+  Description: Mining an ore chains into adjacent ore for free. Each level extends the
+    chain by 1 more connected ore block.
   Icon: {fileID: 21300000, guid: 701d1cd338a2cc0459e885559bda2a95, type: 3}
   Branch: 0
   Effect: 16

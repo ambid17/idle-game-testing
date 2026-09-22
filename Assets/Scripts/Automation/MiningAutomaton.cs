@@ -311,10 +311,10 @@ namespace Automation
             state = State.PickingTarget;
         }
 
-        // GameDesignDoc Control Center "increase mining radius by 1 (max 2)": reuses the same
-        // offset pattern as the player's mining-size upgrade (Player.MiningAreaPattern) rather than
-        // inventing a separate one - the design doc gives no distinct shape for the automaton
-        // version.
+        // GameDesignDoc Control Center "increase mining radius by 1 (max 2)": still uses the fixed
+        // directional offset pattern (Player.MiningAreaPattern) - the player's own Mining_AreaSize
+        // upgrade moved to vein-chain mining (Player.VeinMiningPattern), but this is a separate
+        // upgrade and the design doc gives no distinct shape for the automaton version.
         private void MineTargetAndBonusCells(int layer, Vector2Int primaryCell, BlockType primaryBlockType)
         {
             if (mapGenerationService.MineCell(layer, primaryCell.x, primaryCell.y))

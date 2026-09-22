@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Player
 {
-    // GameDesignDoc "Market Upgrades > Mining > Increase mining size": "each upgrade mines 1 more
-    // block in one direction. The first upgrade mines a block to the left on each dig, second
-    // mines a block to the right, third mines a block down and to the left, fourth mines a block
-    // down and to the right, fifth+ upgrade repeats the cycle, adding another block of distance."
+    // GameDesignDoc Control Center "increase mining radius by 1 (max 2)": fixed directional
+    // offset pattern used by MiningAutomaton's radius upgrade. The player's own mining-size
+    // upgrade (Mining_AreaSize) moved to vein-chain mining - see Player.VeinMiningPattern - this
+    // class now only serves the automaton's Control Center upgrade.
     // Offsets are in grid space, where +y is down (matching MapGenerationService's cell grid).
     public static class MiningAreaPattern
     {

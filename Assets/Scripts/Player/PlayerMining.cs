@@ -163,7 +163,7 @@ namespace Player
             if (!mapGenerationService.MineCell(layerIndex, x, y)) return;
 
             CollectMinedBlock(blockType, layerIndex);
-            MineAreaBonusCells(layerIndex, x, y);
+            MineAreaBonusCells(layerIndex, x, y, blockType);
         }
 
         private void CollectMinedBlock(BlockType blockType, int layerIndex)
@@ -207,24 +207,23 @@ namespace Player
             if (bonus > 0 && Wallet.Instance != null) Wallet.Instance.Add(bonus);
         }
 
-        // GameDesignDoc "Market Upgrades > Mining > Increase mining size": each unlocked offset
-        // mines alongside the primary target cell for free (no extra time cost - the upgrade IS
-        // the free hit).
-        private void MineAreaBonusCells(int layerIndex, int centerX, int centerY)
+        // GameDesignDoc "Market Upgrades > Mining > Increase mining size" (vein mining): only
+        // triggers off mining an Ore block, then chains into adjacent Ore blocks for free (no
+        // extra time cost - the upgrade IS the free hit), up to MiningAreaLevel of them.
+        private void MineAreaBonusCells(int layerIndex, int centerX, int centerY, BlockType primaryBlockType)
         {
+            if (primaryBlockType.Category != BlockCategory.Ore) return;
+
             var upgrades = UpgradeManager.Instance;
             if (upgrades == null || upgrades.MiningAreaLevel <= 0) return;
 
-            foreach (var offset in MiningAreaPattern.GetOffsets(upgrades.MiningAreaLevel))
+            foreach (var cell in VeinMiningPattern.GetChainCells(mapGenerationService, layerIndex, centerX, centerY, upgrades.MiningAreaLevel))
             {
-                int x = centerX + offset.x;
-                int y = centerY + offset.y;
-
-                var bonusBlock = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
+                var bonusBlock = mapGenerationService.GetBlockTypeAt(layerIndex, cell.x, cell.y);
                 if (bonusBlock == null) continue;
                 if (bonusBlock.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow) continue;
 
-                if (!mapGenerationService.MineCell(layerIndex, x, y)) continue;
+                if (!mapGenerationService.MineCell(layerIndex, cell.x, cell.y)) continue;
 
                 CollectMinedBlock(bonusBlock, layerIndex);
             }
