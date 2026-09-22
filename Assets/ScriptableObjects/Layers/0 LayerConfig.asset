@@ -33,6 +33,6 @@ MonoBehaviour:
   - BlockType: {fileID: 11400000, guid: be435c6e0e35a734991efc9fc6c1f4fa, type: 2}
     Weight: 6
   PowerUpTable: []
-  HazardChancePerCell: 0.4
+  HazardChancePerCell: 0.005
   PowerUpChancePerCell: 0
   ArtifactBonusChance: 0.1

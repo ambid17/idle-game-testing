@@ -171,6 +171,7 @@ namespace Player
         {
             if (blockType.Category == BlockCategory.Artifact)
             {
+                GameManager.EventService.Dispatch(new NotificationEvent($"+1 <color=purple>Artifact</color>", NotificationUrgency.Queued, blockType.Icon));
                 Wallet.Instance.AddArtifact();
                 return;
             }
