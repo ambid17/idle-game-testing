@@ -25,6 +25,11 @@ namespace Events
     public class PlayerRevivedEvent { }
     public class PlayerHpUpdatedEvent { }
 
+    // Dispatched by Player.PlayerDeathEffect once its explosion beat finishes playing - DeathUI
+    // listens for this (not PlayerDiedEvent) to decide when to actually reveal the death screen,
+    // so the reveal happens after the explosion instead of instantly when HP/fuel hits zero.
+    public class PlayerDeathMenuRequestedEvent { }
+
     // Dispatched by PlayerHealth.TakeDamage whenever a hit actually reduces CurrentHp (not when a
     // shield charge absorbs it instead - that already has its own HudNotificationEvent). Drives
     // UI.DamageScreenEffectUI's full-screen flash.

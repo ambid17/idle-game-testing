@@ -6,11 +6,13 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    // Death screen: shown on PlayerDiedEvent (fuel or HP reaching zero, see PlayerHealth.Kill;
-    // also a hazard hit, fall damage, or the pause menu's manual respawn button - see
-    // PlayerHealth.DeathReason for the full list), hidden again once the player respawns. The
-    // respawn button only dispatches PlayerRevivedEvent - PlayerHealth, PlayerController, and
-    // PlayerInventory each reset themselves independently in response.
+    // Death screen: reason is captured on PlayerDiedEvent (fuel or HP reaching zero, see
+    // PlayerHealth.Kill; also a hazard hit, fall damage, or the pause menu's manual respawn
+    // button - see PlayerHealth.DeathReason for the full list), but the screen itself only opens
+    // once PlayerDeathMenuRequestedEvent follows - Player.PlayerDeathEffect dispatches that after
+    // its explosion beat finishes, so the menu doesn't cut the animation off. Hidden again once
+    // the player respawns. The respawn button only dispatches PlayerRevivedEvent - PlayerHealth,
+    // PlayerController, and PlayerInventory each reset themselves independently in response.
     public class DeathUI : MonoBehaviour
     {
         [SerializeField] private GameObject rendererRoot;
@@ -26,19 +28,25 @@ namespace UI
 
         private void OnEnable()
         {
-            GameManager.EventService.Add<PlayerDiedEvent>(Open);
+            GameManager.EventService.Add<PlayerDiedEvent>(HandleDied);
+            GameManager.EventService.Add<PlayerDeathMenuRequestedEvent>(ShowMenu);
             GameManager.EventService.Add<PlayerRevivedEvent>(Close);
         }
 
         private void OnDisable()
         {
-            GameManager.EventService.Remove<PlayerDiedEvent>(Open);
+            GameManager.EventService.Remove<PlayerDiedEvent>(HandleDied);
+            GameManager.EventService.Remove<PlayerDeathMenuRequestedEvent>(ShowMenu);
             GameManager.EventService.Remove<PlayerRevivedEvent>(Close);
         }
 
-        private void Open(PlayerDiedEvent evt)
+        private void HandleDied(PlayerDiedEvent evt)
         {
             if (reasonLabel != null) reasonLabel.text = MessageFor(evt.Reason);
+        }
+
+        private void ShowMenu()
+        {
             if (rendererRoot != null) rendererRoot.SetActive(true);
         }
 
