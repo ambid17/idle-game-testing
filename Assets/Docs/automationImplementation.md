@@ -12,7 +12,7 @@ There are 3 forms of automation in the game:
 		- digging behavior
 			- the automatons can dig similar to the player: down, left or right.
 		- movement behavior
-			- the automatons will randomly choose an accessible tile within a 3 block radius and head to mine it
+			- the automatons pick an accessible tile within a 3 block radius to mine, weighted toward closer tiles and toward continuing the same digging direction as their last pick (a "vein"), with an occasional fully random branch for variety - see MiningAutomaton.PickWeightedTarget
 			- if there are no tiles in their radius, they will descend until they hit a block
 			- when they return to the depot to deposit their inventory, they fly directly (ignoring collision)
 - Storage Drones

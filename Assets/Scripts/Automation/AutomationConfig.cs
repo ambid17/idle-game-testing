@@ -14,6 +14,17 @@ namespace Automation
         public int AutomatonBaseMiningRadius = 1;
         public float AutomatonBaseInventoryWeight = 50f;
         public int AutomatonWanderRadius = 3;
+        // How strongly target selection favors continuing the same digging direction as the last
+        // pick (a "vein") over reversing course - see MiningAutomaton.PickWeightedTarget.
+        [Range(0f, 8f)] public float AutomatonDirectionBiasStrength = 4f;
+        // Chance per target pick to ignore direction/distance weighting and pick uniformly at
+        // random instead, so automatons occasionally branch off rather than tunneling forever in
+        // a straight line.
+        [Range(0f, 1f)] public float AutomatonRandomBranchChance = 0.15f;
+        // How far (world units) before a non-final path waypoint the automaton starts rounding
+        // the turn instead of walking straight into the corner and pivoting - see
+        // GridPathMover.StepAlongPath.
+        [Range(0f, 1f)] public float AutomatonCornerRadius = 0.35f;
         // Fuel capacity/drain rates live on the Economy.FuelSystem component on
         // MiningAutomaton.prefab itself, not here - see FuelSystem's own Inspector.
 

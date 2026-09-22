@@ -38,6 +38,12 @@ namespace Automation
         [SerializeField] private State state = State.PickingTarget;
         [SerializeField] private MiningCrackIndicator crackIndicator;
 
+        // Direction of the last chosen dig target relative to where it was picked from - biases
+        // the next pick toward continuing the same "vein" instead of reversing course. Zero until
+        // the first target is ever picked, or after crossing into a new layer via the unbounded
+        // fallback (see UpdatePickingTarget), where continuing the old direction is meaningless.
+        private Vector2 lastDigDirection;
+
         private int currentLayer;
         [SerializeField] private Vector2Int currentCell;
         [SerializeField] private List<Vector3> path;
@@ -151,7 +157,8 @@ namespace Automation
             if (accessible.Count > 0)
             {
                 digTargetLayer = currentLayer;
-                digTargetCell = accessible[Random.Range(0, accessible.Count)];
+                digTargetCell = PickWeightedTarget(accessible, config.AutomatonWanderRadius);
+                lastDigDirection = ((Vector2)(digTargetCell - currentCell)).normalized;
             }
             else
             {
@@ -169,11 +176,57 @@ namespace Automation
                 }
 
                 (digTargetLayer, digTargetCell) = unbounded[Random.Range(0, unbounded.Count)];
+                // Crossed layers (or picked from an unrelated chunk) - the old direction no longer
+                // means anything in the new grid, so the next bounded pick starts unbiased.
+                lastDigDirection = Vector2.zero;
             }
 
             path = AutomatonReachability.BuildWorldPath(mapGenerationService, currentLayer, currentCell, digTargetLayer, digTargetCell);
             pathIndex = 0;
             state = State.MovingAndDigging;
+        }
+
+        // Weighted random pick over the wander-radius candidates: prefers tiles closer to
+        // currentCell and, once a digging direction has been established, tiles that continue
+        // that same direction (a "vein") over ones that reverse course - reads more like a person
+        // following a lead than picking a totally new spot after every single block. Never fully
+        // excludes any candidate (weights are clamped above zero) so a dead-ending vein can't get
+        // the automaton stuck. AutomatonRandomBranchChance occasionally ignores both weights so it
+        // still branches off for variety instead of tunneling in a perfectly straight line forever.
+        private Vector2Int PickWeightedTarget(List<(Vector2Int Cell, int Depth)> candidates, int radius)
+        {
+            if (Random.value < config.AutomatonRandomBranchChance)
+                return candidates[Random.Range(0, candidates.Count)].Cell;
+
+            bool hasDirection = lastDigDirection != Vector2.zero;
+            float bias = config.AutomatonDirectionBiasStrength;
+
+            float totalWeight = 0f;
+            var weights = new float[candidates.Count];
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                var (cell, depth) = candidates[i];
+                float distanceWeight = radius - depth + 1;
+
+                float directionWeight = 1f;
+                if (hasDirection)
+                {
+                    Vector2 offset = ((Vector2)(cell - currentCell)).normalized;
+                    directionWeight = Mathf.Max(0.05f, 1f + bias * Vector2.Dot(offset, lastDigDirection));
+                }
+
+                weights[i] = distanceWeight * directionWeight;
+                totalWeight += weights[i];
+            }
+
+            float roll = Random.value * totalWeight;
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                roll -= weights[i];
+                if (roll <= 0f) return candidates[i].Cell;
+            }
+
+            return candidates[^1].Cell;
         }
 
         private void UpdateMovingAndDigging()
@@ -185,7 +238,7 @@ namespace Automation
             }
 
             float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
-            mover.StepAlongPath(transform, path, ref pathIndex, speed);
+            mover.StepAlongPath(transform, path, ref pathIndex, speed, cornerRadius: config.AutomatonCornerRadius);
 
             // The final waypoint is the dig target cell itself (unmined) - mine it in place once
             // that's the active waypoint, mirroring PlayerMining accruing progress while the

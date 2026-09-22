@@ -19,6 +19,11 @@ namespace Automation
     // dry, cross layer boundaries via TryStep: MineWorld stacks layers vertically (row 0 of layer
     // N+1 sits directly below layer N's last row), so walking off one chunk's edge continues into
     // the neighboring chunk's matching edge instead of stopping dead.
+    //
+    // GetAccessibleTiles tags each candidate with its hop-distance from the origin so
+    // MiningAutomaton can weight target selection toward nearby tiles and toward continuing its
+    // current digging direction (a "vein"), rather than picking uniformly at random - see
+    // MiningAutomaton.PickWeightedTarget.
     public static class AutomatonReachability
     {
         private static readonly Vector2Int GridUp = new(0, -1);
@@ -30,12 +35,15 @@ namespace Automation
         private static readonly Vector2Int[] DigDirections = { GridDown, GridLeft, GridRight };
 
         // Returns unmined, diggable cells (down/left/right of some reachable mined cell) within
-        // `radius` walking hops from (originX, originY). The origin cell itself is always treated
-        // as walkable regardless of its Mined flag, covering spawn-in on a not-yet-mined tile.
-        public static List<Vector2Int> GetAccessibleTiles(MapGenerationService mapGen, int layerIndex, int originX, int originY, int radius)
+        // `radius` walking hops from (originX, originY), each tagged with its own hop-distance
+        // from the origin so callers can weight closer tiles higher (e.g. MiningAutomaton's
+        // direction-persistent target selection) rather than picking uniformly at random. The
+        // origin cell itself is always treated as walkable regardless of its Mined flag, covering
+        // spawn-in on a not-yet-mined tile.
+        public static List<(Vector2Int Cell, int Depth)> GetAccessibleTiles(MapGenerationService mapGen, int layerIndex, int originX, int originY, int radius)
         {
-            var frontier = new HashSet<Vector2Int>();
-            if (mapGen == null || radius <= 0) return new List<Vector2Int>();
+            var frontierDepth = new Dictionary<Vector2Int, int>();
+            if (mapGen == null || radius <= 0) return new List<(Vector2Int, int)>();
 
             // TODO: potential bug, doesn't cross chunk boundaries. Might not matter because they will descend if out of tiles to mine
             var chunk = mapGen.World.GetOrGenerateChunk(layerIndex);
@@ -62,7 +70,10 @@ namespace Automation
                 {
                     var neighbor = cell + dir;
                     if (!InBounds(chunk, neighbor) || IsMined(chunk, neighbor) || IsBuildingSupported(chunk, neighbor)) continue;
-                    frontier.Add(neighbor);
+
+                    int discoveredDepth = depth + 1;
+                    if (frontierDepth.TryGetValue(neighbor, out var knownDepth) && knownDepth <= discoveredDepth) continue;
+                    frontierDepth[neighbor] = discoveredDepth;
                 }
 
                 if (depth >= radius) continue;
@@ -84,7 +95,9 @@ namespace Automation
                 }
             }
 
-            return new List<Vector2Int>(frontier);
+            var result = new List<(Vector2Int, int)>(frontierDepth.Count);
+            foreach (var kvp in frontierDepth) result.Add((kvp.Key, kvp.Value));
+            return result;
         }
 
         // Fallback for when the radius-limited wander above finds nothing. That can happen even
