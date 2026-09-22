@@ -424,17 +424,19 @@ namespace Events
 
     // Prestige (GameDesignDoc "# Prestige") events below.
 
-    public class PrestigePointsChangedEvent { }
-
-    public class ArtifactsTurnedInEvent : IEvent
+    // Dispatched when a queued prestige upgrade purchase (spent now, not yet in effect) or a
+    // save-restored queue entry changes - MuseumUI/SkillTree UI refresh off this, distinct from
+    // PrestigeUpgradePurchasedEvent which only fires once a queued level is actually committed
+    // (applied) by PrestigeManager.ExecutePrestige or restored as an already-applied save level.
+    public class PrestigeUpgradeQueuedEvent : IEvent
     {
-        public int Count;
-        public double PointsEarned;
+        public PrestigeUpgradeDefinition Definition;
+        public int NewQueuedTotal;
 
-        public ArtifactsTurnedInEvent(int count, double pointsEarned)
+        public PrestigeUpgradeQueuedEvent(PrestigeUpgradeDefinition definition, int newQueuedTotal)
         {
-            Count = count;
-            PointsEarned = pointsEarned;
+            Definition = definition;
+            NewQueuedTotal = newQueuedTotal;
         }
     }
 

@@ -31,7 +31,16 @@ namespace Economy
 
         // UpgradeManager overrides this to add its PrestigeUpgradeManager "kept tier" baseline on
         // top of RawLevel. PrestigeUpgradeManager has no such baseline, so it uses this default.
+        // This is the level gameplay effects should read (LevelOf) - for PrestigeUpgradeManager
+        // that means applied/committed levels only, never a not-yet-prestiged queued purchase.
         protected virtual int EffectiveLevel(TDefinition def) => RawLevel(def);
+
+        // Level used for purchase-time bookkeeping (next cost, maxed-out gating, whether a
+        // prerequisite counts as unlocked) - defaults to EffectiveLevel. PrestigeUpgradeManager
+        // overrides this to also count not-yet-applied queued levels, so a player can plan/queue an
+        // entire branch before any of it actually takes effect, without letting EffectiveLevel (and
+        // therefore the live gameplay value) move early.
+        protected virtual int PurchaseLevel(TDefinition def) => EffectiveLevel(def);
 
         protected int LevelOf(TEffect effect) => EffectiveLevel(Find(effect));
 
@@ -57,7 +66,7 @@ namespace Economy
             return IsMaxed(def);
         }
 
-        public bool IsMaxed(TDefinition def) => def != null && EffectiveLevel(def) >= def.MaxLevel;
+        public bool IsMaxed(TDefinition def) => def != null && PurchaseLevel(def) >= def.MaxLevel;
 
         // A plain prerequisite just needs one level purchased; capstones (RequirePrerequisiteMaxed)
         // need the prerequisite fully maxed first.
@@ -66,10 +75,10 @@ namespace Economy
             if (def == null) return false;
             var prerequisite = PrerequisiteOf(def);
             if (prerequisite == null) return true;
-            return def.RequirePrerequisiteMaxed ? IsMaxed(prerequisite) : EffectiveLevel(prerequisite) > 0;
+            return def.RequirePrerequisiteMaxed ? IsMaxed(prerequisite) : PurchaseLevel(prerequisite) > 0;
         }
 
-        public double GetNextCost(TDefinition def) => def.GetCost(EffectiveLevel(def));
+        public double GetNextCost(TDefinition def) => def.GetCost(PurchaseLevel(def));
 
         public bool CanPurchase(TDefinition def)
         {
@@ -97,10 +106,19 @@ namespace Economy
             double cost = GetNextCost(def);
             if (!TrySpendCurrency(cost)) return false;
 
-            int newLevel = EffectiveLevel(def) + 1;
-            levels[KeyOf(def)] = newLevel;
-            DispatchPurchased(def, newLevel);
+            int newLevel = PurchaseLevel(def) + 1;
+            RecordPurchase(def, KeyOf(def), newLevel);
             return true;
+        }
+
+        // Writes a newly-bought level. UpgradeManager (Market) keeps the default: apply immediately
+        // and fire DispatchPurchased. PrestigeUpgradeManager overrides this to write into a separate
+        // queued-levels store instead of levels/EffectiveLevel, so the purchase is paid for now but
+        // has no gameplay effect until PrestigeManager.ExecutePrestige commits the queue.
+        protected virtual void RecordPurchase(TDefinition def, string key, int newLevel)
+        {
+            levels[key] = newLevel;
+            DispatchPurchased(def, newLevel);
         }
 
         // Bulk restore for SaveService. Unlike UpgradeManager's old un-guarded SetLevelFromSave,

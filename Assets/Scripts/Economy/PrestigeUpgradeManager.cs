@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Events;
 using UnityEngine;
 
@@ -8,14 +9,24 @@ namespace Economy
     // PrestigeManager.ExecutePrestige - that's the entire point of this being a separate manager
     // from UpgradeManager: prestige perks are the "meta" progression that survives every hard reset.
     // Singleton so it needs no scene wiring, matching UpgradeManager/Wallet/Depot.
+    //
+    // Purchases are queued, not applied: TryPurchase (inherited from UpgradeManagerBase) still spends
+    // currency immediately, but RecordPurchase below writes into queuedLevels instead of the base
+    // class's applied `levels` dict, so EffectiveLevel/LevelOf (what every gameplay accessor below
+    // reads) never moves until CommitQueuedUpgrades is called by PrestigeManager.ExecutePrestige.
+    // This is what guarantees a map-generation perk (e.g. GridWidthBonus) can't apply mid-run against
+    // an already-generated map - every prestige perk, not just the map-gen ones, waits for the same
+    // moment.
     public class PrestigeUpgradeManager : UpgradeManagerBase<PrestigeUpgradeManager, PrestigeUpgradeDefinition, PrestigeUpgradeEffect>
     {
         private static PrestigeUpgradeDatabase database => GameManager.PrestigeUpgradeDatabase;
 
+        private readonly Dictionary<string, int> queuedLevels = new();
+
         public Sprite CurrencyIcon;
 
-        protected override double CurrentCurrency => PrestigePoints.Instance.Points;
-        protected override bool TrySpendCurrency(double amount) => PrestigePoints.Instance.TrySpend(amount);
+        protected override double CurrentCurrency => Wallet.Instance.ArtifactCount;
+        protected override bool TrySpendCurrency(double amount) => Wallet.Instance.TrySpendArtifacts(Mathf.CeilToInt((float)amount));
         protected override string KeyOf(PrestigeUpgradeDefinition def) => def.DisplayName;
         protected override PrestigeUpgradeDefinition Find(PrestigeUpgradeEffect effect) => database.Find(effect);
         protected override PrestigeUpgradeDefinition Find(string key) => database.Find(key);
@@ -24,10 +35,68 @@ namespace Economy
             GameManager.EventService.Dispatch(new PrestigeUpgradePurchasedEvent(def, newLevel));
         // DispatchLoaded intentionally left at the base default (same event as a live purchase) -
         // every listener (e.g. MuseumUI) reacts identically whether a level came from a purchase or
-        // a save file.
+        // a save file. CommitQueuedUpgrades below also routes through SetLevel/DispatchLoaded for
+        // the same reason: an applied level looks the same to listeners regardless of how it arrived.
+
+        // Purchase-time bookkeeping (cost/maxed/unlock) counts applied + queued levels together, so
+        // costs escalate correctly across queued purchases and a branch can be planned/queued ahead
+        // of a prerequisite actually being applied.
+        protected override int PurchaseLevel(PrestigeUpgradeDefinition def) => RawLevel(def) + QueuedRawLevel(def);
+
+        protected override void RecordPurchase(PrestigeUpgradeDefinition def, string key, int newLevel)
+        {
+            queuedLevels[key] = newLevel - RawLevel(def);
+            GameManager.EventService.Dispatch(new PrestigeUpgradeQueuedEvent(def, newLevel));
+        }
+
+        private int QueuedRawLevel(PrestigeUpgradeDefinition def) =>
+            def != null && queuedLevels.TryGetValue(KeyOf(def), out var lvl) ? lvl : 0;
 
         // Kept as its previous public name since UI/other systems already call this directly.
+        // Applied level only - see the class comment above.
         public int GetLevel(PrestigeUpgradeDefinition def) => EffectiveLevel(def);
+
+        // How many additional levels are queued (paid for, not yet applied) on top of GetLevel.
+        public int GetQueuedLevel(PrestigeUpgradeDefinition def) => QueuedRawLevel(def);
+
+        // Bulk restore for SaveService, mirroring SetLevel but for the queued store - a player who
+        // queues upgrades, spending artifacts, then closes the game before prestiging must not lose
+        // that queue on reload (they already paid for it).
+        public void SetQueuedLevel(string key, int amount)
+        {
+            if (string.IsNullOrEmpty(key) || amount <= 0) return;
+
+            var def = Find(key);
+            if (def == null)
+            {
+                Debug.LogError($"{nameof(PrestigeUpgradeManager)}.SetQueuedLevel: no {nameof(PrestigeUpgradeDefinition)} found for key '{key}'. Save data may be stale (renamed/removed upgrade) - queued level discarded.");
+                return;
+            }
+
+            queuedLevels[key] = amount;
+            GameManager.EventService.Dispatch(new PrestigeUpgradeQueuedEvent(def, RawLevel(def) + amount));
+        }
+
+        public IEnumerable<KeyValuePair<string, int>> AllQueuedLevels => queuedLevels;
+
+        // Called once by PrestigeManager.ExecutePrestige, before anything else, so every applied
+        // level (including map-gen ones like GridWidthBonus) is in place before the rest of the
+        // prestige reads them. Routes through the base class's SetLevel/DispatchLoaded so committed
+        // levels dispatch the same PrestigeUpgradePurchasedEvent a live purchase used to fire
+        // immediately - UI just refreshes, it doesn't need to know queued vs committed.
+        public void CommitQueuedUpgrades()
+        {
+            if (queuedLevels.Count == 0) return;
+
+            foreach (var kvp in new Dictionary<string, int>(queuedLevels))
+            {
+                var def = Find(kvp.Key);
+                int committedLevel = (def != null ? RawLevel(def) : 0) + kvp.Value;
+                SetLevel(kvp.Key, committedLevel);
+            }
+
+            queuedLevels.Clear();
+        }
 
         // GameDesignDoc "Prestige > Mining > Increase grid size": added to the base grid width in
         // MapGenerationService before every prestige's map regeneration.
@@ -55,15 +124,17 @@ namespace Economy
         public int KeptAutomatonMiningRadiusBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMiningRadius);
         public int KeptAutomatonMoveSpeedBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMoveSpeed);
 
-        // GameDesignDoc "Prestige > Prestige": artifact spawn rate / points-per-artifact / passive gain.
+        // GameDesignDoc "Prestige > Prestige": artifact spawn rate / value-per-mine / passive gain.
         public float ArtifactSpawnRateMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Prestige_ArtifactSpawnRateMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_ArtifactSpawnRateMultiplier);
-        public float PrestigePointsPerArtifactMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Prestige_PrestigePointsPerArtifactMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PrestigePointsPerArtifactMultiplier);
-        public float PassivePrestigePointRate => LevelOf(PrestigeUpgradeEffect.Prestige_PassivePrestigePointRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PassivePrestigePointRate);
+        // How many artifacts a single artifact-ore mine grants - see Wallet.AddArtifact.
+        public float ArtifactValueMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier);
+        // Artifacts per minute, passively - see PassivePrestigeIncomeTicker.
+        public float PassiveArtifactRate => LevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate);
 
         // GameDesignDoc "Prestige > Prestige" capstone: "auto-prestige when it's mathematically
         // worth it" - intentionally left as a purchasable/displayed flag with no auto-trigger; a
         // real profitability projection is a separate feature, not upgrade-application.
-        public bool AutoPrestigeUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.Prestige_AutoPrestigeCapstone));
+        public bool AutoPrestigeUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Prestige_AutoPrestigeCapstone);
 
         // GameDesignDoc "Prestige > Progression".
         public float OreTierOddsBonus => LevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus);
@@ -84,10 +155,20 @@ namespace Economy
 
         // GameDesignDoc "Prestige > Economy" capstones on the passive layer bonus (see
         // Economy.LayerBonusTracker for the base mechanic these modify).
-        public bool DoublePassiveLayerBonusUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.Economy_DoublePassiveLayerBonus));
-        public bool KeepPassiveLayerBonusUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.Economy_KeepPassiveLayerBonus));
+        public bool DoublePassiveLayerBonusUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Economy_DoublePassiveLayerBonus);
+        public bool KeepPassiveLayerBonusUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Economy_KeepPassiveLayerBonus);
 
         // GameDesignDoc "Prestige > Mining": keep "digging while flying" between prestige runs.
-        public bool KeepDigWhileFlyingUnlocked => IsMaxed(database.Find(PrestigeUpgradeEffect.Mining_KeepDigWhileFlying));
+        public bool KeepDigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_KeepDigWhileFlying);
+
+        // Gameplay-effect flag for a capstone: applied (post-prestige) level only. Distinct from the
+        // base class's IsMaxed, which now also counts not-yet-applied queued levels for
+        // purchase-gating/UI purposes (see PurchaseLevel override above) - a queued-but-uncommitted
+        // capstone purchase must not unlock its effect early.
+        private bool IsEffectMaxedAndApplied(PrestigeUpgradeEffect effect)
+        {
+            var def = database.Find(effect);
+            return def != null && EffectiveLevel(def) >= def.MaxLevel;
+        }
     }
 }

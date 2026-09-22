@@ -8,6 +8,9 @@ namespace UI.SkillTree
         public string DisplayName;
         public string Description;
         public int Level;
+        // Levels paid for but not yet applied (PrestigeUpgradeManager only). Always 0 for the
+        // Market tree.
+        public int QueuedLevel;
         public int MaxLevel;
         public string CostLabel;
         public bool CanPurchase;

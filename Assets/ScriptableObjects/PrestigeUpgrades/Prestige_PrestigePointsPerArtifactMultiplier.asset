@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Prestige_PrestigePointsPerArtifactMultiplier
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Curator's Eye
-  Description: Increases how many Prestige points each artifact is worth when turned
-    in.
+  Description: Increases how many artifacts you receive each time you mine an artifact
+    ore.
   Icon: {fileID: 21300000, guid: 16e74fa692ba16c42bc519cfa7e16396, type: 3}
   EffectValuePerLevel: 0.15
   MaxLevel: 10

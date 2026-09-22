@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using Economy;
 using Events;
+using UnityEngine;
 
 namespace UI.SkillTree
 {
-    // ISkillTreeSource for the Museum's permanent (Prestige Point-purchased) perk tree. Mirrors
-    // MarketSkillTreeSource exactly, reading from GameManager.PrestigeUpgradeDatabase/
-    // PrestigeUpgradeManager instead.
+    // ISkillTreeSource for the Museum's permanent (artifact-purchased) perk tree. Mirrors
+    // MarketSkillTreeSource, reading from GameManager.PrestigeUpgradeDatabase/PrestigeUpgradeManager
+    // instead - except purchases here are queued, not applied, until an actual prestige (see
+    // PrestigeUpgradeManager's class comment), which is why Level/QueuedLevel are exposed separately.
     public class MuseumSkillTreeSource : ISkillTreeSource
     {
         private PrestigeUpgradeDatabase database => GameManager.PrestigeUpgradeDatabase;
@@ -33,13 +35,14 @@ namespace UI.SkillTree
                     CurrencyIcon = manager.CurrencyIcon,
                     BranchIndex = (int)def.Branch,
                     Level = manager.GetLevel(def),
+                    QueuedLevel = manager.GetQueuedLevel(def),
                     MaxLevel = def.MaxLevel,
                     IsUnlocked = manager.IsUnlocked(def),
                     IsMaxed = manager.IsMaxed(def),
                     CanPurchase = manager.CanPurchase(def),
                     UpgradeDefinition = def,
                 };
-                vm.CostLabel = vm.IsMaxed ? "MAXED" : $"{manager.GetNextCost(def):0} pts";
+                vm.CostLabel = vm.IsMaxed ? "MAXED" : $"{Mathf.CeilToInt((float)manager.GetNextCost(def))}";
 
                 viewModels.Add(vm);
                 viewModelsByDefinition[def] = vm;
@@ -68,8 +71,9 @@ namespace UI.SkillTree
                 DisplayName = def.DisplayName,
                 Description = def.Description,
                 Level = manager.GetLevel(def),
+                QueuedLevel = manager.GetQueuedLevel(def),
                 MaxLevel = def.MaxLevel,
-                CostLabel = manager.IsMaxed(def) ? "MAXED" : $"{manager.GetNextCost(def):0} pts",
+                CostLabel = manager.IsMaxed(def) ? "MAXED" : $"{Mathf.CeilToInt((float)manager.GetNextCost(def))} artifacts",
                 CanPurchase = manager.CanPurchase(def),
                 PurchaseBlockedReason = manager.GetPurchaseBlockedReason(def)
             };

@@ -9,12 +9,13 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    // Museum panel per GameDesignDoc "Map Layout > buildings > museum" / "# Prestige": turn
-    // artifacts in for Prestige points, spend them on the permanent perk tree via the radial skill
-    // tree (see Assets/Docs/skillTreeImplementation.md), and trigger a prestige. Per CLAUDE.md's UI
-    // panel rule, this controller stays enabled on the Panel GameObject and only toggles the child
-    // rendererRoot. Blocks player input while open (like ControlCenterUI) since "Prestige Now" is a
-    // destructive, irreversible action that shouldn't be one accidental click away.
+    // Museum panel per GameDesignDoc "Map Layout > buildings > museum" / "# Prestige": artifacts are
+    // the Museum's currency directly (no turn-in/conversion step), spent on the permanent perk tree
+    // via the radial skill tree (see Assets/Docs/skillTreeImplementation.md). Perk purchases are
+    // queued only - PrestigeUpgradeManager doesn't apply them until a prestige is actually triggered.
+    // Per CLAUDE.md's UI panel rule, this controller stays enabled on the Panel GameObject and only
+    // toggles the child rendererRoot. Blocks player input while open (like ControlCenterUI) since
+    // "Prestige Now" is a destructive, irreversible action that shouldn't be one accidental click away.
     public class MuseumUI : MonoBehaviour
     {
         [Header("Panel")]
@@ -22,10 +23,9 @@ namespace UI
         [SerializeField] private Button closeButton;
 
         [Header("Perk tree")]
-        [SerializeField] private TMP_Text prestigePointsLabel;
         [SerializeField] private SkillTreePanelUI skillTreePanel;
 
-        [Header("Artifact turn-in")]
+        [Header("Artifact currency")]
         [SerializeField] private TMP_Text artifactCountLabel;
 
         [Header("Prestige trigger")]
@@ -47,7 +47,7 @@ namespace UI
         {
             GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Add<PrestigeUpgradePurchasedEvent>(OnPrestigeUpgradePurchased);
-            GameManager.EventService.Add<PrestigePointsChangedEvent>(OnPrestigePointsChanged);
+            GameManager.EventService.Add<PrestigeUpgradeQueuedEvent>(OnPrestigeUpgradeQueued);
             GameManager.EventService.Add<PrestigePurchaseRequestedEvent>(OnPrestigePurchaseRequested);
             GameManager.EventService.Add<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Add<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
@@ -59,7 +59,7 @@ namespace UI
         {
             GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Remove<PrestigeUpgradePurchasedEvent>(OnPrestigeUpgradePurchased);
-            GameManager.EventService.Remove<PrestigePointsChangedEvent>(OnPrestigePointsChanged);
+            GameManager.EventService.Remove<PrestigeUpgradeQueuedEvent>(OnPrestigeUpgradeQueued);
             GameManager.EventService.Remove<PrestigePurchaseRequestedEvent>(OnPrestigePurchaseRequested);
             GameManager.EventService.Remove<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Remove<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
@@ -99,7 +99,7 @@ namespace UI
 
         private void OnPrestigePurchaseRequested(PrestigePurchaseRequestedEvent evt) => PrestigeUpgradeManager.Instance.TryPurchase(evt.Definition);
         private void OnPrestigeUpgradePurchased(PrestigeUpgradePurchasedEvent evt) => RefreshAll();
-        private void OnPrestigePointsChanged() => RefreshAll();
+        private void OnPrestigeUpgradeQueued(PrestigeUpgradeQueuedEvent evt) => RefreshAll();
 
         // MuseumUI owns the confirm sub-panel per the plan's "destructive action needs an explicit
         // confirm, not a single misclick" requirement - PrestigeManager only requests it.
@@ -108,13 +108,9 @@ namespace UI
             if (prestigeConfirm != null) prestigeConfirm.Show();
         }
 
-        // Auto-turns-in any remaining artifacts first so the player never silently loses banked
-        // value to a hard reset they just confirmed.
-        private void ConfirmPrestige()
-        {
-            Museum.Instance.TurnInArtifacts();
-            PrestigeManager.Instance.ExecutePrestige();
-        }
+        // PrestigeManager.ExecutePrestige commits any queued perk purchases before touching anything
+        // else - see its comment for why that ordering matters for map-gen perks.
+        private void ConfirmPrestige() => PrestigeManager.Instance.ExecutePrestige();
 
         private void OnPrestigeCompleted(PrestigeCompletedEvent evt) => Close();
 
@@ -124,16 +120,11 @@ namespace UI
             if (skillTreePanel != null) skillTreePanel.RefreshAll();
         }
 
-        private void RefreshNonTreeUI()
-        {
-            if (prestigePointsLabel != null) prestigePointsLabel.text = $"{PrestigePoints.Instance.Points:0} pts";
-            RefreshArtifactCount();
-        }
+        private void RefreshNonTreeUI() => RefreshArtifactCount();
 
         private void RefreshArtifactCount()
         {
             if (artifactCountLabel != null) artifactCountLabel.text = $"Stellar Credits: {Wallet.Instance.ArtifactCount}";
-            prestigeNowButton.interactable = Wallet.Instance.ArtifactCount > 0;
         }
     }
 }

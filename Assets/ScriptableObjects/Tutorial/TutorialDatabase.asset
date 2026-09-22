@@ -31,8 +31,8 @@ MonoBehaviour:
   - Id: 3
     DisplayType: 0
     Title: Museum
-    Body: Turn in the Artifacts you've found here for Prestige Points, then spend
-      those points on permanent Prestige upgrades that carry across resets.
+    Body: Spend the Artifacts you've found here on permanent Prestige upgrades that
+      carry across resets. Purchases queue up and only take effect once you prestige.
   - Id: 4
     DisplayType: 0
     Title: Processing Center
@@ -47,9 +47,9 @@ MonoBehaviour:
   - Id: 6
     DisplayType: 2
     Title: Museum
-    Body: The Museum is where you turn in Artifacts for Prestige Points, spent on
-      permanent perks that you only earn after prestige. Prestige resets everything
-      including money and upgrades, but your next run will be faster!
+    Body: The Museum is where you spend Artifacts on permanent perks. Purchases
+      queue up and only take effect once you prestige, which resets everything
+      including money and upgrades - but your next run will be faster!
   - Id: 7
     DisplayType: 2
     Title: Processing Center

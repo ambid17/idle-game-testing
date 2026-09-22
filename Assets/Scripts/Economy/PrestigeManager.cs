@@ -25,6 +25,11 @@ namespace Economy
         // Only ever called after the player has explicitly confirmed (MuseumUI's confirm sub-panel).
         public void ExecutePrestige()
         {
+            // Must run first: every PrestigeUpgradeManager accessor below (GridWidthBonus etc.)
+            // reads applied levels only, so anything the player queued in the Museum this run has to
+            // be committed before the map regenerates against it.
+            PrestigeUpgradeManager.Instance.CommitQueuedUpgrades();
+
             UpgradeManager.Instance.ResetAllLevels();
             LayerBonusTracker.Instance.ClearUnlessKept();
             Wallet.Instance.SetDollars(0);

@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Prestige_PassivePrestigePointRate
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Endowment Fund
-  Description: Passively generates Prestige points over time, even while not turning
-    in artifacts.
+  Description: Passively generates artifacts over time, even while not mining.
   Icon: {fileID: 21300000, guid: cad77876f0e00ae4096cfde34337a88f, type: 3}
   EffectValuePerLevel: 0.02
   MaxLevel: 10

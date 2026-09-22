@@ -94,7 +94,9 @@ namespace UI.SkillTree
             }
 
             icon.sprite = viewModel.Icon;
-            levelBadge.text = $"{viewModel.Level}/{viewModel.MaxLevel}";
+            levelBadge.text = viewModel.QueuedLevel > 0
+                ? $"{viewModel.Level}+{viewModel.QueuedLevel}/{viewModel.MaxLevel}"
+                : $"{viewModel.Level}/{viewModel.MaxLevel}";
 
             if (!viewModel.IsUnlocked)
             {
@@ -106,7 +108,7 @@ namespace UI.SkillTree
                 border.color = maxedColor;
                 levelBadge.color = maxedColor;
             }
-            else if (viewModel.Level > 0)
+            else if (viewModel.Level > 0 || viewModel.QueuedLevel > 0)
             {
                 border.color = partialColor;
                 levelBadge.color = partialColor;

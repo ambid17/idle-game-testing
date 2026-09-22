@@ -44,7 +44,7 @@ namespace Economy
 
         private void OnLoadCompleted()
         {
-            bool alreadyUnlocked = Wallet.Instance.ArtifactCount > 0 || PrestigePoints.Instance.Points > 0;
+            bool alreadyUnlocked = Wallet.Instance.ArtifactCount > 0;
             // Self-heals saves from before TutorialManager tracked this moment, so the building
             // doesn't stay stuck hidden for players who already unlocked it.
             if (alreadyUnlocked) TutorialManager.Instance.TryShow(TutorialId.MuseumReveal);
@@ -54,7 +54,7 @@ namespace Economy
         private void OnArtifactCountChanged()
         {
             if (!SaveService.Instance.HasLoadedData) return;
-            if (Wallet.Instance.ArtifactCount <= 0 && PrestigePoints.Instance.Points <= 0) return;
+            if (Wallet.Instance.ArtifactCount <= 0) return;
 
             TutorialManager.Instance.TryShow(TutorialId.MuseumReveal);
         }

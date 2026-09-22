@@ -42,11 +42,11 @@ I want to make an incremental game similar to motherload
 - Currency
 	- Dollars
 		- selling minerals or processed goods will yield dollars
-	- Prestige points
-		- finding artifacts will yield prestige points when given to the museum
+	- Artifacts
+		- mining an artifact banks it directly as the museum's currency - no separate conversion step
 - upgrades
 	- all regular upgrades are purchased at the market using Dollars
-	- all prestige upgrades at the museum are purchased with prestige points
+	- all prestige upgrades at the museum are purchased with artifacts, but only queue - see "# Prestige"
 # Map Layout 
 	- you start out at 0 meters in depth. 
 	- Buildings are on the top of the digging zone on the ground
@@ -64,7 +64,7 @@ I want to make an incremental game similar to motherload
 			- this will combine various ore to make a product
 				- for example 5 wood and 1 iron will make a chest every 10 seconds.
 				- the results are shown in the storage depot where you can sell them
-		- museum: prestige center, turn in artifacts to earn prestige points
+		- museum: prestige center, spend artifacts on permanent perks (queued until you prestige)
 	- the mine:
 		- the grid will be randomly generated with weights for minerals at certain depth ranges
 		- if no ore spawns, the gaps are filled with dirt
@@ -164,13 +164,15 @@ Upgrades will be a skill tree that fans out and requires the player to unlock th
 	- Increase fall speed
 	
 # Prestige
-At a certain point the game will become too difficult. You will have to use a new currency when resetting to work towards a more "meta" skill tree that will make your next run faster. Artifacts are that currency.
+At a certain point the game will become too difficult. You will have to use a new currency when resetting to work towards a more "meta" skill tree that will make your next run faster. Artifacts are that currency - mining one banks it directly, no separate conversion step.
 
 Prestige is manually triggered at the museum. This is a hard reset of all your world upgrades, dollars, and materials in the depot (both minerals and processed goods)
 
+Prestige upgrades can be purchased (spending artifacts) at any time, but only queue - none of them take effect until you actually trigger a prestige. This is what lets map-generation perks (grid size, layer size, etc.) apply cleanly to the freshly-regenerated map instead of retroactively to the one you're standing in, and it keeps every prestige perk's timing consistent with each other.
+
 I would aim for the first prestige to take around 2 hours, with future prestiges being faster due to the upgrades accelerating the player's progress.
 
-The map will regenerate, all of your dug tunnels will be gone. All of your money will be gone. The only thing that will remain is the prestige perks you've purchased.
+The map will regenerate, all of your dug tunnels will be gone. All of your money will be gone. The only thing that will remain is the prestige perks you've purchased (including anything you had queued).
 
 - Mining:
 	- view: zooms out the camera a certain percentage to view more of the mineable area
@@ -194,8 +196,8 @@ The map will regenerate, all of your dug tunnels will be gone. All of your money
 		- keep 1 tier of miner move speed
 - Prestige
 	- increase artifact spawn rate
-	- increase how many prestige points you earn per artifact
-	- add passive prestige point gain over time
+	- increase how many artifacts you get per artifact-ore mined
+	- add passive artifact gain over time
 	- capstones: 
 		- auto-prestige when it's mathematically worth it
 - Progression

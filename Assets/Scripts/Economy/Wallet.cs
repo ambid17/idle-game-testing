@@ -8,11 +8,17 @@ namespace Economy
     //
     // Also banks artifacts (GameDesignDoc "# Prestige"): mining an artifact credits the Wallet
     // directly rather than being carried in PlayerInventory, so - like Dollars - it isn't lost on
-    // player death and is turned in wholesale at the Museum via WithdrawAllArtifacts.
+    // player death. Artifacts ARE the Museum's currency (no separate Prestige Points conversion
+    // step) - spent directly on PrestigeUpgradeManager purchases.
     public class Wallet : Singleton<Wallet>
     {
         [SerializeField] private double dollars;
         [SerializeField] private int artifactCount;
+
+        // Fractional carry for PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier - each pickup
+        // credits a whole number of artifacts, but the multiplier itself is often fractional
+        // (e.g. 1.15x), so the remainder accumulates here instead of always rounding the same way.
+        private double artifactCreditFraction;
 
         public double Dollars => dollars;
         public int ArtifactCount => artifactCount;
@@ -40,19 +46,40 @@ namespace Economy
             GameManager.EventService.Dispatch<DollarsChangedEvent>();
         }
 
+        // Called when mining a single artifact-ore block. Credits PrestigeUpgradeManager's applied
+        // (post-prestige) Prestige_ArtifactValueMultiplier level rather than a flat 1, via
+        // artifactCreditFraction so a fractional multiplier averages out correctly across pickups.
         public void AddArtifact()
         {
-            artifactCount++;
+            var prestige = PrestigeUpgradeManager.Instance;
+            float multiplier = prestige != null ? prestige.ArtifactValueMultiplier : 1f;
+
+            artifactCreditFraction += multiplier;
+            int whole = (int)artifactCreditFraction;
+            if (whole <= 0) return;
+
+            artifactCreditFraction -= whole;
+            artifactCount += whole;
             GameManager.EventService.Dispatch<ArtifactCountChangedEvent>();
         }
 
-        // Snapshots and clears the banked artifacts - called when turning them in at the Museum.
-        public int WithdrawAllArtifacts()
+        // Bulk credit for PassivePrestigeIncomeTicker's passive trickle and dev-panel cheats -
+        // bypasses the per-pickup value multiplier above, which only applies to mining an artifact
+        // block directly.
+        public void AddArtifacts(int amount)
         {
-            int count = artifactCount;
-            artifactCount = 0;
+            if (amount <= 0) return;
+            artifactCount += amount;
             GameManager.EventService.Dispatch<ArtifactCountChangedEvent>();
-            return count;
+        }
+
+        // Museum currency spend - artifacts are the currency directly, no conversion step.
+        public bool TrySpendArtifacts(int amount)
+        {
+            if (amount <= 0 || amount > artifactCount) return false;
+            artifactCount -= amount;
+            GameManager.EventService.Dispatch<ArtifactCountChangedEvent>();
+            return true;
         }
 
         // Direct set for Persistence.SaveService restoring a save file, mirrors SetDollars.

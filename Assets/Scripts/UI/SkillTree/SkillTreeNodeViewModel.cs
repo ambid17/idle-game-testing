@@ -14,6 +14,9 @@ namespace UI.SkillTree
         public Sprite CurrencyIcon;
         public int BranchIndex { get; set; }
         public int Level;
+        // Levels paid for but not yet applied (PrestigeUpgradeManager only - see its class comment).
+        // Always 0 for the Market tree.
+        public int QueuedLevel;
         public int MaxLevel;
         public string CostLabel;
         public bool IsUnlocked;

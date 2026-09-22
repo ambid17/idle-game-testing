@@ -39,8 +39,15 @@ namespace Economy
         Idle_KeepAutomatonMiningRadius,
         Idle_KeepAutomatonMoveSpeed,
         Prestige_ArtifactSpawnRateMultiplier,
-        Prestige_PrestigePointsPerArtifactMultiplier,
-        Prestige_PassivePrestigePointRate,
+        // Renamed from Prestige_PrestigePointsPerArtifactMultiplier when Prestige Points were
+        // removed as a currency (artifacts are now spent directly at the Museum) - same ordinal
+        // position/serialized int, only the C# identifier changed, so existing .asset Effect fields
+        // still resolve correctly. Now multiplies how many artifacts a single artifact-ore grants on
+        // mining, instead of a since-removed points-per-turn-in conversion.
+        Prestige_ArtifactValueMultiplier,
+        // Renamed from Prestige_PassivePrestigePointRate for the same reason - now a passive
+        // artifact (currency) trickle instead of a Prestige Points trickle.
+        Prestige_PassiveArtifactRate,
         Prestige_AutoPrestigeCapstone,
         Progression_OreTierOddsBonus,
         Progression_PowerUpEffectivenessBonus,

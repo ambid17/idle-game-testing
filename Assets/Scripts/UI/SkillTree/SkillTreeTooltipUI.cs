@@ -71,7 +71,9 @@ namespace UI.SkillTree
             var details = skillTreeSource.GetDetails(upgradeDefinition);
             nameLabel.text = details.DisplayName;
             descriptionLabel.text = details.Description;
-            levelLabel.text = $"{details.Level}/{details.MaxLevel}";
+            levelLabel.text = details.QueuedLevel > 0
+                ? $"{details.Level}+{details.QueuedLevel}/{details.MaxLevel}"
+                : $"{details.Level}/{details.MaxLevel}";
             costLabel.text = details.CostLabel;
             purchaseBlockReasonLabel.text = details.CanPurchase ? "" : details.PurchaseBlockedReason;
         }
