@@ -2431,7 +2431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6632313400645007303, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Name
-      value: SkillTreeNode_Wood Insta-Mine
+      value: SkillTreeNode_Scrap Alloy Insta-Mine
       objectReference: {fileID: 0}
     - target: {fileID: 9023701340433558302, guid: 4f7e57ed373fa08428a1262b99a04cc0, type: 3}
       propertyPath: m_Pivot.x
@@ -63334,7 +63334,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4151580521628529601, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_Name
-      value: SkillTreeConnector_Dirt Insta-Mine_to_Wood Insta-Mine
+      value: SkillTreeConnector_Dirt Insta-Mine_to_Scrap Alloy Insta-Mine
       objectReference: {fileID: 0}
     - target: {fileID: 7093010120030294573, guid: 23175b83b182f3b439117be72b5fb0c6, type: 3}
       propertyPath: m_Pivot.x

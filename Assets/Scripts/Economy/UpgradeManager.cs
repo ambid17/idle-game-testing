@@ -76,10 +76,9 @@ namespace Economy
         // (Mining_DirtInstaMine), not a side effect of maxing Mining Speed.
         public bool InstantMineDirt => IsMaxedEffect(UpgradeEffect.Mining_DirtInstaMine);
 
-        // GameDesignDoc "Mining > Increase mining speed" capstone for the ore side: current
-        // BlockTypeId set has no "Wood" block, so this targets ScrapAlloy (the lowest-tier Ore,
-        // closest analog to "junk wood") - rename the enum/asset if that mapping is wrong.
-        public bool InstantMineScrapAlloy => IsMaxedEffect(UpgradeEffect.Mining_WoodInstaMine);
+        // GameDesignDoc "Mining > Increase mining speed" capstone for the ore side: targets
+        // ScrapAlloy, the lowest-tier Ore block.
+        public bool InstantMineScrapAlloy => IsMaxedEffect(UpgradeEffect.Mining_ScrapAlloyInstaMine);
 
         // GameDesignDoc "Mining > Insta-mine chance".
         public float InstaMineChance => LevelOf(UpgradeEffect.Mining_BaseInstaMineChance) * EffectValuePerLevelOf(UpgradeEffect.Mining_BaseInstaMineChance);

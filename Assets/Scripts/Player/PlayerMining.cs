@@ -123,8 +123,7 @@ namespace Player
             var canInstaMine = isNewTarget && upgradeManager != null && upgradeManager.InstaMineChance > 0f && Random.value < upgradeManager.InstaMineChance;
             // GameDesignDoc "the final upgrade makes dirt/stone an instant mine".
             var canInstaMineDirt = blockType.Category == BlockCategory.Dirt && upgradeManager != null && upgradeManager.InstantMineDirt;
-            // Mining_WoodInstaMine's capstone - see UpgradeManager.InstantMineScrapAlloy for the
-            // "Wood" naming gap.
+            // Mining_ScrapAlloyInstaMine's capstone.
             var canInstaMineScrapAlloy = blockType.Id == BlockTypeId.ScrapAlloy && upgradeManager != null && upgradeManager.InstantMineScrapAlloy;
             var finishedMining =  miningProgress >= targetBlockHealth;
             if (canInstaMine || canInstaMineDirt || canInstaMineScrapAlloy || finishedMining)

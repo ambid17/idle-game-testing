@@ -56,9 +56,8 @@ namespace Economy
         Mining_LanternRadius,
         Mining_Speed,
         Mining_TrueSight,
-        // Current BlockTypeId set has no "Wood" block - targets ScrapAlloy instead (see
-        // UpgradeManager.InstantMineScrapAlloy).
-        Mining_WoodInstaMine,
+        // Drives UpgradeManager.InstantMineScrapAlloy.
+        Mining_ScrapAlloyInstaMine,
 
 
         // Movement
