@@ -371,6 +371,7 @@ MonoBehaviour:
   fogTile: {fileID: 11400000, guid: bf4b4d74eeb1338478e3ab236cdfe122, type: 2}
   backgroundTilemap: {fileID: 4707682163721351460}
   backgroundTile: {fileID: 11400000, guid: 84ae11f9121042445a062d839c6082f2, type: 2}
+  edgeBleedTile: {fileID: 11400000, guid: b7358b64097c7004fbabef9e778367e4, type: 2}
   fogDisabled: 0
   surfaceBackgroundColor: {r: 0.45, g: 0.32, b: 0.2, a: 1}
   deepBackgroundColor: {r: 0.25, g: 0.1, b: 0.35, a: 1}
@@ -380,6 +381,7 @@ MonoBehaviour:
   surfaceFogGradientRows: 4
   defaultAlpha: 1
   revealGradientRadius: 3
+  hazardSenseTint: {r: 1, g: 0.4, b: 0.4, a: 1}
 --- !u!1 &7226294879325617473
 GameObject:
   m_ObjectHideFlags: 0

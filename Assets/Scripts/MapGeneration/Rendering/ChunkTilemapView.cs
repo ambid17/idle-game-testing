@@ -15,6 +15,10 @@ namespace MapGeneration
         [SerializeField] private TileBase fogTile;
         [SerializeField] private Tilemap backgroundTilemap;
         [SerializeField] private TileBase backgroundTile;
+        // Sits in mined cells in place of null; a SolidNeighborRuleTile that renders fully
+        // transparent by default and draws debris bleeding in from whichever side(s) still have
+        // a solid neighbor, regardless of that neighbor's block type.
+        [SerializeField] private TileBase edgeBleedTile;
         private BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
         [SerializeField] private bool fogDisabled;
 
@@ -144,7 +148,7 @@ namespace MapGeneration
         // paints the block's tile at full white (no tint).
         private TileChangeData BuildTerrainChange(Vector3Int pos, CellData cell)
         {
-            if (cell.Mined) return new TileChangeData(pos, null, Color.white, Matrix4x4.identity);
+            if (cell.Mined) return new TileChangeData(pos, edgeBleedTile, Color.white, Matrix4x4.identity);
 
             var blockType = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
             var tile = blockType != null ? blockType.Tile : null;
