@@ -2,14 +2,17 @@ using Economy;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace UI.SkillTree
 {
     // One node in the pannable/zoomable skill tree. Purely a view - border color is driven off
     // fields SkillTreePanelUI already sourced from UpgradeManager/PrestigeUpgradeManager via an
-    // ISkillTreeSource, so unlock/purchase logic is never reimplemented here.
-    public class SkillTreeNodeUI : MonoBehaviour
+    // ISkillTreeSource, so unlock/purchase logic is never reimplemented here. Hovering shows
+    // SkillTreeTooltipUI (via SkillTreePanelUI); clicking the node's own button purchases
+    // directly - there's no separate detail modal to open first.
+    public class SkillTreeNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private Image border;
         [SerializeField] private Image icon;
@@ -38,6 +41,9 @@ namespace UI.SkillTree
 
         public SkillTreeNodeViewModel ViewModel { get; private set; }
 
+        private Action<SkillTreeNodeUI> onHoverEnter;
+        private Action<SkillTreeNodeUI> onHoverExit;
+
         private void Start()
         {
             CheckNullRefs();
@@ -54,19 +60,29 @@ namespace UI.SkillTree
             if (costLabel == null) Debug.LogError($"{nameof(SkillTreeNodeUI)}.{nameof(costLabel)} is not assigned in the inspector.");
         }
 
-        public void Bind(SkillTreeNodeViewModel viewModel, Action<SkillTreeNodeViewModel> onClicked)
+        public void Bind(
+            SkillTreeNodeViewModel viewModel,
+            Action<SkillTreeNodeViewModel> onPurchaseClicked,
+            Action<SkillTreeNodeUI> onHoverEnter,
+            Action<SkillTreeNodeUI> onHoverExit)
         {
             upgradeDefinition = viewModel.UpgradeDefinition;
             gameObject.name = $"SkillTreeNode_{viewModel.DisplayName}";
-            
+
+            this.onHoverEnter = onHoverEnter;
+            this.onHoverExit = onHoverExit;
+
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => onClicked?.Invoke(ViewModel));
+            button.onClick.AddListener(() => onPurchaseClicked?.Invoke(ViewModel));
 
             displayNameLabel.text = viewModel.DisplayName;
             Refresh(viewModel);
 
             currencyIcon.sprite = viewModel.CurrencyIcon;
         }
+
+        public void OnPointerEnter(PointerEventData eventData) => onHoverEnter?.Invoke(this);
+        public void OnPointerExit(PointerEventData eventData) => onHoverExit?.Invoke(this);
 
         public void Refresh(SkillTreeNodeViewModel viewModel)
         {
@@ -106,6 +122,8 @@ namespace UI.SkillTree
 
             costLabel.color = viewModel.CanPurchase ? affordableColor : unaffordableColor;
             costLabel.text = viewModel.CostLabel;
+
+            button.interactable = viewModel.CanPurchase;
         }
     }
 }

@@ -15,12 +15,13 @@ namespace UI.SkillTree
         [SerializeField] private SkillTreePanZoomUI panZoom;
         [SerializeField] private SkillTreeNodeUI nodePrefab;
         [SerializeField] private SkillTreeConnectorUI connectorPrefab;
-        [SerializeField] private SkillTreeDetailModalUI detailModal;
+        [SerializeField] private SkillTreeTooltipUI tooltip;
         [SerializeField] private SkillTreeLayoutConfig layoutConfig;
 
         private ISkillTreeSource source;
         private readonly List<SkillTreeNodeUI> nodes = new();
         private readonly List<SkillTreeConnectorUI> connectors = new();
+        private SkillTreeNodeUI hoveredNode;
 
         // Read by the skill tree editor tool so it can bake nodes/connectors using this panel's
         // own prefabs/layout config instead of duplicating them.
@@ -32,7 +33,7 @@ namespace UI.SkillTree
         public void Initialize(ISkillTreeSource source)
         {
             this.source = source;
-            detailModal.Initialize(source);
+            tooltip.Initialize(source);
         }
 
         private void Start()
@@ -46,7 +47,7 @@ namespace UI.SkillTree
             if (panZoom == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(panZoom)} is not assigned in the inspector.");
             if (nodePrefab == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(nodePrefab)} is not assigned in the inspector.");
             if (connectorPrefab == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(connectorPrefab)} is not assigned in the inspector.");
-            if (detailModal == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(detailModal)} is not assigned in the inspector.");
+            if (tooltip == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(tooltip)} is not assigned in the inspector.");
             if (layoutConfig == null) Debug.LogError($"{nameof(SkillTreePanelUI)}.{nameof(layoutConfig)} is not assigned in the inspector.");
         }
 
@@ -55,12 +56,18 @@ namespace UI.SkillTree
         public void Open()
         {
             panZoom.ResetView();
+            tooltip?.Hide();
+            hoveredNode = null;
             RefreshAll();
         }
 
-        // Called by the owning panel (MarketUI/MuseumUI) when it closes, so a still-open detail
-        // modal doesn't leak its ModalTracker registration or reappear pre-opened next time.
-        public void Close() => detailModal?.Close();
+        // Called by the owning panel (MarketUI/MuseumUI) when it closes, so a still-visible
+        // tooltip doesn't linger on screen or reappear pre-shown next time.
+        public void Close()
+        {
+            tooltip?.Hide();
+            hoveredNode = null;
+        }
 
         public void RefreshAll()
         {
@@ -90,9 +97,9 @@ namespace UI.SkillTree
                 AddConnectors(viewModels, positions);
             }
 
-            // The open modal (if any) holds the definition itself, not a view model, so it just
-            // re-queries the source for fresh data - no need to look anything up here.
-            detailModal.Refresh();
+            // The visible tooltip (if any) holds the definition itself, not a view model, so it
+            // just re-queries the source for fresh data - no need to look anything up here.
+            tooltip.Refresh();
         }
 
         private void BindPreplacedNodes(SkillTreeNodeUI[] preplacedNodes, IReadOnlyList<SkillTreeNodeViewModel> viewModels)
@@ -107,7 +114,7 @@ namespace UI.SkillTree
                     continue;
                 }
 
-                nodeUI.Bind(match, OnNodeClicked);
+                nodeUI.Bind(match, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit);
             }
         }
 
@@ -116,7 +123,7 @@ namespace UI.SkillTree
             foreach (var vm in viewModels)
             {
                 var nodeUI = Instantiate(nodePrefab, content);
-                nodeUI.Bind(vm, OnNodeClicked);
+                nodeUI.Bind(vm, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit);
                 if (positions.TryGetValue(vm, out var position))
                 {
                     nodeUI.GetComponent<RectTransform>().anchoredPosition = position;
@@ -141,7 +148,20 @@ namespace UI.SkillTree
             }
         }
 
-        private void OnNodeClicked(SkillTreeNodeViewModel vm) => detailModal?.Show(vm.UpgradeDefinition);
+        private void OnNodePurchaseClicked(SkillTreeNodeViewModel vm) => source?.RequestPurchase(vm.UpgradeDefinition);
+
+        private void OnNodeHoverEnter(SkillTreeNodeUI node)
+        {
+            hoveredNode = node;
+            tooltip?.Show(node.UpgradeDefinition, node.GetComponent<RectTransform>());
+        }
+
+        private void OnNodeHoverExit(SkillTreeNodeUI node)
+        {
+            if (hoveredNode != node) return;
+            hoveredNode = null;
+            tooltip?.Hide();
+        }
 
         private void ClearInstances()
         {

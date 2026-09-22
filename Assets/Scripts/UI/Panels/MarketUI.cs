@@ -13,7 +13,7 @@ namespace UI
     // Automation/Progression upgrades with Dollars via the radial skill tree (see
     // Assets/Docs/skillTreeImplementation.md). Skill-tree gating (previous tier required) is
     // enforced by UpgradeManager.IsUnlocked; purchase clicks route through
-    // SkillTreeDetailModalUI -> MarketSkillTreeSource -> PurchaseRequestedEvent below.
+    // SkillTreeNodeUI -> MarketSkillTreeSource -> PurchaseRequestedEvent below.
     public class MarketUI : MonoBehaviour
     {
         [SerializeField] private GameObject panelRoot;

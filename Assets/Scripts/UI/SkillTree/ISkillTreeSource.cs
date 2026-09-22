@@ -18,8 +18,8 @@ namespace UI.SkillTree
         IReadOnlyList<SkillTreeNodeViewModel> BuildViewModels();
         void RequestPurchase(UpgradeDefinitionBase definition);
 
-        // Live snapshot for SkillTreeDetailModalUI, computed fresh from the owning UpgradeManager
-        // on every call instead of being cached on a SkillTreeNodeViewModel - the modal never
+        // Live snapshot for SkillTreeTooltipUI, computed fresh from the owning UpgradeManager
+        // on every call instead of being cached on a SkillTreeNodeViewModel - the tooltip never
         // holds onto stale data between opens.
         SkillTreeNodeDetails GetDetails(UpgradeDefinitionBase definition);
     }
