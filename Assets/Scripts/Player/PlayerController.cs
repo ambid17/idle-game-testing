@@ -42,6 +42,7 @@ namespace Player
         [SerializeField] private LayerMask groundLayer;
 
         private const float LowFuelWarningFraction = 0.5f;
+        private const float CriticalFuelWarningFraction = 0.2f;
 
         private Rigidbody2D rb;
         private CapsuleCollider2D capsuleCollider;
@@ -297,6 +298,11 @@ namespace Player
             if (FuelFraction <= LowFuelWarningFraction && previousFuelFraction > LowFuelWarningFraction)
             {
                 GameManager.EventService.Dispatch(new HudNotificationEvent("Fuel is running low!"));
+            }
+
+            if (FuelFraction <= CriticalFuelWarningFraction && previousFuelFraction > CriticalFuelWarningFraction)
+            {
+                GameManager.EventService.Dispatch(new HudNotificationEvent("Critical fuel level!"));
             }
 
             if (Fuel <= 0f)
