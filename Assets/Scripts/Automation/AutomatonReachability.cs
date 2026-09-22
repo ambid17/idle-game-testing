@@ -69,7 +69,7 @@ namespace Automation
                 foreach (var dir in DigDirections)
                 {
                     var neighbor = cell + dir;
-                    if (!InBounds(chunk, neighbor) || IsMined(chunk, neighbor) || IsBuildingSupported(chunk, neighbor)) continue;
+                    if (!InBounds(chunk, neighbor) || IsMined(chunk, neighbor) || IsBuildingSupported(chunk, neighbor) || IsFallingRock(chunk, neighbor)) continue;
 
                     int discoveredDepth = depth + 1;
                     if (frontierDepth.TryGetValue(neighbor, out var knownDepth) && knownDepth <= discoveredDepth) continue;
@@ -129,7 +129,7 @@ namespace Automation
                 {
                     if (!TryStep(mapGen, layer, cell, dir, out int dLayer, out Vector2Int dCell)) continue;
                     var dChunk = mapGen.World.GetOrGenerateChunk(dLayer);
-                    if (!InBounds(dChunk, dCell) || IsMined(dChunk, dCell) || IsBuildingSupported(dChunk, dCell)) continue;
+                    if (!InBounds(dChunk, dCell) || IsMined(dChunk, dCell) || IsBuildingSupported(dChunk, dCell) || IsFallingRock(dChunk, dCell)) continue;
 
                     var key = (dLayer, dCell);
                     if (frontierSeen.Add(key)) frontier.Add(key);
@@ -266,5 +266,13 @@ namespace Automation
 
         private static bool IsBuildingSupported(ChunkData chunk, Vector2Int cell) =>
             chunk.Cells[chunk.Index(cell.x, cell.y)].BlockTypeId == (byte)BlockTypeId.GrassyDirt;
+
+        // FallingRock is never directly mineable (MineWorld.TryMineCell refuses it - it only comes
+        // loose once its support is mined out), so it must never be offered as a dig target: an
+        // automaton that picked one would walk up, accrue mining progress and "clear" its own
+        // state as if it dug through, but MineCell would silently no-op and the rock would stay
+        // put - free to get re-picked and repeat the cycle indefinitely.
+        private static bool IsFallingRock(ChunkData chunk, Vector2Int cell) =>
+            chunk.Cells[chunk.Index(cell.x, cell.y)].BlockTypeId == (byte)BlockTypeId.FallingRock;
     }
 }
