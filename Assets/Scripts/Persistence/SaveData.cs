@@ -28,6 +28,7 @@ namespace Persistence
         public TargetMode StorageDroneTargetMode;
         public TargetMode FuelDroneTargetMode;
         public float FuelSpendingCapPercent;
+        public StorageDroneDepositMode StorageDroneDepositMode;
     }
 
     [Serializable]

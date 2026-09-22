@@ -387,6 +387,12 @@ namespace Events
         public SetFuelSpendingCapRequestedEvent(float percent) => Percent = percent;
     }
 
+    public class SetStorageDroneDepositModeRequestedEvent : IEvent
+    {
+        public StorageDroneDepositMode Mode;
+        public SetStorageDroneDepositModeRequestedEvent(StorageDroneDepositMode mode) => Mode = mode;
+    }
+
     public class AutomationSettingsChangedEvent { }
 
     // Dispatched by MiningAutomaton/StorageDrone (via AutomationDepositService) whenever they

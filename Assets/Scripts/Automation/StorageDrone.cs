@@ -206,8 +206,10 @@ namespace Automation
 
             // GameDesignDoc "Automation > Drone delivery > Market Sense" capstone. Sells exactly
             // what this delivery just added (fraction of the now-current total), not any ore
-            // already banked, which might be reserved for a Processing Center recipe.
-            if (upgrades.StorageDroneAutoSellUnlocked)
+            // already banked, which might be reserved for a Processing Center recipe. Unlocking
+            // the capstone only makes auto-sell available - the Control Center toggle
+            // (AutomationSettings.StorageDroneDepositMode) decides whether it's actually used.
+            if (upgrades.StorageDroneAutoSellUnlocked && settings.StorageDroneDepositMode == StorageDroneDepositMode.AutoSell)
             {
                 foreach (var kvp in withdrawn)
                 {
