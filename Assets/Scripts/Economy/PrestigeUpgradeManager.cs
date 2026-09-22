@@ -79,6 +79,16 @@ namespace Economy
 
         public IEnumerable<KeyValuePair<string, int>> AllQueuedLevels => queuedLevels;
 
+        // Dev-only hard reset of both applied and queued prestige upgrade levels, for
+        // DevPanelProgressionTab's "Remove All Prestige Upgrades" cheat button. Real gameplay never
+        // wipes these - PrestigeManager.ExecutePrestige only ever commits queued levels via
+        // CommitQueuedUpgrades below, never clears applied ones.
+        public void ResetAllLevels()
+        {
+            ClearLevels();
+            queuedLevels.Clear();
+        }
+
         // Called once by PrestigeManager.ExecutePrestige, before anything else, so every applied
         // level (including map-gen ones like GridWidthBonus) is in place before the rest of the
         // prestige reads them. Routes through the base class's SetLevel/DispatchLoaded so committed

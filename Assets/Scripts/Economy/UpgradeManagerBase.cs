@@ -29,6 +29,12 @@ namespace Economy
 
         protected int RawLevel(TDefinition def) => def != null && levels.TryGetValue(KeyOf(def), out var lvl) ? lvl : 0;
 
+        // Public raw-level accessor for dev/cheat tooling (DevPanelProgressionTab's +1/-1 buttons)
+        // that needs the actually-stored level to compute a delta, as opposed to EffectiveLevel
+        // (which folds in UpgradeManager's prestige "kept tier" baseline) or PurchaseLevel (which
+        // folds in PrestigeUpgradeManager's queued-but-uncommitted levels).
+        public int GetPurchasedLevel(TDefinition def) => RawLevel(def);
+
         // UpgradeManager overrides this to add its PrestigeUpgradeManager "kept tier" baseline on
         // top of RawLevel. PrestigeUpgradeManager has no such baseline, so it uses this default.
         // This is the level gameplay effects should read (LevelOf) - for PrestigeUpgradeManager
