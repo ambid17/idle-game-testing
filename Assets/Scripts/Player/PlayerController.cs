@@ -271,8 +271,9 @@ namespace Player
             // against it - lets the player feather W for a soft landing instead of a hard cutoff.
             if (IsFlying)
             {
-                var force = rb.linearVelocityY > 0f ? jetpackForce : jetpackForce * 2;
-                rb.AddForce(Vector2.up * force * upgrades.GravityMultiplier, ForceMode2D.Force);
+                var downwardForceCounteract = jetpackForce * 2;
+                var force = rb.linearVelocityY > 0f ? jetpackForce : downwardForceCounteract;
+                rb.AddForce(Vector2.up * force * upgrades.GravityMultiplier * upgrades.FlightSpeedMultiplier, ForceMode2D.Force);
             }
 
             UpdateFuel(Time.fixedDeltaTime);
