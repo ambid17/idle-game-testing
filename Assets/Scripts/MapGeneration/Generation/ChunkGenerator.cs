@@ -18,8 +18,12 @@ namespace MapGeneration
             HazardPick = 3,
             ArtifactPlacement = 4,
             PowerUpGate = 5,
-            PowerUpPick = 6
+            PowerUpPick = 6,
+            VeinSize = 7,
+            VeinSpread = 8,
         }
+
+        private static readonly (int dx, int dy)[] OrthogonalNeighbors = { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
         // layerHeight is the caller-resolved effective height (authored LayerConfig.LayerHeight
         // minus PrestigeUpgradeManager.LayerSizeReduction) - ChunkGenerator stays pure/headless
@@ -50,6 +54,7 @@ namespace MapGeneration
                 }
             }
 
+            GrowVeins(worldSeed, layerIndex, gridWidth, layerHeight, config, chunk);
             PlaceArtifacts(worldSeed, layerIndex, gridWidth, layerHeight, artifactSpawnRateMultiplier, config, chunk);
             chunk.IsFullyGenerated = true;
             return chunk;
@@ -96,6 +101,84 @@ namespace MapGeneration
 
             cell.BlockTypeId = picked != null ? (byte)picked.Id : (byte)0;
             return cell;
+        }
+
+        // Second pass over the already-rolled grid: any cell whose independently-rolled block is
+        // Category.Ore becomes a vein seed and eats into its still-Dirt neighbors (every ore veins
+        // by default; author VeinSizeMin/Max = 1 on a specific entry to opt it out). Runs after the
+        // per-cell roll (so hazard/power-up cells are never touched) and before artifact placement
+        // (so a guaranteed artifact can still land on/overwrite a vein cell, matching how it already
+        // overwrites plain ore). Iterates in a fixed row-major order so results stay deterministic
+        // for a given worldSeed regardless of how/when this is called.
+        private static void GrowVeins(int worldSeed, int layerIndex, int gridWidth, int layerHeight, LayerConfig config, ChunkData chunk)
+        {
+            for (int y = 0; y < layerHeight; y++)
+            {
+                for (int x = 0; x < gridWidth; x++)
+                {
+                    var entry = FindOreEntry(config.OreTable, chunk.Cells[chunk.Index(x, y)].BlockTypeId);
+                    if (entry == null || entry.BlockType.Category != BlockCategory.Ore) continue;
+
+                    GrowVein(worldSeed, layerIndex, gridWidth, layerHeight, x, y, entry, chunk);
+                }
+            }
+        }
+
+        private static WeightedBlockEntry FindOreEntry(IReadOnlyList<WeightedBlockEntry> table, byte blockTypeId)
+        {
+            for (int i = 0; i < table.Count; i++)
+            {
+                if (table[i].BlockType != null && (byte)table[i].BlockType.Id == blockTypeId) return table[i];
+            }
+            return null;
+        }
+
+        // Random-walk flood fill from the seed cell: repeatedly pulls a random still-Dirt neighbor
+        // of the growing vein and converts it, until it hits the target size or runs out of Dirt to
+        // spread into (e.g. boxed in by hazards/other ores/the grid edge).
+        private static void GrowVein(int worldSeed, int layerIndex, int gridWidth, int layerHeight, int seedX, int seedY, WeightedBlockEntry entry, ChunkData chunk)
+        {
+            int sizeRange = Mathf.Max(0, entry.VeinSizeMax - entry.VeinSizeMin);
+            float sizeRoll = MapRng.Value01(worldSeed, layerIndex, seedX, seedY, (int)Salt.VeinSize);
+            int targetSize = entry.VeinSizeMin + Mathf.Min(sizeRange, Mathf.FloorToInt(sizeRoll * (sizeRange + 1)));
+            if (targetSize <= 1) return;
+
+            byte dirtId = (byte)BlockTypeId.Dirt;
+            byte targetId = (byte)entry.BlockType.Id;
+
+            var frontier = new List<(int x, int y)>();
+            AddDirtNeighbors(gridWidth, layerHeight, seedX, seedY, chunk, dirtId, frontier);
+
+            int currentSize = 1;
+            int attempt = 0;
+            while (currentSize < targetSize && frontier.Count > 0)
+            {
+                float pickRoll = MapRng.Value01(worldSeed, layerIndex, seedX, seedY, (int)Salt.VeinSpread + attempt);
+                int pickIndex = Mathf.Min(frontier.Count - 1, Mathf.FloorToInt(pickRoll * frontier.Count));
+                var (fx, fy) = frontier[pickIndex];
+                frontier.RemoveAt(pickIndex);
+                attempt++;
+
+                int cellIndex = chunk.Index(fx, fy);
+                if (chunk.Cells[cellIndex].BlockTypeId != dirtId) continue; // claimed by an overlapping vein already
+
+                float spreadRoll = MapRng.Value01(worldSeed, layerIndex, fx, fy, (int)Salt.VeinSpread);
+                if (spreadRoll > entry.VeinSpreadChance) continue;
+
+                chunk.Cells[cellIndex].BlockTypeId = targetId;
+                currentSize++;
+                AddDirtNeighbors(gridWidth, layerHeight, fx, fy, chunk, dirtId, frontier);
+            }
+        }
+
+        private static void AddDirtNeighbors(int gridWidth, int layerHeight, int x, int y, ChunkData chunk, byte dirtId, List<(int x, int y)> frontier)
+        {
+            foreach (var (dx, dy) in OrthogonalNeighbors)
+            {
+                int nx = x + dx, ny = y + dy;
+                if (nx < 0 || nx >= gridWidth || ny < 0 || ny >= layerHeight) continue;
+                if (chunk.Cells[chunk.Index(nx, ny)].BlockTypeId == dirtId) frontier.Add((nx, ny));
+            }
         }
 
         // 1 artifact is guaranteed per layer; each placement then has a repeating
