@@ -846,13 +846,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.SkillTree.SkillTreeDetailModalUI
   root: {fileID: 8125938756317514523}
+  card: {fileID: 0}
   nameLabel: {fileID: 4093870278708195107}
   descriptionLabel: {fileID: 1080619598415771017}
   levelLabel: {fileID: 5439541013419889225}
   costLabel: {fileID: 3959014951314787446}
-  buyButton: {fileID: 7871679944761431028}
-  closeButton: {fileID: 2806833953058435685}
   purchaseBlockReasonLabel: {fileID: 4183558591460707606}
+  anchorOffset: {x: 24, y: 24}
 --- !u!1 &3685880675465011461
 GameObject:
   m_ObjectHideFlags: 0

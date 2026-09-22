@@ -20,8 +20,6 @@ namespace UI.SkillTree
         [SerializeField] private TMP_Text levelLabel;
         [SerializeField] private TMP_Text costLabel;
         [SerializeField] private TMP_Text purchaseBlockReasonLabel;
-        [SerializeField] private Vector2 anchorOffset = new Vector2(24f, 24f);
-
         // Just the definition identity - never a cached snapshot of its level/cost/affordability.
         // Refresh() re-queries source.GetDetails(current) live every time, so this can't go stale.
         private UpgradeDefinitionBase upgradeDefinition;
@@ -57,7 +55,6 @@ namespace UI.SkillTree
         {
             upgradeDefinition = definition;
             root.SetActive(true);
-            PositionNear(anchor);
             Refresh();
         }
 
@@ -77,31 +74,6 @@ namespace UI.SkillTree
             levelLabel.text = $"{details.Level}/{details.MaxLevel}";
             costLabel.text = details.CostLabel;
             purchaseBlockReasonLabel.text = details.CanPurchase ? "" : details.PurchaseBlockedReason;
-        }
-
-        // Places the tooltip card next to the hovered node, converted through screen space so it
-        // works regardless of the pan/zoom transform the node itself lives under, then clamps it
-        // to stay fully inside this tooltip's own parent rect so it can't drift off-panel at the
-        // tree's edges.
-        private void PositionNear(RectTransform anchor)
-        {
-            if (anchor == null || card == null) return;
-            var parent = card.parent as RectTransform;
-            if (parent == null) return;
-
-            Camera cam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(cam, anchor.position);
-            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screenPoint, cam, out Vector2 localPoint)) return;
-
-            localPoint += anchorOffset;
-
-            float halfWidth = card.rect.width * 0.5f;
-            float halfHeight = card.rect.height * 0.5f;
-            Rect parentRect = parent.rect;
-            localPoint.x = Mathf.Clamp(localPoint.x, parentRect.xMin + halfWidth, parentRect.xMax - halfWidth);
-            localPoint.y = Mathf.Clamp(localPoint.y, parentRect.yMin + halfHeight, parentRect.yMax - halfHeight);
-
-            card.anchoredPosition = localPoint;
         }
     }
 }
