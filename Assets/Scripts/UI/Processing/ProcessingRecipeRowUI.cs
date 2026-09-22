@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using NUnit.Framework;
 using Processing;
 using TMPro;
 using UnityEngine;
@@ -12,28 +15,44 @@ namespace UI.Processing
     {
         [SerializeField] private Image icon;
         [SerializeField] private TMP_Text nameLabel;
-        [SerializeField] private TMP_Text ingredientsLabel;
         [SerializeField] private Button button;
+        [SerializeField] private ProcessingIngredientRow ingredientRowPrefab;
+
+        private List<GameObject> spawnedRows;
 
         public void Bind(ProcessingRecipeDefinition recipe, Action<ProcessingRecipeDefinition> onClicked)
         {
             if(recipe.Icon != null) icon.sprite = recipe.Icon;
             nameLabel.text = recipe.DisplayName;
-            ingredientsLabel.text = FormatIngredients(recipe);
+            gameObject.name = $"ProcessingRecipeRowUI_{recipe.DisplayName}";
+
+            FormatIngredients(recipe);
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => onClicked?.Invoke(recipe));
         }
 
-        private static string FormatIngredients(ProcessingRecipeDefinition recipe)
+        private void FormatIngredients(ProcessingRecipeDefinition recipe)
         {
-            var parts = new string[recipe.Ingredients.Count];
-            for (int i = 0; i < recipe.Ingredients.Count; i++)
+            if(spawnedRows == null) spawnedRows = new List<GameObject>();
+            else
             {
-                var ingredient = recipe.Ingredients[i];
-                parts[i] = $"- {ingredient.Count} {ingredient.Material}";
+                foreach (var row in spawnedRows)
+                {
+                    Destroy(row);
+                }
+                spawnedRows.Clear();
             }
-            return string.Join("\n", parts);
+
+            // Create new ingredient rows
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                var row = Instantiate(ingredientRowPrefab, transform);
+                var blockType =GameManager.BlockTypeDatabase.Get((byte)ingredient.Material);
+                row.Bind(ingredient.Count, blockType.Icon);
+                row.gameObject.name = $"ProcessingIngredientRowUI_{blockType.DisplayName}";
+                spawnedRows.Add(row.gameObject);
+            }
         }
     }
 }
