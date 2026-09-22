@@ -1,6 +1,7 @@
 using Automation;
 using Economy;
 using Events;
+using UI.Reuseable;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,8 @@ namespace UI
     // owning the feature applies the request. Storage drone upgrades are purchased from MarketUI's
     // Automation tab instead - no duplicate purchase UI in the Control Center. The Auto Sell option
     // stays gated behind UpgradeManager.StorageDroneAutoSellUnlocked (the "Market Sense" capstone)
-    // even though the toggle itself lives here.
+    // even though the toggle itself lives here. While locked, hovering the button shows an
+    // explanatory tooltip via HoverTooltipTrigger.
     public class StorageDroneDashboardUI : MonoBehaviour
     {
         [SerializeField] private Button playerAlwaysButton;
@@ -26,6 +28,7 @@ namespace UI
         [SerializeField] private GameObject depositSelectedIndicator;
         [SerializeField] private GameObject autoSellSelectedIndicator;
         [SerializeField] private GameObject autoSellLockedIndicator;
+        [SerializeField] private HoverTooltipTrigger autoSellLockedTooltipTrigger;
 
         private void Start()
         {
@@ -90,6 +93,7 @@ namespace UI
             bool unlocked = UpgradeManager.Instance.StorageDroneAutoSellUnlocked;
             if (autoSellButton != null) autoSellButton.interactable = unlocked;
             if (autoSellLockedIndicator != null) autoSellLockedIndicator.SetActive(!unlocked);
+            if (autoSellLockedTooltipTrigger != null) autoSellLockedTooltipTrigger.Active = !unlocked;
         }
     }
 }
