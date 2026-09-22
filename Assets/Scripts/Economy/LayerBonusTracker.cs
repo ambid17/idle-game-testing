@@ -43,7 +43,7 @@ namespace Economy
             if (tier <= lastNotified) return;
 
             lastNotifiedTierByLayer[layerIndex] = tier;
-            if (tier > 1f) GameManager.EventService.Dispatch(new HudNotificationEvent($"Layer bonus: {tier:0.#}x!"));
+            if (tier > 1f) GameManager.EventService.Dispatch(new NotificationEvent($"Layer bonus: {tier:0.#}x!", NotificationUrgency.TimeSensitive));
         }
 
         private float LiveTierMultiplier(int layerIndex)

@@ -66,7 +66,7 @@ namespace Player
                 CurrentShieldCharges--;
                 shieldRegenTimer = 0f;
                 GameManager.EventService.Dispatch(new ShieldChargeChangedEvent(CurrentShieldCharges, MaxShieldCharges));
-                GameManager.EventService.Dispatch(new HudNotificationEvent("Shield absorbed the hit!"));
+                GameManager.EventService.Dispatch(new NotificationEvent("Shield absorbed the hit!", NotificationUrgency.TimeSensitive));
                 return;
             }
 

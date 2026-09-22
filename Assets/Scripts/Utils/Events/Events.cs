@@ -77,32 +77,26 @@ namespace Events
 
     public class InventoryChangedEvent { }
 
-    // Generic HUD toast - drives UI.HudToastUI's popup. Dispatch this wherever a brief,
-    // non-blocking message should surface to the player (e.g. PlayerMining when a dig is blocked
-    // by a full inventory, PlayerController when fuel drops below half).
-    public class HudNotificationEvent : IEvent
+    // Unified notification system (UI.Notifications.NotificationManager): every UI notification -
+    // toast, warning, deposit report - dispatches one of these rather than driving its own popup.
+    // Urgency picks the queue/screen position (TimeSensitive: top-middle, holds then fades, e.g.
+    // low fuel or a full inventory; Queued: bottom-right, rises while fading, e.g. an ore-mined or
+    // automaton-deposit report). The two queues are independent so a Queued backlog can never delay
+    // a TimeSensitive warning. Icon is optional - null picks the text-only display prefab, a
+    // non-null Sprite picks the icon+text one.
+    public enum NotificationUrgency { TimeSensitive, Queued }
+
+    public class NotificationEvent : IEvent
     {
         public string Message;
+        public NotificationUrgency Urgency;
+        public Sprite Icon;
 
-        public HudNotificationEvent(string message)
+        public NotificationEvent(string message, NotificationUrgency urgency, Sprite icon = null)
         {
             Message = message;
-        }
-    }
-
-    // Dispatched by PlayerMining.CollectMinedBlock whenever the player personally mines an
-    // Ore-category block (whether it lands in the inventory or gets auto-sold via Overflow) -
-    // drives the HUD's ore-mined toast (UI.OreMinedToastUI). Distinct from
-    // OreDepositedByAutomationEvent, which is for automaton/drone deposits at the Depot.
-    public class OreMinedEvent : IEvent
-    {
-        public BlockTypeId Id;
-        public int Amount;
-
-        public OreMinedEvent(BlockTypeId id, int amount)
-        {
-            Id = id;
-            Amount = amount;
+            Urgency = urgency;
+            Icon = icon;
         }
     }
 

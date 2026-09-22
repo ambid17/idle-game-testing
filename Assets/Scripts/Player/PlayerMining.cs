@@ -100,7 +100,7 @@ namespace Player
             // notifications sharing the same toast.
             if (blockedByFullInventory && !wasBlockedByFullInventory)
             {
-                GameManager.EventService.Dispatch(new HudNotificationEvent("Inventory is full!"));
+                GameManager.EventService.Dispatch(new NotificationEvent("Inventory is full!", NotificationUrgency.TimeSensitive));
             }
             wasBlockedByFullInventory = blockedByFullInventory;
 
@@ -176,7 +176,7 @@ namespace Player
             }
             if (blockType.Category != BlockCategory.Ore) return;
 
-            GameManager.EventService.Dispatch(new OreMinedEvent(blockType.Id, 1));
+            GameManager.EventService.Dispatch(new NotificationEvent($"+1 {blockType.DisplayName}", NotificationUrgency.Queued, blockType.Icon));
 
             ApplyLayerBonus(blockType, layerIndex);
 

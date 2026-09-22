@@ -52,7 +52,7 @@ namespace MapGeneration
 
             if (reward.Count == 0 || Depot.Instance == null) return;
             Depot.Instance.Deposit(reward);
-            GameManager.EventService.Dispatch(new HudNotificationEvent("Treasure chest found!"));
+            GameManager.EventService.Dispatch(new NotificationEvent("Treasure chest found!", NotificationUrgency.TimeSensitive));
         }
 
         private static WeightedBlockEntry PickRandomOreEntry(LayerConfig config, System.Random rng)
@@ -81,7 +81,7 @@ namespace MapGeneration
             int radius = Mathf.Max(1, Mathf.RoundToInt(sightPotionBaseRevealRadius * (1f + effectiveness)));
             mapGenerationService.RevealAround(evt.LayerIndex, evt.X, evt.Y, radius);
 
-            GameManager.EventService.Dispatch(new HudNotificationEvent("Sight potion activated!"));
+            GameManager.EventService.Dispatch(new NotificationEvent("Sight potion activated!", NotificationUrgency.TimeSensitive));
         }
     }
 }

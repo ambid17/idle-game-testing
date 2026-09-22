@@ -1,5 +1,6 @@
 using System.Linq;
 using Economy;
+using Events;
 using Player;
 using UnityEngine;
 
@@ -172,6 +173,13 @@ namespace Automation
                 {
                     currentTarget.AddFuel(amountToGive);
                     payload -= amountToGive;
+
+                    // Only the player cares to be told about this - a refueled MiningAutomaton has
+                    // no player-facing report (mirrors how it has no low-fuel warning either).
+                    if (currentTarget is PlayerController)
+                    {
+                        GameManager.EventService.Dispatch(new NotificationEvent($"Fuel drone refueled you (+{amountToGive:0} fuel)", NotificationUrgency.Queued));
+                    }
                 }
             }
 

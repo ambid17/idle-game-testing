@@ -4,8 +4,8 @@ using MapGeneration;
 namespace Automation
 {
     // Turns an OreDepositedByAutomationEvent's raw (entity name, ore dictionary) payload into
-    // display text, e.g. "Automaton #2 deposited 5 Iron, 2 Gold" - shared so NotificationQueueUI
-    // doesn't duplicate this formatting logic.
+    // display text, e.g. "Automaton #2 deposited 5 Iron, 2 Gold" - used by AutomationDepositService
+    // to build the Queued notification alongside the event dispatch.
     public static class DepositNotificationFormatter
     {
         public static string Format(string entityDisplayName, IReadOnlyDictionary<BlockTypeId, int> deposited, BlockTypeDatabase blockTypeDatabase)

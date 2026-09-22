@@ -292,17 +292,17 @@ namespace Player
             if (IsFlying) fuelSystem.ConsumeFlying(dt);
 
             // Edge-triggered: only fires the tick fuel first crosses at/below half, not every
-            // tick while it stays low - otherwise this would keep resetting HudToastUI's display
-            // timer and could drown out other notifications (e.g. inventory-full) sharing the
-            // same toast.
+            // tick while it stays low - otherwise this would keep resetting the TimeSensitive
+            // notification's display timer and could drown out other notifications (e.g.
+            // inventory-full) sharing the same queue.
             if (FuelFraction <= LowFuelWarningFraction && previousFuelFraction > LowFuelWarningFraction)
             {
-                GameManager.EventService.Dispatch(new HudNotificationEvent("Fuel is running low!"));
+                GameManager.EventService.Dispatch(new NotificationEvent("Fuel is running low!", NotificationUrgency.TimeSensitive));
             }
 
             if (FuelFraction <= CriticalFuelWarningFraction && previousFuelFraction > CriticalFuelWarningFraction)
             {
-                GameManager.EventService.Dispatch(new HudNotificationEvent("Critical fuel level!"));
+                GameManager.EventService.Dispatch(new NotificationEvent("Critical fuel level!", NotificationUrgency.TimeSensitive));
             }
 
             if (Fuel <= 0f)

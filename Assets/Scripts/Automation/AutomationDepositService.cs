@@ -23,6 +23,9 @@ namespace Automation
             }
 
             GameManager.EventService.Dispatch(new OreDepositedByAutomationEvent(entityDisplayName, withdrawn));
+
+            string message = DepositNotificationFormatter.Format(entityDisplayName, withdrawn, GameManager.BlockTypeDatabase);
+            GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.Queued));
         }
     }
 }
