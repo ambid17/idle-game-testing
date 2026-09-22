@@ -27,7 +27,6 @@ namespace UI
         [SerializeField] private Transform goodsRowContainer;
         [SerializeField] private GoodsRowUI goodsRowPrefab;
         [SerializeField] private TMP_Text dollarsLabel;
-        [SerializeField] private Button depositAllButton;
         [SerializeField] private Button sellAllButton;
         [SerializeField] private TMP_Text sellAllButtonLabel;
         [SerializeField] private Button sellAllGoodsButton;
@@ -49,12 +48,10 @@ namespace UI
             BuildOreRows();
             BuildGoodsRows();
 
-            depositAllButton.onClick.AddListener(DepositAll);
             sellAllButton.onClick.AddListener(() => Depot.Instance.SellAll());
             sellAllGoodsButton.onClick.AddListener(() => Depot.Instance.SellAllGoods());
             closeButton.onClick.AddListener(Close);
 
-            RefreshDepositButton();
             panelRoot.SetActive(false);
         }
 
@@ -66,7 +63,6 @@ namespace UI
             if (goodsRowContainer == null) Debug.LogError("DepotUI.goodsRowContainer is not assigned.");
             if (goodsRowPrefab == null) Debug.LogError("DepotUI.goodsRowPrefab is not assigned.");
             if (dollarsLabel == null) Debug.LogError("DepotUI.dollarsLabel is not assigned.");
-            if (depositAllButton == null) Debug.LogError("DepotUI.depositAllButton is not assigned.");
             if (sellAllButton == null) Debug.LogError("DepotUI.sellAllButton is not assigned.");
             if (sellAllButtonLabel == null) Debug.LogError("DepotUI.sellAllButtonLabel is not assigned.");
             if (sellAllGoodsButton == null) Debug.LogError("DepotUI.sellAllGoodsButton is not assigned.");
@@ -79,7 +75,6 @@ namespace UI
         {
             GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Add<DepotChangedEvent>(Refresh);
-            GameManager.EventService.Add<InventoryChangedEvent>(RefreshDepositButton);
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
             GameManager.EventService.Add<SellGoodsRequestedEvent>(OnSellGoodsRequested);
@@ -90,7 +85,6 @@ namespace UI
         {
             GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Remove<DepotChangedEvent>(Refresh);
-            GameManager.EventService.Remove<InventoryChangedEvent>(RefreshDepositButton);
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
             GameManager.EventService.Remove<SellGoodsRequestedEvent>(OnSellGoodsRequested);
@@ -174,11 +168,6 @@ namespace UI
         private void DepositAll()
         {
             Depot.Instance.Deposit(playerInventory.WithdrawAllOre());
-        }
-
-        private void RefreshDepositButton()
-        {
-            depositAllButton.interactable = playerInventory.CurrentWeight > 0f;
         }
 
         private void Refresh()
