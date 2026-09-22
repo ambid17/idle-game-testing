@@ -16,7 +16,7 @@ namespace Economy
         private static readonly float[] TierThresholds = { 0.5f, 0.75f, 0.95f };
         private static readonly float[] TierMultipliers = { 2f, 4f, 8f };
 
-        // "Keep the passive layer bonus between prestiges" (PrestigeUpgradeEffect.KeepPassiveLayerBonus):
+        // "Keep the passive layer bonus between prestiges" (PrestigeUpgradeEffect.Economy_KeepPassiveLayerBonus):
         // remembers the highest tier a layer index ever reached, since the map (and every chunk's
         // live MinedCount) is wiped on every prestige.
         private readonly Dictionary<int, float> keptTierByLayer = new();

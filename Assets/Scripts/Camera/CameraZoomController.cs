@@ -53,7 +53,7 @@ namespace CameraControl
 
         private void OnPrestigeUpgradeChanged(PrestigeUpgradePurchasedEvent evt)
         {
-            if (evt.Definition.Effect == PrestigeUpgradeEffect.CameraZoomBonus) ApplyZoom();
+            if (evt.Definition.Effect == PrestigeUpgradeEffect.Mining_CameraZoomBonus) ApplyZoom();
         }
 
         private void ApplyZoom()

@@ -24,36 +24,36 @@ namespace Economy
     // out of scope for upgrade-application work.
     public enum PrestigeUpgradeEffect
     {
-        GridWidthBonus,
-        KeepDigWhileFlying,
-        CameraZoomBonus,
-        LayerSizeReduction,
-        MineralValueMultiplier,
-        ProcessedGoodMultiplier,
+        Mining_GridWidthBonus,
+        Mining_KeepDigWhileFlying,
+        Mining_CameraZoomBonus,
+        Mining_LayerSizeReduction,
+        Economy_MineralValueMultiplier,
+        Economy_ProcessedGoodMultiplier,
         // GameDesignDoc "Prestige > idle > auto miner" lists 4 kept-tier perks (count, speed, dig
         // speed, move speed) but the Market only has 3 distinct automaton stats besides count
         // (AutomatonMiningSpeed, AutomatonMiningRadius, AutomatonMoveSpeed) - mapped 1:1 onto those
         // by name below rather than guessing at the doc's "speed" vs "dig speed" wording.
-        KeepAutomatonCount,
-        KeepAutomatonMiningSpeed,
-        KeepAutomatonMiningRadius,
-        KeepAutomatonMoveSpeed,
-        ArtifactSpawnRateMultiplier,
-        PrestigePointsPerArtifactMultiplier,
-        PassivePrestigePointRate,
-        AutoPrestigeCapstone,
-        OreTierOddsBonus,
-        PowerUpEffectivenessBonus,
-        PowerUpSpawnRateBonus,
-        ShieldChargeCount,
-        MoveSpeedBonus,
-        FallDamageReduction,
-        GasResistance,
-        DoublePassiveLayerBonus,
-        KeepPassiveLayerBonus,
-        BlastResistance,
-        FallingRockResistance,
-        LavaResistance
+        Idle_KeepAutomatonCount,
+        Idle_KeepAutomatonMiningSpeed,
+        Idle_KeepAutomatonMiningRadius,
+        Idle_KeepAutomatonMoveSpeed,
+        Prestige_ArtifactSpawnRateMultiplier,
+        Prestige_PrestigePointsPerArtifactMultiplier,
+        Prestige_PassivePrestigePointRate,
+        Prestige_AutoPrestigeCapstone,
+        Progression_OreTierOddsBonus,
+        Progression_PowerUpEffectivenessBonus,
+        Progression_PowerUpSpawnRateBonus,
+        Survival_ShieldChargeCount,
+        Survival_MoveSpeedBonus,
+        Survival_FallDamageReduction,
+        Survival_GasResistance,
+        Economy_DoublePassiveLayerBonus,
+        Economy_KeepPassiveLayerBonus,
+        Survival_BlastResistance,
+        Survival_FallingRockResistance,
+        Survival_LavaResistance
     }
 
     [CreateAssetMenu(fileName = "PrestigeUpgradeDefinition", menuName = "Economy/Prestige Upgrade Definition")]

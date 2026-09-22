@@ -43,7 +43,7 @@ namespace Events
         }
     }
 
-    // Dispatched by PlayerHealth whenever a shield charge (PrestigeUpgradeEffect.ShieldChargeCount)
+    // Dispatched by PlayerHealth whenever a shield charge (PrestigeUpgradeEffect.Survival_ShieldChargeCount)
     // is consumed or regenerated.
     public class ShieldChargeChangedEvent : IEvent
     {
