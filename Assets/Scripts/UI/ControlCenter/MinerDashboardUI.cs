@@ -24,20 +24,21 @@ namespace UI
 
         private void OnEnable()
         {
+            CheckNullRefs();
             GameManager.EventService.Add<OreDepositedByAutomationEvent>(OnOreDeposited);
             Refresh();
+        }
+
+        private void CheckNullRefs()
+        {
+            if (rowContainer == null) Debug.LogError($"{nameof(MinerDashboardUI)} is missing its rowContainer reference.");
+            if (rowPrefab == null) Debug.LogError($"{nameof(MinerDashboardUI)} is missing its rowPrefab reference.");
         }
 
         private void OnDisable() => GameManager.EventService.Remove<OreDepositedByAutomationEvent>(OnOreDeposited);
 
         private void BuildRows()
         {
-            if (rowPrefab == null || rowContainer == null)
-            {
-                Debug.LogError($"{nameof(MinerDashboardUI)}.BuildRows: Missing rowPrefab or rowContainer.");
-                return;
-            }
-
             foreach (var blockType in blockTypeDatabase.BlockTypes)
             {
                 if (blockType.Category != BlockCategory.Ore) continue;
