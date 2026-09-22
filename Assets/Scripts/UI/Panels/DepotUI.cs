@@ -172,8 +172,6 @@ namespace UI
 
         private void Refresh()
         {
-            RefreshDepositButton();
-
             var totalValue = 0f;
             foreach (var kvp in rows)
             {
