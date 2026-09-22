@@ -70,6 +70,8 @@ namespace UI.Processing
             bool hasRecipe = selectedRecipe != null;
             progressFillParent.SetActive(active);
 
+            selectRecipeButton.interactable = !active;
+
             recipeSizeSlider.gameObject.SetActive(hasRecipe && !active);
             recipeSizeLabel.gameObject.SetActive(hasRecipe && !active);
             recipeSizeLabel.text = $"{recipeSizeSlider.value:0}/{recipeSizeSlider.maxValue:0}";
