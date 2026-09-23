@@ -122,6 +122,55 @@ namespace MapGeneration
             fogTilemap.SetTiles(fogChanges, true);
         }
 
+        // The terrain tiles that would render along this chunk's shallow (row 0) or deep
+        // (last row) edge. ChunkStreamingManager copies these into the vertically adjacent
+        // chunk's own Tilemap as a "ghost" row (see PaintGhostRow) - RuleTile neighbor lookups
+        // only ever query the Tilemap component they live on, so without this, the cell just
+        // across a layer boundary always reads as a null (empty) neighbor even when it's solid
+        // ground, and edgeBleedTile draws a false edge along every layer seam.
+        public TileBase[] GetBoundaryRowTiles(bool bottomRow)
+        {
+            int w = chunk.Width;
+            int y = bottomRow ? chunk.Height - 1 : 0;
+            var tiles = new TileBase[w];
+            for (int x = 0; x < w; x++)
+            {
+                tiles[x] = BuildTerrainChange(new Vector3Int(x, -y, 0), chunk.Cells[chunk.Index(x, y)]).tile;
+            }
+            return tiles;
+        }
+
+        // Paints a copy of a vertically adjacent chunk's boundary row into this chunk's own
+        // Tilemap, one cell beyond this chunk's own row 0 (aboveChunk=true - mirrors the
+        // shallower layer's deepest row) or one cell beyond its last row (aboveChunk=false -
+        // mirrors the deeper layer's shallowest row). These ghost cells are never part of this
+        // chunk's visible Width x Height area; they exist purely so this Tilemap's own RuleTiles
+        // see a real neighbor instead of null at the seam.
+        public void PaintGhostRow(bool aboveChunk, TileBase[] tiles)
+        {
+            int w = chunk.Width;
+            int ghostY = aboveChunk ? 1 : -chunk.Height;
+
+            var changes = new TileChangeData[w];
+            for (int x = 0; x < w; x++)
+            {
+                changes[x] = new TileChangeData(new Vector3Int(x, ghostY, 0), tiles[x], Color.white, Matrix4x4.identity);
+            }
+            terrainTilemap.SetTiles(changes, true);
+        }
+
+        // Re-evaluates this chunk's own boundary row's RuleTiles (e.g. after PaintGhostRow just
+        // updated the neighbor cell they read) - re-setting the same tile reference still forces
+        // the RuleTile to recompute which sprite matches, which is what actually shows the fix.
+        public void RefreshBoundaryRow(bool bottomRow)
+        {
+            int w = chunk.Width;
+            int y = bottomRow ? chunk.Height - 1 : 0;
+            var coords = new List<Vector2Int>(w);
+            for (int x = 0; x < w; x++) coords.Add(new Vector2Int(x, y));
+            RepaintCells(coords);
+        }
+
         public void RepaintCells(IReadOnlyList<Vector2Int> localCoords)
         {
             var expandedCoords = ExpandForFogGradient(localCoords);

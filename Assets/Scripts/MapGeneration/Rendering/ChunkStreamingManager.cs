@@ -121,6 +121,25 @@ namespace MapGeneration
             newView.Bind(chunk, layerIndex);
 
             tilemapsByLayer[layerIndex] = newView;
+
+            SyncBoundary(layerIndex - 1, layerIndex);
+            SyncBoundary(layerIndex, layerIndex + 1);
+        }
+
+        // Stitches a "ghost" copy of each chunk's boundary row into the other's own Tilemap (see
+        // ChunkTilemapView.PaintGhostRow) so RuleTile neighbor lookups across a layer seam resolve
+        // to real ground instead of null - without this, edgeBleedTile draws a false edge along
+        // every layer boundary regardless of mining state. No-ops unless both chunks are resident.
+        private void SyncBoundary(int shallowerLayerIndex, int deeperLayerIndex)
+        {
+            if (!tilemapsByLayer.TryGetValue(shallowerLayerIndex, out var shallower) || !shallower.gameObject.activeSelf) return;
+            if (!tilemapsByLayer.TryGetValue(deeperLayerIndex, out var deeper) || !deeper.gameObject.activeSelf) return;
+
+            deeper.PaintGhostRow(aboveChunk: true, shallower.GetBoundaryRowTiles(bottomRow: true));
+            shallower.PaintGhostRow(aboveChunk: false, deeper.GetBoundaryRowTiles(bottomRow: false));
+
+            deeper.RefreshBoundaryRow(bottomRow: false);
+            shallower.RefreshBoundaryRow(bottomRow: true);
         }
 
         private void Release(int layerIndex)
@@ -137,6 +156,9 @@ namespace MapGeneration
             var affected = new List<Vector2Int>(revealedCells.Count + 1) { new(x, y) };
             affected.AddRange(revealedCells);
             view.RepaintCells(affected);
+
+            SyncBoundary(layerIndex - 1, layerIndex);
+            SyncBoundary(layerIndex, layerIndex + 1);
         }
 
         // For fog reveals that spilled into a neighboring layer's chunk (no mined cell of its own here).
