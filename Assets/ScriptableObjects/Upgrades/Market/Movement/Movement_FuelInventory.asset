@@ -15,11 +15,11 @@ MonoBehaviour:
   DisplayName: Fuel Inventory
   Description: Increases the amount of fuel you can carry for flight.
   Icon: {fileID: 21300000, guid: 2a7a0e2e190859441af93794bbbe9c08, type: 3}
+  EffectValuePerLevel: 20
+  MaxLevel: 6
+  BaseCost: 50
+  CostGrowth: 2
+  RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 0}
   Branch: 3
   Effect: 27
-  EffectValuePerLevel: 1
-  MaxLevel: 6
-  BaseCost: 300
-  CostGrowth: 1.3
-  Prerequisite: {fileID: 0}
-  RequirePrerequisiteMaxed: 0

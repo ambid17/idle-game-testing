@@ -116,11 +116,6 @@ namespace Economy
             }
         }
 
-        // Dollar-purchased counterpart to PrestigeUpgradeManager.GridWidthBonus - takes effect
-        // immediately (see MapGenerationService's UpgradePurchasedEvent listener) rather than
-        // waiting for the next prestige, since it's bought with the run's own currency.
-        public int EconomyGridWidthBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Economy_GridWidthBonus) * EffectValuePerLevelOf(UpgradeEffect.Economy_GridWidthBonus));
-
         // GameDesignDoc "Automation > Mining Automaton": level 0 = no automatons owned, matching
         // every other UpgradeManager effect - the first purchased level buys the first unit.
         public int AutomatonCount => LevelOf(UpgradeEffect.Automation_AutomatonCount);

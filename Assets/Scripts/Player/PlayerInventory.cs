@@ -20,7 +20,7 @@ namespace Player
     // player - registers with OreCarrierRegistry alongside its existing PlayerDiedEvent subscription.
     public class PlayerInventory : MonoBehaviour, IOreCarrier
     {
-        private float baseMaxWeight = 100f;
+        private float baseMaxWeight = 50f;
 
         private OreInventory oreInventory;
 

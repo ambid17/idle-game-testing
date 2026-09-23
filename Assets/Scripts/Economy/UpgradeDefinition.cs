@@ -39,7 +39,6 @@ namespace Economy
         // Economy
         // Dollar-purchased counterpart to PrestigeUpgradeEffect.Mining_GridWidthBonus - applied
         // immediately by MapGenerationService rather than waiting for the next prestige.
-        Economy_GridWidthBonus,
         Economy_InventoryCapacity,
         Economy_MarketingSellMultiplier,
         Economy_Overflow,
