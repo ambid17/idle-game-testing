@@ -15,11 +15,11 @@ MonoBehaviour:
   DisplayName: Processing Queue Slots
   Description: Adds another concurrent processing queue slot.
   Icon: {fileID: 21300000, guid: d97afbb071e79384386db58eb99534bd, type: 3}
-  Branch: 4
-  Effect: 31
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 5000
   CostGrowth: 1.5
-  Prerequisite: {fileID: 11400000, guid: 3c92dbad6e54d8046a7636cc252ecc13, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 3c92dbad6e54d8046a7636cc252ecc13, type: 2}
+  Branch: 4
+  Effect: 500

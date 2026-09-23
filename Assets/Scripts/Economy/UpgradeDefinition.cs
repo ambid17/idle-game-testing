@@ -15,70 +15,66 @@ namespace Economy
 
     // What purchasing a level of this upgrade actually does. UpgradeManager exposes one computed
     // property per effect that the relevant system (PlayerMining, PlayerController, PlayerInventory,
-    // Depot, MapGenerationService, ChunkGenerator, ...) reads on demand. Ordering here is fixed by
-    // the serialized int already baked into existing UpgradeDefinition assets - never reorder or
-    // remove a member, only append.
+    // Depot, MapGenerationService, ChunkGenerator, ...) reads on demand. Values are explicit and are
+    // what's serialized into the UpgradeDefinition .asset files - reorder or remove members freely,
+    // but never change an existing member's number or reuse a retired one. New members take the
+    // next free number in their prefix's range. UpgradeDatabase.Validate() flags any asset whose
+    // name doesn't match its Effect.
     public enum UpgradeEffect
     {
-        // Automation
-        Automation_AutomatonCount,
-        Automation_AutomatonInventoryCapacity,
-        Automation_AutomatonMiningRadius,
-        Automation_AutomatonMiningSpeed,
-        Automation_AutomatonMoveSpeed,
-        Automation_FuelDroneCount,
-        Automation_FuelDroneInventoryCapacity,
-        Automation_FuelDroneMoveSpeed,
+        // Automation 100-199
+        Automation_AutomatonCount = 100,
+        Automation_AutomatonInventoryCapacity = 101,
+        Automation_AutomatonMiningRadius = 102,
+        Automation_AutomatonMiningSpeed = 103,
+        Automation_AutomatonMoveSpeed = 104,
+        Automation_FuelDroneCount = 105,
+        Automation_FuelDroneInventoryCapacity = 106,
+        Automation_FuelDroneMoveSpeed = 107,
         // "Drone delivery > Market Sense" capstone - StorageDrone auto-sells on delivery once maxed.
-        Automation_StorageDroneAutoSellUnlock,
-        Automation_StorageDroneCount,
-        Automation_StorageDroneInventoryCapacity,
-        Automation_StorageDroneMoveSpeed,
+        Automation_StorageDroneAutoSellUnlock = 108,
+        Automation_StorageDroneCount = 109,
+        Automation_StorageDroneInventoryCapacity = 110,
+        Automation_StorageDroneMoveSpeed = 111,
 
+        // Economy 200-299
+        Economy_InventoryCapacity = 200,
+        Economy_MarketingSellMultiplier = 201,
+        Economy_Overflow = 202,
 
-        // Economy
-        // Dollar-purchased counterpart to PrestigeUpgradeEffect.Mining_GridWidthBonus - applied
-        // immediately by MapGenerationService rather than waiting for the next prestige.
-        Economy_InventoryCapacity,
-        Economy_MarketingSellMultiplier,
-        Economy_Overflow,
-
-        // Mining
-        Mining_AreaSize,
-        Mining_BaseInstaMineChance,
+        // Mining 300-399
+        Mining_AreaSize = 300,
+        Mining_BaseInstaMineChance = 301,
         // "Lantern capstones > zoom, enhance" - drives CameraControl.CameraZoomController.
-        Mining_CameraZoom,
-        // Real effect (Dirt block category already exists) - appended out of branch order so
-        // every earlier member keeps its serialized int stable in existing UpgradeDefinition
-        // assets. Drives UpgradeManager.InstantMineDirt.
-        Mining_DirtInstaMine,
-        Mining_LanternRadius,
-        Mining_Speed,
-        Mining_TrueSight,
+        Mining_CameraZoom = 302,
+        // Drives UpgradeManager.InstantMineDirt.
+        Mining_DirtInstaMine = 303,
+        Mining_LanternRadius = 304,
         // Drives UpgradeManager.InstantMineScrapAlloy.
-        Mining_ScrapAlloyInstaMine,
+        Mining_ScrapAlloyInstaMine = 307,
+        Mining_Speed = 305,
+        Mining_TrueSight = 306,
 
-
-        // Movement
-        Movement_FallDamageReduction,
-        Movement_FlightSpeed,
-        Movement_FuelEfficiency,
-        Movement_FuelInventory,
-        Movement_GravityIncrease,
+        // Movement 400-499
+        Movement_FallDamageReduction = 400,
+        Movement_FlightSpeed = 401,
+        Movement_FuelEfficiency = 402,
+        Movement_FuelInventory = 403,
+        Movement_GravityIncrease = 404,
         // "Lantern capstones > hazard sense" - drives ChunkTilemapView's hazard tile tint.
-        Movement_HazardSense,
-        Movement_MoveSpeed,
+        Movement_HazardSense = 405,
+        Movement_MoveSpeed = 406,
 
-        // Processing
-        Processing_QueueSlots,
-        Processing_SaleValueMultiplier,
-        Processing_SpeedMultiplier,
-        Processing_DiamondRecipeUnlock,
-        Processing_EmeraldRecipeUnlock,
-        Processing_GoldRecipeUnlock,
-        Processing_IronRecipeUnlock,
-        Processing_StoneRecipeUnlock,
-        Processing_ScrapRecipeUnlock,
+        // Processing 500-599
+        Processing_DiamondRecipeUnlock = 503,
+        Processing_EmeraldRecipeUnlock = 504,
+        Processing_GoldRecipeUnlock = 505,
+        Processing_IronRecipeUnlock = 506,
+        Processing_QueueSlots = 500,
+        Processing_SaleValueMultiplier = 501,
+        Processing_ScrapRecipeUnlock = 508,
+        Processing_SpeedMultiplier = 502,
+        Processing_StoneRecipeUnlock = 507,
     }
 
     [CreateAssetMenu(fileName = "UpgradeDefinition", menuName = "Economy/Upgrade Definition")]

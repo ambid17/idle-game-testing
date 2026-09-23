@@ -40,9 +40,12 @@ Skipping any one of these produces a specific, recognizable failure - use this t
 
 Open `Assets/Scripts/Economy/UpgradeDefinition.cs` (Market) or `Assets/Scripts/Economy/PrestigeUpgradeDefinition.cs` (Prestige) and add a new member to `UpgradeEffect` / `PrestigeUpgradeEffect`.
 
-**Always append at the end of the enum. Never reorder, rename, insert in the middle, or delete an existing member.** These enums have no explicit `= N` values, so each member's underlying int is positional - it's what's baked into every already-created `.asset` file's serialized data. Reordering silently reassigns every asset after the change point to the wrong effect; nothing will error, it'll just quietly do the wrong thing at runtime. (Both files call this out in their header comments - read them before editing.)
+**Every member has an explicit `= N` value, and that number is what's serialized into the `.asset` files.** Members are grouped by prefix in ranges of 100 (e.g. `UpgradeEffect`: Automation 100s, Economy 200s, Mining 300s, Movement 400s, Processing 500s; `PrestigeUpgradeEffect`: Mining 100s, Economy 200s, Idle 300s, Prestige 400s, Progression 500s, Survival 600s). Rules:
+- Give the new member the **next free number in its prefix's range** (check the highest existing value - members aren't listed in numeric order). It can go anywhere in the source, e.g. alphabetically.
+- Reordering or deleting members is safe. **Never change an existing member's number, and never reuse a retired member's number** - either silently re-points existing assets. C# also allows duplicate values without complaint; `Validate()` catches that at startup.
+- Renaming a member is safe for the asset data, but the asset filename must be renamed to match (see Step 2).
 
-Add a branch, if this is a new category, to `UpgradeBranch` / `PrestigeUpgradeBranch` - same append-only rule applies since the skill tree UI groups nodes by `BranchIndex`.
+Add a branch, if this is a new category, to `UpgradeBranch` / `PrestigeUpgradeBranch` - those enums are still positional and append-only, since the skill tree UI uses `Enum.GetValues(...).Length` as the branch count and groups nodes by `BranchIndex`.
 
 Give the new member a one-line comment naming the doc section it implements (the existing entries all cite `Assets/Docs/GameDesignDoc.md` or `Assets/Docs/UpgradeIdeas.pdf` sections) - future edits rely on that trail to know what an effect is *supposed* to do.
 
@@ -54,7 +57,7 @@ If UnityMCP is connected, use `manage_scriptable_object` rather than hand-author
 manage_scriptable_object(
   action="create",
   type_name="Economy.UpgradeDefinition",       # or Economy.PrestigeUpgradeDefinition
-  asset_name="YourNewUpgradeName",
+  asset_name="Mining_YourNewEffect",               # MUST equal the enum member name exactly
   folder_path="Assets/ScriptableObjects/Upgrades"   # or .../PrestigeUpgrades
 )
 ```
@@ -66,7 +69,7 @@ Then set fields with `action="modify"` and `patches` against the created asset (
 - `EffectValuePerLevel` - the per-level magnitude; what it means is entirely up to the property you write in Step 5, so pick a value that makes that formula read sensibly (e.g. 0.1 for "+10% per level" read as `1f + level * EffectValuePerLevel`).
 - `MaxLevel` - use `1` for a one-time unlock or capstone, higher for a scaling stat.
 - `BaseCost` / `CostGrowth` - leave at the type's `Reset()` defaults unless the design doc says otherwise.
-- `Branch`, `Effect` - the enum entries from Step 1.
+- `Branch`, `Effect` - the enum entries from Step 1. The asset's filename must equal `Effect`'s member name - `UpgradeDatabase.Validate()` / `PrestigeUpgradeDatabase.Validate()` log an error on any mismatch, which is how a mis-pointed Effect gets caught.
 - `RequirePrerequisiteMaxed` / `Prerequisite` - see Step 4.
 
 No UnityMCP available? Use `Assets > Create > Economy > Upgrade Definition` (or `Prestige Upgrade Definition`) in the Editor and fill the Inspector fields by hand - same fields, same rules.

@@ -15,11 +15,11 @@ MonoBehaviour:
   DisplayName: Automaton Move Speed
   Description: +10% Automaton movement speed per level.
   Icon: {fileID: 21300000, guid: 4d26663b990c31d4cbfe87150997e3d5, type: 3}
-  Branch: 2
-  Effect: 4
   EffectValuePerLevel: 0.1
   MaxLevel: 10
   BaseCost: 120
   CostGrowth: 1.2
-  Prerequisite: {fileID: 11400000, guid: fae3e5a0bdaa417409887c7d197d852d, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: fae3e5a0bdaa417409887c7d197d852d, type: 2}
+  Branch: 2
+  Effect: 104

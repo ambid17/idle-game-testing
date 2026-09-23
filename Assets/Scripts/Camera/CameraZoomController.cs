@@ -12,18 +12,19 @@ namespace CameraControl
     // than Camera to avoid shadowing UnityEngine.Camera for any file in this folder.
     public class CameraZoomController : MonoBehaviour
     {
-        [SerializeField] private CinemachineCamera cinemachineCamera;
+        [SerializeField] private CinemachinePositionComposer cinemachineCamera;
 
-        private float baseOrthographicSize;
+        private float baseDistance;
 
         private void Awake()
         {
+            cinemachineCamera = GetComponent<CinemachinePositionComposer>();
             if (cinemachineCamera == null)
             {
                 Debug.LogError($"{nameof(CameraZoomController)} on {name} is missing its cinemachineCamera reference.");
                 return;
             }
-            baseOrthographicSize = cinemachineCamera.Lens.OrthographicSize;
+            baseDistance = cinemachineCamera.CameraDistance;
         }
 
         private void OnEnable()
@@ -58,14 +59,10 @@ namespace CameraControl
 
         private void ApplyZoom()
         {
-            if (cinemachineCamera == null) return;
-
             float marketBonus = UpgradeManager.Instance != null ? UpgradeManager.Instance.CameraZoomBonus : 0f;
             float prestigeBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.CameraZoomBonus : 0f;
 
-            var lens = cinemachineCamera.Lens;
-            lens.OrthographicSize = baseOrthographicSize + marketBonus + prestigeBonus;
-            cinemachineCamera.Lens = lens;
+            cinemachineCamera.CameraDistance = baseDistance + marketBonus + prestigeBonus;
         }
     }
 }

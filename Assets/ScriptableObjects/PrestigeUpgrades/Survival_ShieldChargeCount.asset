@@ -23,4 +23,4 @@ MonoBehaviour:
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 0}
   Branch: 5
-  Effect: 17
+  Effect: 600

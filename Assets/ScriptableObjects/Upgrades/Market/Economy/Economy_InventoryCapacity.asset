@@ -12,16 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
   m_Name: Economy_InventoryCapacity
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  Id: inventory_capacity
   DisplayName: Inventory
   Description: Increase how much weight you can carry before you need to visit the
     Depot.
   Icon: {fileID: 21300000, guid: e3228bbb8cc89c34386577723415609c, type: 3}
-  Branch: 1
-  Effect: 13
   EffectValuePerLevel: 25
   MaxLevel: 10
   BaseCost: 80
   CostGrowth: 1.2
-  Prerequisite: {fileID: 0}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 0}
+  Branch: 1
+  Effect: 200

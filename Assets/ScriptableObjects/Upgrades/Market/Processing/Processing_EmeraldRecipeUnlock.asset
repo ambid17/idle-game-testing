@@ -22,4 +22,4 @@ MonoBehaviour:
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: 8cc2346cc779d18408cc6898848f7fcd, type: 2}
   Branch: 4
-  Effect: 35
+  Effect: 504

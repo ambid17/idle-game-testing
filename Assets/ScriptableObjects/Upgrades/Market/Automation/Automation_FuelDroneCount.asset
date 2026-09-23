@@ -15,11 +15,11 @@ MonoBehaviour:
   DisplayName: Additional Fuel Drone
   Description: Add another Fuel Drone to keep you topped off.
   Icon: {fileID: 21300000, guid: 1bd9ce7314866a94cb3f21dbdf9d66bd, type: 3}
-  Branch: 2
-  Effect: 5
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 500
   CostGrowth: 1.5
-  Prerequisite: {fileID: 11400000, guid: b62349feda8534e4abcb2d3a26cf11ef, type: 2}
   RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: b62349feda8534e4abcb2d3a26cf11ef, type: 2}
+  Branch: 2
+  Effect: 105

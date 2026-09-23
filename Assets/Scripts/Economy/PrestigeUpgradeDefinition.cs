@@ -16,51 +16,60 @@ namespace Economy
     }
 
     // What purchasing a level of this prestige perk actually does. PrestigeUpgradeManager exposes
-    // one computed property per effect - see Assets/Docs/GameDesignDoc.md "# Prestige". Ordering
-    // here is fixed by the serialized int already baked into existing PrestigeUpgradeDefinition
-    // assets - never reorder or remove a member, only append. AutoPrestigeCapstone is the one
-    // deliberate exception left unconsumed: it's a purchasable/displayed flag with no auto-trigger,
-    // since "prestige when mathematically worth it" needs a real profitability projection that's
-    // out of scope for upgrade-application work.
+    // one computed property per effect - see Assets/Docs/GameDesignDoc.md "# Prestige". Values are
+    // explicit and are what's serialized into the PrestigeUpgradeDefinition .asset files - reorder
+    // or remove members freely, but never change an existing member's number or reuse a retired
+    // one. New members take the next free number in their prefix's range.
+    // PrestigeUpgradeDatabase.Validate() flags any asset whose name doesn't match its Effect.
+    // AutoPrestigeCapstone is the one deliberate exception left unconsumed: it's a
+    // purchasable/displayed flag with no auto-trigger, since "prestige when mathematically worth
+    // it" needs a real profitability projection that's out of scope for upgrade-application work.
     public enum PrestigeUpgradeEffect
     {
-        Mining_GridWidthBonus,
-        Mining_KeepDigWhileFlying,
-        Mining_CameraZoomBonus,
-        Mining_LayerSizeReduction,
-        Economy_MineralValueMultiplier,
-        Economy_ProcessedGoodMultiplier,
+        // Mining 100-199
+        Mining_GridWidthBonus = 100,
+        Mining_KeepDigWhileFlying = 101,
+        Mining_CameraZoomBonus = 102,
+        Mining_LayerSizeReduction = 103,
+
+        // Economy 200-299
+        Economy_MineralValueMultiplier = 200,
+        Economy_ProcessedGoodMultiplier = 201,
+        Economy_DoublePassiveLayerBonus = 202,
+        Economy_KeepPassiveLayerBonus = 203,
+
+        // Idle 300-399
         // GameDesignDoc "Prestige > idle > auto miner" lists 4 kept-tier perks (count, speed, dig
         // speed, move speed) but the Market only has 3 distinct automaton stats besides count
         // (AutomatonMiningSpeed, AutomatonMiningRadius, AutomatonMoveSpeed) - mapped 1:1 onto those
         // by name below rather than guessing at the doc's "speed" vs "dig speed" wording.
-        Idle_KeepAutomatonCount,
-        Idle_KeepAutomatonMiningSpeed,
-        Idle_KeepAutomatonMiningRadius,
-        Idle_KeepAutomatonMoveSpeed,
-        Prestige_ArtifactSpawnRateMultiplier,
-        // Renamed from Prestige_PrestigePointsPerArtifactMultiplier when Prestige Points were
-        // removed as a currency (artifacts are now spent directly at the Museum) - same ordinal
-        // position/serialized int, only the C# identifier changed, so existing .asset Effect fields
-        // still resolve correctly. Now multiplies how many artifacts a single artifact-ore grants on
-        // mining, instead of a since-removed points-per-turn-in conversion.
-        Prestige_ArtifactValueMultiplier,
-        // Renamed from Prestige_PassivePrestigePointRate for the same reason - now a passive
-        // artifact (currency) trickle instead of a Prestige Points trickle.
-        Prestige_PassiveArtifactRate,
-        Prestige_AutoPrestigeCapstone,
-        Progression_OreTierOddsBonus,
-        Progression_PowerUpEffectivenessBonus,
-        Progression_PowerUpSpawnRateBonus,
-        Survival_ShieldChargeCount,
-        Survival_MoveSpeedBonus,
-        Survival_FallDamageReduction,
-        Survival_GasResistance,
-        Economy_DoublePassiveLayerBonus,
-        Economy_KeepPassiveLayerBonus,
-        Survival_BlastResistance,
-        Survival_FallingRockResistance,
-        Survival_LavaResistance
+        Idle_KeepAutomatonCount = 300,
+        Idle_KeepAutomatonMiningSpeed = 301,
+        Idle_KeepAutomatonMiningRadius = 302,
+        Idle_KeepAutomatonMoveSpeed = 303,
+
+        // Prestige 400-499
+        Prestige_ArtifactSpawnRateMultiplier = 400,
+        // Multiplies how many artifacts a single artifact-ore grants on mining (formerly a
+        // Prestige Points per artifact multiplier, before Prestige Points were removed).
+        Prestige_ArtifactValueMultiplier = 401,
+        // Passive artifact (currency) trickle - formerly a Prestige Points trickle.
+        Prestige_PassiveArtifactRate = 402,
+        Prestige_AutoPrestigeCapstone = 403,
+
+        // Progression 500-599
+        Progression_OreTierOddsBonus = 500,
+        Progression_PowerUpEffectivenessBonus = 501,
+        Progression_PowerUpSpawnRateBonus = 502,
+
+        // Survival 600-699
+        Survival_ShieldChargeCount = 600,
+        Survival_MoveSpeedBonus = 601,
+        Survival_FallDamageReduction = 602,
+        Survival_GasResistance = 603,
+        Survival_BlastResistance = 604,
+        Survival_FallingRockResistance = 605,
+        Survival_LavaResistance = 606,
     }
 
     [CreateAssetMenu(fileName = "PrestigeUpgradeDefinition", menuName = "Economy/Prestige Upgrade Definition")]

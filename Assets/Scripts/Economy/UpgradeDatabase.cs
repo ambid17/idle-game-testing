@@ -56,6 +56,12 @@ namespace Economy
                 Debug.LogError("UpgradeDatabase is not assigned in GameManager.");
                 return;
             }
+            // C# silently allows two enum members to share a value - which would make two
+            // definitions indistinguishable once serialized.
+            if (System.Enum.GetValues(typeof(UpgradeEffect)).Length != new HashSet<int>((int[])System.Enum.GetValues(typeof(UpgradeEffect))).Count)
+            {
+                Debug.LogError("UpgradeEffect has two members sharing the same explicit value.");
+            }
             foreach (var upgrade in Upgrades)
             {
                 if (upgrade == null)
@@ -82,6 +88,12 @@ namespace Economy
                 if (upgrade.Prerequisite == upgrade)
                 {
                     Debug.LogError($"UpgradeDefinition '{upgrade.name}' lists itself as its own Prerequisite.");
+                }
+                // Asset filenames are named after their effect, so a mismatch means the serialized
+                // Effect int points at the wrong (or a removed) UpgradeEffect member.
+                if (upgrade.name != upgrade.Effect.ToString())
+                {
+                    Debug.LogError($"UpgradeDefinition '{upgrade.name}' has Effect '{upgrade.Effect}' - asset name and Effect must match.");
                 }
             }
         }
