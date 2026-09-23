@@ -21,6 +21,9 @@ namespace MapGeneration
             PowerUpPick = 6,
             VeinSize = 7,
             VeinSpread = 8,
+            EmptyPocketGate = 9,
+            EmptyPocketSize = 10,
+            EmptyPocketSpread = 11,
         }
 
         private static readonly (int dx, int dy)[] OrthogonalNeighbors = { (1, 0), (-1, 0), (0, 1), (0, -1) };
@@ -56,6 +59,7 @@ namespace MapGeneration
 
             GrowVeins(worldSeed, layerIndex, gridWidth, layerHeight, config, chunk);
             PlaceArtifacts(worldSeed, layerIndex, gridWidth, layerHeight, artifactSpawnRateMultiplier, config, chunk);
+            CarveEmptyPockets(worldSeed, layerIndex, gridWidth, layerHeight, config, chunk);
             chunk.IsFullyGenerated = true;
             return chunk;
         }
@@ -160,7 +164,7 @@ namespace MapGeneration
                 attempt++;
 
                 int cellIndex = chunk.Index(fx, fy);
-                if (chunk.Cells[cellIndex].BlockTypeId != dirtId) continue; // claimed by an overlapping vein already
+                if (!IsUnclaimedDirt(chunk.Cells[cellIndex], dirtId)) continue; // claimed by an overlapping vein already
 
                 float spreadRoll = MapRng.Value01(worldSeed, layerIndex, fx, fy, (int)Salt.VeinSpread);
                 if (spreadRoll > entry.VeinSpreadChance) continue;
@@ -171,13 +175,87 @@ namespace MapGeneration
             }
         }
 
+        // A cell is fair game for a vein/pocket to spread into only while it's still plain,
+        // unmined Dirt - the Mined check matters for CarveEmptyPockets (which runs after ore
+        // veins/artifacts, so BlockTypeId alone can't tell an untouched Dirt cell apart from one
+        // an earlier, overlapping pocket already carved out) and is a no-op for GrowVein, since
+        // nothing is ever Mined this early in generation.
+        private static bool IsUnclaimedDirt(CellData cell, byte dirtId) => cell.BlockTypeId == dirtId && !cell.Mined;
+
         private static void AddDirtNeighbors(int gridWidth, int layerHeight, int x, int y, ChunkData chunk, byte dirtId, List<(int x, int y)> frontier)
         {
             foreach (var (dx, dy) in OrthogonalNeighbors)
             {
                 int nx = x + dx, ny = y + dy;
                 if (nx < 0 || nx >= gridWidth || ny < 0 || ny >= layerHeight) continue;
-                if (chunk.Cells[chunk.Index(nx, ny)].BlockTypeId == dirtId) frontier.Add((nx, ny));
+                if (IsUnclaimedDirt(chunk.Cells[chunk.Index(nx, ny)], dirtId)) frontier.Add((nx, ny));
+            }
+        }
+
+        // Fourth pass: some of whatever Dirt is left over after ore veins and artifacts have
+        // claimed theirs seeds a pre-carved empty pocket, grown with the exact same random-walk
+        // flood-fill as GrowVein but flipping Mined instead of swapping BlockTypeId - breaks up
+        // long stretches of uniform dirt without handing out free ore. Pockets stay behind fog
+        // until the player reveals them normally (see MineWorld.RevealFog), so they read as a
+        // hidden cavern opening up rather than an obvious freebie. Runs last so it only ever eats
+        // into leftover Dirt, never an ore vein/hazard/power-up/artifact cell - those all fail the
+        // BlockTypeId == dirtId check both here and in AddDirtNeighbors.
+        private static void CarveEmptyPockets(int worldSeed, int layerIndex, int gridWidth, int layerHeight, LayerConfig config, ChunkData chunk)
+        {
+            if (config.EmptyPocketChancePerCell <= 0f) return;
+
+            byte dirtId = (byte)BlockTypeId.Dirt;
+
+            for (int y = 0; y < layerHeight; y++)
+            {
+                for (int x = 0; x < gridWidth; x++)
+                {
+                    int index = chunk.Index(x, y);
+                    if (!IsUnclaimedDirt(chunk.Cells[index], dirtId)) continue;
+
+                    float gate = MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.EmptyPocketGate);
+                    if (gate >= config.EmptyPocketChancePerCell) continue;
+
+                    CarveEmptyPocket(worldSeed, layerIndex, gridWidth, layerHeight, x, y, config, chunk);
+                }
+            }
+        }
+
+        private static void CarveEmptyPocket(int worldSeed, int layerIndex, int gridWidth, int layerHeight, int seedX, int seedY, LayerConfig config, ChunkData chunk)
+        {
+            byte dirtId = (byte)BlockTypeId.Dirt;
+            int seedIndex = chunk.Index(seedX, seedY);
+            if (!IsUnclaimedDirt(chunk.Cells[seedIndex], dirtId)) return; // claimed by an earlier, overlapping pocket already
+
+            int sizeRange = Mathf.Max(0, config.EmptyPocketSizeMax - config.EmptyPocketSizeMin);
+            float sizeRoll = MapRng.Value01(worldSeed, layerIndex, seedX, seedY, (int)Salt.EmptyPocketSize);
+            int targetSize = config.EmptyPocketSizeMin + Mathf.Min(sizeRange, Mathf.FloorToInt(sizeRoll * (sizeRange + 1)));
+
+            chunk.Cells[seedIndex].Mined = true;
+            if (targetSize <= 1) return;
+
+            var frontier = new List<(int x, int y)>();
+            AddDirtNeighbors(gridWidth, layerHeight, seedX, seedY, chunk, dirtId, frontier);
+
+            int currentSize = 1;
+            int attempt = 0;
+            while (currentSize < targetSize && frontier.Count > 0)
+            {
+                float pickRoll = MapRng.Value01(worldSeed, layerIndex, seedX, seedY, (int)Salt.EmptyPocketSpread + attempt);
+                int pickIndex = Mathf.Min(frontier.Count - 1, Mathf.FloorToInt(pickRoll * frontier.Count));
+                var (fx, fy) = frontier[pickIndex];
+                frontier.RemoveAt(pickIndex);
+                attempt++;
+
+                int cellIndex = chunk.Index(fx, fy);
+                if (!IsUnclaimedDirt(chunk.Cells[cellIndex], dirtId)) continue; // claimed by an overlapping pocket already
+
+                float spreadRoll = MapRng.Value01(worldSeed, layerIndex, fx, fy, (int)Salt.EmptyPocketSpread);
+                if (spreadRoll > config.EmptyPocketSpreadChance) continue;
+
+                chunk.Cells[cellIndex].Mined = true;
+                currentSize++;
+                AddDirtNeighbors(gridWidth, layerHeight, fx, fy, chunk, dirtId, frontier);
             }
         }
 

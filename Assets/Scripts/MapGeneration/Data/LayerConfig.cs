@@ -45,5 +45,14 @@ namespace MapGeneration
         [Tooltip("Chance to place an additional artifact beyond the 1 guaranteed per layer. " +
                  "Re-rolled after every success, so it's really a geometric distribution of bonus artifacts.")]
         [Range(0f, 1f)] public float ArtifactBonusChance = 0.1f;
+
+        [Header("Empty pockets (pre-carved caverns grown with the same vein logic as ores, to break up long stretches of uniform dirt)")]
+        [Tooltip("Chance, checked per still-Dirt cell after ore veins/artifacts are placed, that it seeds an empty pocket. 0 = no pockets (default, existing authored layers are unaffected).")]
+        [Range(0f, 1f)] public float EmptyPocketChancePerCell = 0f;
+        [Tooltip("Chance, checked per candidate cell, that the pocket spreads into it. Higher = denser/more compact pockets.")]
+        [Range(0f, 1f)] public float EmptyPocketSpreadChance = 0.5f;
+        [Tooltip("Total cells in the pocket including the seed cell. A random value in [Min, Max] is picked per seed.")]
+        [Min(1)] public int EmptyPocketSizeMin = 2;
+        [Min(1)] public int EmptyPocketSizeMax = 5;
     }
 }
