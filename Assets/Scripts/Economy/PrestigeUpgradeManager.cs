@@ -177,7 +177,7 @@ namespace Economy
         public float PassiveLayerBonusPerTier => 1f + LevelOf(PrestigeUpgradeEffect.Economy_PassiveLayerBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_PassiveLayerBonus);
 
         // GameDesignDoc "Prestige > Mining": keep "digging while flying" between prestige runs.
-        public bool KeepDigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_KeepDigWhileFlying);
+        public bool DigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_DigWhileFlyingUnlock);
 
         // GameDesignDoc "Prestige > Mining > true sight": reveals all fog of war - read by
         // MapGenerationService.GetFogRevealRadius.

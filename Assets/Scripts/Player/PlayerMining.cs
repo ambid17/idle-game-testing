@@ -51,7 +51,7 @@ namespace Player
             // grounded-only mining restriction. Mining also burns fuel per tick (same tank as
             // flying/idle drain - see PlayerController.ConsumeMiningFuel), so an empty tank blocks
             // it too.
-            bool canMine = (playerController.IsGrounded || (PrestigeUpgradeManager.Instance != null && PrestigeUpgradeManager.Instance.KeepDigWhileFlyingUnlocked)) && playerController.HasFuel;
+            bool canMine = (playerController.IsGrounded || PrestigeUpgradeManager.Instance.DigWhileFlyingUnlocked) && playerController.HasFuel;
             if (!canMine || direction == null || InputBlocker.IsBlocked)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
-  m_Name: Mining_KeepDigWhileFlying
+  m_Name: Mining_DigWhileFlyingUnlocked
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Aerial Prospecting
   Description: Enables digging-while-flying!
