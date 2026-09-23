@@ -18,6 +18,6 @@ MonoBehaviour:
   Ingredients:
   - Material: 7
     Count: 2
-  SaleValue: 360
+  SaleValue: 500
   DurationPerUnit: 25
   RequiredUpgrade: {fileID: 11400000, guid: 7c5df66e927e4414db0c92d78b0bf3dd, type: 2}
