@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Reinforced Helmet
   Description: Increases resistance to falling rock impacts.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 77a292fc9c4c54443b64e43bd55458ce, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8
   BaseCost: 35

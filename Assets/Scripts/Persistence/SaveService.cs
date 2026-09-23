@@ -77,6 +77,8 @@ namespace Persistence
             {
                 Dollars = Wallet.Instance.Dollars,
                 ArtifactCount = Wallet.Instance.ArtifactCount,
+                DollarsEarnedThisRun = Wallet.Instance.DollarsEarnedThisRun,
+                PrestigeCount = PrestigeManager.Instance.PrestigeCount,
                 LastActiveUtcTimestamp = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture),
                 AutomationSettings = new AutomationSettingsSaveData
                 {
@@ -259,6 +261,9 @@ namespace Persistence
 
             Wallet.Instance.SetDollars(data.Dollars);
             Wallet.Instance.SetArtifactCount(data.ArtifactCount);
+            // After SetDollars, which doesn't touch the run total, so the loaded value sticks.
+            Wallet.Instance.SetDollarsEarnedThisRun(data.DollarsEarnedThisRun);
+            PrestigeManager.Instance.SetPrestigeCount(data.PrestigeCount);
             TutorialManager.Instance.RestoreFromSaveData(data.ShownTutorials);
 
             foreach (var entry in data.UpgradeLevels)

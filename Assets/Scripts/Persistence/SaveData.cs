@@ -81,6 +81,10 @@ namespace Persistence
         // Wallet.ArtifactCount - a sibling of Dollars rather than nested under Player, since
         // artifacts are banked directly to the Wallet, not carried in PlayerInventory.
         public int ArtifactCount;
+        // Wallet.DollarsEarnedThisRun (Prestige_GrantFunding basis) and PrestigeManager.PrestigeCount
+        // (Prestige_Legacy basis) - both default to 0 on older saves, which is the correct fallback.
+        public double DollarsEarnedThisRun;
+        public int PrestigeCount;
         public List<UpgradeLevelEntry> UpgradeLevels = new();
         // Prestige upgrade levels per GameDesignDoc "# Prestige" - deliberately a sibling of
         // Dollars/UpgradeLevels above, not a separate file: it doesn't need independent lifecycle, it

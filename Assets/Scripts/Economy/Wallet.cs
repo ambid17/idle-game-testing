@@ -20,13 +20,19 @@ namespace Economy
         // (e.g. 1.15x), so the remainder accumulates here instead of always rounding the same way.
         private double artifactCreditFraction;
 
+        // Total dollars earned (via Add) since the current run started - the basis for
+        // PrestigeUpgradeEffect.Prestige_GrantFunding. Reset by PrestigeManager.ExecutePrestige.
+        [SerializeField] private double dollarsEarnedThisRun;
+
         public double Dollars => dollars;
         public int ArtifactCount => artifactCount;
+        public double DollarsEarnedThisRun => dollarsEarnedThisRun;
 
         public void Add(double amount)
         {
             if (amount <= 0) return;
             dollars += amount;
+            dollarsEarnedThisRun += amount;
             GameManager.EventService.Dispatch<DollarsChangedEvent>();
         }
 
@@ -44,6 +50,12 @@ namespace Economy
         {
             dollars = amount;
             GameManager.EventService.Dispatch<DollarsChangedEvent>();
+        }
+
+        // Direct set for Persistence.SaveService restore and PrestigeManager's per-run reset.
+        public void SetDollarsEarnedThisRun(double amount)
+        {
+            dollarsEarnedThisRun = amount;
         }
 
         // Called when mining a single artifact-ore block. Credits PrestigeUpgradeManager's applied

@@ -141,10 +141,22 @@ namespace Economy
         // Artifacts per minute, passively - see PassivePrestigeIncomeTicker.
         public float PassiveArtifactRate => LevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate);
 
-        // GameDesignDoc "Prestige > Prestige" capstone: "auto-prestige when it's mathematically
-        // worth it" - intentionally left as a purchasable/displayed flag with no auto-trigger; a
-        // real profitability projection is a separate feature, not upgrade-application.
-        public bool AutoPrestigeUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Prestige_AutoPrestigeCapstone);
+        // Museum Dividends: +EffectValuePerLevel per level, per artifact currently held (unspent) -
+        // read live, so spending artifacts in the Museum immediately lowers it. Creates a
+        // spend-vs-hoard tension on the Museum currency.
+        public float MuseumDividendsMultiplier => 1f + Wallet.Instance.ArtifactCount * LevelOf(PrestigeUpgradeEffect.Prestige_MuseumDividends) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_MuseumDividends);
+
+        // Legacy: +EffectValuePerLevel per level, per prestige ever completed (counting prestiges
+        // from before the perk was bought).
+        public float LegacyMultiplier => 1f + PrestigeManager.Instance.PrestigeCount * LevelOf(PrestigeUpgradeEffect.Prestige_Legacy) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_Legacy);
+
+        // Combined Prestige-branch income bonus, applied on top of MineralValueMultiplier /
+        // ProcessedGoodMultiplier to every ore and processed-good sale.
+        public float IncomeMultiplier => MuseumDividendsMultiplier * LegacyMultiplier;
+
+        // Grant Funding: fraction of the previous run's total dollars earned that the next run
+        // starts with - applied once by PrestigeManager.ExecutePrestige.
+        public float GrantFundingFraction => LevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding);
 
         // GameDesignDoc "Prestige > Progression".
         public float OreTierOddsBonus => LevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus);

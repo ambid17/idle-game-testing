@@ -15,6 +15,16 @@ namespace Economy
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private PlayerInventory playerInventory;
 
+        // Total prestiges ever completed - the basis for PrestigeUpgradeEffect.Prestige_Legacy.
+        [SerializeField] private int prestigeCount;
+        public int PrestigeCount => prestigeCount;
+
+        // Direct set for Persistence.SaveService restoring a save file.
+        public void SetPrestigeCount(int count)
+        {
+            prestigeCount = Mathf.Max(0, count);
+        }
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -30,9 +40,17 @@ namespace Economy
             // be committed before the map regenerates against it.
             PrestigeUpgradeManager.Instance.CommitQueuedUpgrades();
 
+            // Grant Funding reads the just-committed level, so a perk queued this run already pays
+            // out on this prestige. Computed before the dollar reset below wipes the run's totals.
+            double grantFunding = Wallet.Instance.DollarsEarnedThisRun * PrestigeUpgradeManager.Instance.GrantFundingFraction;
+            prestigeCount++;
+
             UpgradeManager.Instance.ResetAllLevels();
             LayerBonusTracker.Instance.ClearUnlessKept();
-            Wallet.Instance.SetDollars(0);
+            // SetDollars rather than Add so the grant doesn't count toward the new run's earnings
+            // (which would let Grant Funding compound on itself across prestiges).
+            Wallet.Instance.SetDollars(grantFunding);
+            Wallet.Instance.SetDollarsEarnedThisRun(0);
             Depot.Instance.ClearAll();
             if (playerInventory != null) playerInventory.ClearOreOnly();
 

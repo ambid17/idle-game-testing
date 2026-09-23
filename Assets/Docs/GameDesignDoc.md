@@ -194,8 +194,9 @@ The map will regenerate, all of your dug tunnels will be gone. All of your money
 	- increase artifact spawn rate
 	- increase how many artifacts you get per artifact-ore mined
 	- add passive artifact gain over time
-	- capstones: 
-		- auto-prestige when it's mathematically worth it
+		- grant funding: start each run with a % of the dollars earned during the previous run
+			- legacy: each prestige ever completed adds a permanent, stacking % to all sale value
+	- museum dividends: each unspent artifact held adds a % to all sale value (spend vs. hoard tension)
 - Progression
 	- Increase spawn odds of next tier of blocks in upper layers
 	- increase the spawn odds of all ores

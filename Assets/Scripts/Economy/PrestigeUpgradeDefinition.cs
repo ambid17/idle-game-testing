@@ -21,9 +21,6 @@ namespace Economy
     // or remove members freely, but never change an existing member's number or reuse a retired
     // one. New members take the next free number in their prefix's range.
     // PrestigeUpgradeDatabase.Validate() flags any asset whose name doesn't match its Effect.
-    // AutoPrestigeCapstone is the one deliberate exception left unconsumed: it's a
-    // purchasable/displayed flag with no auto-trigger, since "prestige when mathematically worth
-    // it" needs a real profitability projection that's out of scope for upgrade-application work.
     public enum PrestigeUpgradeEffect
     {
         // Mining 100-199
@@ -57,7 +54,13 @@ namespace Economy
         Prestige_ArtifactValueMultiplier = 401,
         // Passive artifact (currency) trickle - formerly a Prestige Points trickle.
         Prestige_PassiveArtifactRate = 402,
-        Prestige_AutoPrestigeCapstone = 403,
+        // 403 retired (was Prestige_AutoPrestigeCapstone, never implemented) - do not reuse.
+        // Each held (unspent) artifact adds a % bonus to all mineral/processed-good sale value.
+        Prestige_MuseumDividends = 404,
+        // Each new run starts with a % of the dollars earned during the previous run.
+        Prestige_GrantFunding = 405,
+        // Each prestige ever completed adds a permanent, stacking % bonus to all sale value.
+        Prestige_Legacy = 406,
 
         // Progression 500-599
         Progression_OreTierOddsBonus = 500,

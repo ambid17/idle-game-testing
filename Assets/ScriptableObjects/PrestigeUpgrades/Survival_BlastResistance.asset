@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Blast Plating
   Description: Increases resistance to explosive blast damage.
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: f61a0f82fceb2e946831f934fbcd1b6c, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8
   BaseCost: 30
