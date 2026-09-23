@@ -31,7 +31,7 @@
 
 ## Persistence & prestige
 - Save data per chunk: chunk index, mined cell coords (or a dense bit array if mostly mined), discovered artifact locations
-- On prestige: discard all chunk save data, generate a new seed, keep only the grid-width upgrade level (and any "keep passive layer bonus between prestiges" capstone state, which lives outside the grid)
+- On prestige: discard all chunk save data, generate a new seed, keep only the grid-width upgrade level
 
 ## Unity technical approach
 - **Rendering**: one `Tilemap` per loaded chunk (terrain + a fog overlay Tilemap), pooled and repositioned as the player/camera descends rather than instantiated fresh per chunk

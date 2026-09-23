@@ -46,7 +46,7 @@ namespace Economy
             prestigeCount++;
 
             UpgradeManager.Instance.ResetAllLevels();
-            LayerBonusTracker.Instance.ClearUnlessKept();
+            LayerBonusTracker.Instance.ResetForPrestige();
             // SetDollars rather than Add so the grant doesn't count toward the new run's earnings
             // (which would let Grant Funding compound on itself across prestiges).
             Wallet.Instance.SetDollars(grantFunding);

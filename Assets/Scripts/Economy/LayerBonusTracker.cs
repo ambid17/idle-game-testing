@@ -4,35 +4,23 @@ using UnityEngine;
 
 namespace Economy
 {
-    // GameDesignDoc "Passive upgrades": mining 50%/75%/95% of a layer's cells multiplies mined
-    // ore's value by 2x/4x/8x for the rest of that layer (DoublePassiveLayerBonus doubles those
-    // tiers further). Applied as bonus Dollars credited immediately when ore is mined (see
-    // PlayerMining.CollectMinedBlock) rather than a Depot/inventory rework, since Depot has no
-    // concept of which layer a stored ore came from. Reuses ChunkData.MinedCount (already tracked
-    // by MineWorld.TryMineCell) as the "how much of this layer is cleared" signal instead of a
-    // second parallel counter.
+    // GameDesignDoc "Passive upgrades": once the Economy_PassiveLayerBonus prestige perk is owned,
+    // mining 50%/75%/95% of a layer's cells multiplies mined ore's value by
+    // PrestigeUpgradeManager.PassiveLayerBonusPerTier once per threshold reached (e.g. 1.5x at 50%,
+    // 1.5^2x at 75%, 1.5^3x at 95%) for the rest of that layer. Applied as bonus Dollars credited
+    // immediately when ore is mined (see PlayerMining.CollectMinedBlock) rather than a
+    // Depot/inventory rework, since Depot has no concept of which layer a stored ore came from.
+    // Reuses ChunkData.MinedCount (already tracked by MineWorld.TryMineCell) as the "how much of
+    // this layer is cleared" signal instead of a second parallel counter.
     public class LayerBonusTracker : Singleton<LayerBonusTracker>
     {
         private static readonly float[] TierThresholds = { 0.5f, 0.75f, 0.95f };
-        private static readonly float[] TierMultipliers = { 2f, 4f, 8f };
 
-        // "Keep the passive layer bonus between prestiges" (PrestigeUpgradeEffect.Economy_KeepPassiveLayerBonus):
-        // remembers the highest tier a layer index ever reached, since the map (and every chunk's
-        // live MinedCount) is wiped on every prestige.
-        private readonly Dictionary<int, float> keptTierByLayer = new();
         private readonly Dictionary<int, float> lastNotifiedTierByLayer = new();
 
         public float CurrentTierMultiplier(int layerIndex)
         {
-            float liveTier = LiveTierMultiplier(layerIndex);
-            keptTierByLayer.TryGetValue(layerIndex, out float kept);
-            float tier = Mathf.Max(liveTier, kept);
-
-            if (tier > kept && PrestigeUpgradeManager.Instance != null && PrestigeUpgradeManager.Instance.KeepPassiveLayerBonusUnlocked)
-            {
-                keptTierByLayer[layerIndex] = tier;
-            }
-
+            float tier = LiveTierMultiplier(layerIndex);
             NotifyIfNewTier(layerIndex, tier);
             return tier;
         }
@@ -43,33 +31,33 @@ namespace Economy
             if (tier <= lastNotified) return;
 
             lastNotifiedTierByLayer[layerIndex] = tier;
-            if (tier > 1f) GameManager.EventService.Dispatch(new NotificationEvent($"Layer bonus: {tier:0.#}x!", NotificationUrgency.TimeSensitive));
+            if (tier > 1f) GameManager.EventService.Dispatch(new NotificationEvent($"Layer bonus: {tier:0.##}x!", NotificationUrgency.TimeSensitive));
         }
 
         private float LiveTierMultiplier(int layerIndex)
         {
+            float perTier = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.PassiveLayerBonusPerTier : 1f;
+            if (perTier <= 1f) return 1f;
+
             var world = GameManager.MapGenerationService != null ? GameManager.MapGenerationService.World : null;
             var chunk = world?.GetOrGenerateChunk(layerIndex);
             if (chunk == null || chunk.Width <= 0 || chunk.Height <= 0) return 1f;
 
             float minedFraction = (float)chunk.MinedCount / (chunk.Width * chunk.Height);
 
-            float tier = 1f;
-            for (int i = 0; i < TierThresholds.Length; i++)
+            int tiersReached = 0;
+            foreach (float threshold in TierThresholds)
             {
-                if (minedFraction >= TierThresholds[i]) tier = TierMultipliers[i];
+                if (minedFraction >= threshold) tiersReached++;
             }
 
-            bool doubled = PrestigeUpgradeManager.Instance != null && PrestigeUpgradeManager.Instance.DoublePassiveLayerBonusUnlocked;
-            return doubled ? tier * 2f : tier;
+            return Mathf.Pow(perTier, tiersReached);
         }
 
-        // Called by PrestigeManager.ExecutePrestige. Mirrors UpgradeManager.ResetAllLevels's
-        // "wipe unless a perk says otherwise" shape.
-        public void ClearUnlessKept()
+        // Called by PrestigeManager.ExecutePrestige - the map (and every chunk's MinedCount) is
+        // wiped on prestige, so the per-layer notification state has to be too.
+        public void ResetForPrestige()
         {
-            if (PrestigeUpgradeManager.Instance != null && PrestigeUpgradeManager.Instance.KeepPassiveLayerBonusUnlocked) return;
-            keptTierByLayer.Clear();
             lastNotifiedTierByLayer.Clear();
         }
     }

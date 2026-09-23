@@ -34,8 +34,8 @@ namespace Economy
         // Economy 200-299
         Economy_MineralValueMultiplier = 200,
         Economy_ProcessedGoodMultiplier = 201,
-        Economy_DoublePassiveLayerBonus = 202,
-        Economy_KeepPassiveLayerBonus = 203,
+        Economy_PassiveLayerBonus = 202,
+        // 203 - was used for keeping the passive layer bonus between prestiges
 
         // Idle 300-399
         // GameDesignDoc "Prestige > idle > auto miner" lists 4 kept-tier perks (count, speed, dig

@@ -178,9 +178,7 @@ The map will regenerate, all of your dug tunnels will be gone. All of your money
 		- need to balance with processing recipes
 - Economy
 	- mineral value multiplier
-		- capstones: 
-			- double the passive layer bonus
-			- keep the passive layer bonus between prestiges
+		- capstone: passive layer bonus - clearing 50%/75%/95% of a layer each multiply its ore value by 1.5x (1.5^3x at 95%)
 	- processing
 		- processed good production multiplier
 - idle

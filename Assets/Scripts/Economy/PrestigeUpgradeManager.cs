@@ -171,10 +171,10 @@ namespace Economy
         public float FallingRockResistance => LevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance);
         public float LavaResistance => LevelOf(PrestigeUpgradeEffect.Survival_LavaResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_LavaResistance);
 
-        // GameDesignDoc "Prestige > Economy" capstones on the passive layer bonus (see
-        // Economy.LayerBonusTracker for the base mechanic these modify).
-        public bool DoublePassiveLayerBonusUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Economy_DoublePassiveLayerBonus);
-        public bool KeepPassiveLayerBonusUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Economy_KeepPassiveLayerBonus);
+        // GameDesignDoc "Prestige > Economy": the passive layer bonus itself. Ore value multiplier
+        // applied once per clear-threshold tier reached (see Economy.LayerBonusTracker) - 1 (no
+        // bonus) until purchased.
+        public float PassiveLayerBonusPerTier => 1f + LevelOf(PrestigeUpgradeEffect.Economy_PassiveLayerBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_PassiveLayerBonus);
 
         // GameDesignDoc "Prestige > Mining": keep "digging while flying" between prestige runs.
         public bool KeepDigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_KeepDigWhileFlying);

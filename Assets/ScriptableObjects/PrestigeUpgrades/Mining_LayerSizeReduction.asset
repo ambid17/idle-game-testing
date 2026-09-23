@@ -16,9 +16,9 @@ MonoBehaviour:
   Description: Reduces the vertical size of each layer, letting you reach deeper
     layers faster.
   Icon: {fileID: 21300000, guid: 9ca4727e10b73094f96355ca860a228b, type: 3}
-  EffectValuePerLevel: 0.05
+  EffectValuePerLevel: 1
   MaxLevel: 5
-  BaseCost: 80
+  BaseCost: 5
   CostGrowth: 1.5
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: e2d6b7b4034a31b4681479ba1b0ffd2f, type: 2}
