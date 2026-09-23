@@ -24,7 +24,7 @@
 	- Second pass places artifacts: guarantee at least 1 per layer (reserve a random valid cell if none rolled organically), plus a bonus chance that increases with depth
 	- Hazard/power-up blocks (treasure chest, explosive, falling rocks, gas pocket, etc.) are their own weighted pass layered over the dirt/ore result, not competing slots in the ore table
 2. Mining a cell sets its mined flag — the only thing that needs to be written to save data for that cell
-3. Fog-of-war reveal is a flood-fill outward from mined cells by a radius (base radius at Lantern tier 0, extended by the Lantern upgrade tree; "true sight" capstone reveals the whole loaded chunk)
+3. Fog-of-war reveal is a flood-fill outward from mined cells by a radius (base radius at Lantern tier 0, extended by the Lantern upgrade tree; the "true sight" prestige perk reveals the whole loaded chunk)
 
 ## Idle/offline simulation
 - Automated miners must run the *same* generation + mining logic when the game is closed, not a separate approximation — the generation function needs to be callable headless (no rendering) so miner progress can be fast-forwarded across many layers between sessions

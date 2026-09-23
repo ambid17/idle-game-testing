@@ -87,9 +87,6 @@ namespace Economy
         // GameDesignDoc "Mining > Lantern": extra fog-of-war reveal radius on top of the base.
         public int LanternFogRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Mining_LanternRadius) * EffectValuePerLevelOf(UpgradeEffect.Mining_LanternRadius));
 
-        // GameDesignDoc "Lantern capstones > true sight: reveals all fog of war".
-        public bool TrueSightUnlocked => IsMaxedEffect(UpgradeEffect.Mining_TrueSight);
-
         // GameDesignDoc "Lantern capstones > zoom, enhance": additive camera zoom-out, combined
         // with PrestigeUpgradeManager.CameraZoomBonus by CameraZoomController.
         public float CameraZoomBonus => LevelOf(UpgradeEffect.Mining_CameraZoom) * EffectValuePerLevelOf(UpgradeEffect.Mining_CameraZoom);

@@ -88,7 +88,7 @@ Set the new asset's `Prerequisite` field to another `UpgradeDefinition`/`Prestig
 
 Two gating modes, both handled for you by `UpgradeManagerBase.IsUnlocked`:
 - **Normal prerequisite** (default): unlocked once the prerequisite has *any* purchased level.
-- **Capstone gate**: set `RequirePrerequisiteMaxed = true` to require the prerequisite fully maxed first - use this for the "tree branch" capstone nodes (e.g. `Mining_TrueSight`, `Mining_CameraZoom`).
+- **Capstone gate**: set `RequirePrerequisiteMaxed = true` to require the prerequisite fully maxed first - use this for the "tree branch" capstone nodes (e.g. `Mining_CameraZoom`, gated on a maxed Lantern).
 
 Leave `Prerequisite` empty for a branch's first tier. Nothing else needs to change for prerequisites - `MarketSkillTreeSource`/`MuseumSkillTreeSource` (`Assets/Scripts/UI/SkillTree/`) link the visual tree edges automatically off this field, and `CanPurchase`/`GetPurchaseBlockedReason` already enforce it.
 

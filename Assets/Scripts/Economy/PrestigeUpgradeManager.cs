@@ -171,6 +171,10 @@ namespace Economy
         // GameDesignDoc "Prestige > Mining": keep "digging while flying" between prestige runs.
         public bool KeepDigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_KeepDigWhileFlying);
 
+        // GameDesignDoc "Prestige > Mining > true sight": reveals all fog of war - read by
+        // MapGenerationService.GetFogRevealRadius.
+        public bool TrueSightUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_TrueSight);
+
         // Gameplay-effect flag for a capstone: applied (post-prestige) level only. Distinct from the
         // base class's IsMaxed, which now also counts not-yet-applied queued levels for
         // purchase-gating/UI purposes (see PurchaseLevel override above) - a queued-but-uncommitted

@@ -31,6 +31,8 @@ namespace Economy
         Mining_KeepDigWhileFlying = 101,
         Mining_CameraZoomBonus = 102,
         Mining_LayerSizeReduction = 103,
+        // GameDesignDoc "Prestige > Mining > true sight": reveals all fog of war.
+        Mining_TrueSight = 104,
 
         // Economy 200-299
         Economy_MineralValueMultiplier = 200,

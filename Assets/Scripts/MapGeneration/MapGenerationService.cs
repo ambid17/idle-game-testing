@@ -276,11 +276,11 @@ namespace MapGeneration
         }
 
         // GameDesignDoc "Market Upgrades > Mining > Lantern": base radius plus purchased levels,
-        // or the whole chunk width once the "true sight" capstone is unlocked.
+        // or the whole chunk width once the "true sight" prestige perk is unlocked.
         private int GetFogRevealRadius()
         {
+            if (PrestigeUpgradeManager.Instance.TrueSightUnlocked) return mapGenerationConfig.GridWidth;
             var upgrades = UpgradeManager.Instance;
-            if (upgrades != null && upgrades.TrueSightUnlocked) return mapGenerationConfig.GridWidth;
             return baseFogRevealRadius + (upgrades != null ? upgrades.LanternFogRadiusBonus : 0);
         }
 

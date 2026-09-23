@@ -53,7 +53,7 @@ namespace Economy
         // Drives UpgradeManager.InstantMineScrapAlloy.
         Mining_ScrapAlloyInstaMine = 307,
         Mining_Speed = 305,
-        Mining_TrueSight = 306,
+        // 306 retired (was Mining_TrueSight, moved to PrestigeUpgradeEffect) - never reuse.
 
         // Movement 400-499
         Movement_FallDamageReduction = 400,

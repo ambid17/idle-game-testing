@@ -9,17 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
+  m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
   m_Name: Mining_TrueSight
-  m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: True Sight
-  Description: Reveals the entire fog of war. Requires a maxed-out Lantern.
+  Description: Permanently reveals the entire fog of war. Requires Grid Expansion.
   Icon: {fileID: 21300000, guid: 952a65bc8131a934c82b24ee626404a4, type: 3}
   EffectValuePerLevel: 0
   MaxLevel: 1
-  BaseCost: 5000
+  BaseCost: 25
   CostGrowth: 1
-  RequirePrerequisiteMaxed: 1
-  Prerequisite: {fileID: 11400000, guid: eb6a7263731ab1842827c642d624a422, type: 2}
+  RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 9c12a8b77eba121429961eaa11828ad2, type: 2}
   Branch: 0
-  Effect: 306
+  Effect: 104

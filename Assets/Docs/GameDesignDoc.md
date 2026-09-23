@@ -121,7 +121,6 @@ Upgrades will be a skill tree that fans out and requires the player to unlock th
 		- you start out only being able to see the blocks adjacent to your mine shaft
 		- the lantern reveals the "fog of war" and enables you to see deeper into the dirt to find minerals and plan a route
 		- capstones: 
-			- true sight: reveals all fog of war
 			- zoom, enhance: zooms the camera out to reveal more of the map
 			- hazard sense: highlights hazard blocks
 	- Enable digging while flying
@@ -173,6 +172,7 @@ The map will regenerate, all of your dug tunnels will be gone. All of your money
 - Mining:
 	- view: zooms out the camera a certain percentage to view more of the mineable area
 	- Increase grid size: this will add width to the horizontal grid generation
+		- true sight: reveals all fog of war
 	- keep "digging while flying" upgrade between prestige runs
 	- adjust layer sizes: smaller layers let you get deeper faster
 		- need to balance with processing recipes
