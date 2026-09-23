@@ -92,6 +92,7 @@ namespace MapGeneration
             streamingManager.Initialize(World);
             UpdateBoundaryWalls();
             RebuildSurfaceFloorSegments();
+            GameManager.EventService.Dispatch(new GridWidthChangedEvent(World.GridWidth));
         }
 
         private void CreateBoundaryWalls()
@@ -361,6 +362,7 @@ namespace MapGeneration
             World.SetGridWidth(newGridWidth);
             UpdateBoundaryWalls();
             RebuildSurfaceFloorSegments();
+            GameManager.EventService.Dispatch(new GridWidthChangedEvent(newGridWidth));
         }
     }
 }

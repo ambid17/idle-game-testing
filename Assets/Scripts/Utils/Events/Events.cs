@@ -452,6 +452,19 @@ namespace Events
         }
     }
 
+    // Dispatched by MapGenerationService whenever World.GridWidth is (re)applied after startup -
+    // the grid-width prestige perk committing on prestige, or a save restore - so width-dependent
+    // scene objects (e.g. CameraBoundsController) can resize to match.
+    public class GridWidthChangedEvent : IEvent
+    {
+        public int NewGridWidth;
+
+        public GridWidthChangedEvent(int newGridWidth)
+        {
+            NewGridWidth = newGridWidth;
+        }
+    }
+
     public class PrestigePurchaseRequestedEvent : IEvent
     {
         public PrestigeUpgradeDefinition Definition;
