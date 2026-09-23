@@ -26,7 +26,7 @@ namespace Economy
         // Mining 100-199
         Mining_GridWidthBonus = 100,
         Mining_KeepDigWhileFlying = 101,
-        Mining_CameraZoomBonus = 102,
+        // 102 - was used For camera zoom,
         Mining_LayerSizeReduction = 103,
         // GameDesignDoc "Prestige > Mining > true sight": reveals all fog of war.
         Mining_TrueSight = 104,

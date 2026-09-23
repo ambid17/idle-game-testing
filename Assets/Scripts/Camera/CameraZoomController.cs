@@ -31,7 +31,6 @@ namespace CameraControl
         {
             GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradeChanged);
             GameManager.EventService.Add<UpgradeLoadedEvent>(OnUpgradeLoaded);
-            GameManager.EventService.Add<PrestigeUpgradePurchasedEvent>(OnPrestigeUpgradeChanged);
             ApplyZoom();
         }
 
@@ -39,7 +38,6 @@ namespace CameraControl
         {
             GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradeChanged);
             GameManager.EventService.Remove<UpgradeLoadedEvent>(OnUpgradeLoaded);
-            GameManager.EventService.Remove<PrestigeUpgradePurchasedEvent>(OnPrestigeUpgradeChanged);
         }
 
         private void OnUpgradeChanged(UpgradePurchasedEvent evt)
@@ -52,17 +50,12 @@ namespace CameraControl
             if (evt.Definition.Effect == UpgradeEffect.Mining_CameraZoom) ApplyZoom();
         }
 
-        private void OnPrestigeUpgradeChanged(PrestigeUpgradePurchasedEvent evt)
-        {
-            if (evt.Definition.Effect == PrestigeUpgradeEffect.Mining_CameraZoomBonus) ApplyZoom();
-        }
 
         private void ApplyZoom()
         {
             float marketBonus = UpgradeManager.Instance != null ? UpgradeManager.Instance.CameraZoomBonus : 0f;
-            float prestigeBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.CameraZoomBonus : 0f;
 
-            cinemachineCamera.CameraDistance = baseDistance + marketBonus + prestigeBonus;
+            cinemachineCamera.CameraDistance = baseDistance + marketBonus ;
         }
     }
 }
