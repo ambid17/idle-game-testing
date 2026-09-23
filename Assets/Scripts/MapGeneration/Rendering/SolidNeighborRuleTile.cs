@@ -17,5 +17,14 @@ namespace MapGeneration.Rendering
             if (neighbor == AnySolid) return tile != null && tile != this;
             return base.RuleMatch(neighbor, tile);
         }
+
+        // Bleed art is purely cosmetic and sits in mined (walkable) cells, so it must never collide.
+        // Forced here rather than trusting each rule's m_ColliderType, since new TilingRules default
+        // to Sprite and would trace a different collider from every combo sprite's soft alpha edge.
+        public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
+        {
+            base.GetTileData(position, tilemap, ref tileData);
+            tileData.colliderType = Tile.ColliderType.None;
+        }
     }
 }

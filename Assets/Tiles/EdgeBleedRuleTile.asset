@@ -24,7 +24,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000030000000300000003000000
@@ -42,7 +42,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -59,7 +59,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -76,7 +76,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -93,7 +93,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -110,7 +110,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -127,7 +127,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -144,7 +144,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -161,7 +161,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -178,7 +178,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -194,7 +194,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -210,7 +210,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -226,7 +226,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -242,7 +242,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -258,7 +258,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -274,7 +274,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -291,7 +291,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -308,7 +308,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -325,7 +325,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -342,7 +342,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -358,7 +358,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -374,7 +374,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -390,7 +390,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -406,7 +406,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -422,7 +422,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -438,7 +438,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -454,7 +454,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -470,7 +470,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000
@@ -485,7 +485,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000
@@ -500,7 +500,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000
@@ -515,7 +515,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000
@@ -530,7 +530,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000030000000300000003000000
@@ -548,7 +548,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -565,7 +565,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -582,7 +582,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -599,7 +599,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 030000000300000003000000
@@ -616,7 +616,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -632,7 +632,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -648,7 +648,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -664,7 +664,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -680,7 +680,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -696,7 +696,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 0300000003000000
@@ -712,7 +712,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000
@@ -727,7 +727,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000
@@ -742,7 +742,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000
@@ -757,7 +757,7 @@ MonoBehaviour:
     m_MaxAnimationSpeed: 1
     m_PerlinScale: 0.5
     m_Output: 0
-    m_ColliderType: 1
+    m_ColliderType: 0
     m_RandomTransform: 0
     m_Scroll: {x: 0.5, y: 0.5}
     m_Neighbors: 03000000
