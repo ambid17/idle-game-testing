@@ -30,7 +30,7 @@ namespace Player
         // and fully absorb a hit instead of it reducing CurrentHp.
         public int CurrentShieldCharges { get; private set; }
         private float shieldRegenTimer;
-        private int MaxShieldCharges => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.ShieldChargeCount : 0;
+        private int MaxShieldCharges => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Survival_ShieldChargeCount : 0;
 
         private void Awake()
         {

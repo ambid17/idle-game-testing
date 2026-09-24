@@ -42,7 +42,7 @@ namespace Economy
 
             // Grant Funding reads the just-committed level, so a perk queued this run already pays
             // out on this prestige. Computed before the dollar reset below wipes the run's totals.
-            double grantFunding = Wallet.Instance.DollarsEarnedThisRun * PrestigeUpgradeManager.Instance.GrantFundingFraction;
+            double grantFunding = Wallet.Instance.DollarsEarnedThisRun * PrestigeUpgradeManager.Instance.Prestige_GrantFundingFraction;
             prestigeCount++;
 
             UpgradeManager.Instance.ResetAllLevels();
@@ -58,7 +58,7 @@ namespace Economy
 
             // Apply the grid-width perk against the un-upgraded base, not the current (already
             // widened) World.GridWidth, so the bonus never compounds across prestiges.
-            int newGridWidth = mapGenerationService.BaseGridWidth + PrestigeUpgradeManager.Instance.GridWidthBonus;
+            int newGridWidth = mapGenerationService.BaseGridWidth + PrestigeUpgradeManager.Instance.Mining_GridWidthBonus;
             mapGenerationService.ApplyGridWidthUpgrade(newGridWidth);
             mapGenerationService.PrestigeReset(newSeed);
 

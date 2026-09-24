@@ -37,7 +37,7 @@ namespace MapGeneration
             var nextLayerConfig = layerConfigProvider != null ? layerConfigProvider.GetConfig(evt.LayerIndex + 1) : null;
             if (nextLayerConfig == null || nextLayerConfig.OreTable.Count == 0) return;
 
-            float effectiveness = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.PowerUpEffectivenessBonus : 0f;
+            float effectiveness = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Progression_PowerUpEffectivenessBonus : 0f;
             int count = Mathf.Max(1, Mathf.RoundToInt(treasureChestBaseOreCount * (1f + effectiveness)));
 
             var rng = new System.Random();
@@ -77,7 +77,7 @@ namespace MapGeneration
         {
             if (mapGenerationService == null) return;
 
-            float effectiveness = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.PowerUpEffectivenessBonus : 0f;
+            float effectiveness = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Progression_PowerUpEffectivenessBonus : 0f;
             int radius = Mathf.Max(1, Mathf.RoundToInt(sightPotionBaseRevealRadius * (1f + effectiveness)));
             mapGenerationService.RevealAround(evt.LayerIndex, evt.X, evt.Y, radius);
 

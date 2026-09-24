@@ -25,7 +25,7 @@ namespace Player
         private OreInventory oreInventory;
 
         // GameDesignDoc "Market Upgrades > Economy > Inventory": each level adds carrying capacity.
-        public float MaxWeight => baseMaxWeight + UpgradeManager.Instance.InventoryCapacityBonus;
+        public float MaxWeight => baseMaxWeight + UpgradeManager.Instance.Economy_InventoryCapacityBonus;
         public float CurrentWeight => oreInventory.CurrentWeight;
         public bool IsFull => oreInventory.IsFull;
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreInventory.OreCounts;

@@ -50,7 +50,7 @@ namespace UI
             else countLabel.text = count.ToString();
 
             var blockValue = blockType.Value;
-            var totalValue = blockValue * UpgradeManager.Instance.SellValueMultiplier * count;
+            var totalValue = blockValue * UpgradeManager.Instance.Economy_SellValueMultiplier * count;
             if (valueAnimator != null) valueAnimator.SetValue(totalValue);
             else valueLabel.text = $"${totalValue:0}";
 

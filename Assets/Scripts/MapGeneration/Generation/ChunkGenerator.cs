@@ -29,7 +29,7 @@ namespace MapGeneration
         private static readonly (int dx, int dy)[] OrthogonalNeighbors = { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
         // layerHeight is the caller-resolved effective height (authored LayerConfig.LayerHeight
-        // minus PrestigeUpgradeManager.LayerSizeReduction) - ChunkGenerator stays pure/headless
+        // minus PrestigeUpgradeManager.Mining_LayerSizeReduction) - ChunkGenerator stays pure/headless
         // (see class doc) so it can't read the singleton itself. artifactSpawnRateMultiplier,
         // oreTierOddsBonus, and powerUpSpawnRateBonus are likewise resolved by the caller.
         public static ChunkData Generate(int worldSeed, int layerIndex, int gridWidth, LayerConfig config, int layerHeight, float artifactSpawnRateMultiplier = 1f, float oreTierOddsBonus = 0f, float powerUpSpawnRateBonus = 0f)

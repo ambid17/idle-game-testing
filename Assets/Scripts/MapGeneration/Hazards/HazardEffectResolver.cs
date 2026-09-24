@@ -97,7 +97,7 @@ namespace MapGeneration
         {
             if (Wallet.Instance == null || UpgradeManager.Instance == null || PrestigeUpgradeManager.Instance == null) return;
 
-            double value = blockType.Value * UpgradeManager.Instance.SellValueMultiplier * PrestigeUpgradeManager.Instance.MineralValueMultiplier * PrestigeUpgradeManager.Instance.IncomeMultiplier;
+            double value = blockType.Value * UpgradeManager.Instance.Economy_SellValueMultiplier * PrestigeUpgradeManager.Instance.Economy_MineralValueMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier;
             Wallet.Instance.Add(value);
         }
 

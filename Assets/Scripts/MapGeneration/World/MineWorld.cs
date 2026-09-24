@@ -29,9 +29,9 @@ namespace MapGeneration
 
             var config = configProvider != null ? configProvider.GetConfig(layerIndex) : null;
             int layerHeight = configProvider != null ? configProvider.GetEffectiveLayerHeight(layerIndex) : (config != null ? config.LayerHeight : 0);
-            float artifactSpawnRateMultiplier = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.ArtifactSpawnRateMultiplier : 1f;
-            float oreTierOddsBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.OreTierOddsBonus : 0f;
-            float powerUpSpawnRateBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.PowerUpSpawnRateBonus : 0f;
+            float artifactSpawnRateMultiplier = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Prestige_ArtifactSpawnRateMultiplier : 1f;
+            float oreTierOddsBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Progression_OreTierOddsBonus : 0f;
+            float powerUpSpawnRateBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Progression_PowerUpSpawnRateBonus : 0f;
             chunk = ChunkGenerator.Generate(Seed, layerIndex, GridWidth, config, layerHeight, artifactSpawnRateMultiplier, oreTierOddsBonus, powerUpSpawnRateBonus);
             chunksByLayer[layerIndex] = chunk;
             return chunk;

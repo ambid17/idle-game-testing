@@ -52,7 +52,7 @@ namespace UI
             else countLabel.text = count.ToString();
 
             var saleValue = recipe.SaleValue;
-            var totalValue = saleValue * UpgradeManager.Instance.ProcessingGoodsSellMultiplier * count;
+            var totalValue = saleValue * UpgradeManager.Instance.Processing_GoodsSellMultiplier * count;
             if (valueAnimator != null) valueAnimator.SetValue(totalValue);
             else valueLabel.text = $"${totalValue:0}";
 

@@ -54,7 +54,7 @@ namespace MapGeneration
         public MineWorld World { get; private set; }
 
         // The un-upgraded default width, used by PrestigeManager.ExecutePrestige to recompute the
-        // absolute width (base + PrestigeUpgradeManager.GridWidthBonus) on every prestige, rather
+        // absolute width (base + PrestigeUpgradeManager.Mining_GridWidthBonus) on every prestige, rather
         // than compounding bonuses onto whatever World.GridWidth already grew to.
         public int BaseGridWidth => mapGenerationConfig.GridWidth;
 
@@ -280,9 +280,9 @@ namespace MapGeneration
         // or the whole chunk width once the "true sight" prestige perk is unlocked.
         private int GetFogRevealRadius()
         {
-            if (PrestigeUpgradeManager.Instance.TrueSightUnlocked) return mapGenerationConfig.GridWidth;
+            if (PrestigeUpgradeManager.Instance.Mining_TrueSightUnlocked) return mapGenerationConfig.GridWidth;
             var upgrades = UpgradeManager.Instance;
-            return baseFogRevealRadius + (upgrades != null ? upgrades.LanternFogRadiusBonus : 0);
+            return baseFogRevealRadius + (upgrades != null ? upgrades.Mining_LanternFogRadiusBonus : 0);
         }
 
         // Inverts ChunkTilemapView's cell->world placement (pos = (x, -y) within a chunk root

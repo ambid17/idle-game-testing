@@ -47,10 +47,10 @@ namespace Economy
         Mining_BaseInstaMineChance = 301,
         // "Lantern capstones > zoom, enhance" - drives CameraControl.CameraZoomController.
         Mining_CameraZoom = 302,
-        // Drives UpgradeManager.InstantMineDirt.
+        // Drives UpgradeManager.Mining_InstantMineDirt.
         Mining_DirtInstaMine = 303,
         Mining_LanternRadius = 304,
-        // Drives UpgradeManager.InstantMineScrapAlloy.
+        // Drives UpgradeManager.Mining_InstantMineScrapAlloy.
         Mining_ScrapAlloyInstaMine = 307,
         Mining_Speed = 305,
         // 306 retired (was Mining_TrueSight, moved to PrestigeUpgradeEffect) - never reuse.

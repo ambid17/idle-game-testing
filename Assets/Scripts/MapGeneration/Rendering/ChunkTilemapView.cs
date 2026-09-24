@@ -203,7 +203,7 @@ namespace MapGeneration
             var tile = blockType != null ? blockType.Tile : null;
 
             bool highlightHazard = cell.Revealed && blockType != null && blockType.Category == BlockCategory.Hazard
-                && UpgradeManager.Instance != null && UpgradeManager.Instance.HazardSenseUnlocked;
+                && UpgradeManager.Instance != null && UpgradeManager.Instance.Movement_HazardSenseUnlocked;
 
             return new TileChangeData(pos, tile, highlightHazard ? hazardSenseTint : Color.white, Matrix4x4.identity);
         }

@@ -108,80 +108,80 @@ namespace Economy
             queuedLevels.Clear();
         }
 
-        // GameDesignDoc "Prestige > Mining > Increase grid size": added to the base grid width in
-        // MapGenerationService before every prestige's map regeneration.
-        public int GridWidthBonus => Mathf.RoundToInt(LevelOf(PrestigeUpgradeEffect.Mining_GridWidthBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Mining_GridWidthBonus));
-
-        // GameDesignDoc "Prestige > Mining > adjust layer sizes": subtracted from LayerConfig's
-        // authored LayerHeight once per prestige, for not-yet-generated layers only.
-        public float LayerSizeReduction => LevelOf(PrestigeUpgradeEffect.Mining_LayerSizeReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Mining_LayerSizeReduction);
-
         // GameDesignDoc "Prestige > Economy": mineral value multiplier.
-        public float MineralValueMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Economy_MineralValueMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_MineralValueMultiplier);
-
-        // GameDesignDoc "Prestige > Economy > processing": processed good production multiplier.
-        public float ProcessedGoodMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Economy_ProcessedGoodMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_ProcessedGoodMultiplier);
-
-        // GameDesignDoc "Prestige > idle": the purchased level of each "keep tier" perk directly
-        // *is* the kept baseline UpgradeManager adds back to the matching Market effect after a
-        // reset (level 2 owned = Market upgrade starts at effective level 2), not a multiplier.
-        public int KeptAutomatonCountBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonCount);
-        public int KeptAutomatonMiningSpeedBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMiningSpeed);
-        public int KeptAutomatonMiningRadiusBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMiningRadius);
-        public int KeptAutomatonMoveSpeedBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMoveSpeed);
-
-        // GameDesignDoc "Prestige > Prestige": artifact spawn rate / value-per-mine / passive gain.
-        public float ArtifactSpawnRateMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Prestige_ArtifactSpawnRateMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_ArtifactSpawnRateMultiplier);
-        // How many artifacts a single artifact-ore mine grants - see Wallet.AddArtifact.
-        public float ArtifactValueMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier);
-        // Artifacts per minute, passively - see PassivePrestigeIncomeTicker.
-        public float PassiveArtifactRate => LevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate);
-
-        // Museum Dividends: +EffectValuePerLevel per level, per artifact currently held (unspent) -
-        // read live, so spending artifacts in the Museum immediately lowers it. Creates a
-        // spend-vs-hoard tension on the Museum currency.
-        public float MuseumDividendsMultiplier => 1f + Wallet.Instance.ArtifactCount * LevelOf(PrestigeUpgradeEffect.Prestige_MuseumDividends) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_MuseumDividends);
-
-        // Legacy: +EffectValuePerLevel per level, per prestige ever completed (counting prestiges
-        // from before the perk was bought).
-        public float LegacyMultiplier => 1f + PrestigeManager.Instance.PrestigeCount * LevelOf(PrestigeUpgradeEffect.Prestige_Legacy) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_Legacy);
-
-        // Combined Prestige-branch income bonus, applied on top of MineralValueMultiplier /
-        // ProcessedGoodMultiplier to every ore and processed-good sale.
-        public float IncomeMultiplier => MuseumDividendsMultiplier * LegacyMultiplier;
-
-        // Grant Funding: fraction of the previous run's total dollars earned that the next run
-        // starts with - applied once by PrestigeManager.ExecutePrestige.
-        public float GrantFundingFraction => LevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding);
-
-        // GameDesignDoc "Prestige > Progression".
-        public float OreTierOddsBonus => LevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus);
-        public float PowerUpEffectivenessBonus => LevelOf(PrestigeUpgradeEffect.Progression_PowerUpEffectivenessBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_PowerUpEffectivenessBonus);
-        public float PowerUpSpawnRateBonus => LevelOf(PrestigeUpgradeEffect.Progression_PowerUpSpawnRateBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_PowerUpSpawnRateBonus);
-
-        // GameDesignDoc "Prestige > Survival".
-        public int ShieldChargeCount => LevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount);
-        public float MoveSpeedBonus => LevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus);
-        public float FallDamageReduction => LevelOf(PrestigeUpgradeEffect.Survival_FallDamageReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallDamageReduction);
-        public float GasResistance => LevelOf(PrestigeUpgradeEffect.Survival_GasResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_GasResistance);
-
-        // Deepened hazards pass: one resistance perk each for the other 3 hazards that now do more
-        // than flat proximity damage (Explosive/FallingRock/Lava), same shape as GasResistance.
-        public float BlastResistance => LevelOf(PrestigeUpgradeEffect.Survival_BlastResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_BlastResistance);
-        public float FallingRockResistance => LevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance);
-        public float LavaResistance => LevelOf(PrestigeUpgradeEffect.Survival_LavaResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_LavaResistance);
+        public float Economy_MineralValueMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Economy_MineralValueMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_MineralValueMultiplier);
 
         // GameDesignDoc "Prestige > Economy": the passive layer bonus itself. Ore value multiplier
         // applied once per clear-threshold tier reached (see Economy.LayerBonusTracker) - 1 (no
         // bonus) until purchased.
-        public float PassiveLayerBonusPerTier => 1f + LevelOf(PrestigeUpgradeEffect.Economy_PassiveLayerBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_PassiveLayerBonus);
+        public float Economy_PassiveLayerBonusPerTier => 1f + LevelOf(PrestigeUpgradeEffect.Economy_PassiveLayerBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_PassiveLayerBonus);
+
+        // GameDesignDoc "Prestige > Economy > processing": processed good production multiplier.
+        public float Economy_ProcessedGoodMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Economy_ProcessedGoodMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_ProcessedGoodMultiplier);
+
+        // GameDesignDoc "Prestige > idle": the purchased level of each "keep tier" perk directly
+        // *is* the kept baseline UpgradeManager adds back to the matching Market effect after a
+        // reset (level 2 owned = Market upgrade starts at effective level 2), not a multiplier.
+        public int Idle_KeptAutomatonCountBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonCount);
+        public int Idle_KeptAutomatonMiningRadiusBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMiningRadius);
+        public int Idle_KeptAutomatonMiningSpeedBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMiningSpeed);
+        public int Idle_KeptAutomatonMoveSpeedBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMoveSpeed);
 
         // GameDesignDoc "Prestige > Mining": keep "digging while flying" between prestige runs.
-        public bool DigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_DigWhileFlyingUnlock);
+        public bool Mining_DigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_DigWhileFlyingUnlocked);
+
+        // GameDesignDoc "Prestige > Mining > Increase grid size": added to the base grid width in
+        // MapGenerationService before every prestige's map regeneration.
+        public int Mining_GridWidthBonus => Mathf.RoundToInt(LevelOf(PrestigeUpgradeEffect.Mining_GridWidthBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Mining_GridWidthBonus));
+
+        // GameDesignDoc "Prestige > Mining > adjust layer sizes": subtracted from LayerConfig's
+        // authored LayerHeight once per prestige, for not-yet-generated layers only.
+        public float Mining_LayerSizeReduction => LevelOf(PrestigeUpgradeEffect.Mining_LayerSizeReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Mining_LayerSizeReduction);
 
         // GameDesignDoc "Prestige > Mining > true sight": reveals all fog of war - read by
         // MapGenerationService.GetFogRevealRadius.
-        public bool TrueSightUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_TrueSight);
+        public bool Mining_TrueSightUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_TrueSight);
+
+        // GameDesignDoc "Prestige > Prestige": artifact spawn rate / value-per-mine / passive gain.
+        public float Prestige_ArtifactSpawnRateMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Prestige_ArtifactSpawnRateMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_ArtifactSpawnRateMultiplier);
+        // How many artifacts a single artifact-ore mine grants - see Wallet.AddArtifact.
+        public float Prestige_ArtifactValueMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier);
+
+        // Grant Funding: fraction of the previous run's total dollars earned that the next run
+        // starts with - applied once by PrestigeManager.ExecutePrestige.
+        public float Prestige_GrantFundingFraction => LevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding);
+
+        // Combined Prestige-branch income bonus, applied on top of Economy_MineralValueMultiplier /
+        // Economy_ProcessedGoodMultiplier to every ore and processed-good sale.
+        public float Prestige_IncomeMultiplier => Prestige_MuseumDividendsMultiplier * Prestige_LegacyMultiplier;
+
+        // Legacy: +EffectValuePerLevel per level, per prestige ever completed (counting prestiges
+        // from before the perk was bought).
+        public float Prestige_LegacyMultiplier => 1f + PrestigeManager.Instance.PrestigeCount * LevelOf(PrestigeUpgradeEffect.Prestige_Legacy) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_Legacy);
+
+        // Museum Dividends: +EffectValuePerLevel per level, per artifact currently held (unspent) -
+        // read live, so spending artifacts in the Museum immediately lowers it. Creates a
+        // spend-vs-hoard tension on the Museum currency.
+        public float Prestige_MuseumDividendsMultiplier => 1f + Wallet.Instance.ArtifactCount * LevelOf(PrestigeUpgradeEffect.Prestige_MuseumDividends) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_MuseumDividends);
+
+        // Artifacts per minute, passively - see PassivePrestigeIncomeTicker.
+        public float Prestige_PassiveArtifactRate => LevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate);
+
+        // GameDesignDoc "Prestige > Progression".
+        public float Progression_OreTierOddsBonus => LevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus);
+        public float Progression_PowerUpEffectivenessBonus => LevelOf(PrestigeUpgradeEffect.Progression_PowerUpEffectivenessBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_PowerUpEffectivenessBonus);
+        public float Progression_PowerUpSpawnRateBonus => LevelOf(PrestigeUpgradeEffect.Progression_PowerUpSpawnRateBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_PowerUpSpawnRateBonus);
+
+        // GameDesignDoc "Prestige > Survival". Blast/FallingRock/Lava resistances come from the
+        // deepened hazards pass: one resistance perk each for the other 3 hazards that do more than
+        // flat proximity damage, same shape as Survival_GasResistance.
+        public float Survival_BlastResistance => LevelOf(PrestigeUpgradeEffect.Survival_BlastResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_BlastResistance);
+        public float Survival_FallDamageReduction => LevelOf(PrestigeUpgradeEffect.Survival_FallDamageReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallDamageReduction);
+        public float Survival_FallingRockResistance => LevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance);
+        public float Survival_GasResistance => LevelOf(PrestigeUpgradeEffect.Survival_GasResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_GasResistance);
+        public float Survival_LavaResistance => LevelOf(PrestigeUpgradeEffect.Survival_LavaResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_LavaResistance);
+        public float Survival_MoveSpeedBonus => LevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus);
+        public int Survival_ShieldChargeCount => LevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount);
 
         // Gameplay-effect flag for a capstone: applied (post-prestige) level only. Distinct from the
         // base class's IsMaxed, which now also counts not-yet-applied queued levels for

@@ -53,7 +53,7 @@ namespace CameraControl
 
         private void ApplyZoom()
         {
-            float marketBonus = UpgradeManager.Instance != null ? UpgradeManager.Instance.CameraZoomBonus : 0f;
+            float marketBonus = UpgradeManager.Instance != null ? UpgradeManager.Instance.Mining_CameraZoomBonus : 0f;
 
             cinemachineCamera.CameraDistance = baseDistance + marketBonus ;
         }

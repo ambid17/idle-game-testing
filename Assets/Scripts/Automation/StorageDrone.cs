@@ -47,7 +47,7 @@ namespace Automation
 
         private void Start()
         {
-            oreInventory.Initialize(() => config.StorageDroneBaseInventoryWeight * upgrades.StorageDroneInventoryCapacityMultiplier);
+            oreInventory.Initialize(() => config.StorageDroneBaseInventoryWeight * upgrades.Automation_StorageDroneInventoryCapacityMultiplier);
         }
 
         // HasInstance guard: teardown order across objects isn't guaranteed when Stopping the
@@ -149,7 +149,7 @@ namespace Automation
                 return;
             }
 
-            float speed = config.StorageDroneBaseMoveSpeed * upgrades.StorageDroneMoveSpeedMultiplier;
+            float speed = config.StorageDroneBaseMoveSpeed * upgrades.Automation_StorageDroneMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, currentTarget.CarrierTransform.position, speed);
             if (arrived) state = State.Draining;
         }
@@ -191,7 +191,7 @@ namespace Automation
 
         private void UpdateFlyingToDepot()
         {
-            float speed = config.StorageDroneBaseMoveSpeed * upgrades.StorageDroneMoveSpeedMultiplier;
+            float speed = config.StorageDroneBaseMoveSpeed * upgrades.Automation_StorageDroneMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, _depositLocation, speed);
             if (!arrived) return;
 
@@ -209,7 +209,7 @@ namespace Automation
             // already banked, which might be reserved for a Processing Center recipe. Unlocking
             // the capstone only makes auto-sell available - the Control Center toggle
             // (AutomationSettings.StorageDroneDepositMode) decides whether it's actually used.
-            if (upgrades.StorageDroneAutoSellUnlocked && settings.StorageDroneDepositMode == StorageDroneDepositMode.AutoSell)
+            if (upgrades.Automation_StorageDroneAutoSellUnlocked && settings.StorageDroneDepositMode == StorageDroneDepositMode.AutoSell)
             {
                 foreach (var kvp in withdrawn)
                 {
@@ -225,7 +225,7 @@ namespace Automation
         // simpler and avoids event-storm coupling across every carrier.
         private void UpdateIdle()
         {
-            float speed = config.StorageDroneBaseMoveSpeed * upgrades.StorageDroneMoveSpeedMultiplier;
+            float speed = config.StorageDroneBaseMoveSpeed * upgrades.Automation_StorageDroneMoveSpeedMultiplier;
             mover.StepDirect(transform, _depositLocation, speed);
 
             idleRepollTimer += Time.deltaTime;

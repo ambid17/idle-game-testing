@@ -12,7 +12,7 @@ namespace Automation
         FullestInventory
     }
 
-    // Only takes effect once UpgradeManager.StorageDroneAutoSellUnlocked (the "Market Sense"
+    // Only takes effect once UpgradeManager.Automation_StorageDroneAutoSellUnlocked (the "Market Sense"
     // capstone) is purchased - StorageDrone still deposits raw ore at the Depot regardless of this
     // setting until then. See StorageDroneDashboardUI for the gating UI.
     public enum StorageDroneDepositMode

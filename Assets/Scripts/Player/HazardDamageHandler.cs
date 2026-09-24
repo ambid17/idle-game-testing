@@ -134,9 +134,9 @@ namespace Player
 
         // GameDesignDoc "Prestige > Survival": one resistance perk per hazard, same shape as the
         // pre-existing GasResistance (level * per-level value, multiplicatively reduces damage).
-        private static float BlastResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.BlastResistance : 0f;
-        private static float FallingRockResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.FallingRockResistance : 0f;
-        private static float GasResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.GasResistance : 0f;
-        private static float LavaResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.LavaResistance : 0f;
+        private static float BlastResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Survival_BlastResistance : 0f;
+        private static float FallingRockResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Survival_FallingRockResistance : 0f;
+        private static float GasResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Survival_GasResistance : 0f;
+        private static float LavaResistanceOf() => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Survival_LavaResistance : 0f;
     }
 }

@@ -86,7 +86,7 @@ namespace Economy
                 Debug.LogError($"Depot.Sell: BlockTypeDatabase missing or BlockTypeId {id} not found. Cannot sell.");
                 return 0;
             }
-            double value = blockType.Value * UpgradeManager.Instance.SellValueMultiplier * PrestigeUpgradeManager.Instance.MineralValueMultiplier * PrestigeUpgradeManager.Instance.IncomeMultiplier * amountToSell;
+            double value = blockType.Value * UpgradeManager.Instance.Economy_SellValueMultiplier * PrestigeUpgradeManager.Instance.Economy_MineralValueMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier * amountToSell;
 
             int remaining = current - amountToSell;
             storedOres[id] = Mathf.Max(0, remaining);
@@ -117,7 +117,7 @@ namespace Economy
         }
 
         // Mirrors Sell, but reads ProcessingRecipeDefinition.SaleValue from the
-        // ProcessingRecipeDatabase and applies UpgradeManager.ProcessingGoodsSellMultiplier
+        // ProcessingRecipeDatabase and applies UpgradeManager.Processing_GoodsSellMultiplier
         // instead of the ore SellValueMultiplier, so the two upgrade paths stay independent.
         public double SellGood(ProcessingRecipeId id, float fraction)
         {
@@ -133,7 +133,7 @@ namespace Economy
                 Debug.LogError($"Depot.SellGood: ProcessingRecipeDatabase missing or ProcessingRecipeId {id} not found. Cannot sell.");
                 return 0;
             }
-            double value = recipe.SaleValue * UpgradeManager.Instance.ProcessingGoodsSellMultiplier * PrestigeUpgradeManager.Instance.ProcessedGoodMultiplier * PrestigeUpgradeManager.Instance.IncomeMultiplier * amountToSell;
+            double value = recipe.SaleValue * UpgradeManager.Instance.Processing_GoodsSellMultiplier * PrestigeUpgradeManager.Instance.Economy_ProcessedGoodMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier * amountToSell;
 
             int remaining = current - amountToSell;
             storedGoods[id] = Mathf.Max(0, remaining);

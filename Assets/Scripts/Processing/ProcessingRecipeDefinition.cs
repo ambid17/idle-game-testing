@@ -28,7 +28,7 @@ namespace Processing
         [Tooltip("Sell value of one crafted unit - mirrors BlockType.Value.")]
         public float SaleValue;
 
-        [Tooltip("Seconds to craft one unit, before UpgradeManager.ProcessingSpeedMultiplier.")]
+        [Tooltip("Seconds to craft one unit, before UpgradeManager.Processing_SpeedMultiplier.")]
         public float DurationPerUnit;
 
         [Tooltip("The UpgradeDefinition that must be maxed (purchased) before this recipe is selectable.")]

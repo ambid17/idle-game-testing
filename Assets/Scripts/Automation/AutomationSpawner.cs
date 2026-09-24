@@ -77,9 +77,9 @@ namespace Automation
         private void ReconcileAll()
         {
             var upgrades = Economy.UpgradeManager.Instance;
-            Reconcile(automatons, automatonPrefab, upgrades.AutomatonCount, (instance, index) => instance.Configure(index, depotDepositLocation.position));
-            Reconcile(storageDrones, storageDronePrefab, upgrades.StorageDroneCount, (instance, index) => instance.Configure(depotDepositLocation.position, index));
-            Reconcile(fuelDrones, fuelDronePrefab, upgrades.FuelDroneCount, (instance, _) => instance.Configure(transform.position));
+            Reconcile(automatons, automatonPrefab, upgrades.Automation_AutomatonCount, (instance, index) => instance.Configure(index, depotDepositLocation.position));
+            Reconcile(storageDrones, storageDronePrefab, upgrades.Automation_StorageDroneCount, (instance, index) => instance.Configure(depotDepositLocation.position, index));
+            Reconcile(fuelDrones, fuelDronePrefab, upgrades.Automation_FuelDroneCount, (instance, _) => instance.Configure(transform.position));
         }
 
         private void Reconcile<T>(List<T> instances, T prefab, int targetCount, Action<T, int> configure) where T : Component

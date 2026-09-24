@@ -64,7 +64,7 @@ namespace Economy
         public void AddArtifact()
         {
             var prestige = PrestigeUpgradeManager.Instance;
-            float multiplier = prestige != null ? prestige.ArtifactValueMultiplier : 1f;
+            float multiplier = prestige != null ? prestige.Prestige_ArtifactValueMultiplier : 1f;
 
             artifactCreditFraction += multiplier;
             int whole = (int)artifactCreditFraction;

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Economy
 {
     // GameDesignDoc "Prestige > Prestige > add passive artifact gain over time": accrues fractional
-    // artifacts every frame at PrestigeUpgradeManager.PassiveArtifactRate (artifacts per minute),
+    // artifacts every frame at PrestigeUpgradeManager.Prestige_PassiveArtifactRate (artifacts per minute),
     // crediting whole artifacts to the Wallet once the fraction passes 1. No existing ticking
     // component to extend - IdleEarningsTracker and PrestigeManager are both purely event-driven
     // with no Update() - so this is a new one. Singleton so it needs no scene wiring.
@@ -16,7 +16,7 @@ namespace Economy
             var prestige = PrestigeUpgradeManager.Instance;
             if (prestige == null) return;
 
-            float ratePerMinute = prestige.PassiveArtifactRate;
+            float ratePerMinute = prestige.Prestige_PassiveArtifactRate;
             if (ratePerMinute <= 0f) return;
 
             accumulatedFraction += ratePerMinute / 60.0 * Time.deltaTime;

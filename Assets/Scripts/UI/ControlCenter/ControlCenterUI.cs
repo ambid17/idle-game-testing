@@ -60,7 +60,7 @@ namespace UI
 
         private void RefreshDroneTabGate()
         {
-            droneTabButton.gameObject.SetActive(UpgradeManager.Instance.AutomatonCount > 0);
+            droneTabButton.gameObject.SetActive(UpgradeManager.Instance.Automation_AutomatonCount > 0);
         }
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)

@@ -84,7 +84,7 @@ namespace Automation
 
         private void Start()
         {
-            oreInventory.Initialize(() => config.AutomatonBaseInventoryWeight * upgrades.AutomatonInventoryCapacityMultiplier);
+            oreInventory.Initialize(() => config.AutomatonBaseInventoryWeight * upgrades.Automation_AutomatonInventoryCapacityMultiplier);
             // No upgrade-driven bonus/efficiency for automatons (unlike the player) - just the
             // capacity/drain values baked into this prefab's own FuelSystem component.
             fuelSystem.Initialize();
@@ -237,7 +237,7 @@ namespace Automation
                 return;
             }
 
-            float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
+            float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
             mover.StepAlongPath(transform, path, ref pathIndex, speed, cornerRadius: config.AutomatonCornerRadius);
 
             // The final waypoint is the dig target cell itself (unmined) - mine it in place once
@@ -257,7 +257,7 @@ namespace Automation
                 return;
             }
 
-            float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.AutomatonMiningSpeedMultiplier;
+            float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.Automation_AutomatonMiningSpeedMultiplier;
             miningProgress += Time.deltaTime * miningSpeed;
             fuelSystem.ConsumeMining(Time.deltaTime);
             float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(digTargetLayer);
@@ -291,12 +291,12 @@ namespace Automation
             {
                 // Already-open ground directly below - step down into it and keep descending.
                 crackIndicator.Hide();
-                float moveSpeed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
+                float moveSpeed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
                 transform.position = Vector3.MoveTowards(transform.position, mapGenerationService.CellToWorldCenter(layer, x, y), moveSpeed * Time.deltaTime);
                 return;
             }
 
-            float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.AutomatonMiningSpeedMultiplier;
+            float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.Automation_AutomatonMiningSpeedMultiplier;
             miningProgress += Time.deltaTime * miningSpeed;
             fuelSystem.ConsumeMining(Time.deltaTime);
             float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layer);
@@ -322,7 +322,7 @@ namespace Automation
                 CollectMinedBlock(primaryBlockType);
             }
 
-            int radiusLevel = upgrades.AutomatonMiningRadiusBonus;
+            int radiusLevel = upgrades.Automation_AutomatonMiningRadiusBonus;
             if (radiusLevel <= 0) return;
 
             foreach (var offset in MiningAreaPattern.GetOffsets(radiusLevel))
@@ -362,7 +362,7 @@ namespace Automation
         {
             fuelSystem.ConsumeFlying(Time.deltaTime);
 
-            float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
+            float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, _depotLocation, speed);
             if (!arrived) return;
 
@@ -386,7 +386,7 @@ namespace Automation
         // rather than a separate refuel destination - there's only the one Control Center.
         private void UpdateReturningToRefuel()
         {
-            float speed = config.AutomatonBaseMoveSpeed * upgrades.AutomatonMoveSpeedMultiplier;
+            float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, _depotLocation, speed);
             if (!arrived) return;
 

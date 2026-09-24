@@ -35,7 +35,7 @@ namespace Automation
         private float payload;
         private float idleRepollTimer;
 
-        public float Capacity => config.FuelDroneBaseFuelCapacity * upgrades.FuelDroneInventoryCapacityMultiplier;
+        public float Capacity => config.FuelDroneBaseFuelCapacity * upgrades.Automation_FuelDroneInventoryCapacityMultiplier;
 
         // Assigned by AutomationSpawner.
         public void Configure(Vector3 controlCenterPos)
@@ -159,7 +159,7 @@ namespace Automation
                 return;
             }
 
-            float speed = config.FuelDroneBaseMoveSpeed * upgrades.FuelDroneMoveSpeedMultiplier;
+            float speed = config.FuelDroneBaseMoveSpeed * upgrades.Automation_FuelDroneMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, currentTarget.FuelTransform.position, speed);
             if (arrived) state = State.Depositing;
         }
@@ -198,7 +198,7 @@ namespace Automation
 
         private void UpdateFlyingToControlCenter()
         {
-            float speed = config.FuelDroneBaseMoveSpeed * upgrades.FuelDroneMoveSpeedMultiplier;
+            float speed = config.FuelDroneBaseMoveSpeed * upgrades.Automation_FuelDroneMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, controlCenterPosition, speed);
             if (!arrived) return;
 

@@ -10,7 +10,7 @@ namespace MapGeneration
     [CreateAssetMenu(fileName = "LayerConfigProvider", menuName = "Map Generation/Layer Config Provider")]
     public class LayerConfigProvider : ScriptableObject
     {
-        // Floor so PrestigeUpgradeManager.LayerSizeReduction can't shrink a layer to nothing.
+        // Floor so PrestigeUpgradeManager.Mining_LayerSizeReduction can't shrink a layer to nothing.
         private const int MinLayerHeight = 5;
 
         public List<LayerConfig> LayerConfigs = new();
@@ -41,7 +41,7 @@ namespace MapGeneration
         {
             var config = GetConfig(layerIndex);
             if (config == null) return 0;
-            int reduction = PrestigeUpgradeManager.Instance != null ? Mathf.RoundToInt(PrestigeUpgradeManager.Instance.LayerSizeReduction) : 0;
+            int reduction = PrestigeUpgradeManager.Instance != null ? Mathf.RoundToInt(PrestigeUpgradeManager.Instance.Mining_LayerSizeReduction) : 0;
             return Mathf.Max(MinLayerHeight, config.LayerHeight - reduction);
         }
 

@@ -13,7 +13,7 @@ namespace UI
     // precedent - the settings object only stores state and dispatches the changed-event, the UI
     // owning the feature applies the request. Storage drone upgrades are purchased from MarketUI's
     // Automation tab instead - no duplicate purchase UI in the Control Center. The Auto Sell option
-    // stays gated behind UpgradeManager.StorageDroneAutoSellUnlocked (the "Market Sense" capstone)
+    // stays gated behind UpgradeManager.Automation_StorageDroneAutoSellUnlocked (the "Market Sense" capstone)
     // even though the toggle itself lives here. While locked, hovering the button shows an
     // explanatory tooltip via HoverTooltipTrigger.
     public class StorageDroneDashboardUI : MonoBehaviour
@@ -67,7 +67,7 @@ namespace UI
         // of autoSellButton.interactable being false, since that's what actually stops the click.
         private void OnDepositModeRequested(SetStorageDroneDepositModeRequestedEvent evt)
         {
-            if (evt.Mode == StorageDroneDepositMode.AutoSell && !UpgradeManager.Instance.StorageDroneAutoSellUnlocked) return;
+            if (evt.Mode == StorageDroneDepositMode.AutoSell && !UpgradeManager.Instance.Automation_StorageDroneAutoSellUnlocked) return;
             AutomationSettings.Instance.SetStorageDroneDepositMode(evt.Mode);
         }
 
@@ -90,7 +90,7 @@ namespace UI
 
         private void RefreshAutoSellGate()
         {
-            bool unlocked = UpgradeManager.Instance.StorageDroneAutoSellUnlocked;
+            bool unlocked = UpgradeManager.Instance.Automation_StorageDroneAutoSellUnlocked;
             if (autoSellButton != null) autoSellButton.interactable = unlocked;
             if (autoSellLockedIndicator != null) autoSellLockedIndicator.SetActive(!unlocked);
             if (autoSellLockedTooltipTrigger != null) autoSellLockedTooltipTrigger.Active = !unlocked;

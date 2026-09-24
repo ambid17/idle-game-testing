@@ -30,7 +30,7 @@ namespace Processing
 
         // 1 free base slot per the doc's "processing queue: allows multiple recipes to be running
         // at once" - the upgrade adds more on top.
-        public int SlotCount => 1 + UpgradeManager.Instance.ProcessingQueueSlotCount;
+        public int SlotCount => 1 + UpgradeManager.Instance.Processing_QueueSlotCount;
         public IReadOnlyList<ProcessingJob> Slots => slots;
 
         // Guarantees `slots` covers at least the 1 free base slot immediately, not just after the
@@ -174,7 +174,7 @@ namespace Processing
         }
 
         private static float ComputeDuration(ProcessingRecipeDefinition recipe, int quantity) =>
-            recipe.DurationPerUnit * quantity / Mathf.Max(0.01f, UpgradeManager.Instance.ProcessingSpeedMultiplier);
+            recipe.DurationPerUnit * quantity / Mathf.Max(0.01f, UpgradeManager.Instance.Processing_SpeedMultiplier);
 
         // Restore for SaveService. The ore for these jobs was already deducted from the Depot last
         // session (and that deduction is what's reflected in the saved Depot totals), so this

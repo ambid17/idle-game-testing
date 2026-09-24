@@ -31,7 +31,7 @@ namespace Player
         private bool wasBlockedByFullInventory;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
-        private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.OverflowUnlocked;
+        private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.Economy_OverflowUnlocked;
         
 
         private void Awake()
@@ -51,7 +51,7 @@ namespace Player
             // grounded-only mining restriction. Mining also burns fuel per tick (same tank as
             // flying/idle drain - see PlayerController.ConsumeMiningFuel), so an empty tank blocks
             // it too.
-            bool canMine = (playerController.IsGrounded || PrestigeUpgradeManager.Instance.DigWhileFlyingUnlocked) && playerController.HasFuel;
+            bool canMine = (playerController.IsGrounded || PrestigeUpgradeManager.Instance.Mining_DigWhileFlyingUnlocked) && playerController.HasFuel;
             if (!canMine || direction == null || InputBlocker.IsBlocked)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
@@ -115,16 +115,16 @@ namespace Player
                 return;
             }
 
-            miningProgress += Time.deltaTime * upgradeManager.MiningSpeedMultiplier;
+            miningProgress += Time.deltaTime * upgradeManager.Mining_SpeedMultiplier;
             playerController.ConsumeMiningFuel(Time.deltaTime);
             float targetBlockHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
 
             // GameDesignDoc "Insta-mine chance": rolled once per newly-acquired target.
-            var canInstaMine = isNewTarget && upgradeManager != null && upgradeManager.InstaMineChance > 0f && Random.value < upgradeManager.InstaMineChance;
+            var canInstaMine = isNewTarget && upgradeManager != null && upgradeManager.Mining_InstaMineChance > 0f && Random.value < upgradeManager.Mining_InstaMineChance;
             // GameDesignDoc "the final upgrade makes dirt/stone an instant mine".
-            var canInstaMineDirt = blockType.Category == BlockCategory.Dirt && upgradeManager != null && upgradeManager.InstantMineDirt;
+            var canInstaMineDirt = blockType.Category == BlockCategory.Dirt && upgradeManager != null && upgradeManager.Mining_InstantMineDirt;
             // Mining_ScrapAlloyInstaMine's capstone.
-            var canInstaMineScrapAlloy = blockType.Id == BlockTypeId.ScrapAlloy && upgradeManager != null && upgradeManager.InstantMineScrapAlloy;
+            var canInstaMineScrapAlloy = blockType.Id == BlockTypeId.ScrapAlloy && upgradeManager != null && upgradeManager.Mining_InstantMineScrapAlloy;
             var finishedMining =  miningProgress >= targetBlockHealth;
             if (canInstaMine || canInstaMineDirt || canInstaMineScrapAlloy || finishedMining)
             {
@@ -183,7 +183,7 @@ namespace Player
             if (playerInventory.IsFull && CanOverflow)
             {
                 var upgrades = UpgradeManager.Instance;
-                double value = blockType.Value * upgrades.OverflowSellFraction * upgrades.SellValueMultiplier;
+                double value = blockType.Value * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier;
                 if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
             }
             else
@@ -215,9 +215,9 @@ namespace Player
             if (primaryBlockType.Category != BlockCategory.Ore) return;
 
             var upgrades = UpgradeManager.Instance;
-            if (upgrades == null || upgrades.MiningAreaLevel <= 0) return;
+            if (upgrades == null || upgrades.Mining_AreaLevel <= 0) return;
 
-            foreach (var cell in VeinMiningPattern.GetChainCells(mapGenerationService, layerIndex, centerX, centerY, upgrades.MiningAreaLevel))
+            foreach (var cell in VeinMiningPattern.GetChainCells(mapGenerationService, layerIndex, centerX, centerY, upgrades.Mining_AreaLevel))
             {
                 var bonusBlock = mapGenerationService.GetBlockTypeAt(layerIndex, cell.x, cell.y);
                 if (bonusBlock == null) continue;

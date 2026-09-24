@@ -107,8 +107,8 @@ namespace Player
             // GameDesignDoc "Survival > fuel efficiency": FuelEfficiencyMultiplier is a drain
             // *reduction* (1 - upgrade), so a maxed upgrade approaches zero drain, not zero fuel.
             fuelSystem.Initialize(
-                () => upgrades != null ? upgrades.FuelCapacityBonus : 0f,
-                () => upgrades != null ? upgrades.FuelEfficiencyMultiplier : 1f);
+                () => upgrades != null ? upgrades.Movement_FuelCapacityBonus : 0f,
+                () => upgrades != null ? upgrades.Movement_FuelEfficiencyMultiplier : 1f);
 
             spawnPosition = transform.position;
 
@@ -258,14 +258,14 @@ namespace Player
             // GameDesignDoc "Survival > Increase fly speed/Increase move speed": market multipliers
             // scale the base, the prestige perk adds a further flat bonus on top.
             float baseHorizontalSpeed = IsFlying
-                ? flySpeed * (upgrades != null ? upgrades.FlightSpeedMultiplier : 1f)
-                : groundSpeed * (upgrades != null ? upgrades.MoveSpeedMultiplier : 1f);
-            float horizontalSpeed = baseHorizontalSpeed + (prestigeUpgrades != null ? prestigeUpgrades.MoveSpeedBonus : 0f);
+                ? flySpeed * (upgrades != null ? upgrades.Movement_FlightSpeedMultiplier : 1f)
+                : groundSpeed * (upgrades != null ? upgrades.Movement_MoveSpeedMultiplier : 1f);
+            float horizontalSpeed = baseHorizontalSpeed + (prestigeUpgrades != null ? prestigeUpgrades.Survival_MoveSpeedBonus : 0f);
             ApplyHorizontalMovementForce(movementInput.x * horizontalSpeed);
 
             // GameDesignDoc "Survival > Increase fall speed" (Movement_GravityIncrease): reset to
             // base * multiplier rather than compounding, since this runs every FixedUpdate.
-            rb.gravityScale = baseGravityScale * (upgrades != null ? upgrades.GravityMultiplier : 1f);
+            rb.gravityScale = baseGravityScale * (upgrades != null ? upgrades.Movement_GravityMultiplier : 1f);
 
             // Jetpack pushes rather than snapping vertical velocity, so gravity still pulls
             // against it - lets the player feather W for a soft landing instead of a hard cutoff.
@@ -273,7 +273,7 @@ namespace Player
             {
                 var downwardForceCounteract = jetpackForce * 2;
                 var force = rb.linearVelocityY > 0f ? jetpackForce : downwardForceCounteract;
-                rb.AddForce(Vector2.up * force * upgrades.GravityMultiplier * upgrades.FlightSpeedMultiplier, ForceMode2D.Force);
+                rb.AddForce(Vector2.up * force * upgrades.Movement_GravityMultiplier * upgrades.Movement_FlightSpeedMultiplier, ForceMode2D.Force);
             }
 
             UpdateFuel(Time.fixedDeltaTime);
@@ -326,8 +326,8 @@ namespace Player
             {
                 // GameDesignDoc "Survival > Decrease fall damage": market multiplier and the
                 // prestige perk both reduce the per-unit damage, applied multiplicatively.
-                float marketReduction = upgrades != null ? upgrades.FallDamageReductionMultiplier : 1f;
-                float prestigeReduction = prestigeUpgrades != null ? Mathf.Max(0f, 1f - prestigeUpgrades.FallDamageReduction) : 1f;
+                float marketReduction = upgrades != null ? upgrades.Movement_FallDamageReductionMultiplier : 1f;
+                float prestigeReduction = prestigeUpgrades != null ? Mathf.Max(0f, 1f - prestigeUpgrades.Survival_FallDamageReduction) : 1f;
                 float effectiveDamagePerUnit = fallDamagePerExcessUnit * marketReduction * prestigeReduction;
                 health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * effectiveDamagePerUnit, DeathReason.FallDamage);
             }
