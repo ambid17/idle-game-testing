@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Prestige_GrantFunding
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Grant Funding
-  Description: Start each new run with a share of the dollars you earned during the
-    previous run.
+  Description: Start each new run with a share of the dollars (2% exponential per
+    upgrade) you earned during the previous run.
   Icon: {fileID: 21300000, guid: 834ea64732ef91643b80d4f9bad7af60, type: 3}
   EffectValuePerLevel: 0.02
   MaxLevel: 5
-  BaseCost: 30
+  BaseCost: 15
   CostGrowth: 1.5
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: 19ce06fa6d9b8ee4eb01397caac4baae, type: 2}

@@ -18,7 +18,7 @@ MonoBehaviour:
   Icon: {fileID: 21300000, guid: 4a517d7e27cc61a4888933c96943df95, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3
-  BaseCost: 25
+  BaseCost: 14
   CostGrowth: 1.6
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: 4f0e48a60b860c84cb3e04ba194935d0, type: 2}

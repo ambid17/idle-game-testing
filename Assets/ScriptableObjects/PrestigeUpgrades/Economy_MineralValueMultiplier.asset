@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Economy_MineralValueMultiplier
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Appraised Value
-  Description: Permanently increases the sale value of every mineral you dig up.
+  Description: Permanently increases the sale value of every mineral you dig up by
+    10%.
   Icon: {fileID: 21300000, guid: 81597b6c0b40e2340a9d8657726ff531, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 10

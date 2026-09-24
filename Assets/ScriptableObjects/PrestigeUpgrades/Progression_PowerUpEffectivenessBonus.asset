@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Progression_PowerUpEffectivenessBonus
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Amplified Boosts
-  Description: Increases the effectiveness of power-up blocks.
+  Description: Increases the effectiveness of power-up blocks by 10%
   Icon: {fileID: 21300000, guid: 3e026c8694ff8194ea85d864c0760828, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 10
-  BaseCost: 20
+  BaseCost: 6
   CostGrowth: 1.4
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: ffc252451db0d0e48be95f957efbef08, type: 2}

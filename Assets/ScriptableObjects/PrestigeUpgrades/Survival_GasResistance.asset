@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Survival_GasResistance
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Filtered Lungs
-  Description: Increases resistance to harmful gas.
+  Description: Increases resistance to harmful gas. Reduce damage by 10%.
   Icon: {fileID: 21300000, guid: a4bc5e3ddc48de543a56cf8f806bb561, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8
-  BaseCost: 25
-  CostGrowth: 1.4
+  BaseCost: 2
+  CostGrowth: 2
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: b15182af204f22d4d94717f25744dfe6, type: 2}
   Branch: 5

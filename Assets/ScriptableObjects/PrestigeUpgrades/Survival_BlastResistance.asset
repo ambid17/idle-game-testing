@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Survival_BlastResistance
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Blast Plating
-  Description: Increases resistance to explosive blast damage.
+  Description: Increases resistance to explosive blast damage. Take 10% less damage
   Icon: {fileID: 21300000, guid: f61a0f82fceb2e946831f934fbcd1b6c, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8
-  BaseCost: 30
-  CostGrowth: 1.4
+  BaseCost: 2
+  CostGrowth: 2
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: 1ea9294859d7af743934039ed82cbd34, type: 2}
   Branch: 5

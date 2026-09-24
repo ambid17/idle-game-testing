@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mining_TrueSight
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: True Sight
-  Description: Permanently reveals the entire fog of war. Requires Grid Expansion.
+  Description: Permanently reveals the entire fog of war.
   Icon: {fileID: 21300000, guid: 952a65bc8131a934c82b24ee626404a4, type: 3}
   EffectValuePerLevel: 0
   MaxLevel: 1

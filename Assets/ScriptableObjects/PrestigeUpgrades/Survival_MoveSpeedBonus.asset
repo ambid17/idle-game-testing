@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Survival_MoveSpeedBonus
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Light Boots
-  Description: Increases your move speed.
+  Description: Increases your move speed by 5%.
   Icon: {fileID: 21300000, guid: f832037ebbebfb044a02f2d60826559d, type: 3}
   EffectValuePerLevel: 0.05
   MaxLevel: 10
-  BaseCost: 15
+  BaseCost: 5
   CostGrowth: 1.4
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: 3b462ae4ff26b39499e295079a31d2c1, type: 2}

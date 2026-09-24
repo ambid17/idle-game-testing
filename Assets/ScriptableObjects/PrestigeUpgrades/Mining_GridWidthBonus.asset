@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Mining_GridWidthBonus
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Grid Expansion
-  Description: Permanently increases the width of the mineable area generated after
-    each prestige.
+  Description: Permanently increases the width of the mineable area by 5 tiles, generated
+    after each prestige.
   Icon: {fileID: 21300000, guid: e41a7e5198e6367458ec362a9184ce6a, type: 3}
   EffectValuePerLevel: 5
   MaxLevel: 10

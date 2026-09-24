@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Museum Dividends
   Description: Every unspent artifact you hold increases the sale value of minerals
-    and processed goods.
+    and processed goods by 1%.
   Icon: {fileID: 21300000, guid: 83d0240b29f54954f992590182b98f4c, type: 3}
-  EffectValuePerLevel: 0.002
+  EffectValuePerLevel: 0.01
   MaxLevel: 5
   BaseCost: 50
   CostGrowth: 1.6
