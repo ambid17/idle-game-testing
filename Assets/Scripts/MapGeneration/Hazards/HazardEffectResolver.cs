@@ -10,8 +10,7 @@ namespace MapGeneration
     // GasPocket). Lava needs no world-side resolution at all - mining it clears the cell like any
     // other block (MapGenerationService.MineCell), and its damage (both the instant mining hit and
     // the per-frame underfoot tick) is entirely owned by Player.HazardDamageHandler. Singleton,
-    // event-only coupling, matching PowerUpEffectResolver's structure for the PowerUp side of the
-    // same HazardBehavior enum.
+    // event-only coupling.
     public class HazardEffectResolver : Singleton<HazardEffectResolver>
     {
         [SerializeField] private int explosiveBlastRadius = 2;
@@ -53,9 +52,10 @@ namespace MapGeneration
 
         // GameDesignDoc "explosive: destroys blocks in a radius... you get to collect the minerals
         // destroyed by the explosion" - destroying a cell reuses MapGenerationService.MineCell, so
-        // a destroyed Hazard/PowerUp block dispatches its own HazardTriggeredEvent/
-        // PowerUpTriggeredEvent for free (chain reactions between Explosive blocks happen with no
-        // extra code, naturally bounded since TryMineCell refuses an already-mined cell). Destroyed
+        // a destroyed Hazard block dispatches its own CustomBlockTriggeredEvent for free (chain
+        // reactions between Explosive blocks happen with no extra code, naturally bounded since
+        // TryMineCell refuses an already-mined cell). PowerUp blocks survive the blast - they're
+        // player-only, so MineCell refuses them here. Destroyed
         // ore is auto-credited straight to Wallet rather than added to inventory - there's no
         // guarantee the player (or the automaton that triggered this) is standing close enough to
         // physically collect it. Runs off ExplosiveDetonatedEvent, not HazardTriggeredEvent - see

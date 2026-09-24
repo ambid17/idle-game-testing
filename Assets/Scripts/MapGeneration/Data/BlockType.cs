@@ -39,10 +39,18 @@ namespace MapGeneration
         FallingRock = 20,
         GasPocket = 21,
         Lava = 22,
+        // PowerUp block types (Category.PowerUp) - player-only mineable, resolved by
+        // Player.PlayerPowerUps. Append-only, same rule as every id above.
+        TreasureChest = 23,
+        DrillOverdrive = 24,
+        FuelCanister = 25,
+        RepairKit = 26,
+        LuckyStrike = 27,
     }
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)
-    // react to this when a cell with a matching category is mined.
+    // react to this when a cell with a matching category is mined. Hazards resolve through
+    // CustomBlockTriggeredEvent; PowerUps are applied directly by Player.PlayerPowerUps.
     public enum CustomBehavior
     {
         None = 0,
@@ -53,7 +61,10 @@ namespace MapGeneration
         GasPocket = 5,
         Lava = 6,
         TreasureChest = 7,
-        SightPotion = 8
+        DrillOverdrive = 8,
+        FuelCanister = 9,
+        RepairKit = 10,
+        LuckyStrike = 11
     }
 
     [CreateAssetMenu(fileName = "BlockType", menuName = "Map Generation/Block Type")]

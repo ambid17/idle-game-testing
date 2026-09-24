@@ -41,11 +41,13 @@ namespace Economy
         private void OnEnable()
         {
             GameManager.EventService.Add<PlayerInventoryDroppedEvent>(OnPlayerInventoryDropped);
+            GameManager.EventService.Add<ChestSpawnRequestedEvent>(OnChestSpawnRequested);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<PlayerInventoryDroppedEvent>(OnPlayerInventoryDropped);
+            GameManager.EventService.Remove<ChestSpawnRequestedEvent>(OnChestSpawnRequested);
         }
 
         private void OnPlayerInventoryDropped(PlayerInventoryDroppedEvent evt)
@@ -61,6 +63,14 @@ namespace Economy
             }
 
             SpawnChest(spawnPosition, evt.OreCounts);
+        }
+
+        // Treasure Chest power-up overflow (see Player.PlayerPowerUps) - position is already a cell
+        // center, so it's used as-is.
+        private void OnChestSpawnRequested(ChestSpawnRequestedEvent evt)
+        {
+            if (chestPrefab == null || evt.OreCounts.All(kvp => kvp.Value <= 0)) return;
+            SpawnChest(evt.Position, evt.OreCounts);
         }
 
         // Respawns chests that were still active (unlooted) at the last save - called by

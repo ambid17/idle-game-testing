@@ -16,6 +16,7 @@ namespace Player
     [RequireComponent(typeof(PlayerController))]
     [RequireComponent(typeof(PlayerInventory))]
     [RequireComponent(typeof(CapsuleCollider2D))]
+    [RequireComponent(typeof(PlayerPowerUps))]
     public class PlayerMining : MonoBehaviour
     {
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
@@ -25,6 +26,7 @@ namespace Player
 
         private PlayerController playerController;
         private PlayerInventory playerInventory;
+        private PlayerPowerUps playerPowerUps;
         private CapsuleCollider2D capsuleCollider;
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
@@ -40,7 +42,9 @@ namespace Player
             playerController = GetComponent<PlayerController>();
             playerInventory = GetComponent<PlayerInventory>();
             capsuleCollider = GetComponent<CapsuleCollider2D>();
+            playerPowerUps = GetComponent<PlayerPowerUps>();
 
+            if (playerPowerUps == null) Debug.LogError($"{nameof(PlayerMining)} on {name} requires a PlayerPowerUps component.");
             if (crackIndicator == null) Debug.LogError($"{nameof(PlayerMining)} on {name} is missing its crackIndicator reference.");
         }
 
@@ -120,7 +124,7 @@ namespace Player
                 return;
             }
 
-            miningProgress += Time.deltaTime * upgradeManager.Mining_SpeedMultiplier;
+            miningProgress += Time.deltaTime * upgradeManager.Mining_SpeedMultiplier * playerPowerUps.MiningSpeedMultiplier;
             playerController.ConsumeMiningFuel(Time.deltaTime);
             float targetBlockHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
 
@@ -168,14 +172,19 @@ namespace Player
 
         private void MineTarget(int layerIndex, int x, int y, BlockType blockType)
         {
-            if (!mapGenerationService.MineCell(layerIndex, x, y)) return;
+            if (!mapGenerationService.MineCell(layerIndex, x, y, minedByPlayer: true)) return;
 
-            CollectMinedBlock(blockType, layerIndex);
+            CollectMinedBlock(blockType, layerIndex, x, y);
             MineAreaBonusCells(layerIndex, x, y, blockType);
         }
 
-        private void CollectMinedBlock(BlockType blockType, int layerIndex)
+        private void CollectMinedBlock(BlockType blockType, int layerIndex, int x, int y)
         {
+            if (blockType.Category == BlockCategory.PowerUp)
+            {
+                playerPowerUps.Apply(blockType, layerIndex, x, y);
+                return;
+            }
             if (blockType.Category == BlockCategory.Artifact)
             {
                 GameManager.EventService.Dispatch(new NotificationEvent($"+1 <color=purple>Artifact</color>", NotificationUrgency.Queued, blockType.Icon));
@@ -184,19 +193,21 @@ namespace Player
             }
             if (blockType.Category != BlockCategory.Ore) return;
 
-            GameManager.EventService.Dispatch(new NotificationEvent($"+1 {blockType.DisplayName}", NotificationUrgency.Queued, blockType.Icon));
+            // Lucky Strike power-up (see PlayerPowerUps): 2 while charges remain, else 1.
+            int amount = playerPowerUps.ConsumeLuckyStrikeMultiplier();
+            GameManager.EventService.Dispatch(new NotificationEvent($"+{amount} {blockType.DisplayName}", NotificationUrgency.Queued, blockType.Icon));
 
-            ApplyLayerBonus(blockType, layerIndex);
+            for (int i = 0; i < amount; i++) ApplyLayerBonus(blockType, layerIndex);
 
             if (playerInventory.IsFull && CanOverflow)
             {
                 var upgrades = UpgradeManager.Instance;
-                double value = blockType.Value * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier;
+                double value = blockType.Value * amount * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier;
                 if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
             }
             else
             {
-                playerInventory.AddOre(blockType);
+                playerInventory.AddOre(blockType, amount);
             }
         }
 
@@ -231,9 +242,9 @@ namespace Player
                 if (bonusBlock == null) continue;
                 if (bonusBlock.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow) continue;
 
-                if (!mapGenerationService.MineCell(layerIndex, cell.x, cell.y)) continue;
+                if (!mapGenerationService.MineCell(layerIndex, cell.x, cell.y, minedByPlayer: true)) continue;
 
-                CollectMinedBlock(bonusBlock, layerIndex);
+                CollectMinedBlock(bonusBlock, layerIndex, cell.x, cell.y);
             }
         }
     }

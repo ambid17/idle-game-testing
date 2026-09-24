@@ -117,6 +117,21 @@ namespace Events
         }
     }
 
+    // Dispatched by Player.PlayerPowerUps when a Treasure Chest's loot doesn't fit in the
+    // player's inventory - Economy.ChestSpawner drops the remainder into a lootable chest at
+    // Position, the same way it handles PlayerInventoryDroppedEvent on death.
+    public class ChestSpawnRequestedEvent : IEvent
+    {
+        public Vector3 Position;
+        public IReadOnlyDictionary<BlockTypeId, int> OreCounts;
+
+        public ChestSpawnRequestedEvent(Vector3 position, IReadOnlyDictionary<BlockTypeId, int> oreCounts)
+        {
+            Position = position;
+            OreCounts = oreCounts;
+        }
+    }
+
     public class UICloseEvent { }
 
     // Dispatched by PlayerController on Escape when UI.ModalTracker.IsAnyModalOpen - closes just
@@ -284,25 +299,6 @@ namespace Events
             X = x;
             Y = y;
             Hazard = hazard;
-        }
-    }
-
-    // Dispatched by MapGenerationService.MineCell alongside HazardTriggeredEvent, but for a mined
-    // cell whose Category is PowerUp rather than Hazard - reuses the same HazardBehavior enum
-    // (TreasureChest/SightPotion), which already anticipates this dual use (see BlockType.cs).
-    public class PowerUpTriggeredEvent : IEvent
-    {
-        public int LayerIndex;
-        public int X;
-        public int Y;
-        public CustomBehavior Behavior;
-
-        public PowerUpTriggeredEvent(int layerIndex, int x, int y, CustomBehavior behavior)
-        {
-            LayerIndex = layerIndex;
-            X = x;
-            Y = y;
-            Behavior = behavior;
         }
     }
 

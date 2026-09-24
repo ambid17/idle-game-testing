@@ -68101,6 +68101,7 @@ GameObject:
   - component: {fileID: 2055974200}
   - component: {fileID: 2055974201}
   - component: {fileID: 2055974202}
+  - component: {fileID: 2055974203}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -68341,7 +68342,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerHealth
   maxHp: 100
-  shieldRegenSeconds: 30
+  shieldBaseRegenSeconds: 60
+  shieldMinRegenSeconds: 5
 --- !u!114 &2055974200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68391,6 +68393,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerDeathEffect
   explosionParticles: {fileID: 1013865071}
   fallbackSeconds: 1
+--- !u!114 &2055974203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055974188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d573f40dd27febc40aca40452e29b4ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerPowerUps
+  treasureChestOreCount: 12
+  overdriveSpeedMultiplier: 3
+  overdriveDurationSeconds: 15
+  fuelCanisterFraction: 1
+  repairKitFraction: 0.4
+  luckyStrikeCharges: 10
 --- !u!1 &2056435485
 GameObject:
   m_ObjectHideFlags: 0

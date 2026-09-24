@@ -93,9 +93,34 @@ MonoBehaviour:
     VeinSpreadChance: 0.5
     VeinSizeMin: 2
     VeinSizeMax: 4
-  PowerUpTable: []
+  PowerUpTable:
+  - BlockType: {fileID: 11400000, guid: 5c01e228e5d50a34b963db1ba5b3eb5d, type: 2}
+    Weight: 10
+    VeinSpreadChance: 0
+    VeinSizeMin: 1
+    VeinSizeMax: 1
+  - BlockType: {fileID: 11400000, guid: 4c4e77aba607b7e4b9b95f1b86f69207, type: 2}
+    Weight: 20
+    VeinSpreadChance: 0
+    VeinSizeMin: 1
+    VeinSizeMax: 1
+  - BlockType: {fileID: 11400000, guid: a50ef82158eae014ca7328823a28d356, type: 2}
+    Weight: 20
+    VeinSpreadChance: 0
+    VeinSizeMin: 1
+    VeinSizeMax: 1
+  - BlockType: {fileID: 11400000, guid: db38c713e0035224185186a57bd4f079, type: 2}
+    Weight: 20
+    VeinSpreadChance: 0
+    VeinSizeMin: 1
+    VeinSizeMax: 1
+  - BlockType: {fileID: 11400000, guid: 2e26e91dd3bd42e4784785d329de2383, type: 2}
+    Weight: 20
+    VeinSpreadChance: 0
+    VeinSizeMin: 1
+    VeinSizeMax: 1
   HazardChancePerCell: 0.025
-  PowerUpChancePerCell: 0
+  PowerUpChancePerCell: 0.0076
   ArtifactBonusChance: 0.1
   EmptyPocketChancePerCell: 0.05
   EmptyPocketSpreadChance: 0.5

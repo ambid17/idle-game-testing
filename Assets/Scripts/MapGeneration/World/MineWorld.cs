@@ -40,7 +40,7 @@ namespace MapGeneration
 
         public IEnumerable<ChunkData> GetLoadedChunks() => chunksByLayer.Values;
 
-        public bool TryMineCell(int layerIndex, int x, int y, out BlockType minedBlock)
+        public bool TryMineCell(int layerIndex, int x, int y, bool minedByPlayer, out BlockType minedBlock)
         {
             minedBlock = null;
 
@@ -65,6 +65,11 @@ namespace MapGeneration
                 // MapGeneration.FallingRockHazardEffect).
                 return false;
             }
+            if (!minedByPlayer && IsPowerUp(cell.BlockTypeId))
+            {
+                // Player-only (see Player.PlayerPowerUps) - automatons and explosions leave them be.
+                return false;
+            }
             if (cell.Mined)
             {
                 //Debug.LogWarning($"TryMineCell: cell already mined for layer {layerIndex}: ({x}, {y})");
@@ -76,6 +81,12 @@ namespace MapGeneration
 
             minedBlock = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
             return true;
+        }
+
+        private bool IsPowerUp(byte blockTypeId)
+        {
+            var blockType = blockTypes != null ? blockTypes.Get(blockTypeId) : null;
+            return blockType != null && blockType.Category == BlockCategory.PowerUp;
         }
 
         // Bypasses the mineable checks in TryMineCell above - used only by

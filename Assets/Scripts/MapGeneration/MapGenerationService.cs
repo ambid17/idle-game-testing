@@ -68,7 +68,7 @@ namespace MapGeneration
             RebuildSurfaceFloorSegments();
 
             // HazardEffectResolver is a pure event listener with no scene reference pointing at
-            // it (same shape as PowerUpEffectResolver) - nothing else ever touches .Instance, so
+            // it - nothing else ever touches .Instance, so
             // without this force-wake its Singleton<T> GameObject would never get created and
             // HazardTriggeredEvent would go unhandled. Mirrors GameManager.Start() force-waking
             // SaveService.Instance for the same reason.
@@ -219,18 +219,21 @@ namespace MapGeneration
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="fogRadiusOverride"></param>
+        /// <param name="minedByPlayer">PowerUp blocks are player-only - every other caller (automatons, explosions) is refused them.</param>
         /// <returns>True if the cell was able to be mined.</returns>
-        public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1)
+        public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1, bool minedByPlayer = false)
         {
-            // Can't mine if: already mined, or target is a building support
-            if (!World.TryMineCell(layerIndex, x, y, out var block)) return false;
+            // Can't mine if: already mined, target is a building support, or a PowerUp not mined by the player
+            if (!World.TryMineCell(layerIndex, x, y, minedByPlayer, out var block)) return false;
 
             // Digging out row 1 (the tile beneath the surface) is what actually opens a fall-
             // through gap at that column - see the SurfaceFloor* fields' comment above.
             if (layerIndex == 0 && y == 1) UpdateSurfaceFloorSegmentEnabled(x);
 
             HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);
-            if (block != null && (block.Category == BlockCategory.Hazard || block.Category == BlockCategory.PowerUp))
+            // PowerUps aren't dispatched here - Player.PlayerMining applies them directly, since
+            // only the player can ever mine one.
+            if (block != null && block.Category == BlockCategory.Hazard)
             {
                 GameManager.EventService.Dispatch(new CustomBlockTriggeredEvent(layerIndex, x, y, block.CustomBehavior));
             }
@@ -255,11 +258,6 @@ namespace MapGeneration
 
             GameManager.EventService.Dispatch(new CustomBlockTriggeredEvent(aboveLayer, aboveX, aboveY, CustomBehavior.FallingRock));
         }
-
-        // Called by MapGeneration.PowerUpEffectResolver for a SightPotion's reveal burst - same
-        // underlying World.RevealFog + streaming notification as a normal mine, just triggered
-        // externally with an explicit radius rather than from MineCell itself.
-        public void RevealAround(int layerIndex, int x, int y, int radius) => HandleFogUpdate(layerIndex, x, y, radius);
 
         private void HandleFogUpdate(int layerIndex, int x, int y, int fogRadiusOverride = -1)
         {
