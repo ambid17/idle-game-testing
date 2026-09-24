@@ -5,8 +5,8 @@ import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 FONT = 'Assets/Fonts/Orbitron-Regular.ttf'
-WIDE = 'Assets/Generated/Steam/SteamKeyArt_Wide.png'
-TALL = 'Assets/Generated/Steam/SteamKeyArt_Tall.png'
+WIDE = os.path.join(ROOT, 'source', 'SteamKeyArt_Wide.png')
+TALL = os.path.join(ROOT, 'source', 'SteamKeyArt_Tall.png')
 OUT = os.path.join(ROOT, 'out')
 TITLE = 'DRILLIONAIRE'
 
