@@ -6,7 +6,8 @@ using UnityEngine.InputSystem;
 
 namespace Player
 {
-    // Directional mining per GameDesignDoc "Mechanics": holding A/S/D mines in that direction,
+    // Directional mining per GameDesignDoc "Mechanics": holding A/S/D (and W, with the DigUp
+    // prestige perk) mines in that direction,
     // but only while grounded (PlayerController.IsGrounded). Resolves the targeted grid cell
     // through MapGenerationService's world<->cell helpers and mines it once BlockType.MiningTime
     // (scaled by the layer's BlockHealth and the Mining Speed upgrade) has elapsed. Per
@@ -47,11 +48,13 @@ namespace Player
         {
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
             Vector2Int? direction = ResolveDirection();
-            // GameDesignDoc "Prestige > Mining": the KeepDigWhileFlying perk lifts the normal
-            // grounded-only mining restriction. Mining also burns fuel per tick (same tank as
-            // flying/idle drain - see PlayerController.ConsumeMiningFuel), so an empty tank blocks
-            // it too.
-            bool canMine = (playerController.IsGrounded || PrestigeUpgradeManager.Instance.Mining_DigWhileFlyingUnlocked) && playerController.HasFuel;
+            // GameDesignDoc "Prestige > Mining": the DigWhileFlying perk lifts the normal
+            // grounded-only mining restriction. Digging up (DigUp perk) is always exempt from it -
+            // holding W fires the jetpack, so the player is usually pressed against the ceiling
+            // rather than grounded. Mining also burns fuel per tick (same tank as flying/idle
+            // drain - see PlayerController.ConsumeMiningFuel), so an empty tank blocks it too.
+            bool isDiggingUp = direction == Vector2Int.up;
+            bool canMine = (playerController.IsGrounded || isDiggingUp || PrestigeUpgradeManager.Instance.Mining_DigWhileFlyingUnlocked) && playerController.HasFuel;
             if (!canMine || direction == null || InputBlocker.IsBlocked)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
@@ -66,9 +69,11 @@ namespace Player
             // never hit a block (only "down" ever happened to land in-bounds by coincidence).
             float cellSize = mapGenerationService.CellSize;
 
+            // Digging up targets the cell just above the top of the collider instead.
             var bottomOfCollider = transform.position.y - (capsuleCollider.size.y / 2);
+            var topOfCollider = transform.position.y + (capsuleCollider.size.y / 2);
             var digDownDepth = direction.Value.y < 0 ? cellSize / 2 : 0;
-            float targetYPos = bottomOfCollider - digDownDepth;
+            float targetYPos = isDiggingUp ? topOfCollider + cellSize / 2 : bottomOfCollider - digDownDepth;
 
             Vector3 miningTargetWorldPos = new Vector3(transform.position.x + direction.Value.x * cellSize, targetYPos, 0f);
 
@@ -148,6 +153,9 @@ namespace Player
             if (keyboard.aKey.isPressed) return Vector2Int.left;
             if (keyboard.dKey.isPressed) return Vector2Int.right;
             if (keyboard.sKey.isPressed) return Vector2Int.down;
+            // W also fires the jetpack (PlayerController), so digging up only happens while the
+            // player is holding W against a block overhead.
+            if (keyboard.wKey.isPressed && PrestigeUpgradeManager.Instance.Mining_DigUpUnlocked) return Vector2Int.up;
             return null;
         }
 

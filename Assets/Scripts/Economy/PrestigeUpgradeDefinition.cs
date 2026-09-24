@@ -30,6 +30,7 @@ namespace Economy
         Mining_LayerSizeReduction = 103,
         // GameDesignDoc "Prestige > Mining > true sight": reveals all fog of war.
         Mining_TrueSight = 104,
+        // Lets the player mine upward (W) into the block directly above them.
         Mining_DigUpUnlock = 105,
 
         // Economy 200-299

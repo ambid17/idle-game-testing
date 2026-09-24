@@ -20,17 +20,20 @@ namespace Player
     public class PlayerHealth : MonoBehaviour
     {
         [SerializeField] private float maxHp = 100f;
-        [SerializeField] private float shieldRegenSeconds = 30f;
+        // Emergency Shielding's level-1 recharge time; higher levels shorten it (see ShieldRegenSeconds).
+        [SerializeField] private float shieldBaseRegenSeconds = 60f;
+        [SerializeField] private float shieldMinRegenSeconds = 5f;
 
         public float MaxHp => maxHp;
         public float CurrentHp { get; private set; }
         public bool IsDead { get; private set; }
 
-        // GameDesignDoc "Prestige > Survival": one-time shield charges that regenerate over time
-        // and fully absorb a hit instead of it reducing CurrentHp.
+        // GameDesignDoc "Prestige > Survival": a single shield charge that regenerates over time
+        // and fully absorbs a hit instead of it reducing CurrentHp.
         public int CurrentShieldCharges { get; private set; }
         private float shieldRegenTimer;
-        private int MaxShieldCharges => PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Survival_ShieldChargeCount : 0;
+        private int MaxShieldCharges => PrestigeUpgradeManager.Instance != null && PrestigeUpgradeManager.Instance.Survival_ShieldUnlocked ? 1 : 0;
+        private float ShieldRegenSeconds => Mathf.Max(shieldMinRegenSeconds, shieldBaseRegenSeconds - PrestigeUpgradeManager.Instance.Survival_ShieldRegenReductionSeconds);
 
         private void Awake()
         {
@@ -51,7 +54,7 @@ namespace Player
         {
             if (CurrentShieldCharges >= MaxShieldCharges) return;
             shieldRegenTimer += Time.deltaTime;
-            if (shieldRegenTimer < shieldRegenSeconds) return;
+            if (shieldRegenTimer < ShieldRegenSeconds) return;
             shieldRegenTimer = 0f;
             CurrentShieldCharges++;
             GameManager.EventService.Dispatch(new ShieldChargeChangedEvent(CurrentShieldCharges, MaxShieldCharges));

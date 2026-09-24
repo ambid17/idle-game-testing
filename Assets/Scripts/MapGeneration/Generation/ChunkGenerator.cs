@@ -24,6 +24,8 @@ namespace MapGeneration
             EmptyPocketGate = 9,
             EmptyPocketSize = 10,
             EmptyPocketSpread = 11,
+            OreTierGate = 12,
+            OreTierPick = 13,
         }
 
         private static readonly (int dx, int dy)[] OrthogonalNeighbors = { (1, 0), (-1, 0), (0, 1), (0, -1) };
@@ -31,8 +33,9 @@ namespace MapGeneration
         // layerHeight is the caller-resolved effective height (authored LayerConfig.LayerHeight
         // minus PrestigeUpgradeManager.Mining_LayerSizeReduction) - ChunkGenerator stays pure/headless
         // (see class doc) so it can't read the singleton itself. artifactSpawnRateMultiplier,
-        // oreTierOddsBonus, and powerUpSpawnRateBonus are likewise resolved by the caller.
-        public static ChunkData Generate(int worldSeed, int layerIndex, int gridWidth, LayerConfig config, int layerHeight, float artifactSpawnRateMultiplier = 1f, float oreTierOddsBonus = 0f, float powerUpSpawnRateBonus = 0f)
+        // oreTierOddsBonus, and powerUpSpawnRateBonus are likewise resolved by the caller, as is
+        // nextLayerConfig (the source table for oreTierOddsBonus's deeper-layer ore swaps).
+        public static ChunkData Generate(int worldSeed, int layerIndex, int gridWidth, LayerConfig config, int layerHeight, float artifactSpawnRateMultiplier = 1f, float oreTierOddsBonus = 0f, float powerUpSpawnRateBonus = 0f, LayerConfig nextLayerConfig = null)
         {
             var chunk = new ChunkData
             {
@@ -53,18 +56,18 @@ namespace MapGeneration
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    chunk.Cells[chunk.Index(x, y)] = RollCell(worldSeed, layerIndex, x, y, config, oreTierOddsBonus, powerUpSpawnRateBonus);
+                    chunk.Cells[chunk.Index(x, y)] = RollCell(worldSeed, layerIndex, x, y, config, nextLayerConfig, oreTierOddsBonus, powerUpSpawnRateBonus);
                 }
             }
 
-            GrowVeins(worldSeed, layerIndex, gridWidth, layerHeight, config, chunk);
+            GrowVeins(worldSeed, layerIndex, gridWidth, layerHeight, config, nextLayerConfig, chunk);
             PlaceArtifacts(worldSeed, layerIndex, gridWidth, layerHeight, artifactSpawnRateMultiplier, config, chunk);
             CarveEmptyPockets(worldSeed, layerIndex, gridWidth, layerHeight, config, chunk);
             chunk.IsFullyGenerated = true;
             return chunk;
         }
 
-        private static CellData RollCell(int worldSeed, int layerIndex, int x, int y, LayerConfig config, float oreTierOddsBonus, float powerUpSpawnRateBonus)
+        private static CellData RollCell(int worldSeed, int layerIndex, int x, int y, LayerConfig config, LayerConfig nextLayerConfig, float oreTierOddsBonus, float powerUpSpawnRateBonus)
         {
             var cell = new CellData();
 
@@ -75,7 +78,17 @@ namespace MapGeneration
                 return cell;
             }
 
-            var picked = PickWeighted(config.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OrePick), oreTierOddsBonus);
+            var picked = PickWeighted(config.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OrePick));
+
+            // GameDesignDoc "Prestige > Progression > increase spawn odds of next tier of blocks":
+            // each rolled ore has an oreTierOddsBonus chance to be swapped for an ore from the next
+            // layer's table instead (dirt/hazard/power-up rolls are never swapped).
+            if (picked != null && picked.Category == BlockCategory.Ore && nextLayerConfig != null && oreTierOddsBonus > 0f
+                && MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OreTierGate) < oreTierOddsBonus)
+            {
+                var deeperOre = PickWeightedOre(nextLayerConfig.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OreTierPick));
+                if (deeperOre != null) picked = deeperOre;
+            }
             bool hazardAssigned = false;
 
             // hazards are optional, so we only roll for them if the config has a chance and a table
@@ -114,13 +127,17 @@ namespace MapGeneration
         // (so a guaranteed artifact can still land on/overwrite a vein cell, matching how it already
         // overwrites plain ore). Iterates in a fixed row-major order so results stay deterministic
         // for a given worldSeed regardless of how/when this is called.
-        private static void GrowVeins(int worldSeed, int layerIndex, int gridWidth, int layerHeight, LayerConfig config, ChunkData chunk)
+        private static void GrowVeins(int worldSeed, int layerIndex, int gridWidth, int layerHeight, LayerConfig config, LayerConfig nextLayerConfig, ChunkData chunk)
         {
             for (int y = 0; y < layerHeight; y++)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    var entry = FindOreEntry(config.OreTable, chunk.Cells[chunk.Index(x, y)].BlockTypeId);
+                    // Falls back to the next layer's table so ores swapped in by oreTierOddsBonus
+                    // still vein using their own authored vein settings.
+                    byte blockTypeId = chunk.Cells[chunk.Index(x, y)].BlockTypeId;
+                    var entry = FindOreEntry(config.OreTable, blockTypeId)
+                        ?? (nextLayerConfig != null ? FindOreEntry(nextLayerConfig.OreTable, blockTypeId) : null);
                     if (entry == null || entry.BlockType.Category != BlockCategory.Ore) continue;
 
                     GrowVein(worldSeed, layerIndex, gridWidth, layerHeight, x, y, entry, chunk);
@@ -282,11 +299,7 @@ namespace MapGeneration
             chunk.Cells[chunk.Index(x, y)].BlockTypeId = (byte)BlockTypeId.Artifact;
         }
 
-        // GameDesignDoc "Prestige > Progression > increase spawn odds of next tier of blocks":
-        // tierOddsBonus (default 0 = no bias, existing HazardTable rolls are unaffected) skews the
-        // roll toward entries with a higher BlockType.Value within this specific table, without a
-        // full rarity-tier rework.
-        private static BlockType PickWeighted(IReadOnlyList<WeightedBlockEntry> table, float roll01, float tierOddsBonus = 0f)
+        private static BlockType PickWeighted(IReadOnlyList<WeightedBlockEntry> table, float roll01)
         {
             if (table.Count == 0)
             {
@@ -294,17 +307,8 @@ namespace MapGeneration
                 return null;
             }
 
-            float maxValue = 0f;
-            if (tierOddsBonus > 0f)
-            {
-                for (int i = 0; i < table.Count; i++)
-                {
-                    if (table[i].BlockType != null) maxValue = Mathf.Max(maxValue, table[i].BlockType.Value);
-                }
-            }
-
             float total = 0f;
-            for (int i = 0; i < table.Count; i++) total += EffectiveWeight(table[i], maxValue, tierOddsBonus);
+            for (int i = 0; i < table.Count; i++) total += table[i].Weight;
             if (total <= 0f)
             {
                 Debug.LogWarning("Weighted table has no weight, returning null");
@@ -315,18 +319,39 @@ namespace MapGeneration
             float cumulative = 0f;
             for (int i = 0; i < table.Count; i++)
             {
-                cumulative += EffectiveWeight(table[i], maxValue, tierOddsBonus);
+                cumulative += table[i].Weight;
                 if (target <= cumulative) return table[i].BlockType;
             }
 
             return table[^1].BlockType;
         }
 
-        private static float EffectiveWeight(WeightedBlockEntry entry, float maxValue, float tierOddsBonus)
+        // Same weighted roll as PickWeighted, restricted to Ore-category entries (skips the table's
+        // Dirt filler) - used for the ore-tier upgrade's deeper-layer swap. Null if the table has
+        // no ore.
+        private static BlockType PickWeightedOre(IReadOnlyList<WeightedBlockEntry> table, float roll01)
         {
-            if (tierOddsBonus <= 0f || maxValue <= 0f || entry.BlockType == null) return entry.Weight;
-            float normalizedValueRank = entry.BlockType.Value / maxValue;
-            return entry.Weight * (1f + tierOddsBonus * normalizedValueRank);
+            float total = 0f;
+            for (int i = 0; i < table.Count; i++)
+            {
+                if (IsOreEntry(table[i])) total += table[i].Weight;
+            }
+            if (total <= 0f) return null;
+
+            float target = roll01 * total;
+            float cumulative = 0f;
+            BlockType last = null;
+            for (int i = 0; i < table.Count; i++)
+            {
+                if (!IsOreEntry(table[i])) continue;
+                cumulative += table[i].Weight;
+                last = table[i].BlockType;
+                if (target <= cumulative) return last;
+            }
+
+            return last;
         }
+
+        private static bool IsOreEntry(WeightedBlockEntry entry) => entry.BlockType != null && entry.BlockType.Category == BlockCategory.Ore;
     }
 }

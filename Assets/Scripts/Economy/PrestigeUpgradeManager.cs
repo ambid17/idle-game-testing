@@ -130,6 +130,9 @@ namespace Economy
         // GameDesignDoc "Prestige > Mining": keep "digging while flying" between prestige runs.
         public bool Mining_DigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_DigWhileFlyingUnlocked);
 
+        // Lets the player mine the block directly above them (W) - read by PlayerMining.
+        public bool Mining_DigUpUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_DigUpUnlock);
+
         // GameDesignDoc "Prestige > Mining > Increase grid size": added to the base grid width in
         // MapGenerationService before every prestige's map regeneration.
         public int Mining_GridWidthBonus => Mathf.RoundToInt(LevelOf(PrestigeUpgradeEffect.Mining_GridWidthBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Mining_GridWidthBonus));
@@ -148,8 +151,17 @@ namespace Economy
         public float Prestige_ArtifactValueMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_ArtifactValueMultiplier);
 
         // Grant Funding: fraction of the previous run's total dollars earned that the next run
-        // starts with - applied once by PrestigeManager.ExecutePrestige.
-        public float Prestige_GrantFundingFraction => LevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding);
+        // starts with - applied once by PrestigeManager.ExecutePrestige. Exponential: the first
+        // level grants EffectValuePerLevel and each further level doubles it (2%, 4%, 8%, ...).
+        public float Prestige_GrantFundingFraction
+        {
+            get
+            {
+                int level = LevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding);
+                if (level <= 0) return 0f;
+                return EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_GrantFunding) * Mathf.Pow(2f, level - 1);
+            }
+        }
 
         // Combined Prestige-branch income bonus, applied on top of Economy_MineralValueMultiplier /
         // Economy_ProcessedGoodMultiplier to every ore and processed-good sale.
@@ -167,7 +179,8 @@ namespace Economy
         // Artifacts per minute, passively - see PassivePrestigeIncomeTicker.
         public float Prestige_PassiveArtifactRate => LevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate);
 
-        // GameDesignDoc "Prestige > Progression".
+        // GameDesignDoc "Prestige > Progression". OreTierOddsBonus is the chance (0-1) that a rolled
+        // ore is swapped for one from the next layer's OreTable - see ChunkGenerator.RollCell.
         public float Progression_OreTierOddsBonus => LevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus);
         public float Progression_PowerUpEffectivenessBonus => LevelOf(PrestigeUpgradeEffect.Progression_PowerUpEffectivenessBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_PowerUpEffectivenessBonus);
         public float Progression_PowerUpSpawnRateBonus => LevelOf(PrestigeUpgradeEffect.Progression_PowerUpSpawnRateBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_PowerUpSpawnRateBonus);
@@ -180,8 +193,14 @@ namespace Economy
         public float Survival_FallingRockResistance => LevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance);
         public float Survival_GasResistance => LevelOf(PrestigeUpgradeEffect.Survival_GasResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_GasResistance);
         public float Survival_LavaResistance => LevelOf(PrestigeUpgradeEffect.Survival_LavaResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_LavaResistance);
-        public float Survival_MoveSpeedBonus => LevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus);
-        public int Survival_ShieldChargeCount => LevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount);
+        // Multiplier on horizontal move/fly speed (+X% per level).
+        public float Survival_MoveSpeedMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus);
+
+        // Emergency Shielding: owning any level grants a single regenerating shield charge. The
+        // first level recharges at PlayerHealth's base cooldown; each level past the first shaves
+        // EffectValuePerLevel seconds off it (see PlayerHealth.ShieldRegenSeconds).
+        public bool Survival_ShieldUnlocked => LevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount) > 0;
+        public float Survival_ShieldRegenReductionSeconds => Mathf.Max(0, LevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount) - 1) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount);
 
         // Gameplay-effect flag for a capstone: applied (post-prestige) level only. Distinct from the
         // base class's IsMaxed, which now also counts not-yet-applied queued levels for

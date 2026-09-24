@@ -256,11 +256,11 @@ namespace Player
             capsuleCollider.sharedMaterial = !IsGrounded ? flyingMaterial : groundedMaterial;
 
             // GameDesignDoc "Survival > Increase fly speed/Increase move speed": market multipliers
-            // scale the base, the prestige perk adds a further flat bonus on top.
+            // scale the base, the prestige perk adds a further % bonus on top.
             float baseHorizontalSpeed = IsFlying
                 ? flySpeed * (upgrades != null ? upgrades.Movement_FlightSpeedMultiplier : 1f)
                 : groundSpeed * (upgrades != null ? upgrades.Movement_MoveSpeedMultiplier : 1f);
-            float horizontalSpeed = baseHorizontalSpeed + (prestigeUpgrades != null ? prestigeUpgrades.Survival_MoveSpeedBonus : 0f);
+            float horizontalSpeed = baseHorizontalSpeed * (prestigeUpgrades != null ? prestigeUpgrades.Survival_MoveSpeedMultiplier : 1f);
             ApplyHorizontalMovementForce(movementInput.x * horizontalSpeed);
 
             // GameDesignDoc "Survival > Increase fall speed" (Movement_GravityIncrease): reset to
