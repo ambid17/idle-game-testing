@@ -102,6 +102,7 @@ The value and weight scales as you go down the tiers. Value scales faster than w
 ## Artifacts:
 	- at least 1 artifact is guaranteed per depth layer, with a separate low change of bonus artifacts beyond the guaranteed one
 	- artifact spawn rate increases as you go to deeper layers
+	- artifacts are secretly the Seals holding back what's buried at the bottom of the mine - see "# Story & Endgame: The Seals"
 
 
 # Passive upgrades
@@ -206,3 +207,64 @@ The map will regenerate, all of your dug tunnels will be gone. All of your money
 	- increased move speed
 	- reduced fall damage
 	- gas resistance
+
+# Story & Endgame: The Seals
+Motherload's structure (friendly employer, stranger signs the deeper you go, a twist, a fight at the bottom) without copying its content. The goal is a real ending to dig toward, so prestige means "getting strong enough to reach the bottom" rather than just "numbers go faster". Names below are working titles.
+
+## Premise
+- The Museum is your eager patron. The curator pays well for every artifact you bring up and is the reason you prestige.
+- The curator is NOT the villain (this is the main break from Mr. Natas). They're an honest collector who doesn't understand what they're buying.
+- The twist: artifacts aren't relics, they're Seals. An ancient civilization buried something (working name: "the Bound") beneath the mine and locked it away with thousands of wards spread through the layers. Every artifact you dig up weakens the prison.
+- The player is responsible. Their core loop (dig artifacts, spend them at the Museum) is what frees it.
+
+## Delivering the story
+- Artifact lore: lore fragments unlock as you find artifacts in each layer, readable in a Museum lore/collection tab. The tone gets darker with depth:
+	- layers 1-3: museum placards ("ceremonial disc, fired clay, purpose unknown")
+	- layers 4-7: translated inscriptions that start to warn ("...so that it may not rise...", "do not lift")
+	- layers 8-11: the full account of what was sealed and why, and the realization of what the player has been doing
+- Curator dialogue: short lines when the Museum opens, keyed to story progress. Excited early, uneasy in the middle, horrified after the twist. After the twist the curator becomes your ally, translating inscriptions to reveal guardian and boss weaknesses.
+- Hazards as symptoms: the existing depth scaling of gas, lava, and falling rocks is explained as the Bound stirring. Optional screen-shake "tremors" that grow more frequent as total artifacts collected rises.
+- Prestige as a story beat: the map regenerating is diegetic. Each prestige the Bound stirs and the mine collapses and reshapes itself. The prestige confirmation and post-prestige text should say so.
+- Story progress (lore unlocked, guardians defeated, twist seen) is permanent and survives prestige, like lifetime stats.
+
+## Guardians (mini-bosses)
+Constructs the old civilization left to stop anyone digging toward the prison. Each one guards a layer boundary and teaches one way to turn hazards into weapons, as preparation for the final fight.
+- Guardians are the "too difficult" wall that motivates prestige: a guardian blocks further descent until it's defeated in the current run. The first run should hit the Stone Warden at about the 2-hour mark, matching the first-prestige target.
+- The Stone Warden: bottom of layer 4
+	- a slow construct of rock and wards
+	- can't be damaged directly. The arena ceiling is lined with falling rocks and scattered with explosive blocks
+	- teaches: mine a rock's support to drop it on the guardian, and lure it into explosives
+- The Censer: bottom of layer 8
+	- a construct that vents gas clouds into the arena as it moves
+	- teaches: ignite its gas while it's standing in it (requires the deferred gas chain-ignition mechanic)
+	- its gas also damages the player, so fuel/HP management and Survival perks matter
+
+## The final fight: the Bound
+Below layer 11 is the Vault, a hand-authored arena rather than a generated layer. As with the guardians, the player never gets a direct attack. Every hazard they've learned to fear becomes their arsenal.
+- Phase 1 (chained): the Bound is held by the last remaining seals. It swipes and triggers cave-ins. The player drops falling rocks and sets off explosives on it.
+- Phase 2 (loose): it burrows through the arena terrain, leaving tunnels and gas pockets. The player ignites the gas while it's inside, using what the Censer taught.
+- Phase 3 (rising): lava floods the Vault from below and the Bound climbs toward the surface. The player has to climb with the jetpack while hitting it with the rocks and explosives around the shaft. This is a fuel-management test, the tension the whole game has been training.
+- Optional: owned automatons and drones join the fight (draw fire, ferry fuel), so idle investment pays off in the finale.
+
+## Ending
+- After phase 3 the player chooses:
+	- Reseal: sacrifice a large number of artifacts to rebuild the prison. This plays on the Museum Dividends spend-vs-hoard tension, since you're giving up your hoard to fix what you caused.
+	- Destroy: an extra, harder phase that ends it for good.
+- Both roll credits, unlock a unique achievement, and leave the game playable afterward (post-game / NG+: "the mine stirs again", with the ending reflected in curator dialogue and lore).
+
+## Systems impact
+What this adds to the current build:
+- persistent story progress in the save file (lore unlocked, guardians beaten, ending chosen), not reset by prestige
+- lore fragment data per layer and a Museum lore/collection tab
+- curator dialogue lines keyed to story progress
+- guardian/boss arenas at the layer 4 and 8 boundaries and below layer 11, plus a descent gate while a guardian is alive
+- boss entities with health, AI, and phases
+- hazards (falling rocks, explosives, gas, lava) able to damage non-player entities, not just the player
+- gas chain-ignition, currently deferred (needed for the Censer and phase 2)
+- new achievements: each guardian, each ending
+
+## Open questions
+- once a guardian is defeated, does it stay dead across prestiges, or return every run (tougher each time)? Leaning toward returning every run for the first few runs so it stays the prestige wall, then permanent after enough prestige perks
+- are artifacts still an anonymous count, or do they become unique named items (sets, rarities)? Lore per layer works with either
+- does the twist hit at a fixed depth (e.g. defeating the Stone Warden) or at a lifetime-artifacts threshold?
+- how many prestiges should reaching the Vault take? Target an 8-15 hour total playtime
