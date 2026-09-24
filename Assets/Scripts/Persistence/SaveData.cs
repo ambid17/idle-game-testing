@@ -71,6 +71,23 @@ namespace Persistence
         public List<OreCountEntry> OreCounts = new();
     }
 
+    // Cumulative stats backing Platform.AchievementManager - never reset by prestige. The local
+    // save is the source of truth for achievements: UnlockedAchievements holds Steam API names so
+    // unlocks earned while Steam wasn't running get re-pushed on the next launch.
+    [Serializable]
+    public class LifetimeStats
+    {
+        public long BlocksMined;
+        public int DeepestLayerIndex = -1;
+        public double DollarsEarned;
+        public int ArtifactsFound;
+        public List<BlockTypeId> OreTypesMined = new();
+        public List<BlockTypeId> PowerUpTypesCollected = new();
+        public List<ProcessingRecipeId> RecipesCompleted = new();
+        public List<int> HazardDeathReasons = new();
+        public List<string> UnlockedAchievements = new();
+    }
+
     // Minimal save file per the resolved persistence decision - Wallet/UpgradeManager/idle-average/
     // AutomationSettings/Depot/Player state plus a last-active timestamp. Map/chunk data lives in
     // the sibling map.json (MapGeneration/Persistence's MapSaveData), not here.
@@ -111,6 +128,8 @@ namespace Persistence
         // Tutorial.TutorialManager: which one-time tutorial popups have already been shown, so they
         // don't repeat after reload.
         public List<TutorialId> ShownTutorials = new();
+        // Platform.AchievementManager - cumulative across prestiges.
+        public LifetimeStats LifetimeStats = new();
         // ISO-8601 string, since JsonUtility can't serialize DateTime directly.
         public string LastActiveUtcTimestamp;
     }

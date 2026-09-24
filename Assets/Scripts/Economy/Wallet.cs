@@ -34,6 +34,7 @@ namespace Economy
             dollars += amount;
             dollarsEarnedThisRun += amount;
             GameManager.EventService.Dispatch<DollarsChangedEvent>();
+            GameManager.EventService.Dispatch(new DollarsEarnedEvent(amount));
         }
 
         public bool TrySpend(double amount)

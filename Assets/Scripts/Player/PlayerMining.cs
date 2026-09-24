@@ -180,6 +180,8 @@ namespace Player
 
         private void CollectMinedBlock(BlockType blockType, int layerIndex, int x, int y)
         {
+            GameManager.EventService.Dispatch(new BlockMinedEvent(blockType, layerIndex));
+
             if (blockType.Category == BlockCategory.PowerUp)
             {
                 playerPowerUps.Apply(blockType, layerIndex, x, y);

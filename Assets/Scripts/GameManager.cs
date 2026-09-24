@@ -21,6 +21,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private ProcessingRecipeDatabase _processingRecipeDatabase;
     [SerializeField] private TutorialDatabase _tutorialDatabase;
     [SerializeField] private SteamManager _steamManager;
+    [SerializeField] private AchievementManager _achievementManager;
 
     public static ChunkStreamingManager ChunkStreamingManager => Instance._chunkStreamingManager;
     public static MapGenerationService MapGenerationService => Instance._mapGenerationService;
@@ -33,6 +34,7 @@ public class GameManager : Singleton<GameManager>
     public static ProcessingRecipeDatabase ProcessingRecipeDatabase => Instance._processingRecipeDatabase;
     public static TutorialDatabase TutorialDatabase => Instance._tutorialDatabase;
     public static SteamManager SteamManager => Instance._steamManager;
+    public static AchievementManager AchievementManager => Instance._achievementManager;
 
     // Deliberately static rather than routed through Instance: many listeners remove themselves
     // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
@@ -99,6 +101,10 @@ public class GameManager : Singleton<GameManager>
         if (_steamManager == null)
         {
             Debug.LogError("SteamManager is not assigned in GameManager.");
+        }
+        if (_achievementManager == null)
+        {
+            Debug.LogError("AchievementManager is not assigned in GameManager.");
         }
         BlockTypeDatabase.Validate();
         LayerConfigProvider.Validate();

@@ -22013,6 +22013,7 @@ GameObject:
   - component: {fileID: 528579664}
   - component: {fileID: 528579665}
   - component: {fileID: 528579666}
+  - component: {fileID: 528579667}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -22088,6 +22089,7 @@ MonoBehaviour:
   _processingRecipeDatabase: {fileID: 11400000, guid: a0417a789f164b248a4cc1acc067ba07, type: 2}
   _tutorialDatabase: {fileID: 11400000, guid: 18a101a57d7c249428aadd53c11738d1, type: 2}
   _steamManager: {fileID: 528579666}
+  _achievementManager: {fileID: 528579667}
 --- !u!114 &528579662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22157,6 +22159,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d2db89f21dc55e41a15df8824880c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Platform.SteamManager
+--- !u!114 &528579667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 528579657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2005730df8a64ea44921886c89a64e36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Platform.AchievementManager
 --- !u!1 &531858249
 GameObject:
   m_ObjectHideFlags: 0
@@ -40435,7 +40449,7 @@ Transform:
   m_GameObject: {fileID: 1150534566}
   serializedVersion: 2
   m_LocalRotation: {x: -4.6565474e-10, y: 0.000000029816878, z: 1.388437e-17, w: 1}
-  m_LocalPosition: {x: 19.876339, y: 2.1699998, z: -10}
+  m_LocalPosition: {x: 19.81595, y: 2.1699998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

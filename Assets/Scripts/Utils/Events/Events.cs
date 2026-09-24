@@ -504,6 +504,33 @@ namespace Events
 
     public class LoadCompletedEvent { }
 
+    // Dispatched by PlayerMining.CollectMinedBlock for every block the player mines (including
+    // vein-mining bonus cells, power-ups and artifacts - automaton mining doesn't go through it).
+    // Platform.AchievementManager's source for lifetime mining/depth stats.
+    public class BlockMinedEvent : IEvent
+    {
+        public BlockType BlockType;
+        public int LayerIndex;
+
+        public BlockMinedEvent(BlockType blockType, int layerIndex)
+        {
+            BlockType = blockType;
+            LayerIndex = layerIndex;
+        }
+    }
+
+    // Dispatched by Wallet.Add with the amount actually credited - unlike DollarsChangedEvent,
+    // which also fires on spends and save restores.
+    public class DollarsEarnedEvent : IEvent
+    {
+        public double Amount;
+
+        public DollarsEarnedEvent(double amount)
+        {
+            Amount = amount;
+        }
+    }
+
     // Dispatched by PlayerController on backquote, only in the Editor or a Development Build (see
     // UI.DevPanelUI). Mirrors PauseMenuOpenRequestedEvent's shape.
     public class DevPanelOpenRequestedEvent { }

@@ -170,6 +170,8 @@ namespace Persistence
                 data.ShownTutorials.Add(id);
             }
 
+            data.LifetimeStats = GameManager.AchievementManager.Stats;
+
             try
             {
                 File.WriteAllText(SavePath, JsonUtility.ToJson(data));
@@ -265,6 +267,7 @@ namespace Persistence
             Wallet.Instance.SetDollarsEarnedThisRun(data.DollarsEarnedThisRun);
             PrestigeManager.Instance.SetPrestigeCount(data.PrestigeCount);
             TutorialManager.Instance.RestoreFromSaveData(data.ShownTutorials);
+            GameManager.AchievementManager.RestoreFromSaveData(data.LifetimeStats);
 
             foreach (var entry in data.UpgradeLevels)
             {
