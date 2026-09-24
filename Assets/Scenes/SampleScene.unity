@@ -22012,6 +22012,7 @@ GameObject:
   - component: {fileID: 528579663}
   - component: {fileID: 528579664}
   - component: {fileID: 528579665}
+  - component: {fileID: 528579666}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -22086,6 +22087,7 @@ MonoBehaviour:
   _automationConfig: {fileID: 11400000, guid: f44f0b5fc9b3d6643a32345e6f23b960, type: 2}
   _processingRecipeDatabase: {fileID: 11400000, guid: a0417a789f164b248a4cc1acc067ba07, type: 2}
   _tutorialDatabase: {fileID: 11400000, guid: 18a101a57d7c249428aadd53c11738d1, type: 2}
+  _steamManager: {fileID: 528579666}
 --- !u!114 &528579662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22143,6 +22145,18 @@ MonoBehaviour:
   explosiveEffectPrefab: {fileID: 158297067041686266, guid: 0eac8f92e8f90fe48a6917075df1c9ee, type: 3}
   fallingRockEffectPrefab: {fileID: 1608046206515764736, guid: 34d7bbf171d65974cb341d036c7e2358, type: 3}
   gasCloudEffectPrefab: {fileID: 7024855636632672245, guid: c31a77df5784083478d399b8819b9ec3, type: 3}
+--- !u!114 &528579666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 528579657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d2db89f21dc55e41a15df8824880c34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Platform.SteamManager
 --- !u!1 &531858249
 GameObject:
   m_ObjectHideFlags: 0
