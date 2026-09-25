@@ -9,9 +9,8 @@ namespace UI
     // Tabbed audio/video/control options, opened from PauseMenuUI's Options button (tab
     // switching itself is TabGroupUI, shared with ControlCenterUI's dashboards). Audio and Video
     // controls read/write through SettingsService (PlayerPrefs-backed, applies immediately as the
-    // player drags/clicks). Quality/Resolution use TMP_Dropdowns. Controls is a static legend
-    // rather than a rebinding UI - the project has no Input Actions asset, every key is
-    // hardcoded via UnityEngine.InputSystem.Keyboard.
+    // player drags/clicks). Quality/Resolution use TMP_Dropdowns. The Controls tab is its own
+    // component (KeybindsUI) backed by Settings.KeybindService.
     public class OptionsUI : MonoBehaviour
     {
         [SerializeField] private GameObject rendererRoot;

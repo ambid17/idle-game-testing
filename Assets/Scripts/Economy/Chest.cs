@@ -23,7 +23,7 @@ namespace Economy
         private OreInventory oreInventory;
         private PlayerInventory playerInventory;
 
-        public string PromptText => "Press E to pick up lost ores";
+        public string PromptText => $"Press {GameManager.KeybindService.GetDisplayName(Settings.GameAction.InteractPrimary)} to pick up lost ores";
 
         // Snapshot of what's currently in the chest, for SaveService (via ChestRegistry) to persist.
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreInventory.OreCounts;

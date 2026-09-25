@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Events;
+using Settings;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Interaction
 {
@@ -18,7 +18,6 @@ namespace Interaction
 
         private readonly List<IInteractable> nearby = new List<IInteractable>();
         private IInteractable current;
-        Keyboard keyboard => Keyboard.current;
 
         private void Update()
         {
@@ -40,19 +39,20 @@ namespace Interaction
                 }
             }
 
-            if (current != null && keyboard != null)
+            if (current != null)
             {
                 var interactionType = InteractionType.None;
 
-                if (keyboard.eKey.wasPressedThisFrame)
+                var keybinds = GameManager.KeybindService;
+                if (keybinds.WasPressedThisFrame(GameAction.InteractPrimary))
                 {
                     interactionType = InteractionType.Primary;
                 }
-                if (keyboard.rKey.wasPressedThisFrame)
+                if (keybinds.WasPressedThisFrame(GameAction.InteractSecondary))
                 {
                     interactionType = InteractionType.Secondary;
                 }
-                if (keyboard.fKey.wasPressedThisFrame)
+                if (keybinds.WasPressedThisFrame(GameAction.InteractTertiary))
                 {
                     interactionType = InteractionType.Tertiary;
                 }

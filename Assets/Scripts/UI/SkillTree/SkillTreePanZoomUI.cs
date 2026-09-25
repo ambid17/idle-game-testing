@@ -1,11 +1,11 @@
+using Settings;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace UI.SkillTree
 {
-    // Click-drag or WASD to pan, scroll wheel to zoom, on a uGUI RectTransform content container.
+    // Click-drag or the movement keybinds (WASD by default) to pan, scroll wheel to zoom, on a uGUI RectTransform content container.
     // Lives on a full-bleed transparent raycast-target Image over the tree's viewport, so
     // drag/scroll register anywhere in the empty background, not just on top of nodes.
     [RequireComponent(typeof(Image))]
@@ -18,17 +18,10 @@ namespace UI.SkillTree
         [SerializeField] private float defaultScale = 0.5f;
         [SerializeField] private float keyboardPanSpeed = 800f;
 
-        private Keyboard keyboard;
         private Canvas canvas;
 
         private void Awake()
         {
-            keyboard = Keyboard.current;
-            if (keyboard == null)
-            {
-                Debug.LogError("SkillTreePanZoomUI: no keyboard found, WASD panning disabled.");
-            }
-
             canvas = GetComponentInParent<Canvas>();
             if (canvas == null)
             {
@@ -38,13 +31,14 @@ namespace UI.SkillTree
 
         private void Update()
         {
-            if (content == null || keyboard == null) return;
+            if (content == null) return;
 
             Vector2 move = Vector2.zero;
-            if (keyboard.wKey.isPressed) move.y -= 1f;
-            if (keyboard.sKey.isPressed) move.y += 1f;
-            if (keyboard.aKey.isPressed) move.x += 1f;
-            if (keyboard.dKey.isPressed) move.x -= 1f;
+            var keybinds = GameManager.KeybindService;
+            if (keybinds.IsPressed(GameAction.FlyUp)) move.y -= 1f;
+            if (keybinds.IsPressed(GameAction.MoveDown)) move.y += 1f;
+            if (keybinds.IsPressed(GameAction.MoveLeft)) move.x += 1f;
+            if (keybinds.IsPressed(GameAction.MoveRight)) move.x -= 1f;
             if (move == Vector2.zero) return;
 
             content.anchoredPosition = content.anchoredPosition

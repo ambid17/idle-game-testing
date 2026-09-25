@@ -5,6 +5,7 @@ using MapGeneration;
 using Persistence;
 using Platform;
 using Processing;
+using Settings;
 using Tutorial;
 using UnityEngine;
 
@@ -22,6 +23,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private TutorialDatabase _tutorialDatabase;
     [SerializeField] private SteamManager _steamManager;
     [SerializeField] private AchievementManager _achievementManager;
+    [SerializeField] private KeyIconDatabase _keyIconDatabase;
 
     public static ChunkStreamingManager ChunkStreamingManager => Instance._chunkStreamingManager;
     public static MapGenerationService MapGenerationService => Instance._mapGenerationService;
@@ -35,6 +37,7 @@ public class GameManager : Singleton<GameManager>
     public static TutorialDatabase TutorialDatabase => Instance._tutorialDatabase;
     public static SteamManager SteamManager => Instance._steamManager;
     public static AchievementManager AchievementManager => Instance._achievementManager;
+    public static KeyIconDatabase KeyIconDatabase => Instance._keyIconDatabase;
 
     // Deliberately static rather than routed through Instance: many listeners remove themselves
     // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
@@ -54,6 +57,11 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+
+    // Plain C# (PlayerPrefs-backed, no scene references), so it's created lazily like
+    // EventService rather than needing a serialized scene object.
+    private static KeybindService _keybindService;
+    public static KeybindService KeybindService => _keybindService ??= new KeybindService();
 
     protected override void Initialize()
     {
@@ -106,6 +114,10 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.LogError("AchievementManager is not assigned in GameManager.");
         }
+        if (_keyIconDatabase == null)
+        {
+            Debug.LogError("KeyIconDatabase is not assigned in GameManager.");
+        }
         BlockTypeDatabase.Validate();
         LayerConfigProvider.Validate();
         MapGenerationConfig.Validate();
@@ -114,6 +126,7 @@ public class GameManager : Singleton<GameManager>
         AutomationConfig.Validate();
         ProcessingRecipeDatabase.Validate();
         TutorialDatabase.Validate();
+        KeyIconDatabase.Validate();
     }
 
     // Runs after every scene object's Awake(), so Wallet/UpgradeManager/AutomationSettings/

@@ -1,8 +1,8 @@
 using Economy;
 using Events;
 using MapGeneration;
+using Settings;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Player
 {
@@ -151,15 +151,13 @@ namespace Player
 
         private static Vector2Int? ResolveDirection()
         {
-            var keyboard = Keyboard.current;
-            if (keyboard == null) return null;
-
-            if (keyboard.aKey.isPressed) return Vector2Int.left;
-            if (keyboard.dKey.isPressed) return Vector2Int.right;
-            if (keyboard.sKey.isPressed) return Vector2Int.down;
-            // W also fires the jetpack (PlayerController), so digging up only happens while the
-            // player is holding W against a block overhead.
-            if (keyboard.wKey.isPressed && PrestigeUpgradeManager.Instance.Mining_DigUpUnlocked) return Vector2Int.up;
+            var keybinds = GameManager.KeybindService;
+            if (keybinds.IsPressed(GameAction.MoveLeft)) return Vector2Int.left;
+            if (keybinds.IsPressed(GameAction.MoveRight)) return Vector2Int.right;
+            if (keybinds.IsPressed(GameAction.MoveDown)) return Vector2Int.down;
+            // FlyUp also fires the jetpack (PlayerController), so digging up only happens while
+            // the player is holding it against a block overhead.
+            if (keybinds.IsPressed(GameAction.FlyUp) && PrestigeUpgradeManager.Instance.Mining_DigUpUnlocked) return Vector2Int.up;
             return null;
         }
 

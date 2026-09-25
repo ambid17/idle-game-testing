@@ -22,7 +22,9 @@ namespace Interaction
             promptRoot.SetActive(true);
             foreach (var row in allRows)
             {
-                row.gameObject.SetActive(row.InteractableType == interactableType);
+                bool matches = row.InteractableType == interactableType;
+                row.gameObject.SetActive(matches);
+                if (matches) row.RefreshKeyIcon();
             }
         }
 

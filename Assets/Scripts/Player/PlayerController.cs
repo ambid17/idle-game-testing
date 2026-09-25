@@ -1,6 +1,7 @@
 using Automation;
 using Economy;
 using Events;
+using Settings;
 using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -166,7 +167,8 @@ namespace Player
         {
             if (health.IsDead || keyboard == null) return;
 
-            if (keyboard.escapeKey.wasPressedThisFrame)
+            // Escape while Options > Controls is waiting for a key cancels that capture instead.
+            if (keyboard.escapeKey.wasPressedThisFrame && !GameManager.KeybindService.IsCapturingKey)
             {
                 // Three tiers: a modal nested inside (or standalone atop) a panel closes first;
                 // only once none is open does Escape fall through to closing the panel itself,
@@ -223,21 +225,20 @@ namespace Player
                 return;
             }
 
-            bool wHeld = keyboard.wKey.isPressed;
-            bool aHeld = keyboard.aKey.isPressed;
-            bool dHeld = keyboard.dKey.isPressed;
+            var keybinds = GameManager.KeybindService;
+            bool flyHeld = keybinds.IsPressed(GameAction.FlyUp);
 
             float horizontalInput = 0f;
-            if (aHeld) horizontalInput -= 1f;
-            if (dHeld) horizontalInput += 1f;
-            movementInput = new Vector2(horizontalInput, wHeld ? 1f : 0f);
+            if (keybinds.IsPressed(GameAction.MoveLeft)) horizontalInput -= 1f;
+            if (keybinds.IsPressed(GameAction.MoveRight)) horizontalInput += 1f;
+            movementInput = new Vector2(horizontalInput, flyHeld ? 1f : 0f);
 
-            // S drops the player through MapGenerationService's invisible surface floor gate when
+            // MoveDown (S by default) drops the player through MapGenerationService's invisible surface floor gate when
             // they're standing on it specifically (not just any ground) - lets them re-enter the
             // mine on foot instead of having to fly down through a dug-out gap. The gate is built
             // from several sibling colliders on one GameObject, so compare owning GameObject
             // rather than the specific collider instance.
-            if (keyboard.sKey.wasPressedThisFrame && IsGrounded && groundCollider.gameObject == GameManager.MapGenerationService.SurfaceFloorObject)
+            if (keybinds.WasPressedThisFrame(GameAction.MoveDown) && IsGrounded && groundCollider.gameObject == GameManager.MapGenerationService.SurfaceFloorObject)
             {
                 GameManager.MapGenerationService.DropThroughSurfaceFloor();
             }
