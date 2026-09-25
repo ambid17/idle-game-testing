@@ -7,8 +7,9 @@ namespace UI.Reuseable
     // GameObject, hides it on exit. A Button's own Image keeps receiving pointer events even
     // while Button.interactable is false, so callers that only want the tooltip available
     // conditionally (e.g. explaining why a feature is locked) toggle Active rather than this
-    // component/GameObject, which would also suppress the pointer events entirely.
-    public class HoverTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    // component/GameObject, which would also suppress the pointer events entirely. Controller
+    // selection (ISelectHandler) shows it the same way hovering does.
+    public class HoverTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
     {
         [SerializeField] private GameObject tooltipRoot;
 
@@ -26,5 +27,12 @@ namespace UI.Reuseable
         }
 
         public void OnPointerExit(PointerEventData eventData) => tooltipRoot.SetActive(false);
+
+        public void OnSelect(BaseEventData eventData)
+        {
+            if (Active) tooltipRoot.SetActive(true);
+        }
+
+        public void OnDeselect(BaseEventData eventData) => tooltipRoot.SetActive(false);
     }
 }

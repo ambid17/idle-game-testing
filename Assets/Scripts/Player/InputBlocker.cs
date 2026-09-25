@@ -13,11 +13,19 @@ namespace Player
 
         public static bool IsBlocked => blockCount > 0;
 
+        // Frame the last block was released on. A press that closes a panel through its UI (e.g.
+        // gamepad A on a focused "Collect" button) is still "pressed this frame" for gameplay
+        // readers that run after it, so they check this to avoid also acting on that press.
+        public static int LastUnblockedFrame { get; private set; } = -1;
+        public static bool WasUnblockedThisFrame => LastUnblockedFrame == Time.frameCount;
+
         // Reference-counted so two modals opening/closing in overlapping order can't accidentally
         // unblock input while another is still open.
         public static void SetBlocked(bool blocked)
         {
+            bool wasBlocked = IsBlocked;
             blockCount = blocked ? blockCount + 1 : Mathf.Max(0, blockCount - 1);
+            if (wasBlocked && !IsBlocked) LastUnblockedFrame = Time.frameCount;
         }
     }
 }

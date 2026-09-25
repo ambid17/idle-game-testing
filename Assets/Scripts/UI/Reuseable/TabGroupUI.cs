@@ -26,6 +26,8 @@ namespace UI
         [SerializeField] private Color activeTabColor = Color.white;
         [SerializeField] private Color inactiveTabColor = new(0.7f, 0.7f, 0.7f);
 
+        private int currentIndex;
+
         private void Start()
         {
             for (int i = 0; i < tabs.Count; i++)
@@ -37,8 +39,34 @@ namespace UI
             SelectTab(defaultTabIndex);
         }
 
+        // Controller LB/RB cycle tabs, but only in the frontmost panel (see GamepadFocus), so a
+        // panel underneath an open modal doesn't switch tabs behind it.
+        private void Update()
+        {
+            if (tabs.Count < 2 || !GamepadFocus.IsInTopmost(transform)) return;
+
+            var keybinds = GameManager.KeybindService;
+            if (keybinds.WasTabNextPressedThisFrame()) CycleTab(1);
+            else if (keybinds.WasTabPreviousPressedThisFrame()) CycleTab(-1);
+        }
+
+        // Skips tabs whose button is hidden or non-interactable (e.g. locked dashboards).
+        private void CycleTab(int direction)
+        {
+            for (int step = 1; step < tabs.Count; step++)
+            {
+                int index = ((currentIndex + direction * step) % tabs.Count + tabs.Count) % tabs.Count;
+                var button = tabs[index].Button;
+                if (button != null && (!button.isActiveAndEnabled || !button.interactable)) continue;
+
+                SelectTab(index);
+                return;
+            }
+        }
+
         public void SelectTab(int index)
         {
+            currentIndex = index;
             for (int i = 0; i < tabs.Count; i++)
             {
                 if (tabs[i].ContentRoot != null) tabs[i].ContentRoot.SetActive(i == index);

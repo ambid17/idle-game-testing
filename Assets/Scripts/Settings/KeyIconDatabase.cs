@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 namespace Settings
 {
@@ -12,17 +13,50 @@ namespace Settings
         public Sprite Sprite;
     }
 
-    // Key -> prompt sprite (keyboard-&-mouse_sheet_default) so on-screen prompts like
-    // Interaction.InteractionPromptRow show whatever key the player has bound, not a hardcoded
-    // letter. Keys without an entry fall back to FallbackSprite (the sheet's "ANY" key).
+    [Serializable]
+    public class GamepadButtonIcon
+    {
+        // Control path as the Input System stores it in a binding, e.g. "<Gamepad>/buttonSouth".
+        public string ControlPath;
+        public Sprite Sprite;
+    }
+
+    // Key -> prompt sprite (keyboard-&-mouse_sheet_default) and gamepad control path -> prompt
+    // sprite, so on-screen prompts like Interaction.InteractionPromptRow show whatever the player
+    // has bound on the device they're using, not a hardcoded letter. Entries without a sprite
+    // fall back to FallbackSprite / GamepadFallbackSprite.
     // Follows Tutorial.TutorialDatabase's lazy-lookup-dictionary pattern.
     [CreateAssetMenu(fileName = "KeyIconDatabase", menuName = "Settings/Key Icon Database")]
     public class KeyIconDatabase : ScriptableObject
     {
         public List<KeyIcon> Icons = new();
         public Sprite FallbackSprite;
+        public List<GamepadButtonIcon> GamepadIcons = new();
+        public Sprite GamepadFallbackSprite;
 
         private Dictionary<Key, Sprite> spritesByKey;
+        private Dictionary<string, Sprite> spritesByGamepadPath;
+
+        // Icon for action's binding on the device the player is currently using.
+        public Sprite GetIcon(GameAction action)
+        {
+            var keybinds = GameManager.KeybindService;
+            var scheme = keybinds.CurrentScheme;
+            string path = keybinds.GetBindingPath(action, scheme);
+            if (path == null) return scheme == InputScheme.Gamepad ? GamepadFallbackSprite : FallbackSprite;
+
+            if (scheme == InputScheme.Gamepad) return GetGamepadIcon(path);
+
+            var keyboard = Keyboard.current;
+            var keyControl = keyboard != null ? InputControlPath.TryFindControl(keyboard, path) as KeyControl : null;
+            return keyControl != null ? GetIcon(keyControl.keyCode) : FallbackSprite;
+        }
+
+        public Sprite GetGamepadIcon(string controlPath)
+        {
+            if (spritesByGamepadPath == null) BuildLookup();
+            return spritesByGamepadPath.TryGetValue(controlPath, out var sprite) ? sprite : GamepadFallbackSprite;
+        }
 
         public Sprite GetIcon(Key key)
         {
@@ -38,6 +72,13 @@ namespace Settings
                 if (icon == null || icon.Sprite == null) continue;
                 spritesByKey[icon.Key] = icon.Sprite;
             }
+
+            spritesByGamepadPath = new Dictionary<string, Sprite>(StringComparer.OrdinalIgnoreCase);
+            foreach (var icon in GamepadIcons)
+            {
+                if (icon == null || icon.Sprite == null || string.IsNullOrEmpty(icon.ControlPath)) continue;
+                spritesByGamepadPath[icon.ControlPath] = icon.Sprite;
+            }
         }
 
         public void Validate()
@@ -45,6 +86,17 @@ namespace Settings
             if (FallbackSprite == null)
             {
                 Debug.LogError("KeyIconDatabase.FallbackSprite is not assigned.");
+            }
+            if (GamepadFallbackSprite == null)
+            {
+                Debug.LogError("KeyIconDatabase.GamepadFallbackSprite is not assigned.");
+            }
+            foreach (var icon in GamepadIcons)
+            {
+                if (icon == null || icon.Sprite == null)
+                {
+                    Debug.LogError($"KeyIconDatabase has a gamepad entry with no sprite ({icon?.ControlPath}).");
+                }
             }
             if (Icons == null || Icons.Count == 0)
             {

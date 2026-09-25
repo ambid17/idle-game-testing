@@ -4,7 +4,6 @@ using Events;
 using Settings;
 using UI;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Player
 {
@@ -90,7 +89,6 @@ namespace Player
 
         private Vector2 movementInput;
         public Vector2 MovementInput => movementInput;
-        private Keyboard keyboard;
 
 
         private void Awake()
@@ -116,7 +114,6 @@ namespace Player
             capsuleCollider = GetComponent<CapsuleCollider2D>();
             groundCheckOffset = capsuleCollider.size.y * 0.5f * Vector2.down;
             groundCheckSize = new Vector2(capsuleCollider.size.x * 0.5f, 0.1f);
-            keyboard = Keyboard.current;
 
             groundedMaterial = capsuleCollider.sharedMaterial;
             flyingMaterial = new PhysicsMaterial2D("PlayerFlyingMaterial") { friction = 0f, bounciness = 0f };
@@ -165,34 +162,31 @@ namespace Player
 
         private void Update()
         {
-            if (health.IsDead || keyboard == null) return;
+            if (health.IsDead) return;
 
-            // Escape while Options > Controls is waiting for a key cancels that capture instead.
-            if (keyboard.escapeKey.wasPressedThisFrame && !GameManager.KeybindService.IsCapturingKey)
+            var keybinds = GameManager.KeybindService;
+
+            // Escape/Start while Options > Controls is waiting for a key cancels that capture
+            // instead, and Escape/B with a dropdown's list open just closes the list (UI Cancel).
+            if (!keybinds.IsCapturingKey && !GamepadFocus.IsDropdownListOpen())
             {
-                // Three tiers: a modal nested inside (or standalone atop) a panel closes first;
-                // only once none is open does Escape fall through to closing the panel itself,
-                // or - if nothing was open at all - opening the pause menu. See UI.ModalTracker.
-                if (ModalTracker.IsAnyModalOpen)
+                if (keybinds.WasPausePressedThisFrame())
                 {
-                    GameManager.EventService.Dispatch<ModalCloseRequestedEvent>();
+                    CloseTopmostUI(openPauseIfNothingOpen: true);
                 }
-                else
+                // Gamepad B only ever backs out of UI - with nothing open it does nothing, rather
+                // than opening the pause menu the way Escape/Start do.
+                else if (keybinds.WasBackPressedThisFrame())
                 {
-                    bool panelWasOpen = InputBlocker.IsBlocked;
-                    GameManager.EventService.Dispatch<UICloseEvent>();
-                    if (!panelWasOpen)
-                    {
-                        GameManager.EventService.Dispatch<PauseMenuOpenRequestedEvent>();
-                    }
+                    CloseTopmostUI(openPauseIfNothingOpen: false);
                 }
             }
 
             // Dev Panel hotkey (UI.DevPanelUI) - backquote matches the console log viewer's
-            // pre-existing key. Editor/Development Build only, and only when nothing else already
-            // has input blocked, matching PauseMenuOpenRequestedEvent's guard above so it never
-            // fights another open modal for the screen.
-            if (keyboard.backquoteKey.wasPressedThisFrame && (Debug.isDebugBuild || Application.isEditor) && !InputBlocker.IsBlocked)
+            // pre-existing key (Select on a gamepad). Editor/Development Build only, and only when
+            // nothing else already has input blocked, matching PauseMenuOpenRequestedEvent's guard
+            // so it never fights another open modal for the screen.
+            if (keybinds.WasDevPanelPressedThisFrame() && (Debug.isDebugBuild || Application.isEditor) && !InputBlocker.IsBlocked)
             {
                 GameManager.EventService.Dispatch<DevPanelOpenRequestedEvent>();
             }
@@ -219,13 +213,6 @@ namespace Player
                 return;
             }
 
-            if (keyboard == null)
-            {
-                Debug.LogError("no keyboard found");
-                return;
-            }
-
-            var keybinds = GameManager.KeybindService;
             bool flyHeld = keybinds.IsPressed(GameAction.FlyUp);
 
             float horizontalInput = 0f;
@@ -241,6 +228,25 @@ namespace Player
             if (keybinds.WasPressedThisFrame(GameAction.MoveDown) && IsGrounded && groundCollider.gameObject == GameManager.MapGenerationService.SurfaceFloorObject)
             {
                 GameManager.MapGenerationService.DropThroughSurfaceFloor();
+            }
+        }
+
+        // Three tiers: a modal nested inside (or standalone atop) a panel closes first; only once
+        // none is open does this fall through to closing the panel itself, or - if nothing was
+        // open at all - optionally opening the pause menu. See UI.ModalTracker.
+        private static void CloseTopmostUI(bool openPauseIfNothingOpen)
+        {
+            if (ModalTracker.IsAnyModalOpen)
+            {
+                GameManager.EventService.Dispatch<ModalCloseRequestedEvent>();
+                return;
+            }
+
+            bool panelWasOpen = InputBlocker.IsBlocked;
+            GameManager.EventService.Dispatch<UICloseEvent>();
+            if (!panelWasOpen && openPauseIfNothingOpen)
+            {
+                GameManager.EventService.Dispatch<PauseMenuOpenRequestedEvent>();
             }
         }
 

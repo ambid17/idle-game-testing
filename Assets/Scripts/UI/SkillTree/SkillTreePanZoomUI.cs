@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 namespace UI.SkillTree
 {
-    // Click-drag or the movement keybinds (WASD by default) to pan, scroll wheel to zoom, on a uGUI RectTransform content container.
+    // Click-drag, the movement keybinds (WASD by default) or the right stick to pan; scroll wheel or
+    // the gamepad triggers to zoom, on a uGUI RectTransform content container.
     // Lives on a full-bleed transparent raycast-target Image over the tree's viewport, so
     // drag/scroll register anywhere in the empty background, not just on top of nodes.
     [RequireComponent(typeof(Image))]
@@ -17,8 +18,13 @@ namespace UI.SkillTree
         [SerializeField] private float maxZoom = 1.5f;
         [SerializeField] private float defaultScale = 0.5f;
         [SerializeField] private float keyboardPanSpeed = 800f;
+        // Scale change per second at full trigger pull.
+        [SerializeField] private float gamepadZoomSpeed = 1f;
 
         private Canvas canvas;
+        // Set by CenterOn (controller selection moving between nodes); eased toward in Update and
+        // dropped the moment the player pans or zooms by hand.
+        private Vector2? panTarget;
 
         private void Awake()
         {
@@ -33,13 +39,37 @@ namespace UI.SkillTree
         {
             if (content == null) return;
 
-            Vector2 move = Vector2.zero;
             var keybinds = GameManager.KeybindService;
-            if (keybinds.IsPressed(GameAction.FlyUp)) move.y -= 1f;
-            if (keybinds.IsPressed(GameAction.MoveDown)) move.y += 1f;
-            if (keybinds.IsPressed(GameAction.MoveLeft)) move.x += 1f;
-            if (keybinds.IsPressed(GameAction.MoveRight)) move.x -= 1f;
-            if (move == Vector2.zero) return;
+
+            float zoomInput = keybinds.ZoomViewInput;
+            if (!Mathf.Approximately(zoomInput, 0f))
+            {
+                panTarget = null;
+                var viewport = (RectTransform)transform;
+                Vector2 viewportCenter = RectTransformUtility.WorldToScreenPoint(GetCanvasCamera(), viewport.TransformPoint(viewport.rect.center));
+                ZoomAround(viewportCenter, content.localScale.x + zoomInput * gamepadZoomSpeed * Time.deltaTime);
+            }
+
+            Vector2 move = Vector2.zero;
+            // Keyboard only - on a gamepad the movement actions' d-pad/left stick navigate between
+            // nodes instead (SkillTreeNodeUI pans the view to follow the selection).
+            if (keybinds.CurrentScheme == InputScheme.KeyboardMouse)
+            {
+                if (keybinds.IsPressed(GameAction.FlyUp)) move.y -= 1f;
+                if (keybinds.IsPressed(GameAction.MoveDown)) move.y += 1f;
+                if (keybinds.IsPressed(GameAction.MoveLeft)) move.x += 1f;
+                if (keybinds.IsPressed(GameAction.MoveRight)) move.x -= 1f;
+            }
+            // Right stick: pushing it moves the view the way the stick points.
+            move -= keybinds.PanViewInput;
+            move = Vector2.ClampMagnitude(move, 1f);
+            if (move == Vector2.zero)
+            {
+                EaseTowardPanTarget();
+                return;
+            }
+
+            panTarget = null;
 
             content.anchoredPosition = content.anchoredPosition
                 + move * (keyboardPanSpeed * Time.deltaTime / content.localScale.x);
@@ -52,14 +82,47 @@ namespace UI.SkillTree
             // own localScale, so adding the raw screen-space delta keeps the dragged point
             // glued to the cursor at any zoom level - dividing by scale would make drags feel
             // slower zoomed in and faster zoomed out.
+            panTarget = null;
             content.anchoredPosition = content.anchoredPosition + eventData.delta;
+        }
+
+        // Pans (smoothly) so target sits at the center of the viewport - used when a controller
+        // moves the selection onto a node, which may be off-screen.
+        public void CenterOn(RectTransform target)
+        {
+            if (content == null || content.parent == null) return;
+            var parent = content.parent;
+            var viewport = (RectTransform)transform;
+            Vector3 viewportCenter = parent.InverseTransformPoint(viewport.TransformPoint(viewport.rect.center));
+            Vector3 targetPoint = parent.InverseTransformPoint(target.TransformPoint(target.rect.center));
+            panTarget = content.anchoredPosition + (Vector2)(viewportCenter - targetPoint);
+        }
+
+        private void EaseTowardPanTarget()
+        {
+            if (panTarget == null) return;
+            content.anchoredPosition = Vector2.Lerp(content.anchoredPosition, panTarget.Value, 1f - Mathf.Exp(-12f * Time.unscaledDeltaTime));
+            if ((content.anchoredPosition - panTarget.Value).sqrMagnitude < 1f)
+            {
+                content.anchoredPosition = panTarget.Value;
+                panTarget = null;
+            }
         }
 
         public void OnScroll(PointerEventData eventData)
         {
             if (content == null) return;
+            panTarget = null;
+            ZoomAround(eventData.position, content.localScale.x + eventData.scrollDelta.y * zoomSpeed);
+        }
+
+        private Camera GetCanvasCamera() =>
+            canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
+
+        private void ZoomAround(Vector2 screenPoint, float targetScale)
+        {
             float current = content.localScale.x;
-            float next = Mathf.Clamp(current + eventData.scrollDelta.y * zoomSpeed, minZoom, maxZoom);
+            float next = Mathf.Clamp(targetScale, minZoom, maxZoom);
             if (Mathf.Approximately(next, current)) return;
 
             // Keep the point under the cursor fixed on screen: find where the cursor lands in
@@ -67,8 +130,7 @@ namespace UI.SkillTree
             // space point still corresponds to the same spot in content-local space at the new
             // scale (standard zoom-to-cursor math for a scaled RectTransform).
             var parent = content.parent as RectTransform;
-            Camera cam = canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay ? canvas.worldCamera : null;
-            if (parent != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, eventData.position, cam, out Vector2 localPoint))
+            if (parent != null && RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screenPoint, GetCanvasCamera(), out Vector2 localPoint))
             {
                 Vector2 contentSpacePoint = (localPoint - content.anchoredPosition) / current;
                 content.anchoredPosition = localPoint - contentSpacePoint * next;
@@ -83,6 +145,7 @@ namespace UI.SkillTree
         public void ResetView()
         {
             if (content == null) return;
+            panTarget = null;
             content.anchoredPosition = Vector2.zero;
             content.localScale = new Vector3(defaultScale, defaultScale, 1f);
         }

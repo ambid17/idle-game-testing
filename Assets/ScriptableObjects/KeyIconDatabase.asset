@@ -204,3 +204,45 @@ MonoBehaviour:
   - Key: 78
     Sprite: {fileID: -544243631, guid: 0959436723eedde45a7f4687fe6d0121, type: 3}
   FallbackSprite: {fileID: -748254820, guid: 0959436723eedde45a7f4687fe6d0121, type: 3}
+  GamepadIcons:
+  - ControlPath: <Gamepad>/buttonSouth
+    Sprite: {fileID: 21300000, guid: 5ca7ef5aa3444304188535e26fa00f55, type: 3}
+  - ControlPath: <Gamepad>/buttonEast
+    Sprite: {fileID: 21300000, guid: 3a7a85a4ff6d899439369dbefce79a47, type: 3}
+  - ControlPath: <Gamepad>/buttonWest
+    Sprite: {fileID: 21300000, guid: 8527c70876264114daf29782b81690c3, type: 3}
+  - ControlPath: <Gamepad>/buttonNorth
+    Sprite: {fileID: 21300000, guid: 3808f6aa2ca0c2f489b685efb4c91a34, type: 3}
+  - ControlPath: <Gamepad>/leftShoulder
+    Sprite: {fileID: 21300000, guid: 937c95dcab88108449494264771bfdb1, type: 3}
+  - ControlPath: <Gamepad>/rightShoulder
+    Sprite: {fileID: 21300000, guid: fe3348c10261af143a958a83b75dbc69, type: 3}
+  - ControlPath: <Gamepad>/leftTrigger
+    Sprite: {fileID: 21300000, guid: 6bd6558e5e131ec49a4684151a705623, type: 3}
+  - ControlPath: <Gamepad>/rightTrigger
+    Sprite: {fileID: 21300000, guid: e0fe9e5cebda2ab4a96f36f71fb5c161, type: 3}
+  - ControlPath: <Gamepad>/leftStickPress
+    Sprite: {fileID: 21300000, guid: fcf73c777f08ee34ba674f19e073c412, type: 3}
+  - ControlPath: <Gamepad>/rightStickPress
+    Sprite: {fileID: 21300000, guid: fabb9bddc336b364487d91add519c760, type: 3}
+  - ControlPath: <Gamepad>/start
+    Sprite: {fileID: 21300000, guid: 511095873ac766147a1ed34383271646, type: 3}
+  - ControlPath: <Gamepad>/select
+    Sprite: {fileID: 21300000, guid: fecef8f4941181448b2eb3c488af9786, type: 3}
+  - ControlPath: <Gamepad>/dpad/up
+    Sprite: {fileID: 21300000, guid: ded282c3366d29747a1aec90165549ca, type: 3}
+  - ControlPath: <Gamepad>/dpad/down
+    Sprite: {fileID: 21300000, guid: 237c3ab679e86c44480c6f20bd6939c3, type: 3}
+  - ControlPath: <Gamepad>/dpad/left
+    Sprite: {fileID: 21300000, guid: 5f81a628f0831a846bd78e5496638128, type: 3}
+  - ControlPath: <Gamepad>/dpad/right
+    Sprite: {fileID: 21300000, guid: f10a8cf8161a69c4a8be08edecd3eb5c, type: 3}
+  - ControlPath: <Gamepad>/leftStick/up
+    Sprite: {fileID: 21300000, guid: 971132c9d0ead5b478e2d65ddfdc4bcc, type: 3}
+  - ControlPath: <Gamepad>/leftStick/down
+    Sprite: {fileID: 21300000, guid: a2a594aa9df4c6443a823e390158f6d6, type: 3}
+  - ControlPath: <Gamepad>/leftStick/left
+    Sprite: {fileID: 21300000, guid: c2a343a945f00f147867c7990847e051, type: 3}
+  - ControlPath: <Gamepad>/leftStick/right
+    Sprite: {fileID: 21300000, guid: 90b4080dbc827114eb25172344571d75, type: 3}
+  GamepadFallbackSprite: {fileID: 21300000, guid: e5c570ecca0d42942aa1fd70d023c808, type: 3}

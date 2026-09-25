@@ -8,6 +8,7 @@ using Processing;
 using Settings;
 using Tutorial;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -24,6 +25,9 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private SteamManager _steamManager;
     [SerializeField] private AchievementManager _achievementManager;
     [SerializeField] private KeyIconDatabase _keyIconDatabase;
+    // GameControls.inputactions - also the scene EventSystem's InputSystemUIInputModule asset,
+    // so KeybindService's binding overrides and the UI share one set of actions.
+    [SerializeField] private InputActionAsset _inputActions;
 
     public static ChunkStreamingManager ChunkStreamingManager => Instance._chunkStreamingManager;
     public static MapGenerationService MapGenerationService => Instance._mapGenerationService;
@@ -58,10 +62,9 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-    // Plain C# (PlayerPrefs-backed, no scene references), so it's created lazily like
-    // EventService rather than needing a serialized scene object.
+    // Plain C# (PlayerPrefs-backed), created lazily on first use from the serialized actions asset.
     private static KeybindService _keybindService;
-    public static KeybindService KeybindService => _keybindService ??= new KeybindService();
+    public static KeybindService KeybindService => _keybindService ??= new KeybindService(Instance._inputActions);
 
     protected override void Initialize()
     {
@@ -117,6 +120,10 @@ public class GameManager : Singleton<GameManager>
         if (_keyIconDatabase == null)
         {
             Debug.LogError("KeyIconDatabase is not assigned in GameManager.");
+        }
+        if (_inputActions == null)
+        {
+            Debug.LogError("InputActions is not assigned in GameManager.");
         }
         BlockTypeDatabase.Validate();
         LayerConfigProvider.Validate();

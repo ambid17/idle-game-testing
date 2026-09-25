@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Events;
+using Player;
 using Settings;
 using UnityEngine;
 
@@ -39,11 +40,17 @@ namespace Interaction
                 }
             }
 
-            if (current != null)
+            var keybinds = GameManager.KeybindService;
+            // On a gamepad the interact buttons double as UI Submit (A) etc., so while a panel is
+            // open they belong to the panel's focused button rather than re-interacting with the
+            // building (e.g. Depot's Secondary = Deposit All). A press that just closed a panel
+            // through its UI is likewise not also an interact.
+            bool gamepadInPanel = InputBlocker.IsBlocked && keybinds.CurrentScheme == InputScheme.Gamepad;
+
+            if (current != null && !gamepadInPanel && !InputBlocker.WasUnblockedThisFrame)
             {
                 var interactionType = InteractionType.None;
 
-                var keybinds = GameManager.KeybindService;
                 if (keybinds.WasPressedThisFrame(GameAction.InteractPrimary))
                 {
                     interactionType = InteractionType.Primary;

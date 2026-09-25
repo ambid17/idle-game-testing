@@ -1,4 +1,6 @@
 using Economy;
+using Events;
+using Settings;
 using System;
 using TMPro;
 using UnityEngine;
@@ -11,8 +13,9 @@ namespace UI.SkillTree
     // fields SkillTreePanelUI already sourced from UpgradeManager/PrestigeUpgradeManager via an
     // ISkillTreeSource, so unlock/purchase logic is never reimplemented here. Hovering shows
     // SkillTreeTooltipUI (via SkillTreePanelUI); clicking the node's own button purchases
-    // directly - there's no separate detail modal to open first.
-    public class SkillTreeNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    // directly - there's no separate detail modal to open first. Controller selection shows the
+    // tooltip like hovering and pans the tree to the node.
+    public class SkillTreeNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
     {
         [SerializeField] private Image border;
         [SerializeField] private Image icon;
@@ -43,6 +46,7 @@ namespace UI.SkillTree
 
         private Action<SkillTreeNodeUI> onHoverEnter;
         private Action<SkillTreeNodeUI> onHoverExit;
+        private Action<SkillTreeNodeUI> onSelected;
 
         private void Start()
         {
@@ -64,13 +68,15 @@ namespace UI.SkillTree
             SkillTreeNodeViewModel viewModel,
             Action<SkillTreeNodeViewModel> onPurchaseClicked,
             Action<SkillTreeNodeUI> onHoverEnter,
-            Action<SkillTreeNodeUI> onHoverExit)
+            Action<SkillTreeNodeUI> onHoverExit,
+            Action<SkillTreeNodeUI> onSelected)
         {
             upgradeDefinition = viewModel.UpgradeDefinition;
             gameObject.name = $"SkillTreeNode_{viewModel.DisplayName}";
 
             this.onHoverEnter = onHoverEnter;
             this.onHoverExit = onHoverExit;
+            this.onSelected = onSelected;
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => onPurchaseClicked?.Invoke(ViewModel));
@@ -83,6 +89,23 @@ namespace UI.SkillTree
 
         public void OnPointerEnter(PointerEventData eventData) => onHoverEnter?.Invoke(this);
         public void OnPointerExit(PointerEventData eventData) => onHoverExit?.Invoke(this);
+        public void OnSelect(BaseEventData eventData) => onSelected?.Invoke(this);
+        public void OnDeselect(BaseEventData eventData) => onHoverExit?.Invoke(this);
+
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<InputSchemeChangedEvent>(OnInputSchemeChanged);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<InputSchemeChangedEvent>(OnInputSchemeChanged);
+        }
+
+        private void OnInputSchemeChanged(InputSchemeChangedEvent evt)
+        {
+            if (ViewModel != null) Refresh(ViewModel);
+        }
 
         public void Refresh(SkillTreeNodeViewModel viewModel)
         {
@@ -125,7 +148,10 @@ namespace UI.SkillTree
             costLabel.color = viewModel.CanPurchase ? affordableColor : unaffordableColor;
             costLabel.text = viewModel.CostLabel;
 
-            button.interactable = viewModel.CanPurchase;
+            // A non-interactable Selectable can't be navigated to, so on a controller every node
+            // stays selectable (to read its tooltip) - purchasing is still validated by
+            // UpgradeManager/PrestigeUpgradeManager.TryPurchase, and the cost color shows affordability.
+            button.interactable = viewModel.CanPurchase || GameManager.KeybindService.CurrentScheme == InputScheme.Gamepad;
         }
     }
 }

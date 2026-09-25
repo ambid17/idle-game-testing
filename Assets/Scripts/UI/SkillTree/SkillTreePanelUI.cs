@@ -114,7 +114,7 @@ namespace UI.SkillTree
                     continue;
                 }
 
-                nodeUI.Bind(match, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit);
+                nodeUI.Bind(match, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit, OnNodeSelected);
             }
         }
 
@@ -123,7 +123,7 @@ namespace UI.SkillTree
             foreach (var vm in viewModels)
             {
                 var nodeUI = Instantiate(nodePrefab, content);
-                nodeUI.Bind(vm, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit);
+                nodeUI.Bind(vm, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit, OnNodeSelected);
                 if (positions.TryGetValue(vm, out var position))
                 {
                     nodeUI.GetComponent<RectTransform>().anchoredPosition = position;
@@ -154,6 +154,12 @@ namespace UI.SkillTree
         {
             hoveredNode = node;
             tooltip?.Show(node.UpgradeDefinition, node.GetComponent<RectTransform>());
+        }
+
+        private void OnNodeSelected(SkillTreeNodeUI node)
+        {
+            OnNodeHoverEnter(node);
+            panZoom.CenterOn(node.GetComponent<RectTransform>());
         }
 
         private void OnNodeHoverExit(SkillTreeNodeUI node)

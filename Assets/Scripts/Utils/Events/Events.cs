@@ -534,4 +534,17 @@ namespace Events
     // Dispatched by PlayerController on backquote, only in the Editor or a Development Build (see
     // UI.DevPanelUI). Mirrors PauseMenuOpenRequestedEvent's shape.
     public class DevPanelOpenRequestedEvent { }
+
+    // Dispatched by Settings.KeybindService when the player switches between keyboard/mouse and a
+    // controller, so button prompts (InteractionPromptRow, Chest) and gamepad-only UI focus can
+    // follow the device actually in use.
+    public class InputSchemeChangedEvent : IEvent
+    {
+        public Settings.InputScheme Scheme;
+
+        public InputSchemeChangedEvent(Settings.InputScheme scheme)
+        {
+            Scheme = scheme;
+        }
+    }
 }
