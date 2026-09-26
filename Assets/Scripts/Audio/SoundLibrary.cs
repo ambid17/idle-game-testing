@@ -25,6 +25,7 @@ namespace Audio
     {
         public List<SoundEntry> Sounds = new();
         public AudioClip Music;
+        [Range(0f, 1f)] public float MusicVolume = 0.5f;
 
         private Dictionary<SoundId, SoundEntry> entriesById;
 

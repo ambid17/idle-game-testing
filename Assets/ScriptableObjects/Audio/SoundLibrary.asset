@@ -12,5 +12,162 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2a71c82f54ec2d4ebdc557b7f4464b5, type: 3}
   m_Name: SoundLibrary
   m_EditorClassIdentifier: Assembly-CSharp::Audio.SoundLibrary
-  Sounds: []
-  Music: {fileID: 0}
+  Sounds:
+  - Id: 1
+    Clips:
+    - {fileID: 8300000, guid: 3cd783aa202e3f9438a15b6ba5bbd078, type: 3}
+    - {fileID: 8300000, guid: 47548405dd7fd584fbe7479adba89057, type: 3}
+    - {fileID: 8300000, guid: 799540a0068391a4cb246b6652c6fa4f, type: 3}
+    Volume: 0.35
+    PitchVariance: 0.08
+    MinInterval: 0.1
+  - Id: 2
+    Clips:
+    - {fileID: 8300000, guid: b7560f354a177ed469047723286166a4, type: 3}
+    - {fileID: 8300000, guid: 00c9cfedafddad344b30fa527f48b1d7, type: 3}
+    - {fileID: 8300000, guid: e78568b044c05f547acb8ec6830e4064, type: 3}
+    Volume: 0.45
+    PitchVariance: 0.08
+    MinInterval: 0.05
+  - Id: 3
+    Clips:
+    - {fileID: 8300000, guid: 2b21bb25e33e3784cac197cf01c642f5, type: 3}
+    - {fileID: 8300000, guid: 2d73e6c40d5940441b3dc15a92c46188, type: 3}
+    - {fileID: 8300000, guid: 84f82695319a53f438046c1d8db45d47, type: 3}
+    Volume: 0.55
+    PitchVariance: 0.03
+    MinInterval: 0.06
+  - Id: 4
+    Clips:
+    - {fileID: 8300000, guid: b5dec38616ed68a42a7ca2b438b1cc61, type: 3}
+    Volume: 0.7
+    PitchVariance: 0
+    MinInterval: 0.1
+  - Id: 5
+    Clips:
+    - {fileID: 8300000, guid: 98692c57968349d40b26c74de2ef55aa, type: 3}
+    Volume: 0.5
+    PitchVariance: 0
+    MinInterval: 0.1
+  - Id: 20
+    Clips:
+    - {fileID: 8300000, guid: 58c3fcee825942c44810a34c9deae099, type: 3}
+    Volume: 0.6
+    PitchVariance: 0.06
+    MinInterval: 0.1
+  - Id: 21
+    Clips:
+    - {fileID: 8300000, guid: 8d99decae1367664a95a1620f87e2bfd, type: 3}
+    Volume: 0.65
+    PitchVariance: 0.04
+    MinInterval: 0.1
+  - Id: 22
+    Clips:
+    - {fileID: 8300000, guid: 091c5b4ca7bd7c946a63b55d3e9fd9e2, type: 3}
+    Volume: 0.9
+    PitchVariance: 0
+    MinInterval: 0.5
+  - Id: 23
+    Clips:
+    - {fileID: 8300000, guid: 4e3e734fce752ee479e4af1abaf666ef, type: 3}
+    Volume: 0.55
+    PitchVariance: 0
+    MinInterval: 0.5
+  - Id: 24
+    Clips:
+    - {fileID: 8300000, guid: a880d567454aa874782bbf8fca147c11, type: 3}
+    Volume: 0.22
+    PitchVariance: 0
+    MinInterval: 0
+  - Id: 25
+    Clips:
+    - {fileID: 8300000, guid: 5f86edde1044e7f49807d6467e08c282, type: 3}
+    Volume: 0.4
+    PitchVariance: 0
+    MinInterval: 0.5
+  - Id: 40
+    Clips:
+    - {fileID: 8300000, guid: 4b25f89f8b280224ca6a53b8eb21c9ff, type: 3}
+    Volume: 0.5
+    PitchVariance: 0.03
+    MinInterval: 0.05
+  - Id: 41
+    Clips:
+    - {fileID: 8300000, guid: 42a9407aa408a2c4aa5cd8fbe71a7d83, type: 3}
+    Volume: 1
+    PitchVariance: 0.06
+    MinInterval: 0.08
+  - Id: 42
+    Clips:
+    - {fileID: 8300000, guid: c2faf0c940a46204b97d13885dbadd1e, type: 3}
+    Volume: 0.65
+    PitchVariance: 0.06
+    MinInterval: 0.1
+  - Id: 43
+    Clips:
+    - {fileID: 8300000, guid: 44c258d2f0c392641816646fa22fba98, type: 3}
+    Volume: 0.85
+    PitchVariance: 0.06
+    MinInterval: 0.08
+  - Id: 44
+    Clips:
+    - {fileID: 8300000, guid: ae9bc31a81311c44989a9eb3d3e6a4c2, type: 3}
+    Volume: 0.55
+    PitchVariance: 0.04
+    MinInterval: 0.2
+  - Id: 45
+    Clips:
+    - {fileID: 8300000, guid: a95959efc06521248a03f9156c921c81, type: 3}
+    Volume: 0.55
+    PitchVariance: 0.05
+    MinInterval: 0.2
+  - Id: 60
+    Clips:
+    - {fileID: 8300000, guid: 463ebe8d4ffe997429c96070045df09b, type: 3}
+    Volume: 0.55
+    PitchVariance: 0.02
+    MinInterval: 0.1
+  - Id: 61
+    Clips:
+    - {fileID: 8300000, guid: 4eaa6acd65ac1854084b3df381472dbd, type: 3}
+    Volume: 0.5
+    PitchVariance: 0
+    MinInterval: 0.05
+  - Id: 62
+    Clips:
+    - {fileID: 8300000, guid: a0243e5d47c4055478e11d889e7dee06, type: 3}
+    Volume: 0.55
+    PitchVariance: 0
+    MinInterval: 0.05
+  - Id: 63
+    Clips:
+    - {fileID: 8300000, guid: 5acd2f86acd3c96439447d082e45418b, type: 3}
+    Volume: 0.85
+    PitchVariance: 0
+    MinInterval: 1
+  - Id: 64
+    Clips:
+    - {fileID: 8300000, guid: 5b237f130e3feb34b99659cca6a7b737, type: 3}
+    Volume: 0.45
+    PitchVariance: 0.02
+    MinInterval: 0.1
+  - Id: 65
+    Clips:
+    - {fileID: 8300000, guid: d1dbd613078099e459eeb668c33fc408, type: 3}
+    Volume: 0.5
+    PitchVariance: 0
+    MinInterval: 0.2
+  - Id: 80
+    Clips:
+    - {fileID: 8300000, guid: 61632eb29cfffc147b846e641780b7bd, type: 3}
+    Volume: 0.35
+    PitchVariance: 0.02
+    MinInterval: 0.03
+  - Id: 81
+    Clips:
+    - {fileID: 8300000, guid: a9fc32511126c094da7cc1277c5f213c, type: 3}
+    Volume: 0.12
+    PitchVariance: 0.02
+    MinInterval: 0.04
+  Music: {fileID: 8300000, guid: 49c551ad5f14c7641b48df0c188a1d03, type: 3}
+  MusicVolume: 0.35

@@ -48,7 +48,7 @@ namespace Audio
         private bool hasLoaded;
 
         private static float SfxVolume => SettingsService.Instance.SFXVolume;
-        private static float MusicVolume => SettingsService.Instance.MusicVolume;
+        private float MusicVolume => SettingsService.Instance.MusicVolume * library.MusicVolume;
 
         private void Awake()
         {
