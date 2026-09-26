@@ -1,3 +1,4 @@
+using Audio;
 using Automation;
 using Economy;
 using Events;
@@ -25,6 +26,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private SteamManager _steamManager;
     [SerializeField] private AchievementManager _achievementManager;
     [SerializeField] private KeyIconDatabase _keyIconDatabase;
+    [SerializeField] private AudioService _audioService;
     // GameControls.inputactions - also the scene EventSystem's InputSystemUIInputModule asset,
     // so KeybindService's binding overrides and the UI share one set of actions.
     [SerializeField] private InputActionAsset _inputActions;
@@ -42,6 +44,7 @@ public class GameManager : Singleton<GameManager>
     public static SteamManager SteamManager => Instance._steamManager;
     public static AchievementManager AchievementManager => Instance._achievementManager;
     public static KeyIconDatabase KeyIconDatabase => Instance._keyIconDatabase;
+    public static AudioService AudioService => Instance._audioService;
 
     // Deliberately static rather than routed through Instance: many listeners remove themselves
     // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
@@ -120,6 +123,10 @@ public class GameManager : Singleton<GameManager>
         if (_keyIconDatabase == null)
         {
             Debug.LogError("KeyIconDatabase is not assigned in GameManager.");
+        }
+        if (_audioService == null)
+        {
+            Debug.LogError("AudioService is not assigned in GameManager.");
         }
         if (_inputActions == null)
         {

@@ -98,11 +98,11 @@ namespace MapGeneration
 
                 // Dispatched once per cell it now occupies - "touches the player during its fall",
                 // not a lingering proximity effect (that's what impactRadius on landing is for).
-                GameManager.EventService.Dispatch(new FallingRockImpactEvent(layerIndex, x, y, contactRadius));
+                GameManager.EventService.Dispatch(new FallingRockImpactEvent(layerIndex, x, y, contactRadius, isLanding: false));
             }
 
             transform.position = mapGen.CellToWorldCenter(layerIndex, x, y);
-            GameManager.EventService.Dispatch(new FallingRockImpactEvent(layerIndex, x, y, impactRadius));
+            GameManager.EventService.Dispatch(new FallingRockImpactEvent(layerIndex, x, y, impactRadius, isLanding: true));
         }
 
         private IEnumerator MoveOneCell(Vector3 from, Vector3 to)

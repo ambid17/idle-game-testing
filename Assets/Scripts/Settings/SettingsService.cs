@@ -3,9 +3,9 @@ using UnityEngine;
 namespace Settings
 {
     // Persists and applies user-configurable audio/video settings via PlayerPrefs, backing the
-    // Options screen (UI.OptionsUI) opened from the pause menu. MasterVolume is the only setting
-    // with an audible effect today (drives AudioListener.volume) - Music/SFX volumes are stored
-    // for future AudioSource-driven music/sfx to read, since the project has no audio content yet.
+    // Options screen (UI.OptionsUI) opened from the pause menu. MasterVolume drives
+    // AudioListener.volume; Music/SFX volumes are read by Audio.AudioService, which is told to
+    // re-apply them whenever they change here.
     public class SettingsService : Singleton<SettingsService>
     {
         private const string MasterVolumeKey = "Settings.MasterVolume";
@@ -50,12 +50,14 @@ namespace Settings
         {
             MusicVolume = Mathf.Clamp01(value);
             PlayerPrefs.SetFloat(MusicVolumeKey, MusicVolume);
+            GameManager.AudioService.ApplyVolumes();
         }
 
         public void SetSFXVolume(float value)
         {
             SFXVolume = Mathf.Clamp01(value);
             PlayerPrefs.SetFloat(SFXVolumeKey, SFXVolume);
+            GameManager.AudioService.ApplyVolumes();
         }
 
         public void SetFullscreen(bool value)

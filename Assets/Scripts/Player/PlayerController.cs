@@ -1,3 +1,4 @@
+using Audio;
 using Automation;
 using Economy;
 using Events;
@@ -255,10 +256,15 @@ namespace Player
             // The Kinematic switch in Update already removes the Rigidbody2D from physics
             // simulation, but this also skips fuel drain and fall-damage tracking so a blocked
             // modal doesn't silently cost fuel or attribute fall damage to time spent paused.
-            if (health.IsDead || InputBlocker.IsBlocked) return;
+            if (health.IsDead || InputBlocker.IsBlocked)
+            {
+                GameManager.AudioService.SetLoopActive(SoundId.Jetpack, false);
+                return;
+            }
 
             IsGrounded = CheckGrounded();
             IsFlying = movementInput.y > 0 && Fuel > 0f;
+            GameManager.AudioService.SetLoopActive(SoundId.Jetpack, IsFlying);
 
             capsuleCollider.sharedMaterial = !IsGrounded ? flyingMaterial : groundedMaterial;
 
@@ -306,6 +312,7 @@ namespace Player
             if (FuelFraction <= LowFuelWarningFraction && previousFuelFraction > LowFuelWarningFraction)
             {
                 GameManager.EventService.Dispatch(new NotificationEvent("Fuel is running low!", NotificationUrgency.TimeSensitive));
+                GameManager.AudioService.Play(SoundId.Warning);
             }
 
             if (FuelFraction <= CriticalFuelWarningFraction && previousFuelFraction > CriticalFuelWarningFraction)

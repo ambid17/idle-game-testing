@@ -1,3 +1,4 @@
+using Audio;
 using Economy;
 using Events;
 using MapGeneration;
@@ -22,6 +23,8 @@ namespace Player
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private ChunkStreamingManager streamingManager => GameManager.ChunkStreamingManager;
         [SerializeField] private MiningCrackIndicator crackIndicator;
+        [Tooltip("Seconds between pickaxe-hit sounds while working on a block.")]
+        [SerializeField] private float miningHitInterval = 0.25f;
         [SerializeField] private bool debug;
 
         private PlayerController playerController;
@@ -31,6 +34,7 @@ namespace Player
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
         private float miningProgress;
+        private float miningHitTimer;
         private bool wasBlockedByFullInventory;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
@@ -99,6 +103,8 @@ namespace Player
                 targetY = targetCellY;
                 hasTarget = true;
                 miningProgress = 0f;
+                // Due immediately, so the first hit lands the moment the player starts digging.
+                miningHitTimer = 0f;
             }
 
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, targetCellX, targetCellY);
@@ -110,6 +116,7 @@ namespace Player
             if (blockedByFullInventory && !wasBlockedByFullInventory)
             {
                 GameManager.EventService.Dispatch(new NotificationEvent("Inventory is full!", NotificationUrgency.TimeSensitive));
+                GameManager.AudioService.Play(SoundId.Warning);
             }
             wasBlockedByFullInventory = blockedByFullInventory;
 
@@ -141,6 +148,13 @@ namespace Player
                 MineTarget(layerIndex, targetCellX, targetCellY, blockType);
                 ResetTarget();
                 return;
+            }
+
+            miningHitTimer -= Time.deltaTime;
+            if (miningHitTimer <= 0f)
+            {
+                GameManager.AudioService.Play(SoundId.MiningHit);
+                miningHitTimer = miningHitInterval;
             }
 
             if (crackIndicator != null)

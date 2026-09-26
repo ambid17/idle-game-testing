@@ -313,13 +313,16 @@ namespace Events
         public int X;
         public int Y;
         public float Radius;
+        // True for the final landing dispatch, false for the per-cell mid-fall ones.
+        public bool IsLanding;
 
-        public FallingRockImpactEvent(int layerIndex, int x, int y, float radius)
+        public FallingRockImpactEvent(int layerIndex, int x, int y, float radius, bool isLanding)
         {
             LayerIndex = layerIndex;
             X = x;
             Y = y;
             Radius = radius;
+            IsLanding = isLanding;
         }
     }
 
