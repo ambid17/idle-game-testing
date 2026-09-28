@@ -253,15 +253,18 @@ def player_revive():
 
 
 def jetpack_loop():
+    # Soft, warm "whoosh" rather than a buzzy roar: the energy sits low (~60-400Hz), the air
+    # layer is lowpassed well below the harsh 2-7kHz range, and the swell is slow and shallow
+    # (fast/deep amplitude flutter reads as a rattle). 2s loop so the noise repeats less audibly.
     rng = np.random.default_rng(9)
-    d = 1.0  # integer number of flutter cycles below keeps the loop seamless
+    d = 2.0  # modulation rates below are multiples of 1/d Hz so the loop stays seamless
     t = t_axis(d)
-    roar = loop_noise(d, rng, (180, 900))
-    hiss = loop_noise(d, rng, (2500, 7000)) * 0.25
-    flutter = 1 + 0.18 * np.sin(2 * np.pi * 14 * t) + 0.08 * np.sin(2 * np.pi * 31 * t)
-    roar /= np.max(np.abs(roar))
-    hiss /= np.max(np.abs(hiss))
-    return (roar + hiss * 0.3) * flutter
+    body = loop_noise(d, rng, (60, 400))
+    air = loop_noise(d, rng, (500, 1600))
+    body /= np.max(np.abs(body))
+    air /= np.max(np.abs(air))
+    swell = 1 + 0.07 * np.sin(2 * np.pi * 3.0 * t) + 0.04 * np.sin(2 * np.pi * 5.5 * t + 1.3)
+    return (body + air * 0.18) * swell
 
 
 def warning():
@@ -479,7 +482,7 @@ if __name__ == "__main__":
     for name, fn in SOUNDS.items():
         write(name, fn())
     # Loops: no fade-out (would click at the loop point).
-    write("Jetpack_Loop", jetpack_loop(), peak=0.8, fade_ms=0)
+    write("Jetpack_Loop", jetpack_loop(), peak=0.7, fade_ms=0)
     music_dir = os.path.join(os.path.dirname(OUT.rstrip("/\\")), "Music")
     os.makedirs(music_dir, exist_ok=True)
     m = finish(music_loop(), 0.8, 0)

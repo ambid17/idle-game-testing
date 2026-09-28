@@ -22,6 +22,11 @@ In general, when a non-instantiated MonoBehaviour script needs to be accessed fr
 	- Access the services/classes via `GameManager.<VariableName>`
 	- Do not check for null during access.
 	- Do check for null in the game manager, and log an error if the value isn't set.
+- Add singletons as child gameObjects of the "GameManager" scene Object
+	- for each singleton:
+		- name the game object
+		- add the Singleton
+		- ensure its parent is the game manager
 	
 ## Object references
 - Never use "Find" methods like FindAnyObjectByType()
