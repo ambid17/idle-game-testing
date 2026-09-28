@@ -17,10 +17,13 @@ MonoBehaviour:
   AutomatonBaseMiningRadius: 1
   AutomatonBaseInventoryWeight: 10
   AutomatonWanderRadius: 3
+  AutomatonDirectionBiasStrength: 4
+  AutomatonRandomBranchChance: 0.15
+  AutomatonCornerRadius: 0.35
   StorageDroneBaseMoveSpeed: 4
   StorageDroneBaseInventoryWeight: 5
   FuelDroneBaseMoveSpeed: 4
   FuelDroneBaseFuelCapacity: 20
-  FuelCostPerUnit: 5
+  FuelCostPerUnit: 1
   FuelNeedThresholdFraction: 0.1
   HpCostPerUnit: 5
