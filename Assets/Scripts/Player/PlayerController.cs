@@ -32,6 +32,9 @@ namespace Player
         // contact response can actually oppose this force instead of being overwritten every
         // FixedUpdate, which is what let the player pop up and over walls they ran into.
         [SerializeField] private float moveAcceleration = 80f;
+        // Downward decel applied while MoveDown is held and the player is rising - bleeds off
+        // upward momentum but never pushes them into a descent (see ApplyVerticalBrakeForce).
+        [SerializeField] private float verticalBrakeDeceleration = 30f;
 
         [Header("Fall Damage")]
         [SerializeField] private float fallDamageVelocityThreshold = 12f;
@@ -98,6 +101,7 @@ namespace Player
 
         private Vector2 movementInput;
         public Vector2 MovementInput => movementInput;
+        private bool brakeHeld;
 
 
         private void Awake()
@@ -145,6 +149,7 @@ namespace Player
         private void HandleDied(PlayerDiedEvent evt)
         {
             movementInput = Vector2.zero;
+            brakeHeld = false;
             rb.linearVelocity = Vector2.zero;
         }
 
@@ -229,6 +234,7 @@ namespace Player
             if (isBlocked)
             {
                 movementInput = Vector2.zero;
+                brakeHeld = false;
                 return;
             }
 
@@ -238,6 +244,7 @@ namespace Player
             if (keybinds.IsPressed(GameAction.MoveLeft)) horizontalInput -= 1f;
             if (keybinds.IsPressed(GameAction.MoveRight)) horizontalInput += 1f;
             movementInput = new Vector2(horizontalInput, flyHeld ? 1f : 0f);
+            brakeHeld = keybinds.IsPressed(GameAction.MoveDown);
 
             // MoveDown (S by default) drops the player through MapGenerationService's invisible surface floor gate when
             // they're standing on it specifically (not just any ground) - lets them re-enter the
@@ -305,6 +312,11 @@ namespace Player
                 var downwardForceCounteract = jetpackForce * 2;
                 var force = rb.linearVelocityY > 0f ? jetpackForce : downwardForceCounteract;
                 rb.AddForce(Vector2.up * force * upgrades.Movement_GravityMultiplier * upgrades.Movement_FlightSpeedMultiplier, ForceMode2D.Force);
+            }
+
+            if (brakeHeld && !IsGrounded && rb.linearVelocityY > 0f)
+            {
+                ApplyVerticalBrakeForce();
             }
 
             UpdateFuel(Time.fixedDeltaTime);
@@ -378,6 +390,15 @@ namespace Player
             float maxForce = moveAcceleration * rb.mass;
             float force = Mathf.Clamp(velocityDiff * rb.mass / Time.fixedDeltaTime, -maxForce, maxForce);
             rb.AddForce(new Vector2(force, 0f), ForceMode2D.Force);
+        }
+
+        // Slows upward velocity toward zero. Capped at exactly the force that would zero vy this
+        // step, so the brake only ever cancels rising momentum - falling is left to gravity.
+        private void ApplyVerticalBrakeForce()
+        {
+            float maxForce = verticalBrakeDeceleration * rb.mass;
+            float stopForce = rb.linearVelocityY * rb.mass / Time.fixedDeltaTime;
+            rb.AddForce(Vector2.down * Mathf.Min(maxForce, stopForce), ForceMode2D.Force);
         }
 
         private void SetPhysicsFrozen(bool frozen)
