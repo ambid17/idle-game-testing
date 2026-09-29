@@ -253,18 +253,40 @@ def player_revive():
 
 
 def jetpack_loop():
-    # Soft, warm "whoosh" rather than a buzzy roar: the energy sits low (~60-400Hz), the air
-    # layer is lowpassed well below the harsh 2-7kHz range, and the swell is slow and shallow
-    # (fast/deep amplitude flutter reads as a rattle). 2s loop so the noise repeats less audibly.
+    # Whimsical toy-rocket "putt-putt": soft sine bloops (little puffs, pitch dropping) riding on
+    # a quiet pillowy airflow, plus a warbly hum like a tiny motor. Everything stays under ~1.2kHz
+    # and the puffs have rounded attacks - hiss above 2kHz and sharp flutter read as harsh.
+    # 2s loop; puffs wrap around the loop point and every rate/pitch is a multiple of 1/d Hz so
+    # the loop stays seamless.
     rng = np.random.default_rng(9)
-    d = 2.0  # modulation rates below are multiples of 1/d Hz so the loop stays seamless
+    d = 2.0
+    n = int(SR * d)
     t = t_axis(d)
-    body = loop_noise(d, rng, (60, 400))
-    air = loop_noise(d, rng, (500, 1600))
-    body /= np.max(np.abs(body))
+    air = loop_noise(d, rng, (80, 500))
     air /= np.max(np.abs(air))
-    swell = 1 + 0.07 * np.sin(2 * np.pi * 3.0 * t) + 0.04 * np.sin(2 * np.pi * 5.5 * t + 1.3)
-    return (body + air * 0.18) * swell
+    wisp = loop_noise(d, rng, (500, 1200))
+    wisp /= np.max(np.abs(wisp))
+
+    # 12 puffs in 2s (6/s), gently swung, with a small repeating pitch pattern for a bouncy feel.
+    puffs = np.zeros(n)
+    pitches = [330, 294, 349, 294, 330, 262]
+    for k in range(12):
+        at = k * d / 12 + (0.012 if k % 2 else 0.0)
+        pd = 0.13
+        f0 = pitches[k % len(pitches)] * rng.uniform(0.98, 1.02)
+        bloop = osc(sweep(f0 * 1.35, f0 * 0.8, pd), pd) * env_adsr(pd, 0.012, 0.03, 0.45, 0.085)
+        bloop += osc(sweep(f0 * 2.7, f0 * 1.6, pd), pd) * env_exp(pd, 0.025, attack=0.008) * 0.15
+        i = int(SR * at)
+        idx = (np.arange(len(bloop)) + i) % n  # wrap across the loop point
+        np.add.at(puffs, idx, bloop * rng.uniform(0.85, 1.0))
+
+    # Warbly toy-motor hum: 196Hz sine + octave, slow 5Hz vibrato (±2.5%). Pure sines, no IIR
+    # filtering, so there's no filter warm-up transient at the loop seam.
+    vib = 1 + 0.025 * np.sin(2 * np.pi * 5.0 * t)
+    hum = osc(196.0 * vib, d) + osc(392.0 * vib, d) * 0.3
+
+    swell = 1 + 0.06 * np.sin(2 * np.pi * 1.5 * t)
+    return (puffs * 0.55 + air * 0.35 + wisp * 0.06 + hum * 0.12) * swell
 
 
 def warning():
