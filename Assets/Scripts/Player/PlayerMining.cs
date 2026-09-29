@@ -18,6 +18,7 @@ namespace Player
     [RequireComponent(typeof(PlayerInventory))]
     [RequireComponent(typeof(CapsuleCollider2D))]
     [RequireComponent(typeof(PlayerPowerUps))]
+    [RequireComponent(typeof(DigFeedback))]
     public class PlayerMining : MonoBehaviour
     {
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
@@ -30,6 +31,7 @@ namespace Player
         private PlayerController playerController;
         private PlayerInventory playerInventory;
         private PlayerPowerUps playerPowerUps;
+        private DigFeedback digFeedback;
         private CapsuleCollider2D capsuleCollider;
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
@@ -51,8 +53,10 @@ namespace Player
             playerInventory = GetComponent<PlayerInventory>();
             capsuleCollider = GetComponent<CapsuleCollider2D>();
             playerPowerUps = GetComponent<PlayerPowerUps>();
+            digFeedback = GetComponent<DigFeedback>();
 
             if (playerPowerUps == null) Debug.LogError($"{nameof(PlayerMining)} on {name} requires a PlayerPowerUps component.");
+            if (digFeedback == null) Debug.LogError($"{nameof(PlayerMining)} on {name} requires a DigFeedback component.");
             if (crackIndicator == null) Debug.LogError($"{nameof(PlayerMining)} on {name} is missing its crackIndicator reference.");
         }
 
@@ -135,7 +139,7 @@ namespace Player
             if (canInstaMine || canInstaMineDirt || canInstaMineScrapAlloy || finishedMining)
             {
                 if (debug) Debug.Log($"PlayerMining: finishing mine at (x,y,layer): ({targetCellX},{targetCellY},{layerIndex})");
-                MineTarget(layerIndex, targetCellX, targetCellY, blockType);
+                MineTarget(layerIndex, targetCellX, targetCellY, blockType, direction.Value, targetBlockHealth);
                 ResetTarget();
                 return;
             }
@@ -144,6 +148,7 @@ namespace Player
             if (miningHitTimer <= 0f)
             {
                 GameManager.AudioService.Play(SoundId.MiningHit);
+                digFeedback.Hit(mapGenerationService.CellToWorldCenter(layerIndex, targetCellX, targetCellY), direction.Value, blockType);
                 miningHitTimer = miningHitInterval;
             }
 
@@ -192,12 +197,13 @@ namespace Player
             if (crackIndicator != null) crackIndicator.Hide();
         }
 
-        private void MineTarget(int layerIndex, int x, int y, BlockType blockType)
+        private void MineTarget(int layerIndex, int x, int y, BlockType blockType, Vector2Int direction, float effectiveHealth)
         {
             if (!mapGenerationService.MineCell(layerIndex, x, y, minedByPlayer: true)) return;
 
+            digFeedback.Break(mapGenerationService.CellToWorldCenter(layerIndex, x, y), direction, blockType, effectiveHealth, primary: true);
             CollectMinedBlock(blockType, layerIndex, x, y);
-            MineAreaBonusCells(layerIndex, x, y, blockType);
+            MineAreaBonusCells(layerIndex, x, y, blockType, direction);
         }
 
         private void CollectMinedBlock(BlockType blockType, int layerIndex, int x, int y)
@@ -213,6 +219,7 @@ namespace Player
             {
                 GameManager.EventService.Dispatch(new NotificationEvent($"+1 <color=purple>Artifact</color>", NotificationUrgency.Queued, blockType.Icon));
                 Wallet.Instance.AddArtifact();
+                digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, 1);
                 return;
             }
             if (blockType.Category != BlockCategory.Ore) return;
@@ -220,6 +227,7 @@ namespace Player
             // Lucky Strike power-up (see PlayerPowerUps): 2 while charges remain, else 1.
             int amount = playerPowerUps.ConsumeLuckyStrikeMultiplier();
             GameManager.EventService.Dispatch(new NotificationEvent($"+{amount} {blockType.DisplayName}", NotificationUrgency.Queued, blockType.Icon));
+            digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, amount);
 
             for (int i = 0; i < amount; i++) ApplyLayerBonus(blockType, layerIndex);
 
@@ -253,7 +261,7 @@ namespace Player
         // GameDesignDoc "Market Upgrades > Mining > Increase mining size" (vein mining): only
         // triggers off mining an Ore block, then chains into adjacent Ore blocks for free (no
         // extra time cost - the upgrade IS the free hit), up to MiningAreaLevel of them.
-        private void MineAreaBonusCells(int layerIndex, int centerX, int centerY, BlockType primaryBlockType)
+        private void MineAreaBonusCells(int layerIndex, int centerX, int centerY, BlockType primaryBlockType, Vector2Int direction)
         {
             if (primaryBlockType.Category != BlockCategory.Ore) return;
 
@@ -268,6 +276,8 @@ namespace Player
 
                 if (!mapGenerationService.MineCell(layerIndex, cell.x, cell.y, minedByPlayer: true)) continue;
 
+                float bonusHealth = bonusBlock.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
+                digFeedback.Break(mapGenerationService.CellToWorldCenter(layerIndex, cell.x, cell.y), direction, bonusBlock, bonusHealth, primary: false);
                 CollectMinedBlock(bonusBlock, layerIndex, cell.x, cell.y);
             }
         }
