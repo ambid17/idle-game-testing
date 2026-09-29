@@ -130,13 +130,13 @@ MonoBehaviour:
   - Id: 61
     Clips:
     - {fileID: 8300000, guid: 4eaa6acd65ac1854084b3df381472dbd, type: 3}
-    Volume: 0.5
+    Volume: 0.3
     PitchVariance: 0
     MinInterval: 0.05
   - Id: 62
     Clips:
     - {fileID: 8300000, guid: a0243e5d47c4055478e11d889e7dee06, type: 3}
-    Volume: 0.55
+    Volume: 0.3
     PitchVariance: 0
     MinInterval: 0.05
   - Id: 63
