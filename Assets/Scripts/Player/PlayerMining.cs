@@ -38,6 +38,10 @@ namespace Player
         private bool wasBlockedByFullInventory;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
+        // True only while actually working on a mineable block - PlayerAnimation plays the drill
+        // frames off this rather than off raw input, so bumping an unmineable block doesn't drill.
+        public bool IsMining => hasTarget;
+
         private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.Economy_OverflowUnlocked;
         
 
