@@ -23,6 +23,7 @@ namespace UI
 
         [Header("Video")]
         [SerializeField] private Toggle fullscreenToggle;
+        [SerializeField] private Toggle screenShakeToggle;
         [SerializeField] private TMP_Dropdown qualityDropdown;
         [SerializeField] private TMP_Dropdown resolutionDropdown;
         [SerializeField] private TMP_Dropdown refreshRateDropdown;
@@ -73,6 +74,7 @@ namespace UI
         private void BindVideoControls()
         {
             if (fullscreenToggle != null) fullscreenToggle.onValueChanged.AddListener(settings.SetFullscreen);
+            if (screenShakeToggle != null) screenShakeToggle.onValueChanged.AddListener(settings.SetScreenShake);
             if (qualityDropdown != null) qualityDropdown.onValueChanged.AddListener(settings.SetQualityLevel);
             if (resolutionDropdown != null) resolutionDropdown.onValueChanged.AddListener(OnResolutionSelected);
             if (refreshRateDropdown != null) refreshRateDropdown.onValueChanged.AddListener(OnRefreshRateSelected);
@@ -180,6 +182,7 @@ namespace UI
             if (sfxVolumeSlider != null) sfxVolumeSlider.SetValueWithoutNotify(settings.SFXVolume);
             settings.SyncFullscreenState();
             if (fullscreenToggle != null) fullscreenToggle.SetIsOnWithoutNotify(settings.Fullscreen);
+            if (screenShakeToggle != null) screenShakeToggle.SetIsOnWithoutNotify(settings.ScreenShake);
 
             if (qualityDropdown != null)
             {

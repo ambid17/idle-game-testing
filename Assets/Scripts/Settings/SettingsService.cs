@@ -17,6 +17,7 @@ namespace Settings
         private const string ResolutionHeightKey = "Settings.ResolutionHeight";
         private const string RefreshRateNumeratorKey = "Settings.RefreshRateNumerator";
         private const string RefreshRateDenominatorKey = "Settings.RefreshRateDenominator";
+        private const string ScreenShakeKey = "Settings.ScreenShake";
 
         public float MasterVolume { get; private set; } = 1f;
         public float MusicVolume { get; private set; } = 1f;
@@ -31,6 +32,8 @@ namespace Settings
         public int ResolutionHeight { get; private set; } = -1;
         public int RefreshRateNumerator { get; private set; }
         public int RefreshRateDenominator { get; private set; } = 1;
+        // Read by CameraControl.CameraShake before every shake - off = no camera shake at all.
+        public bool ScreenShake { get; private set; } = true;
 
         protected override void Initialize()
         {
@@ -76,6 +79,12 @@ namespace Settings
             PlayerPrefs.SetInt(FullscreenKey, Fullscreen ? 1 : 0);
         }
 
+        public void SetScreenShake(bool value)
+        {
+            ScreenShake = value;
+            PlayerPrefs.SetInt(ScreenShakeKey, value ? 1 : 0);
+        }
+
         public void SetQualityLevel(int qualityIndex)
         {
             QualityLevel = qualityIndex;
@@ -107,6 +116,7 @@ namespace Settings
             ResolutionHeight = PlayerPrefs.GetInt(ResolutionHeightKey, -1);
             RefreshRateNumerator = PlayerPrefs.GetInt(RefreshRateNumeratorKey, 0);
             RefreshRateDenominator = PlayerPrefs.GetInt(RefreshRateDenominatorKey, 1);
+            ScreenShake = PlayerPrefs.GetInt(ScreenShakeKey, 1) == 1;
         }
 
         private void Apply()

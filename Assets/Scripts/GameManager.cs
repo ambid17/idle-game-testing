@@ -1,6 +1,7 @@
 using Atmosphere;
 using Audio;
 using Automation;
+using CameraControl;
 using Critters;
 using Economy;
 using Events;
@@ -31,6 +32,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private AudioService _audioService;
     [SerializeField] private CritterDatabase _critterDatabase;
     [SerializeField] private AtmosphereConfig _atmosphereConfig;
+    [SerializeField] private CameraShake _cameraShake;
     // GameControls.inputactions - also the scene EventSystem's InputSystemUIInputModule asset,
     // so KeybindService's binding overrides and the UI share one set of actions.
     [SerializeField] private InputActionAsset _inputActions;
@@ -51,6 +53,7 @@ public class GameManager : Singleton<GameManager>
     public static AudioService AudioService => Instance._audioService;
     public static CritterDatabase CritterDatabase => Instance._critterDatabase;
     public static AtmosphereConfig AtmosphereConfig => Instance._atmosphereConfig;
+    public static CameraShake CameraShake => Instance._cameraShake;
 
     // Deliberately static rather than routed through Instance: many listeners remove themselves
     // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
@@ -141,6 +144,10 @@ public class GameManager : Singleton<GameManager>
         if (_atmosphereConfig == null)
         {
             Debug.LogError("AtmosphereConfig is not assigned in GameManager.");
+        }
+        if (_cameraShake == null)
+        {
+            Debug.LogError("CameraShake is not assigned in GameManager.");
         }
         if (_inputActions == null)
         {

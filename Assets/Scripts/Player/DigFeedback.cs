@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Atmosphere;
 using MapGeneration;
-using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Player
@@ -13,9 +12,7 @@ namespace Player
     //    puff, a screen shake scaled by the block's effective health, and a brief hit-stop on hard blocks.
     //  - Pickup: collected ore/artifacts pop out of the cell as tinted nuggets that home in on the
     //    player. The inventory is credited immediately by PlayerMining as before - this is visual only.
-    // Shake goes through a CinemachineImpulseSource on this GameObject; the scene's CinemachineCamera
-    // needs a CinemachineImpulseListener to receive it.
-    [RequireComponent(typeof(CinemachineImpulseSource))]
+    // Shake goes through GameManager.CameraShake (which honours the Options "Screen Shake" toggle).
     public class DigFeedback : MonoBehaviour
     {
         private struct Nugget
@@ -48,6 +45,7 @@ namespace Player
         [SerializeField] private Vector2 shakeHealthRange = new(0.4f, 3f);
         [SerializeField, Min(0f)] private float minShakeForce = 0.04f;
         [SerializeField, Min(0f)] private float maxShakeForce = 0.2f;
+        [SerializeField, Min(0f)] private float shakeSeconds = 0.15f;
 
         [Header("Hit-stop (brief freeze when a hard block breaks)")]
         [SerializeField, Min(0f)] private float hitStopHealthThreshold = 1.5f;
@@ -62,7 +60,6 @@ namespace Player
         [SerializeField, Min(0f)] private float nuggetHomingAcceleration = 60f;
         [SerializeField, Min(0.5f)] private float nuggetMaxSpeed = 22f;
 
-        private CinemachineImpulseSource impulseSource;
         private ParticleSystem debrisSystem;
         private ParticleSystem dustSystem;
         private ParticleSystem sparkleSystem;
@@ -76,12 +73,6 @@ namespace Player
         {
             if (debrisMaterial == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its debrisMaterial reference.");
             if (nuggetSprite == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its nuggetSprite reference.");
-
-            impulseSource = GetComponent<CinemachineImpulseSource>();
-            var impulse = impulseSource.ImpulseDefinition;
-            impulse.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Bump;
-            impulse.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
-            impulse.ImpulseDuration = 0.15f;
         }
 
         private void Start()
@@ -166,7 +157,7 @@ namespace Player
             float strength = Mathf.InverseLerp(shakeHealthRange.x, shakeHealthRange.y, effectiveHealth);
             if (effectiveHealth >= shakeHealthRange.x)
             {
-                impulseSource.GenerateImpulseWithVelocity((Vector2)digDirection * Mathf.Lerp(minShakeForce, maxShakeForce, strength));
+                GameManager.CameraShake.Shake((Vector2)digDirection * Mathf.Lerp(minShakeForce, maxShakeForce, strength), shakeSeconds);
             }
 
             if (effectiveHealth >= hitStopHealthThreshold && hitStopSeconds > 0f && Time.unscaledTime >= nextHitStopTime && hitStopRoutine == null)
