@@ -175,6 +175,30 @@ MonoBehaviour:
     Volume: 0.12
     PitchVariance: 0.02
     MinInterval: 0.04
+  - Id: 100
+    Clips:
+    - {fileID: 8300000, guid: a4388f8e3c7ecaf4fb1f22bc4eefea16, type: 3}
+    Volume: 0.7
+    PitchVariance: 0.06
+    MinInterval: 0.05
+  - Id: 101
+    Clips:
+    - {fileID: 8300000, guid: 73ad1594907524a4ebca8444f39d6dbc, type: 3}
+    Volume: 0.7
+    PitchVariance: 0.03
+    MinInterval: 0.1
+  - Id: 102
+    Clips:
+    - {fileID: 8300000, guid: a9247df57c4cf3a49af9d2adcd533a45, type: 3}
+    Volume: 0.7
+    PitchVariance: 0
+    MinInterval: 0.1
+  - Id: 103
+    Clips:
+    - {fileID: 8300000, guid: 228a098c7380d044996465be71d5b2fb, type: 3}
+    Volume: 0.3
+    PitchVariance: 0.18
+    MinInterval: 0.04
   MusicTracks:
   - {fileID: 8300000, guid: 49c551ad5f14c7641b48df0c188a1d03, type: 3}
   - {fileID: 8300000, guid: 064d3bf63b794e7459668d777c3e414a, type: 3}

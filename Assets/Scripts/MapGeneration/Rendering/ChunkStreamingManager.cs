@@ -81,6 +81,7 @@ namespace MapGeneration
             if (tilemapsByLayer.ContainsKey(layerIndex))
             {
                 tilemapsByLayer[layerIndex].gameObject.SetActive(true);
+                GameManager.EventService.Dispatch(new ChunkViewShownEvent(layerIndex));
                 return;
             }
 
@@ -96,6 +97,7 @@ namespace MapGeneration
 
             SyncBoundary(layerIndex - 1, layerIndex);
             SyncBoundary(layerIndex, layerIndex + 1);
+            GameManager.EventService.Dispatch(new ChunkViewShownEvent(layerIndex));
         }
 
         // Stitches a "ghost" copy of each chunk's boundary row into the other's own Tilemap (see
@@ -119,7 +121,11 @@ namespace MapGeneration
             //Debug.Log($"ChunkStreamingManager.Release: {layerIndex}");
             var view = tilemapsByLayer[layerIndex];
             view.gameObject.SetActive(false);
+            GameManager.EventService.Dispatch(new ChunkViewHiddenEvent(layerIndex));
         }
+
+        public bool IsLayerResident(int layerIndex) =>
+            tilemapsByLayer.TryGetValue(layerIndex, out var view) && view != null && view.gameObject.activeSelf;
 
         public void NotifyCellMined(int layerIndex, int x, int y, IReadOnlyList<Vector2Int> revealedCells)
         {
@@ -148,6 +154,7 @@ namespace MapGeneration
             {
                 if(tilemapsByLayer[layerIndex] == null) continue;
                 Destroy(tilemapsByLayer[layerIndex].gameObject);
+                GameManager.EventService.Dispatch(new ChunkViewHiddenEvent(layerIndex));
             }
             tilemapsByLayer.Clear();
             focusLayerByEntity.Clear();

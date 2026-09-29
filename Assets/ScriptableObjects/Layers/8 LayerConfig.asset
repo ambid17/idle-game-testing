@@ -17,7 +17,7 @@ MonoBehaviour:
   LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
   BlockHealth: 2.3
   OreTable:
-  - BlockType: {fileID: 11400000, guid: bd9aa55caea212c498b4b2dc0e1a2de9, type: 2}
+  - BlockType: {fileID: 11400000, guid: da4f65576bcec1847805830d80fd8b5f, type: 2}
     Weight: 20
     VeinSpreadChance: 0.5
     VeinSizeMin: 2
@@ -121,3 +121,15 @@ MonoBehaviour:
   EmptyPocketSpreadChance: 0.5
   EmptyPocketSizeMin: 2
   EmptyPocketSizeMax: 5
+  CritterTable:
+  - Critter: {fileID: 11400000, guid: 709d984bd0dff1348b14848e17f8a44b, type: 2}
+    Weight: 0.7
+  - Critter: {fileID: 11400000, guid: 533a7db7395454e45a0513e51359df2c, type: 2}
+    Weight: 0.7
+  - Critter: {fileID: 11400000, guid: 87665e2c23a02274c99d4005dcb88890, type: 2}
+    Weight: 1
+  CritterChancePerPocket: 0.3
+  AmbientParticleColor: {r: 1, g: 0.5, b: 0.25, a: 1}
+  SporesPerSecond: 3
+  DripsPerSecond: 0.5
+  AmbientLoop: {fileID: 8300000, guid: 606040b0bd4a6324299e2e207de6eef3, type: 3}

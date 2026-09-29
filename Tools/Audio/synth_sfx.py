@@ -510,6 +510,131 @@ def music_loop():
     return soft(buf, 6000)
 
 
+def critter_caught():
+    # Scooped into the jar: a rising bubble "bwoop" landing on a two-note marimba "got it!".
+    d = 0.45
+    buf = np.zeros(int(SR * d))
+    place(buf, bloop(300, 620, 0.16, attack=0.01) * 0.7, 0.0)
+    place(buf, marimba(523.25, 0.25, 0.08) * 0.45, 0.12)
+    return place(buf, marimba(659.25, 0.3, 0.1) * 0.45, 0.2)
+
+
+def critter_turn_in():
+    # Happy wooden arpeggio up to C5 over a soft poof of the jar lid coming off.
+    rng = np.random.default_rng(900)
+    d = 1.0
+    buf = np.zeros(int(SR * d))
+    place(buf, poof(0.25, rng, cutoff=600) * 0.25, 0.0)
+    for i, f in enumerate([261.63, 329.63, 392.0, 523.25]):
+        place(buf, marimba(f, 0.35, 0.12) * 0.5, 0.05 + i * 0.09)
+    return buf
+
+
+def hat_unlocked():
+    # A springy "boing" (the hat popping on) then a gentle three-note chime fanfare.
+    d = 1.3
+    buf = np.zeros(int(SR * d))
+    place(buf, boing(220, 0.4, depth=0.18, rate=11) * 0.6, 0.0)
+    for i, f in enumerate([392.0, 523.25, 659.25]):
+        place(buf, chime(f, 0.7, 0.25) * 0.45, 0.3 + i * 0.12)
+    return buf
+
+
+def dialog_blip():
+    # Tiny soft "bop" per few typed characters - SoundLibrary pitch variance makes it chatter.
+    d = 0.05
+    return bloop(460, 380, d, attack=0.004)
+
+
+# ---------- ambient loops ----------
+# 24s beds, seamless by construction: tones use whole cycles per loop, noise is FFT-circular,
+# and one-shot events wrap around the end. Everything sits under ~1.2kHz and stays quiet -
+# they play under the music for as long as the player is in a layer.
+
+AMBIENCE_SECONDS = 24.0
+
+
+def place_wrap(buf, x, at):
+    i = int(SR * at) % len(buf)
+    first = min(len(x), len(buf) - i)
+    buf[i:i + first] += x[:first]
+    if first < len(x):
+        buf[:len(x) - first] += x[first:]
+    return buf
+
+
+def loop_tone(freq, kind="sine"):
+    # Snap to a whole number of cycles over the loop so the wrap is click-free.
+    cycles = max(1, round(freq * AMBIENCE_SECONDS))
+    return osc(cycles / AMBIENCE_SECONDS, AMBIENCE_SECONDS, kind)
+
+
+def loop_lfo(cycles, depth, phase=0.0):
+    t = t_axis(AMBIENCE_SECONDS)
+    return 1 - depth * 0.5 * (1 - np.cos(2 * np.pi * cycles * t / AMBIENCE_SECONDS + phase))
+
+
+def drips(buf, rng, count, gain=0.2):
+    for _ in range(count):
+        f0 = rng.uniform(650, 850)
+        place_wrap(buf, bloop(f0, f0 * 0.55, 0.09, attack=0.002) * gain * rng.uniform(0.5, 1.0), rng.uniform(0, AMBIENCE_SECONDS))
+    return buf
+
+
+def ambience_shallow():
+    # Earthy topsoil: low rumble that breathes, far-off pebble plinks, a few drips.
+    rng = np.random.default_rng(1001)
+    buf = loop_noise(AMBIENCE_SECONDS, rng, (40, 220)) * 0.5 * loop_lfo(3, 0.5)
+    buf = buf / np.max(np.abs(buf)) * 0.35
+    for _ in range(9):
+        f = rng.choice([196.0, 220.0, 261.63, 293.66])
+        place_wrap(buf, marimba(f, 0.2, 0.05) * 0.12 * rng.uniform(0.5, 1.0), rng.uniform(0, AMBIENCE_SECONDS))
+    return drips(buf, rng, 6, gain=0.14)
+
+
+def ambience_crystal():
+    # Crystal caverns: a hollow open-fifth pad with slow swells, sparse soft glassy chimes, drips.
+    rng = np.random.default_rng(1002)
+    pad = (loop_tone(110) * loop_lfo(2, 0.6) + loop_tone(165) * loop_lfo(3, 0.7, 1.0) * 0.7
+           + loop_tone(220, "tri") * loop_lfo(4, 0.8, 2.0) * 0.3)
+    buf = pad * 0.18 + loop_noise(AMBIENCE_SECONDS, rng, (150, 700)) * 0.04
+    for _ in range(7):
+        f = rng.choice([523.25, 587.33, 659.25, 783.99])
+        place_wrap(buf, chime(f, 2.0, 0.6) * 0.1, rng.uniform(0, AMBIENCE_SECONDS))
+    return drips(buf, rng, 8, gain=0.16)
+
+
+def ambience_moss():
+    # Mossy glow depths: warm breathing hum, gentle leafy rustle, little bug "bloops".
+    rng = np.random.default_rng(1003)
+    hum = loop_tone(98, "tri") * 0.6 + loop_tone(147) * 0.35 + loop_tone(196) * 0.12
+    # No IIR filtering here - it isn't circular and would put a click at the loop point.
+    buf = hum * loop_lfo(3, 0.5) * 0.2
+    buf += loop_noise(AMBIENCE_SECONDS, rng, (250, 1000)) * loop_lfo(2, 0.8, 0.5) * 0.05
+    for _ in range(12):
+        f = rng.uniform(320, 520)
+        place_wrap(buf, bloop(f, f * rng.choice([0.7, 1.4]), 0.07) * 0.09, rng.uniform(0, AMBIENCE_SECONDS))
+    return drips(buf, rng, 5, gain=0.12)
+
+
+def ambience_void():
+    # The abyss: a deep slowly-beating drone, an airy swell, the occasional far-off deep bloop.
+    rng = np.random.default_rng(1004)
+    drone = loop_tone(55) + loop_tone(55.25) * 0.9 + loop_tone(82.5) * 0.4
+    buf = drone * 0.16 + loop_noise(AMBIENCE_SECONDS, rng, (90, 500)) * loop_lfo(2, 0.9) * 0.08
+    for _ in range(4):
+        place_wrap(buf, bloop(150, 60, 0.8, attack=0.05) * 0.25, rng.uniform(0, AMBIENCE_SECONDS))
+    return buf
+
+
+AMBIENCE = {
+    "Ambience_Shallow_Loop": ambience_shallow,
+    "Ambience_Crystal_Loop": ambience_crystal,
+    "Ambience_Moss_Loop": ambience_moss,
+    "Ambience_Void_Loop": ambience_void,
+}
+
+
 SOUNDS = {
     **{f"MiningHit_{i + 1}": (lambda i=i: mining_hit(i)) for i in range(3)},
     **{f"MineDirt_{i + 1}": (lambda i=i: mine_dirt(i)) for i in range(3)},
@@ -536,10 +661,30 @@ SOUNDS = {
     "ProcessingCompleted": processing_completed,
     "UIClick": ui_click,
     "UIHover": ui_hover,
+    "CritterCaught": critter_caught,
+    "CritterTurnIn": critter_turn_in,
+    "HatUnlocked": hat_unlocked,
+    "DialogBlip": dialog_blip,
 }
 
 if __name__ == "__main__":
+    # Optional extra args: only (re)write the named sounds/ambience loops, e.g.
+    #   python Tools/Audio/synth_sfx.py Assets/Audio/SFX CritterCaught Ambience_Void_Loop
+    only = set(sys.argv[2:])
     os.makedirs(OUT, exist_ok=True)
+    ambience_dir = os.path.join(os.path.dirname(OUT.rstrip("/\\")), "Ambience")
+    os.makedirs(ambience_dir, exist_ok=True)
+    for name, fn in AMBIENCE.items():
+        if only and name not in only:
+            continue
+        a = finish(fn(), 0.6, 0)
+        wavfile.write(os.path.join(ambience_dir, name + ".wav"), SR, (a * 32767).astype(np.int16))
+        print(f"Ambience/{name}.wav  {len(a) / SR:.2f}s")
+    if only:
+        for name in only:
+            if name in SOUNDS:
+                write(name, SOUNDS[name]())
+        sys.exit(0)
     for name, fn in SOUNDS.items():
         write(name, fn())
     # Loops: no fade-out (would click at the loop point).

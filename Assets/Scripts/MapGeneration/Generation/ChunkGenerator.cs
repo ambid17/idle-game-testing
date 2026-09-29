@@ -26,7 +26,18 @@ namespace MapGeneration
             EmptyPocketSpread = 11,
             OreTierGate = 12,
             OreTierPick = 13,
+            ShopLayer = 14,
+            ShopCavePosition = 15,
         }
+
+        // Critter Shop cave (see CarveShopCave): lands on one layer in [ShopCaveMinLayer,
+        // ShopCaveMaxLayer] per seed - below the surface buildings on layer 0, above layer 4.
+        public const int ShopCaveMinLayer = 1;
+        public const int ShopCaveMaxLayer = 3;
+        private const int ShopCaveWidth = 7;
+        private const int ShopCaveHeight = 4;
+        // Keeps the cave off the grid's side walls and the layer's top/bottom seams.
+        private const int ShopCaveMargin = 2;
 
         private static readonly (int dx, int dy)[] OrthogonalNeighbors = { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
@@ -61,6 +72,7 @@ namespace MapGeneration
             }
 
             GrowVeins(worldSeed, layerIndex, gridWidth, layerHeight, config, nextLayerConfig, chunk);
+            if (layerIndex == GetShopLayerIndex(worldSeed)) CarveShopCave(worldSeed, layerIndex, gridWidth, layerHeight, chunk);
             PlaceArtifacts(worldSeed, layerIndex, gridWidth, layerHeight, artifactSpawnRateMultiplier, config, chunk);
             CarveEmptyPockets(worldSeed, layerIndex, gridWidth, layerHeight, config, chunk);
             chunk.IsFullyGenerated = true;
@@ -217,11 +229,13 @@ namespace MapGeneration
         // hidden cavern opening up rather than an obvious freebie. Runs last so it only ever eats
         // into leftover Dirt, never an ore vein/hazard/power-up/artifact cell - those all fail the
         // BlockTypeId == dirtId check both here and in AddDirtNeighbors.
+        // "Dirt" here means the layer's filler block (see GetPocketFillerId) - deep layers have no
+        // Dirt at all, and without this they'd never get pockets (or the critters that live in them).
         private static void CarveEmptyPockets(int worldSeed, int layerIndex, int gridWidth, int layerHeight, LayerConfig config, ChunkData chunk)
         {
             if (config.EmptyPocketChancePerCell <= 0f) return;
 
-            byte dirtId = (byte)BlockTypeId.Dirt;
+            byte dirtId = GetPocketFillerId(config);
 
             for (int y = 0; y < layerHeight; y++)
             {
@@ -233,14 +247,27 @@ namespace MapGeneration
                     float gate = MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.EmptyPocketGate);
                     if (gate >= config.EmptyPocketChancePerCell) continue;
 
-                    CarveEmptyPocket(worldSeed, layerIndex, gridWidth, layerHeight, x, y, config, chunk);
+                    CarveEmptyPocket(worldSeed, layerIndex, gridWidth, layerHeight, x, y, config, chunk, dirtId);
                 }
             }
         }
 
-        private static void CarveEmptyPocket(int worldSeed, int layerIndex, int gridWidth, int layerHeight, int seedX, int seedY, LayerConfig config, ChunkData chunk)
+        // Dirt when the layer's table has it (layers 0-3, so their generation is unchanged);
+        // otherwise the table's most common entry (Stone/Coal in the deep layers).
+        private static byte GetPocketFillerId(LayerConfig config)
         {
-            byte dirtId = (byte)BlockTypeId.Dirt;
+            WeightedBlockEntry commonest = null;
+            foreach (var entry in config.OreTable)
+            {
+                if (entry.BlockType == null) continue;
+                if (entry.BlockType.Id == BlockTypeId.Dirt) return (byte)BlockTypeId.Dirt;
+                if (commonest == null || entry.Weight > commonest.Weight) commonest = entry;
+            }
+            return commonest != null ? (byte)commonest.BlockType.Id : (byte)BlockTypeId.Dirt;
+        }
+
+        private static void CarveEmptyPocket(int worldSeed, int layerIndex, int gridWidth, int layerHeight, int seedX, int seedY, LayerConfig config, ChunkData chunk, byte dirtId)
+        {
             int seedIndex = chunk.Index(seedX, seedY);
             if (!IsUnclaimedDirt(chunk.Cells[seedIndex], dirtId)) return; // claimed by an earlier, overlapping pocket already
 
@@ -249,6 +276,8 @@ namespace MapGeneration
             int targetSize = config.EmptyPocketSizeMin + Mathf.Min(sizeRange, Mathf.FloorToInt(sizeRoll * (sizeRange + 1)));
 
             chunk.Cells[seedIndex].Mined = true;
+            var pocketCells = new List<Vector2Int> { new(seedX, seedY) };
+            chunk.EmptyPockets.Add(pocketCells);
             if (targetSize <= 1) return;
 
             var frontier = new List<(int x, int y)>();
@@ -271,10 +300,76 @@ namespace MapGeneration
                 if (spreadRoll > config.EmptyPocketSpreadChance) continue;
 
                 chunk.Cells[cellIndex].Mined = true;
+                pocketCells.Add(new Vector2Int(fx, fy));
                 currentSize++;
                 AddDirtNeighbors(gridWidth, layerHeight, fx, fy, chunk, dirtId, frontier);
             }
         }
+
+        // Which layer hosts the Critter Shop for this seed - a pure function of the seed so
+        // Critters.CritterShopController can find the cave without scanning chunks.
+        public static int GetShopLayerIndex(int worldSeed)
+        {
+            int span = ShopCaveMaxLayer - ShopCaveMinLayer + 1;
+            return ShopCaveMinLayer + (int)(MapRng.HashCell(worldSeed, 0, 0, 0, (int)Salt.ShopLayer) % (uint)span);
+        }
+
+        // A guaranteed, larger-than-any-pocket cavern for the Critter Shop: a ShopCaveWidth x
+        // ShopCaveHeight room (top corners rounded off) floored with unmineable GrassyDirt so the
+        // building can never be undermined, with any hazard in the surrounding ring swapped for
+        // Dirt so the shopkeeper's doorstep can't blow up or cave in. Runs after veins (so it cuts
+        // cleanly through them) and before artifacts/pockets (PlaceArtifact rerolls off mined
+        // cells; pockets only ever eat unmined Dirt). Stays behind fog like any pocket until found.
+        private static void CarveShopCave(int worldSeed, int layerIndex, int gridWidth, int layerHeight, ChunkData chunk)
+        {
+            int caveHeight = Mathf.Min(ShopCaveHeight, layerHeight - ShopCaveMargin * 2 - 1);
+            int caveWidth = Mathf.Min(ShopCaveWidth, gridWidth - ShopCaveMargin * 2);
+            if (caveHeight < 2 || caveWidth < 3)
+            {
+                Debug.LogWarning($"ChunkGenerator: layer {layerIndex} ({gridWidth}x{layerHeight}) is too small for the Critter Shop cave.");
+                return;
+            }
+
+            var rng = MapRng.CreateLayerRandom(worldSeed, layerIndex, (int)Salt.ShopCavePosition);
+            int x0 = rng.Next(ShopCaveMargin, gridWidth - ShopCaveMargin - caveWidth + 1);
+            // The floor row (y0 + caveHeight) must also fit inside the layer.
+            int y0 = rng.Next(ShopCaveMargin, layerHeight - ShopCaveMargin - caveHeight);
+            var cave = new RectInt(x0, y0, caveWidth, caveHeight);
+
+            byte dirtId = (byte)BlockTypeId.Dirt;
+            for (int y = cave.yMin - 1; y <= cave.yMax; y++)
+            {
+                for (int x = cave.xMin - 1; x <= cave.xMax; x++)
+                {
+                    if (x < 0 || x >= gridWidth || y < 0 || y >= layerHeight) continue;
+                    int index = chunk.Index(x, y);
+
+                    bool isFloor = y == cave.yMax && x >= cave.xMin && x < cave.xMax;
+                    bool isRoundedCorner = y == cave.yMin && (x == cave.xMin || x == cave.xMax - 1);
+                    bool isInterior = cave.Contains(new Vector2Int(x, y)) && !isRoundedCorner;
+
+                    if (isFloor)
+                    {
+                        chunk.Cells[index].BlockTypeId = (byte)BlockTypeId.GrassyDirt;
+                    }
+                    else if (isInterior)
+                    {
+                        chunk.Cells[index].BlockTypeId = dirtId;
+                        chunk.Cells[index].Mined = true;
+                    }
+                    else if (IsHazardId(chunk.Cells[index].BlockTypeId))
+                    {
+                        chunk.Cells[index].BlockTypeId = dirtId;
+                    }
+                }
+            }
+
+            chunk.ShopCave = cave;
+        }
+
+        private static bool IsHazardId(byte blockTypeId) =>
+            blockTypeId == (byte)BlockTypeId.Explosive || blockTypeId == (byte)BlockTypeId.FallingRock
+            || blockTypeId == (byte)BlockTypeId.GasPocket || blockTypeId == (byte)BlockTypeId.Lava;
 
         // 1 artifact is guaranteed per layer; each placement then has a repeating
         // ArtifactBonusChance to place one more, so bonus count follows a geometric distribution
@@ -292,11 +387,23 @@ namespace MapGeneration
             }
         }
 
+        // Rerolls off already-mined cells (only the Critter Shop cave exists this early) so an
+        // artifact is never placed where it would be invisible and unminable. Layers without a
+        // cave never reroll, so their rng stream - and existing saves' artifact spots - are unchanged.
+        private const int ArtifactPlacementAttempts = 20;
+
         private static void PlaceArtifact(System.Random rng, int gridWidth, int layerHeight, ChunkData chunk)
         {
-            int x = rng.Next(0, gridWidth);
-            int y = rng.Next(0, layerHeight);
-            chunk.Cells[chunk.Index(x, y)].BlockTypeId = (byte)BlockTypeId.Artifact;
+            for (int attempt = 0; attempt < ArtifactPlacementAttempts; attempt++)
+            {
+                int x = rng.Next(0, gridWidth);
+                int y = rng.Next(0, layerHeight);
+                int index = chunk.Index(x, y);
+                if (chunk.Cells[index].Mined || chunk.Cells[index].BlockTypeId == (byte)BlockTypeId.GrassyDirt) continue;
+
+                chunk.Cells[index].BlockTypeId = (byte)BlockTypeId.Artifact;
+                return;
+            }
         }
 
         private static BlockType PickWeighted(IReadOnlyList<WeightedBlockEntry> table, float roll01)

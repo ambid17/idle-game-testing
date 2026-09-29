@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 964beaf7899f985469b5c5da476eb855, type: 3}
+  m_Name: 02_DustBunny
+  m_EditorClassIdentifier: Assembly-CSharp::Critters.CritterDefinition
+  Id: 2
+  DisplayName: Dust Bunny
+  Description: Not technically a rabbit. Not technically alive. Hops anyway.
+  Sprite: {fileID: 21300000, guid: eeff1b4dff6c9be479967593cf49a433, type: 3}
+  Movement: 4
+  Speed: 1.5
+  WanderRadius: 2.5
+  Size: 0.67499995
+  GlowColor: {r: 0, g: 0, b: 0, a: 0}
+  TurnInValue: 300
+  ShopkeeperQuip: Oh! A Dust Bunny! Don't sneeze. Last time I sneezed near one, it
+    became three Dust Bunnies.

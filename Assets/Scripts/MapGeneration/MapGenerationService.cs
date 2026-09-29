@@ -239,6 +239,7 @@ namespace MapGeneration
             }
 
             TryTriggerFallingRockAbove(layerIndex, x, y);
+            GameManager.EventService.Dispatch(new CellMinedEvent(layerIndex, x, y));
             return true;
         }
 
@@ -326,6 +327,45 @@ namespace MapGeneration
             if (cell.Mined) return null;
 
             return blockTypeDatabase != null ? blockTypeDatabase.Get(cell.BlockTypeId) : null;
+        }
+
+        // Open = nothing solid to bump into: a mined/pre-carved cell, or open sky above the surface.
+        // Outside the grid's side walls counts as solid. For free-moving world entities (critters,
+        // ambient particles) that need to stay inside tunnels without their own physics.
+        public bool IsOpenAt(Vector3 worldPos)
+        {
+            return GetCellAt(worldPos, out var cell) switch
+            {
+                CellLookup.Sky => true,
+                CellLookup.Cell => cell.Mined,
+                _ => false,
+            };
+        }
+
+        // Fog state at a world position - open sky above the surface is always visible.
+        public bool IsRevealedAt(Vector3 worldPos)
+        {
+            return GetCellAt(worldPos, out var cell) switch
+            {
+                CellLookup.Sky => true,
+                CellLookup.Cell => cell.Revealed,
+                _ => false,
+            };
+        }
+
+        private enum CellLookup { OutOfBounds, Sky, Cell }
+
+        // TryWorldToCellInBounds reports rows above the surface as negative y (still "in bounds"),
+        // so those are split out as Sky rather than indexed.
+        private CellLookup GetCellAt(Vector3 worldPos, out CellData cell)
+        {
+            cell = default;
+            if (!TryWorldToCellInBounds(worldPos, out int layerIndex, out int x, out int y)) return CellLookup.OutOfBounds;
+            if (y < 0) return CellLookup.Sky;
+
+            var chunk = World.GetOrGenerateChunk(layerIndex);
+            cell = chunk.Cells[chunk.Index(x, y)];
+            return CellLookup.Cell;
         }
 
         public float GetBlockHealthMultiplier(int layerIndex) => layerConfigProvider.GetConfig(layerIndex).BlockHealth;

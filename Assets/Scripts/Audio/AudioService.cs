@@ -92,6 +92,8 @@ namespace Audio
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Add<ProcessingJobStartedEvent>(OnProcessingJobStarted);
             GameManager.EventService.Add<ProcessingJobCompletedEvent>(OnProcessingJobCompleted);
+            GameManager.EventService.Add<CritterCaughtEvent>(OnCritterCaught);
+            GameManager.EventService.Add<CrittersTurnedInEvent>(OnCrittersTurnedIn);
         }
 
         private void OnDisable()
@@ -112,6 +114,8 @@ namespace Audio
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Remove<ProcessingJobStartedEvent>(OnProcessingJobStarted);
             GameManager.EventService.Remove<ProcessingJobCompletedEvent>(OnProcessingJobCompleted);
+            GameManager.EventService.Remove<CritterCaughtEvent>(OnCritterCaught);
+            GameManager.EventService.Remove<CrittersTurnedInEvent>(OnCrittersTurnedIn);
         }
 
         #region Public API
@@ -348,6 +352,13 @@ namespace Audio
         private void OnPrestigeCompleted(PrestigeCompletedEvent e) => PlayEvent(SoundId.Prestige);
         private void OnProcessingJobStarted(ProcessingJobStartedEvent e) => PlayEvent(SoundId.ProcessingStarted);
         private void OnProcessingJobCompleted(ProcessingJobCompletedEvent e) => PlayEvent(SoundId.ProcessingCompleted);
+        private void OnCritterCaught(CritterCaughtEvent e) => PlayEvent(SoundId.CritterCaught);
+
+        private void OnCrittersTurnedIn(CrittersTurnedInEvent e)
+        {
+            PlayEvent(SoundId.CritterTurnIn);
+            if (e.NewHats.Count > 0) PlayEvent(SoundId.HatUnlocked);
+        }
 
         #endregion
     }

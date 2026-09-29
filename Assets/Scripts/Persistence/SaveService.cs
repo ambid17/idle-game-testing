@@ -1,4 +1,5 @@
 using Automation;
+using Critters;
 using Economy;
 using Events;
 using MapGeneration;
@@ -171,6 +172,7 @@ namespace Persistence
             }
 
             data.LifetimeStats = GameManager.AchievementManager.Stats;
+            data.Critters = CritterCollection.Instance.ToSaveData();
 
             try
             {
@@ -268,6 +270,7 @@ namespace Persistence
             PrestigeManager.Instance.SetPrestigeCount(data.PrestigeCount);
             TutorialManager.Instance.RestoreFromSaveData(data.ShownTutorials);
             GameManager.AchievementManager.RestoreFromSaveData(data.LifetimeStats);
+            CritterCollection.Instance.RestoreFromSaveData(data.Critters);
 
             foreach (var entry in data.UpgradeLevels)
             {

@@ -48,6 +48,7 @@ namespace MapGeneration
         public int LayerIndex { get; private set; }
 
         private ChunkData chunk;
+        private Atmosphere.OreGlowLayer oreGlow;
 
         public void Bind(ChunkData chunkData, int layerIndex)
         {
@@ -55,6 +56,10 @@ namespace MapGeneration
             LayerIndex = layerIndex;
             RepaintAll();
             PaintBackground();
+
+            // Added in code rather than on the prefab - it needs nothing authored.
+            if (oreGlow == null) oreGlow = gameObject.AddComponent<Atmosphere.OreGlowLayer>();
+            oreGlow.Rebuild(chunk, LayerIndex, terrainTilemap);
 
             if (fogDisabled)
             {
@@ -188,6 +193,7 @@ namespace MapGeneration
 
             terrainTilemap.SetTiles(terrainChanges, true);
             fogTilemap.SetTiles(fogChanges, true);
+            oreGlow.RefreshCells(localCoords);
         }
 
         // Paints the block's tile at full white (no tint).

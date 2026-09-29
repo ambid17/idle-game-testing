@@ -11,6 +11,9 @@ namespace Interaction
         // Not a world object - PlayerInteractionDetector shows this row itself while the player
         // is stranded out of fuel waiting on a Fuel Drone (see PlayerController.IsStrandedWithoutFuel).
         OutOfFuel,
+        // Appended (scene prompt rows serialize this enum as an int).
+        Critter,
+        Building_CritterShop,
     }
 
     public enum InteractionType

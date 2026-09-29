@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using UnityEngine;
+
 namespace MapGeneration
 {
     // One layer (width x height) worth of generated cells - the streaming/persistence unit.
@@ -9,6 +12,17 @@ namespace MapGeneration
         public CellData[] Cells;
         public int MinedCount;
         public bool IsFullyGenerated;
+
+        // Every pre-carved empty pocket (ChunkGenerator.CarveEmptyPockets), each as its own cell
+        // list with the seed cell first. Rebuilt on every generation rather than persisted - restored
+        // chunks regenerate from the seed before their mined bits are applied - so Critters.CritterSpawner
+        // can key spawns off a pocket's seed cell and get the same answer every load.
+        public readonly List<List<Vector2Int>> EmptyPockets = new();
+
+        // The Critter Shop's cave (ChunkGenerator.CarveShopCave), in chunk-local cells - only ever set
+        // on the single layer ChunkGenerator.GetShopLayerIndex picks for this seed. The row directly
+        // below it (yMax) is the unmineable GrassyDirt floor the shop stands on.
+        public RectInt? ShopCave;
 
         public int TotalCells => Width * Height;
         public float CompletionRatio => TotalCells == 0 ? 0f : (float)MinedCount / TotalCells;

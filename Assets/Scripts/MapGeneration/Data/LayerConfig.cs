@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Critters;
 using UnityEngine;
 
 namespace MapGeneration
@@ -16,6 +17,13 @@ namespace MapGeneration
         [Tooltip("Total cells in the vein including the seed cell. A random value in [Min, Max] is picked per seed.")]
         [Min(1)] public int VeinSizeMin = 2;
         [Min(1)] public int VeinSizeMax = 4;
+    }
+
+    [Serializable]
+    public class WeightedCritterEntry
+    {
+        public CritterDefinition Critter;
+        [Min(0f)] public float Weight = 1f;
     }
 
     // Authored per layer: ore/dirt table, hazard/power-up table, dirt tint, mining speed.
@@ -54,5 +62,21 @@ namespace MapGeneration
         [Tooltip("Total cells in the pocket including the seed cell. A random value in [Min, Max] is picked per seed.")]
         [Min(1)] public int EmptyPocketSizeMin = 2;
         [Min(1)] public int EmptyPocketSizeMax = 5;
+
+        [Header("Critters (spawned by Critters.CritterSpawner inside this layer's empty pockets)")]
+        [Tooltip("This layer's critter set - one entry is rolled (by weight) per pocket that passes CritterChancePerPocket.")]
+        public List<WeightedCritterEntry> CritterTable = new();
+        [Tooltip("Chance, per empty pocket, that a critter lives in it.")]
+        [Range(0f, 1f)] public float CritterChancePerPocket = 0.15f;
+
+        [Header("Atmosphere (Atmosphere.MineAtmosphere - ambient particles and sound while the player is in this layer)")]
+        [Tooltip("Tint for this layer's floating spores and falling dust.")]
+        public Color AmbientParticleColor = new(1f, 0.9f, 0.6f, 1f);
+        [Tooltip("Glowing spores drifting up through open ground near the player, per second. 0 = none (shallow layers).")]
+        [Min(0f)] public float SporesPerSecond = 0f;
+        [Tooltip("Water drips falling from open ceilings near the player, per second.")]
+        [Min(0f)] public float DripsPerSecond = 0.5f;
+        [Tooltip("Looping ambience that crossfades in while the player is in this layer. Null keeps whatever is already playing.")]
+        public AudioClip AmbientLoop;
     }
 }

@@ -91,7 +91,7 @@ namespace Interaction
 
                 if (interactionType != InteractionType.None)
                 {
-                    GameManager.EventService.Dispatch(new PlayerInteractedEvent(current.InteractableType, interactionType));
+                    GameManager.EventService.Dispatch(new PlayerInteractedEvent(current.InteractableType, interactionType, current));
                 }
             }
         }
