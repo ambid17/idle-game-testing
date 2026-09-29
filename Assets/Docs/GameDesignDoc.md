@@ -121,9 +121,8 @@ Upgrades will be a skill tree that fans out and requires the player to unlock th
 	- Lantern:
 		- you start out only being able to see the blocks adjacent to your mine shaft
 		- the lantern reveals the "fog of war" and enables you to see deeper into the dirt to find minerals and plan a route
-		- capstones: 
+		- capstone: 
 			- zoom, enhance: zooms the camera out to reveal more of the map
-			- hazard sense: highlights hazard blocks
 	- Enable digging while flying
 - Economy
 	- Inventory: increase the player's max carrying weight
@@ -156,7 +155,8 @@ Upgrades will be a skill tree that fans out and requires the player to unlock th
 	- Increase fuel cap
 	- Increase fly speed
 	- Increase fly acceleration for changing speed
-	- Decrease fall damage
+	- Core Stability: reduces all damage taken by a percentage per level
+		- Core Integrity: increases max HP by a flat amount per level
 	- Increase fall speed
 	
 # Prestige

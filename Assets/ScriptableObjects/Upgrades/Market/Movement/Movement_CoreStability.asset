@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
-  m_Name: Movement_HazardSense
+  m_Name: Movement_CoreStability
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
-  DisplayName: Hazard Sense
-  Description: Highlights nearby environmental hazards before you reach them.
-  Icon: {fileID: 21300000, guid: b2b9b571e3fae694aaf122161bf05436, type: 3}
-  EffectValuePerLevel: 1
-  MaxLevel: 1
-  BaseCost: 900
-  CostGrowth: 1
+  DisplayName: Core Stability
+  Description: Reinforces your core, reducing all damage you take by 15% per level.
+  Icon: {fileID: 21300000, guid: 2ebdf269071e1444b95ff2424198138a, type: 3}
+  EffectValuePerLevel: 0.15
+  MaxLevel: 5
+  BaseCost: 600
+  CostGrowth: 1.3
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: b4910e8a519fd2244bb6b6a5ed7e3db0, type: 2}
+  Prerequisite: {fileID: 11400000, guid: 0ead90cceab9b2e4798d968a028fc2b5, type: 2}
   Branch: 3
-  Effect: 405
+  Effect: 400

@@ -58,13 +58,15 @@ namespace Economy
         // 306 retired (was Mining_TrueSight, moved to PrestigeUpgradeEffect) - never reuse.
 
         // Movement 400-499
-        Movement_FallDamageReduction = 400,
+        // Flat max HP bonus per level - drives PlayerHealth.MaxHp.
+        Movement_CoreIntegrity = 407,
+        // Formerly Movement_FallDamageReduction - now reduces all damage taken (PlayerHealth.TakeDamage).
+        Movement_CoreStability = 400,
         Movement_FlightSpeed = 401,
         Movement_FuelEfficiency = 402,
         Movement_FuelInventory = 403,
         Movement_GravityIncrease = 404,
-        // "Lantern capstones > hazard sense" - drives ChunkTilemapView's hazard tile tint.
-        Movement_HazardSense = 405,
+        // 405 retired (was Movement_HazardSense) - never reuse.
         Movement_MoveSpeed = 406,
 
         // Processing 500-599

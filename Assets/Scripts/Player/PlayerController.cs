@@ -359,11 +359,10 @@ namespace Player
 
             if (!wasGrounded && lastFallSpeed > fallDamageVelocityThreshold)
             {
-                // GameDesignDoc "Survival > Decrease fall damage": market multiplier and the
-                // prestige perk both reduce the per-unit damage, applied multiplicatively.
-                float marketReduction = upgrades != null ? upgrades.Movement_FallDamageReductionMultiplier : 1f;
+                // GameDesignDoc "Survival > Decrease fall damage": the prestige perk reduces the
+                // per-unit damage; the market's Core Stability applies later, in PlayerHealth.TakeDamage.
                 float prestigeReduction = prestigeUpgrades != null ? Mathf.Max(0f, 1f - prestigeUpgrades.Survival_FallDamageReduction) : 1f;
-                float effectiveDamagePerUnit = fallDamagePerExcessUnit * marketReduction * prestigeReduction;
+                float effectiveDamagePerUnit = fallDamagePerExcessUnit * prestigeReduction;
                 health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * effectiveDamagePerUnit, DeathReason.FallDamage);
             }
 
