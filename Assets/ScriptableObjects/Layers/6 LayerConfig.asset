@@ -17,11 +17,6 @@ MonoBehaviour:
   LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
   BlockHealth: 1.9
   OreTable:
-  - BlockType: {fileID: 11400000, guid: da4f65576bcec1847805830d80fd8b5f, type: 2}
-    Weight: 50
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: d529a29641331c448ac6f8f4d4209047, type: 2}
     Weight: 30
     VeinSpreadChance: 0.5

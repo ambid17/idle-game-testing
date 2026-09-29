@@ -39,6 +39,10 @@ namespace MapGeneration
         // Keeps the cave off the grid's side walls and the layer's top/bottom seams.
         private const int ShopCaveMargin = 2;
 
+        // Every layer's ore roll includes Dirt as filler at this weight, alongside the authored
+        // LayerConfig.OreTable weights - Dirt is never authored in the table itself.
+        public const float DirtFillerWeight = 100f;
+
         private static readonly (int dx, int dy)[] OrthogonalNeighbors = { (1, 0), (-1, 0), (0, 1), (0, -1) };
 
         // layerHeight is the caller-resolved effective height (authored LayerConfig.LayerHeight
@@ -90,7 +94,8 @@ namespace MapGeneration
                 return cell;
             }
 
-            var picked = PickWeighted(config.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OrePick));
+            // Null means the roll landed on the implicit Dirt filler (see DirtFillerWeight).
+            var picked = PickWeighted(config.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OrePick), DirtFillerWeight);
 
             // GameDesignDoc "Prestige > Progression > increase spawn odds of next tier of blocks":
             // each rolled ore has an oreTierOddsBonus chance to be swapped for an ore from the next
@@ -128,7 +133,7 @@ namespace MapGeneration
                 }
             }
 
-            cell.BlockTypeId = picked != null ? (byte)picked.Id : (byte)0;
+            cell.BlockTypeId = picked != null ? (byte)picked.Id : (byte)BlockTypeId.Dirt;
             return cell;
         }
 
@@ -229,13 +234,11 @@ namespace MapGeneration
         // hidden cavern opening up rather than an obvious freebie. Runs last so it only ever eats
         // into leftover Dirt, never an ore vein/hazard/power-up/artifact cell - those all fail the
         // BlockTypeId == dirtId check both here and in AddDirtNeighbors.
-        // "Dirt" here means the layer's filler block (see GetPocketFillerId) - deep layers have no
-        // Dirt at all, and without this they'd never get pockets (or the critters that live in them).
         private static void CarveEmptyPockets(int worldSeed, int layerIndex, int gridWidth, int layerHeight, LayerConfig config, ChunkData chunk)
         {
             if (config.EmptyPocketChancePerCell <= 0f) return;
 
-            byte dirtId = GetPocketFillerId(config);
+            byte dirtId = (byte)BlockTypeId.Dirt;
 
             for (int y = 0; y < layerHeight; y++)
             {
@@ -250,20 +253,6 @@ namespace MapGeneration
                     CarveEmptyPocket(worldSeed, layerIndex, gridWidth, layerHeight, x, y, config, chunk, dirtId);
                 }
             }
-        }
-
-        // Dirt when the layer's table has it (layers 0-3, so their generation is unchanged);
-        // otherwise the table's most common entry (Stone/Coal in the deep layers).
-        private static byte GetPocketFillerId(LayerConfig config)
-        {
-            WeightedBlockEntry commonest = null;
-            foreach (var entry in config.OreTable)
-            {
-                if (entry.BlockType == null) continue;
-                if (entry.BlockType.Id == BlockTypeId.Dirt) return (byte)BlockTypeId.Dirt;
-                if (commonest == null || entry.Weight > commonest.Weight) commonest = entry;
-            }
-            return commonest != null ? (byte)commonest.BlockType.Id : (byte)BlockTypeId.Dirt;
         }
 
         private static void CarveEmptyPocket(int worldSeed, int layerIndex, int gridWidth, int layerHeight, int seedX, int seedY, LayerConfig config, ChunkData chunk, byte dirtId)
@@ -406,15 +395,12 @@ namespace MapGeneration
             }
         }
 
-        private static BlockType PickWeighted(IReadOnlyList<WeightedBlockEntry> table, float roll01)
+        // fillerWeight is an implicit extra entry rolled ahead of the table's own entries; landing
+        // on it returns null (the ore roll uses it for Dirt, see DirtFillerWeight). Rolled first so
+        // layers that used to author Dirt as their first entry keep the same roll -> block mapping.
+        private static BlockType PickWeighted(IReadOnlyList<WeightedBlockEntry> table, float roll01, float fillerWeight = 0f)
         {
-            if (table.Count == 0)
-            {
-                Debug.LogWarning("Weighted table has no entries, returning null");
-                return null;
-            }
-
-            float total = 0f;
+            float total = fillerWeight;
             for (int i = 0; i < table.Count; i++) total += table[i].Weight;
             if (total <= 0f)
             {
@@ -423,19 +409,19 @@ namespace MapGeneration
             }
 
             float target = roll01 * total;
-            float cumulative = 0f;
+            float cumulative = fillerWeight;
+            if (fillerWeight > 0f && target <= cumulative) return null;
             for (int i = 0; i < table.Count; i++)
             {
                 cumulative += table[i].Weight;
                 if (target <= cumulative) return table[i].BlockType;
             }
 
-            return table[^1].BlockType;
+            return table.Count > 0 ? table[^1].BlockType : null;
         }
 
-        // Same weighted roll as PickWeighted, restricted to Ore-category entries (skips the table's
-        // Dirt filler) - used for the ore-tier upgrade's deeper-layer swap. Null if the table has
-        // no ore.
+        // Same weighted roll as PickWeighted, restricted to Ore-category entries - used for the
+        // ore-tier upgrade's deeper-layer swap. Null if the table has no ore.
         private static BlockType PickWeightedOre(IReadOnlyList<WeightedBlockEntry> table, float roll01)
         {
             float total = 0f;

@@ -149,8 +149,7 @@ namespace Player
             Notify(message, chestBlock);
         }
 
-        // OreTable also carries the layer's Dirt filler entry (weight 100) - only real Ore-category
-        // entries count as treasure.
+        // Only real Ore-category entries count as treasure.
         private static BlockType PickRandomOre(LayerConfig config)
         {
             float total = 0f;

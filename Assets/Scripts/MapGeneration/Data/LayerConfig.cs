@@ -27,7 +27,7 @@ namespace MapGeneration
     }
 
     // Authored per layer: ore/dirt table, hazard/power-up table, dirt tint, mining speed.
-    // Include a "Dirt" entry directly in OreTable to represent the dirt fallback weight.
+    // Don't author Dirt in OreTable - every layer rolls Dirt as filler at ChunkGenerator.DirtFillerWeight.
     [CreateAssetMenu(fileName = "LayerConfig", menuName = "Map Generation/Layer Config")]
     public class LayerConfig : ScriptableObject
     {

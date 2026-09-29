@@ -119,6 +119,10 @@ namespace MapGeneration
                 {
                     Debug.LogError($"LayerConfig '{layer.name}' has no OreTable entries.");
                 }
+                else if (layer.OreTable.Exists(entry => entry.BlockType != null && entry.BlockType.Id == BlockTypeId.Dirt))
+                {
+                    Debug.LogError($"LayerConfig '{layer.name}' has a Dirt entry in its OreTable - Dirt is added automatically as filler (ChunkGenerator.DirtFillerWeight), remove it.");
+                }
             }
         }
     }
