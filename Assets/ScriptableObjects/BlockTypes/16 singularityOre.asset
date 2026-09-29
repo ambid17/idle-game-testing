@@ -23,3 +23,6 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.308, g: 0.194, b: 0.6, a: 1}
+  AnalyzerLines:
+  - 'Infinitely dense, yet it somehow fits in your backpack. Don''t think about it too hard.'
+  - 'The Analyzer''s needle is pointing... inward.'

@@ -23,3 +23,5 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.722, g: 0.542, b: 0.094, a: 1}
+  AnalyzerLines:
+  - 'Lucky charm. Mine it and your next 10 ores are doubled.'

@@ -23,3 +23,6 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.742, g: 0.321, b: 0.075, a: 1}
+  AnalyzerLines:
+  - 'Somebody''s old toaster, compressed by a few million years of dirt. Still smells faintly of bagels.'
+  - 'One miner''s trash is... also this miner''s trash. But sellable.'

@@ -23,3 +23,6 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.6, g: 0.72, b: 0.8, a: 1}
+  AnalyzerLines:
+  - 'Aerospace-grade. Someone clearly lost a rocket down here.'
+  - 'Lightweight, strong, and deeply unimpressed by your pickaxe.'

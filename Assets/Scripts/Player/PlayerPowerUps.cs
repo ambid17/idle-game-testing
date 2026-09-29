@@ -10,7 +10,7 @@ namespace Player
     // player mines. PowerUps are player-only (MineWorld.TryMineCell refuses them for automatons
     // and explosions), so PlayerMining applies them directly here instead of routing through
     // CustomBlockTriggeredEvent like hazards do. Every magnitude scales with the Museum's
-    // Progression_PowerUpEffectivenessBonus. Timed buffs aren't saved - a reload drops them.
+    // Economy_PowerUpEffectivenessBonus. Timed buffs aren't saved - a reload drops them.
     [RequireComponent(typeof(PlayerInventory))]
     [RequireComponent(typeof(PlayerHealth))]
     [RequireComponent(typeof(PlayerController))]
@@ -44,7 +44,7 @@ namespace Player
         private float overdriveEndTime;
         private int remainingLuckyStrikeCharges;
 
-        private float Effectiveness => 1f + PrestigeUpgradeManager.Instance.Progression_PowerUpEffectivenessBonus;
+        private float Effectiveness => 1f + PrestigeUpgradeManager.Instance.Economy_PowerUpEffectivenessBonus;
 
         public bool IsOverdriveActive => Time.time < overdriveEndTime;
         public float MiningSpeedMultiplier => IsOverdriveActive ? overdriveSpeedMultiplier : 1f;

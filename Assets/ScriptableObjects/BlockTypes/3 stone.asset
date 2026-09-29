@@ -23,3 +23,6 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.6, g: 0.57, b: 0.506, a: 1}
+  AnalyzerLines:
+  - 'It''s a rock. Geologists call it ''stone.'' Accountants call it ''barely worth the trip.'''
+  - 'Certified 100% organic, free-range stone. No additives.'

@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
-  m_Name: Progression_OreTierOddsBonus
+  m_Name: Hazard_Analyzer
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  DisplayName: Prospector's Instinct
-  Description: Increases the odds of finding higher-tier ore. 10% chance per-level
-    for an ore of one layer deeper to generate.
-  Icon: {fileID: 21300000, guid: 7d5239f94093a4c43be1fc9330796a2c, type: 3}
-  EffectValuePerLevel: 0.1
-  MaxLevel: 10
-  BaseCost: 5
-  CostGrowth: 1.4
+  DisplayName: Analyzer
+  Description: 'Unlocks an active ability: scan the block in front of you (or below,
+    while holding down) to learn what a hazard or power-up does, an ore''s value,
+    or a bit of artifact lore.'
+  Icon: {fileID: 21300000, guid: 7cacf0216501b50419066aa4bc5c3e76, type: 3}
+  EffectValuePerLevel: 1
+  MaxLevel: 1
+  BaseCost: 2
+  CostGrowth: 1.5
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 0}
   Branch: 4
-  Effect: 500
+  Effect: 700

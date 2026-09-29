@@ -23,3 +23,5 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.988, g: 0.32, b: 0.14, a: 1}
+  AnalyzerLines:
+  - 'Molten rock. It burns when you mine it, and burns every second you stand on top of it. Heat Shielding reduces the damage.'

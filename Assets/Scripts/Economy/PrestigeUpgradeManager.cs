@@ -179,20 +179,25 @@ namespace Economy
         // Artifacts per minute, passively - see PassivePrestigeIncomeTicker.
         public float Prestige_PassiveArtifactRate => LevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate);
 
-        // GameDesignDoc "Prestige > Progression". OreTierOddsBonus is the chance (0-1) that a rolled
-        // ore is swapped for one from the next layer's OreTable - see ChunkGenerator.RollCell.
-        public float Progression_OreTierOddsBonus => LevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_OreTierOddsBonus);
-        public float Progression_PowerUpEffectivenessBonus => LevelOf(PrestigeUpgradeEffect.Progression_PowerUpEffectivenessBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_PowerUpEffectivenessBonus);
-        public float Progression_PowerUpSpawnRateBonus => LevelOf(PrestigeUpgradeEffect.Progression_PowerUpSpawnRateBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Progression_PowerUpSpawnRateBonus);
+        // GameDesignDoc "Prestige > Progression" (now part of the Economy branch). OreTierOddsBonus is
+        // the chance (0-1) that a rolled ore is swapped for one from the next layer's OreTable - see
+        // ChunkGenerator.RollCell.
+        public float Economy_OreTierOddsBonus => LevelOf(PrestigeUpgradeEffect.Economy_OreTierOddsBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_OreTierOddsBonus);
+        public float Economy_PowerUpEffectivenessBonus => LevelOf(PrestigeUpgradeEffect.Economy_PowerUpEffectivenessBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_PowerUpEffectivenessBonus);
+        public float Economy_PowerUpSpawnRateBonus => LevelOf(PrestigeUpgradeEffect.Economy_PowerUpSpawnRateBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Economy_PowerUpSpawnRateBonus);
 
-        // GameDesignDoc "Prestige > Survival". Blast/FallingRock/Lava resistances come from the
-        // deepened hazards pass: one resistance perk each for the other 3 hazards that do more than
-        // flat proximity damage, same shape as Survival_GasResistance.
-        public float Survival_BlastResistance => LevelOf(PrestigeUpgradeEffect.Survival_BlastResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_BlastResistance);
+        // Hazard branch. Analyzer: owning any level unlocks the scan ability (Player.PlayerAnalyzer).
+        public bool Hazard_AnalyzerUnlocked => LevelOf(PrestigeUpgradeEffect.Hazard_Analyzer) > 0;
+
+        // Per-hazard damage reduction (0-1), read by Player.HazardDamageHandler. Blast/FallingRock/
+        // Lava come from the deepened hazards pass, same shape as Hazard_GasResistance.
+        public float Hazard_BlastResistance => LevelOf(PrestigeUpgradeEffect.Hazard_BlastResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Hazard_BlastResistance);
+        public float Hazard_FallingRockResistance => LevelOf(PrestigeUpgradeEffect.Hazard_FallingRockResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Hazard_FallingRockResistance);
+        public float Hazard_GasResistance => LevelOf(PrestigeUpgradeEffect.Hazard_GasResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Hazard_GasResistance);
+        public float Hazard_LavaResistance => LevelOf(PrestigeUpgradeEffect.Hazard_LavaResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Hazard_LavaResistance);
+
+        // GameDesignDoc "Prestige > Survival".
         public float Survival_FallDamageReduction => LevelOf(PrestigeUpgradeEffect.Survival_FallDamageReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallDamageReduction);
-        public float Survival_FallingRockResistance => LevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallingRockResistance);
-        public float Survival_GasResistance => LevelOf(PrestigeUpgradeEffect.Survival_GasResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_GasResistance);
-        public float Survival_LavaResistance => LevelOf(PrestigeUpgradeEffect.Survival_LavaResistance) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_LavaResistance);
         // Multiplier on horizontal move/fly speed (+X% per level).
         public float Survival_MoveSpeedMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus);
 

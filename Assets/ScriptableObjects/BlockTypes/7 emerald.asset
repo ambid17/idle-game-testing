@@ -23,3 +23,6 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0, g: 0.742, b: 0.24, a: 1}
+  AnalyzerLines:
+  - 'Green, gleaming, and quietly judging your life choices.'
+  - 'A wizard would pay a fortune for this. Luckily, so will the Depot.'

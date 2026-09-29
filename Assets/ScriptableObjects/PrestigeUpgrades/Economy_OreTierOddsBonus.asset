@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
-  m_Name: Survival_LavaResistance
+  m_Name: Economy_OreTierOddsBonus
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  DisplayName: Heat Shielding
-  Description: Increases resistance to lava damage. Reduce damage by 10%.
-  Icon: {fileID: 21300000, guid: 7c7b5dcc12ad1b549a67347f8956d28f, type: 3}
+  DisplayName: Prospector's Instinct
+  Description: Increases the odds of finding higher-tier ore. 10% chance per-level
+    for an ore of one layer deeper to generate.
+  Icon: {fileID: 21300000, guid: 7d5239f94093a4c43be1fc9330796a2c, type: 3}
   EffectValuePerLevel: 0.1
-  MaxLevel: 8
-  BaseCost: 2
-  CostGrowth: 2
+  MaxLevel: 10
+  BaseCost: 5
+  CostGrowth: 1.4
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: 1ea9294859d7af743934039ed82cbd34, type: 2}
-  Branch: 5
-  Effect: 606
+  Prerequisite: {fileID: 11400000, guid: 0f7aa281b1c06a64abb915bc51ad1034, type: 2}
+  Branch: 1
+  Effect: 500

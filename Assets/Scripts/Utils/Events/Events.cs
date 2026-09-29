@@ -522,6 +522,20 @@ namespace Events
         }
     }
 
+    // Dispatched by Player.PlayerAnalyzer when a scan finds something worth reporting. Body is the
+    // already-formatted readout (explanation / joke + value / lore); UI.AnalyzerReadoutUI shows it.
+    public class BlockAnalyzedEvent : IEvent
+    {
+        public BlockType BlockType;
+        public string Body;
+
+        public BlockAnalyzedEvent(BlockType blockType, string body)
+        {
+            BlockType = blockType;
+            Body = body;
+        }
+    }
+
     // Dispatched by Wallet.Add with the amount actually credited - unlike DollarsChangedEvent,
     // which also fires on spends and save restores.
     public class DollarsEarnedEvent : IEvent

@@ -23,3 +23,6 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.85, g: 0.88, b: 0.92, a: 1}
+  AnalyzerLines:
+  - 'Tiny machines, very busy. Several appear to be unionizing.'
+  - 'Self-assembling ore. It''s been waiting for you to show up and carry it.'

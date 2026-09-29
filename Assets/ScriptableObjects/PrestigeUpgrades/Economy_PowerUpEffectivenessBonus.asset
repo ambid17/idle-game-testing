@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
-  m_Name: Survival_GasResistance
+  m_Name: Economy_PowerUpEffectivenessBonus
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
-  DisplayName: Filtered Lungs
-  Description: Increases resistance to harmful gas. Reduce damage by 10%.
-  Icon: {fileID: 21300000, guid: a4bc5e3ddc48de543a56cf8f806bb561, type: 3}
+  DisplayName: Amplified Boosts
+  Description: Increases the effectiveness of power-up blocks by 10%
+  Icon: {fileID: 21300000, guid: 3e026c8694ff8194ea85d864c0760828, type: 3}
   EffectValuePerLevel: 0.1
-  MaxLevel: 8
-  BaseCost: 2
-  CostGrowth: 2
+  MaxLevel: 10
+  BaseCost: 6
+  CostGrowth: 1.4
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: 76cb477371fe5464e971ec2b37f698fc, type: 2}
-  Branch: 5
-  Effect: 603
+  Prerequisite: {fileID: 11400000, guid: ffc252451db0d0e48be95f957efbef08, type: 2}
+  Branch: 1
+  Effect: 501

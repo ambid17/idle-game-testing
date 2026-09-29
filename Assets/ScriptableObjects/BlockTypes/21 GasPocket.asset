@@ -23,3 +23,5 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.331, g: 0.633, b: 0.333, a: 1}
+  AnalyzerLines:
+  - 'Pressurized toxic gas. Mining it releases a spreading cloud that damages you every half-second you stay inside it. Back off and let it dissipate. Filtered Lungs reduces the damage.'

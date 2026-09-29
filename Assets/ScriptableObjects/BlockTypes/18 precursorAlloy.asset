@@ -23,3 +23,6 @@ MonoBehaviour:
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.274, g: 0.527, b: 0.622, a: 1}
+  AnalyzerLines:
+  - 'Forged by someone long before you. Their receipts are probably buried down here too.'
+  - 'Older than the planet it''s buried in. Somehow.'
