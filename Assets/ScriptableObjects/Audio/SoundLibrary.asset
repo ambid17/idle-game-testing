@@ -175,5 +175,10 @@ MonoBehaviour:
     Volume: 0.12
     PitchVariance: 0.02
     MinInterval: 0.04
-  Music: {fileID: 8300000, guid: 49c551ad5f14c7641b48df0c188a1d03, type: 3}
+  MusicTracks:
+  - {fileID: 8300000, guid: 49c551ad5f14c7641b48df0c188a1d03, type: 3}
+  - {fileID: 8300000, guid: 064d3bf63b794e7459668d777c3e414a, type: 3}
+  - {fileID: 8300000, guid: f5874157e49602449a1ca0500a945473, type: 3}
+  - {fileID: 8300000, guid: 04244506d99131047bf158a2159b5235, type: 3}
+  - {fileID: 8300000, guid: 529eed1d7c64bf549a80b76365f9cde3, type: 3}
   MusicVolume: 0.35
