@@ -8,6 +8,9 @@ namespace Interaction
         Building_Processing,
         Building_ControlCenter,
         Chest,
+        // Not a world object - PlayerInteractionDetector shows this row itself while the player
+        // is stranded out of fuel waiting on a Fuel Drone (see PlayerController.IsStrandedWithoutFuel).
+        OutOfFuel,
     }
 
     public enum InteractionType

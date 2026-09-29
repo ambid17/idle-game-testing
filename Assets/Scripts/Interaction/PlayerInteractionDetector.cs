@@ -19,6 +19,14 @@ namespace Interaction
 
         private readonly List<IInteractable> nearby = new List<IInteractable>();
         private IInteractable current;
+        private PlayerController playerController;
+        private bool showingStrandedPrompt;
+
+        private void Start()
+        {
+            playerController = GetComponent<PlayerController>();
+            if (playerController == null) Debug.LogError("PlayerInteractionDetector needs a PlayerController on the same GameObject.");
+        }
 
         private void Update()
         {
@@ -26,11 +34,19 @@ namespace Interaction
             // a C# null through the interface reference - check Unity's own null first.
             nearby.RemoveAll(interactable => interactable is Object obj && obj == null);
 
-            var closest = GetClosest();
-            if (closest != current)
+            // Out of fuel waiting on a Fuel Drone: the respawn prompt takes over from any nearby
+            // interactable, so its key can't also fire a building interaction.
+            bool stranded = playerController.IsStrandedWithoutFuel;
+            var closest = stranded ? null : GetClosest();
+            if (closest != current || stranded != showingStrandedPrompt)
             {
                 current = closest;
-                if (current != null)
+                showingStrandedPrompt = stranded;
+                if (stranded)
+                {
+                    promptUI.Show(InteractableType.OutOfFuel);
+                }
+                else if (current != null)
                 {
                     promptUI.Show(current.InteractableType);
                 }
@@ -41,6 +57,15 @@ namespace Interaction
             }
 
             var keybinds = GameManager.KeybindService;
+
+            if (stranded)
+            {
+                if (!InputBlocker.IsBlocked && !InputBlocker.WasUnblockedThisFrame && keybinds.WasPressedThisFrame(GameAction.InteractSecondary))
+                {
+                    playerController.RespawnWhileStranded();
+                }
+                return;
+            }
             // On a gamepad the interact buttons double as UI Submit (A) etc., so while a panel is
             // open they belong to the panel's focused button rather than re-interacting with the
             // building (e.g. Depot's Secondary = Deposit All). A press that just closed a panel
