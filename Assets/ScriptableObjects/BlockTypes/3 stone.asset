@@ -22,3 +22,4 @@ MonoBehaviour:
   Weight: 2
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.6, g: 0.57, b: 0.506, a: 1}

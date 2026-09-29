@@ -50,6 +50,8 @@ namespace Economy
         // Drives UpgradeManager.Mining_InstantMineDirt.
         Mining_DirtInstaMine = 303,
         Mining_LanternRadius = 304,
+        // HUD minimap (UI.MinimapUI): first level unlocks it, further levels widen its view.
+        Mining_Minimap = 308,
         // Drives UpgradeManager.Mining_InstantMineScrapAlloy.
         Mining_ScrapAlloyInstaMine = 307,
         Mining_Speed = 305,

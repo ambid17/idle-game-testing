@@ -40,6 +40,10 @@ namespace MapGeneration
 
         public IEnumerable<ChunkData> GetLoadedChunks() => chunksByLayer.Values;
 
+        // Read-only lookup that never generates - for observers like UI.MinimapUI that must not
+        // force chunks into existence just by looking at them.
+        public bool TryGetLoadedChunk(int layerIndex, out ChunkData chunk) => chunksByLayer.TryGetValue(layerIndex, out chunk);
+
         public bool TryMineCell(int layerIndex, int x, int y, bool minedByPlayer, out BlockType minedBlock)
         {
             minedBlock = null;

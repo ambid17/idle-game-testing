@@ -84,5 +84,7 @@ namespace MapGeneration
         public float Weight;
         public float Health = 1f;
         public Color Tint = Color.white;
+        [Tooltip("Pixel color on the HUD minimap (UI.MinimapUI).")]
+        public Color MinimapColor = new(0.45f, 0.32f, 0.22f, 1f);
     }
 }

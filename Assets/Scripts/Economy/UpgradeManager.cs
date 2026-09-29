@@ -130,6 +130,11 @@ namespace Economy
         // GameDesignDoc "Mining > Lantern": extra fog-of-war reveal radius on top of the base.
         public int Mining_LanternFogRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Mining_LanternRadius) * EffectValuePerLevelOf(UpgradeEffect.Mining_LanternRadius));
 
+        // HUD minimap (UI.MinimapUI): owning any level unlocks it; each level past the first widens
+        // its view by EffectValuePerLevel cells.
+        public bool Mining_MinimapUnlocked => LevelOf(UpgradeEffect.Mining_Minimap) > 0;
+        public int Mining_MinimapRangeBonus => Mathf.RoundToInt(Mathf.Max(0, LevelOf(UpgradeEffect.Mining_Minimap) - 1) * EffectValuePerLevelOf(UpgradeEffect.Mining_Minimap));
+
         // GameDesignDoc "Mining > Increase mining speed": "each tier adds 10% mining speed".
         public float Mining_SpeedMultiplier => 1f + LevelOf(UpgradeEffect.Mining_Speed) * EffectValuePerLevelOf(UpgradeEffect.Mining_Speed);
 
