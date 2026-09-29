@@ -13,6 +13,8 @@ namespace Audio
     // continuous/edge-triggered things with no event (mining hits, the jetpack loop, warnings)
     // call Play/SetLoopActive directly.
     //
+    // Music shuffles through SoundLibrary.MusicTracks at random (see ShuffleMusic).
+    //
     // Volume: Master is AudioListener.volume (SettingsService); SFX/Music are applied per-source
     // here from SettingsService, and ApplyVolumes() is called whenever those settings change.
     //
@@ -33,13 +35,14 @@ namespace Audio
         [Range(0f, 1f)]
         [SerializeField] private float maxStereoPan = 0.6f;
         [SerializeField] private float musicFadeSeconds = 1.5f;
+        [Tooltip("How many times a music track loops before shuffling to another.")]
+        [SerializeField] private int musicLoopsPerTrack = 2;
 
         private readonly List<AudioSource> sfxVoices = new();
         private readonly Dictionary<SoundId, AudioSource> loopSources = new();
         private readonly Dictionary<SoundId, float> lastPlayedAt = new();
         private Transform sourceRoot;
         private AudioSource musicSource;
-        private Coroutine musicFade;
         private float musicFadeFactor = 1f;
         private int nextVoice;
         private int lastShieldCharges = -1;
@@ -48,7 +51,7 @@ namespace Audio
         private bool hasLoaded;
 
         private static float SfxVolume => SettingsService.Instance.SFXVolume;
-        private static float MusicVolume => SettingsService.Instance.MusicVolume;
+        private float MusicVolume => SettingsService.Instance.MusicVolume * library.MusicVolume;
 
         private void Awake()
         {
@@ -68,7 +71,7 @@ namespace Audio
 
         private void Start()
         {
-            if (library.Music != null) PlayMusic(library.Music);
+            if (library.MusicTracks.Length > 0) StartCoroutine(ShuffleMusic());
         }
 
         private void OnEnable()
@@ -89,6 +92,8 @@ namespace Audio
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Add<ProcessingJobStartedEvent>(OnProcessingJobStarted);
             GameManager.EventService.Add<ProcessingJobCompletedEvent>(OnProcessingJobCompleted);
+            GameManager.EventService.Add<CritterCaughtEvent>(OnCritterCaught);
+            GameManager.EventService.Add<CrittersTurnedInEvent>(OnCrittersTurnedIn);
         }
 
         private void OnDisable()
@@ -109,6 +114,8 @@ namespace Audio
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Remove<ProcessingJobStartedEvent>(OnProcessingJobStarted);
             GameManager.EventService.Remove<ProcessingJobCompletedEvent>(OnProcessingJobCompleted);
+            GameManager.EventService.Remove<CritterCaughtEvent>(OnCritterCaught);
+            GameManager.EventService.Remove<CrittersTurnedInEvent>(OnCrittersTurnedIn);
         }
 
         #region Public API
@@ -160,14 +167,6 @@ namespace Audio
             source.clip = entry.Clips[0];
             source.volume = entry.Volume * SfxVolume;
             source.Play();
-        }
-
-        // Crossfades from whatever is playing. Unscaled time, so it still fades while paused.
-        public void PlayMusic(AudioClip clip)
-        {
-            if (musicSource.clip == clip && musicSource.isPlaying) return;
-            if (musicFade != null) StopCoroutine(musicFade);
-            musicFade = StartCoroutine(CrossfadeMusic(clip));
         }
 
         // Called by SettingsService when the SFX/Music sliders change. One-shots already playing
@@ -228,6 +227,38 @@ namespace Audio
             return source;
         }
 
+        // Random track, never the same one twice in a row, each held for musicLoopsPerTrack loops.
+        // The wait is timed so the next fade-out ends as the last loop does. Realtime, so the
+        // music keeps rotating while the game is paused.
+        private IEnumerator ShuffleMusic()
+        {
+            var tracks = library.MusicTracks;
+            int lastIndex = -1;
+            while (true)
+            {
+                int index;
+                if (lastIndex < 0 || tracks.Length == 1)
+                {
+                    index = Random.Range(0, tracks.Length);
+                }
+                else
+                {
+                    index = Random.Range(0, tracks.Length - 1);
+                    if (index >= lastIndex) index++;
+                }
+                lastIndex = index;
+
+                var clip = tracks[index];
+                yield return CrossfadeMusic(clip);
+                if (tracks.Length == 1) yield break;
+
+                float remaining = clip.length * musicLoopsPerTrack - 2f * musicFadeSeconds;
+                yield return new WaitForSecondsRealtime(Mathf.Max(0f, remaining));
+            }
+        }
+
+        // Fades out whatever is playing, then fades the new clip in. Unscaled time, so it still
+        // fades while paused.
         private IEnumerator CrossfadeMusic(AudioClip clip)
         {
             if (musicSource.isPlaying)
@@ -237,11 +268,8 @@ namespace Audio
             }
 
             musicSource.clip = clip;
-            if (clip == null) yield break;
-
             musicSource.Play();
             yield return FadeMusic(0f, 1f);
-            musicFade = null;
         }
 
         private IEnumerator FadeMusic(float from, float to)
@@ -324,6 +352,13 @@ namespace Audio
         private void OnPrestigeCompleted(PrestigeCompletedEvent e) => PlayEvent(SoundId.Prestige);
         private void OnProcessingJobStarted(ProcessingJobStartedEvent e) => PlayEvent(SoundId.ProcessingStarted);
         private void OnProcessingJobCompleted(ProcessingJobCompletedEvent e) => PlayEvent(SoundId.ProcessingCompleted);
+        private void OnCritterCaught(CritterCaughtEvent e) => PlayEvent(SoundId.CritterCaught);
+
+        private void OnCrittersTurnedIn(CrittersTurnedInEvent e)
+        {
+            PlayEvent(SoundId.CritterTurnIn);
+            if (e.NewHats.Count > 0) PlayEvent(SoundId.HatUnlocked);
+        }
 
         #endregion
     }

@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 6233729820642421187}
   - component: {fileID: 7976875734430516152}
   - component: {fileID: 6569216783213287884}
+  - component: {fileID: 3092494643009576969}
   m_Layer: 6
   m_Name: Chest
   m_TagString: Untagged
@@ -242,6 +243,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Economy.Chest
   weightBarUI: {fileID: 8722429609776545847}
+--- !u!114 &3092494643009576969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1076705816106589162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db1bd2de0c9ffb498d6e17cc426e52b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.MinimapMarker
+  color: {r: 1, g: 0.9, b: 0.2, a: 1}
+  size: 7
+  clampToEdge: 1
+  drawOnTop: 0
 --- !u!1 &1884116235601212267
 GameObject:
   m_ObjectHideFlags: 0

@@ -22,3 +22,6 @@ MonoBehaviour:
   Weight: 0
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.593, g: 0.6, b: 0.588, a: 1}
+  AnalyzerLines:
+  - 'Overclocked drill bit. Mine it for triple mining speed for 15 seconds.'

@@ -22,3 +22,6 @@ MonoBehaviour:
   Weight: 0
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.882, g: 0.229, b: 0.163, a: 1}
+  AnalyzerLines:
+  - 'Unstable charge. Mining it lights a one-second fuse, then it blasts every block within 2 tiles and hurts anyone close by. Blast Plating reduces the damage.'

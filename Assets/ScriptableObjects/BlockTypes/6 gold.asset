@@ -22,3 +22,7 @@ MonoBehaviour:
   Weight: 5
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.869, g: 0.68, b: 0, a: 1}
+  AnalyzerLines:
+  - 'Shiny. Your inner dragon would like to sleep on it.'
+  - 'Not fool''s gold. The Analyzer double-checked. Twice.'

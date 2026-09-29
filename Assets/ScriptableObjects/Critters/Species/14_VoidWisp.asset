@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 964beaf7899f985469b5c5da476eb855, type: 3}
+  m_Name: 14_VoidWisp
+  m_EditorClassIdentifier: Assembly-CSharp::Critters.CritterDefinition
+  Id: 14
+  DisplayName: Void Wisp
+  Description: Made of pure nothing. Somehow still has opinions.
+  Sprite: {fileID: 21300000, guid: b120def9b7143374c81601771c25fc02, type: 3}
+  Movement: 1
+  Speed: 1.6
+  WanderRadius: 3
+  Size: 0.6
+  GlowColor: {r: 0.7, g: 0.3, b: 1, a: 0.6}
+  TurnInValue: 120000
+  ShopkeeperQuip: A Void Wisp... it's staring into my soul. My soul's mostly mushroom
+    soup, so joke's on it.

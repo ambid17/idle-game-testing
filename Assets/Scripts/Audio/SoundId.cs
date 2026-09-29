@@ -38,9 +38,16 @@ namespace Audio
         Prestige = 63,
         ProcessingStarted = 64,
         ProcessingCompleted = 65,
+        Deposit = 66,
 
         // UI
         UIClick = 80,
         UIHover = 81,
+
+        // Critters
+        CritterCaught = 100,
+        CritterTurnIn = 101,
+        HatUnlocked = 102,
+        DialogBlip = 103,
     }
 }

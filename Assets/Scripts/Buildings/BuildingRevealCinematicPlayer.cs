@@ -20,12 +20,12 @@ namespace Buildings
         [SerializeField] private ParticleSystem portalEffect;
         [SerializeField] private BuildingRevealTextUI cinematicText;
 
-        [SerializeField] private float cameraPanInSeconds = 1f;
-        [SerializeField] private float portalWarmupSeconds = 0.75f;
+        [SerializeField] private float cameraPanInSeconds = 0.75f;
+        [SerializeField] private float portalWarmupSeconds = 0.5f;
         [SerializeField] private float materializeDuration = 1.5f;
         [SerializeField] private float portalCooldownSeconds = 0.5f;
         [SerializeField] private float cameraPanOutSeconds = 1f;
-        [SerializeField] private float textPromptDelaySeconds = 3f;
+        [SerializeField] private float textPromptDelaySeconds = 2f;
         [SerializeField] private AnimationCurve materializeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         protected override void Initialize()

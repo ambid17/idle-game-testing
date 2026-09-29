@@ -78,6 +78,14 @@ namespace Player
         public float FuelMax => fuelSystem.MaxFuel;
         public float FuelMissing => fuelSystem.FuelMissing;
 
+        // With Fuel Drones unlocked, an empty tank strands the player instead of killing them, so a
+        // drone can come refuel them. PlayerInteractionDetector shows a respawn prompt meanwhile,
+        // which calls RespawnWhileStranded if the player doesn't want to wait.
+        public bool IsStrandedWithoutFuel => !health.IsDead && !HasFuel && CanWaitForFuelDrone;
+        private bool CanWaitForFuelDrone => upgrades != null && upgrades.Automation_FuelDroneCount > 0;
+
+        public void RespawnWhileStranded() => health.Kill(DeathReason.OutOfFuel);
+
         // IFuelConsumer - lets Fuel Drones target the player the same way they target automatons.
         public Transform FuelTransform => transform;
 
@@ -161,27 +169,19 @@ namespace Player
             lastFallSpeed = 0f;
         }
 
+        // Used by PlayerDepotRecall. Clears fall tracking so arriving mid-air (or from a long fall)
+        // doesn't register as a fall-damage landing.
+        public void TeleportTo(Vector3 position)
+        {
+            rb.position = position;
+            transform.position = position;
+            rb.linearVelocity = Vector2.zero;
+            lastFallSpeed = 0f;
+        }
+
         private void Update()
         {
-            if (health.IsDead) return;
-
             var keybinds = GameManager.KeybindService;
-
-            // Escape/Start while Options > Controls is waiting for a key cancels that capture
-            // instead, and Escape/B with a dropdown's list open just closes the list (UI Cancel).
-            if (!keybinds.IsCapturingKey && !GamepadFocus.IsDropdownListOpen())
-            {
-                if (keybinds.WasPausePressedThisFrame())
-                {
-                    CloseTopmostUI(openPauseIfNothingOpen: true);
-                }
-                // Gamepad B only ever backs out of UI - with nothing open it does nothing, rather
-                // than opening the pause menu the way Escape/Start do.
-                else if (keybinds.WasBackPressedThisFrame())
-                {
-                    CloseTopmostUI(openPauseIfNothingOpen: false);
-                }
-            }
 
             // Dev Panel hotkey (UI.DevPanelUI) - backquote matches the console log viewer's
             // pre-existing key (Select on a gamepad). Editor/Development Build only, and only when
@@ -191,6 +191,24 @@ namespace Player
             {
                 GameManager.EventService.Dispatch<DevPanelOpenRequestedEvent>();
             }
+
+            // Escape/Start while Options > Controls is waiting for a key cancels that capture
+            // instead, and Escape/B with a dropdown's list open just closes the list (UI Cancel).
+            if (!keybinds.IsCapturingKey && !GamepadFocus.IsDropdownListOpen())
+            {
+                if (keybinds.WasPausePressedThisFrame())
+                {
+                    OnPauseButtonPressed(openPauseIfNothingOpen: true);
+                }
+                // Gamepad B only ever backs out of UI - with nothing open it does nothing, rather
+                // than opening the pause menu the way Escape/Start do.
+                else if (keybinds.WasBackPressedThisFrame())
+                {
+                    OnPauseButtonPressed(openPauseIfNothingOpen: false);
+                }
+            }
+
+            if (health.IsDead || !HasFuel) return;
 
             // Unlike death (which zeroes movementInput once via HandleDied), blocking can start/end
             // mid-motion, so it has to actively zero the stale input each frame it's active -
@@ -235,7 +253,7 @@ namespace Player
         // Three tiers: a modal nested inside (or standalone atop) a panel closes first; only once
         // none is open does this fall through to closing the panel itself, or - if nothing was
         // open at all - optionally opening the pause menu. See UI.ModalTracker.
-        private static void CloseTopmostUI(bool openPauseIfNothingOpen)
+        private static void OnPauseButtonPressed(bool openPauseIfNothingOpen)
         {
             if (ModalTracker.IsAnyModalOpen)
             {
@@ -299,10 +317,6 @@ namespace Player
         {
             float previousFuelFraction = FuelFraction;
 
-            // Idle drain always applies (no passive regen), flying drain stacks on top of it while
-            // airborne - mining drain is charged separately by PlayerMining via ConsumeMiningFuel,
-            // since it can happen simultaneously with flying (Prestige "keep dig while flying" perk).
-            fuelSystem.ConsumeIdle(dt);
             if (IsFlying) fuelSystem.ConsumeFlying(dt);
 
             // Edge-triggered: only fires the tick fuel first crosses at/below half, not every
@@ -322,7 +336,14 @@ namespace Player
 
             if (Fuel <= 0f)
             {
-                health.Kill(DeathReason.OutOfFuel);
+                if (!CanWaitForFuelDrone)
+                {
+                    health.Kill(DeathReason.OutOfFuel);
+                }
+                else if (previousFuelFraction > 0f)
+                {
+                    GameManager.EventService.Dispatch(new NotificationEvent("Out of fuel! Wait for a fuel drone or respawn.", NotificationUrgency.TimeSensitive));
+                }
             }
         }
 
@@ -338,11 +359,10 @@ namespace Player
 
             if (!wasGrounded && lastFallSpeed > fallDamageVelocityThreshold)
             {
-                // GameDesignDoc "Survival > Decrease fall damage": market multiplier and the
-                // prestige perk both reduce the per-unit damage, applied multiplicatively.
-                float marketReduction = upgrades != null ? upgrades.Movement_FallDamageReductionMultiplier : 1f;
+                // GameDesignDoc "Survival > Decrease fall damage": the prestige perk reduces the
+                // per-unit damage; the market's Core Stability applies later, in PlayerHealth.TakeDamage.
                 float prestigeReduction = prestigeUpgrades != null ? Mathf.Max(0f, 1f - prestigeUpgrades.Survival_FallDamageReduction) : 1f;
-                float effectiveDamagePerUnit = fallDamagePerExcessUnit * marketReduction * prestigeReduction;
+                float effectiveDamagePerUnit = fallDamagePerExcessUnit * prestigeReduction;
                 health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * effectiveDamagePerUnit, DeathReason.FallDamage);
             }
 

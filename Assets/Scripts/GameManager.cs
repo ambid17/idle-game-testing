@@ -1,5 +1,7 @@
+using Atmosphere;
 using Audio;
 using Automation;
+using Critters;
 using Economy;
 using Events;
 using MapGeneration;
@@ -27,6 +29,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private AchievementManager _achievementManager;
     [SerializeField] private KeyIconDatabase _keyIconDatabase;
     [SerializeField] private AudioService _audioService;
+    [SerializeField] private CritterDatabase _critterDatabase;
+    [SerializeField] private AtmosphereConfig _atmosphereConfig;
     // GameControls.inputactions - also the scene EventSystem's InputSystemUIInputModule asset,
     // so KeybindService's binding overrides and the UI share one set of actions.
     [SerializeField] private InputActionAsset _inputActions;
@@ -45,6 +49,8 @@ public class GameManager : Singleton<GameManager>
     public static AchievementManager AchievementManager => Instance._achievementManager;
     public static KeyIconDatabase KeyIconDatabase => Instance._keyIconDatabase;
     public static AudioService AudioService => Instance._audioService;
+    public static CritterDatabase CritterDatabase => Instance._critterDatabase;
+    public static AtmosphereConfig AtmosphereConfig => Instance._atmosphereConfig;
 
     // Deliberately static rather than routed through Instance: many listeners remove themselves
     // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
@@ -128,6 +134,14 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.LogError("AudioService is not assigned in GameManager.");
         }
+        if (_critterDatabase == null)
+        {
+            Debug.LogError("CritterDatabase is not assigned in GameManager.");
+        }
+        if (_atmosphereConfig == null)
+        {
+            Debug.LogError("AtmosphereConfig is not assigned in GameManager.");
+        }
         if (_inputActions == null)
         {
             Debug.LogError("InputActions is not assigned in GameManager.");
@@ -141,6 +155,8 @@ public class GameManager : Singleton<GameManager>
         ProcessingRecipeDatabase.Validate();
         TutorialDatabase.Validate();
         KeyIconDatabase.Validate();
+        CritterDatabase.Validate();
+        AtmosphereConfig.Validate();
     }
 
     // Runs after every scene object's Awake(), so Wallet/UpgradeManager/AutomationSettings/

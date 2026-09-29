@@ -38,6 +38,10 @@ namespace Player
         private bool wasBlockedByFullInventory;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
+        // True only while actually working on a mineable block - PlayerAnimation plays the drill
+        // frames off this rather than off raw input, so bumping an unmineable block doesn't drill.
+        public bool IsMining => hasTarget;
+
         private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.Economy_OverflowUnlocked;
         
 
@@ -71,23 +75,9 @@ namespace Player
                 return;
             }
 
-            // The player's pivot sits at chest height, above the row they're standing on top of,
-            // so targeting always resolves against that standing row's vertical center rather
-            // than the raw pivot Y - otherwise horizontal targets resolve one row too high and
-            // never hit a block (only "down" ever happened to land in-bounds by coincidence).
-            float cellSize = mapGenerationService.CellSize;
-
-            // Digging up targets the cell just above the top of the collider instead.
-            var bottomOfCollider = transform.position.y - (capsuleCollider.size.y / 2);
-            var topOfCollider = transform.position.y + (capsuleCollider.size.y / 2);
-            var digDownDepth = direction.Value.y < 0 ? cellSize / 2 : 0;
-            float targetYPos = isDiggingUp ? topOfCollider + cellSize / 2 : bottomOfCollider - digDownDepth;
-
-            Vector3 miningTargetWorldPos = new Vector3(transform.position.x + direction.Value.x * cellSize, targetYPos, 0f);
-
-            if (!mapGenerationService.TryWorldToCellInBounds(miningTargetWorldPos, out int layerIndex, out int targetCellX, out int targetCellY))
+            if (!TryResolveTargetCell(direction.Value, out int layerIndex, out int targetCellX, out int targetCellY))
             {
-                if (debug) Debug.LogWarning($"PlayerMining: failed to resolve target cell at {miningTargetWorldPos} (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()}). Resolved Cell: ({targetCellX}, {targetCellY})");
+                if (debug) Debug.LogWarning($"PlayerMining: failed to resolve target cell (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()}). Resolved Cell: ({targetCellX}, {targetCellY})");
                 wasBlockedByFullInventory = false;
                 ResetTarget();
                 return;
@@ -161,6 +151,26 @@ namespace Player
             {
                 crackIndicator.Show(mapGenerationService.CellToWorldCenter(layerIndex, targetCellX, targetCellY), miningProgress / targetBlockHealth);
             }
+        }
+
+        // The grid cell mining in `direction` would hit. Also used by PlayerAnalyzer so a scan
+        // always targets the same block the player would dig.
+        public bool TryResolveTargetCell(Vector2Int direction, out int layerIndex, out int x, out int y)
+        {
+            // The player's pivot sits at chest height, above the row they're standing on top of,
+            // so targeting always resolves against that standing row's vertical center rather
+            // than the raw pivot Y - otherwise horizontal targets resolve one row too high and
+            // never hit a block (only "down" ever happened to land in-bounds by coincidence).
+            float cellSize = mapGenerationService.CellSize;
+
+            // Digging up targets the cell just above the top of the collider instead.
+            var bottomOfCollider = transform.position.y - (capsuleCollider.size.y / 2);
+            var topOfCollider = transform.position.y + (capsuleCollider.size.y / 2);
+            var digDownDepth = direction.y < 0 ? cellSize / 2 : 0;
+            float targetYPos = direction == Vector2Int.up ? topOfCollider + cellSize / 2 : bottomOfCollider - digDownDepth;
+
+            Vector3 targetWorldPos = new Vector3(transform.position.x + direction.x * cellSize, targetYPos, 0f);
+            return mapGenerationService.TryWorldToCellInBounds(targetWorldPos, out layerIndex, out x, out y);
         }
 
         private static Vector2Int? ResolveDirection()

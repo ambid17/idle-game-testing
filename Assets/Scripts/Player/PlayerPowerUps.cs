@@ -10,7 +10,9 @@ namespace Player
     // player mines. PowerUps are player-only (MineWorld.TryMineCell refuses them for automatons
     // and explosions), so PlayerMining applies them directly here instead of routing through
     // CustomBlockTriggeredEvent like hazards do. Every magnitude scales with the Museum's
-    // Progression_PowerUpEffectivenessBonus. Timed buffs aren't saved - a reload drops them.
+    // Economy_PowerUpEffectivenessBonus. Timed buffs aren't saved - a reload drops them.
+    // Lasting buffs (Drill Overdrive, Lucky Strike) are exposed via GetActiveBuffs for the HUD's
+    // UI.PowerUpBuffBarUI.
     [RequireComponent(typeof(PlayerInventory))]
     [RequireComponent(typeof(PlayerHealth))]
     [RequireComponent(typeof(PlayerController))]
@@ -42,9 +44,15 @@ namespace Player
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
 
         private float overdriveEndTime;
+        private float overdriveDuration;
+        private Sprite overdriveIcon;
         private int remainingLuckyStrikeCharges;
+        // Charge count right after the most recent pickup - the denominator for the buff bar's
+        // remaining fraction, since pickups stack onto whatever charges are left.
+        private int luckyStrikeChargesAtPickup;
+        private Sprite luckyStrikeIcon;
 
-        private float Effectiveness => 1f + PrestigeUpgradeManager.Instance.Progression_PowerUpEffectivenessBonus;
+        private float Effectiveness => 1f + PrestigeUpgradeManager.Instance.Economy_PowerUpEffectivenessBonus;
 
         public bool IsOverdriveActive => Time.time < overdriveEndTime;
         public float MiningSpeedMultiplier => IsOverdriveActive ? overdriveSpeedMultiplier : 1f;
@@ -73,6 +81,21 @@ namespace Player
                 default:
                     Debug.LogError($"{nameof(PlayerPowerUps)}: PowerUp block '{blockType.name}' has unhandled CustomBehavior {blockType.CustomBehavior}.");
                     break;
+            }
+        }
+
+        // Fills results (cleared first) with every currently active lasting buff, in a stable order.
+        public void GetActiveBuffs(List<PowerUpBuffStatus> results)
+        {
+            results.Clear();
+            if (IsOverdriveActive)
+            {
+                float remaining = overdriveEndTime - Time.time;
+                results.Add(new PowerUpBuffStatus(overdriveIcon, remaining / overdriveDuration, Mathf.CeilToInt(remaining), PowerUpBuffUnit.Seconds));
+            }
+            if (remainingLuckyStrikeCharges > 0)
+            {
+                results.Add(new PowerUpBuffStatus(luckyStrikeIcon, (float)remainingLuckyStrikeCharges / luckyStrikeChargesAtPickup, remainingLuckyStrikeCharges, PowerUpBuffUnit.Charges));
             }
         }
 
@@ -117,11 +140,11 @@ namespace Player
                 overflow[ore.Id] = current + 1;
             }
 
-            string message = $"Treasure chest! +{addedToInventory} ores";
+            string message = $"Treasure Chest: +{addedToInventory} ores from the next layer down";
             if (overflow.Count > 0)
             {
                 GameManager.EventService.Dispatch(new ChestSpawnRequestedEvent(mapGenerationService.CellToWorldCenter(layerIndex, x, y), overflow));
-                message += " (overflow left in a chest)";
+                message += $" ({count - addedToInventory} more spilled into a chest)";
             }
             Notify(message, chestBlock);
         }
@@ -157,31 +180,58 @@ namespace Player
         private void ApplyDrillOverdrive(BlockType block)
         {
             float duration = overdriveDurationSeconds * Effectiveness;
+            overdriveDuration = duration;
             overdriveEndTime = Time.time + duration;
-            Notify($"Drill overdrive! {overdriveSpeedMultiplier:0.#}x mining speed for {duration:0}s", block);
+            overdriveIcon = block.Icon;
+            Notify($"Drill Overdrive: you mine {overdriveSpeedMultiplier:0.#}x faster for {duration:0}s", block);
         }
 
         private void ApplyFuelCanister(BlockType block)
         {
-            playerController.AddFuel(playerController.FuelMax * fuelCanisterFraction * Effectiveness);
-            Notify("Fuel canister! Fuel refilled", block);
+            float amount = playerController.FuelMax * fuelCanisterFraction * Effectiveness;
+            playerController.AddFuel(amount);
+            Notify($"Fuel Canister: restored {amount:0} fuel", block);
         }
 
         private void ApplyRepairKit(BlockType block)
         {
             float amount = playerHealth.MaxHp * repairKitFraction * Effectiveness;
             playerHealth.AddHp(amount);
-            Notify($"Repair kit! +{amount:0} HP", block);
+            Notify($"Repair Kit: restored {amount:0} HP", block);
         }
 
         private void ApplyLuckyStrike(BlockType block)
         {
             int charges = Mathf.Max(1, Mathf.RoundToInt(luckyStrikeCharges * Effectiveness));
             remainingLuckyStrikeCharges += charges;
-            Notify($"Lucky strike! Next {remainingLuckyStrikeCharges} ores doubled", block);
+            luckyStrikeChargesAtPickup = remainingLuckyStrikeCharges;
+            luckyStrikeIcon = block.Icon;
+            Notify($"Lucky Strike: the next {remainingLuckyStrikeCharges} ores you mine are doubled", block);
         }
 
+        // Queued, not TimeSensitive - a pickup is informational, it never needs to cut in front of
+        // warnings like low fuel.
         private static void Notify(string message, BlockType block) =>
-            GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.TimeSensitive, block.Icon));
+            GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.Queued, block.Icon));
+    }
+
+    public enum PowerUpBuffUnit { Seconds, Charges }
+
+    // Snapshot of one active lasting power-up buff for the HUD. RemainingFraction is 1 when fresh
+    // and falls toward 0; Remaining is whole seconds or charges, per Unit.
+    public readonly struct PowerUpBuffStatus
+    {
+        public readonly Sprite Icon;
+        public readonly float RemainingFraction;
+        public readonly int Remaining;
+        public readonly PowerUpBuffUnit Unit;
+
+        public PowerUpBuffStatus(Sprite icon, float remainingFraction, int remaining, PowerUpBuffUnit unit)
+        {
+            Icon = icon;
+            RemainingFraction = remainingFraction;
+            Remaining = remaining;
+            Unit = unit;
+        }
     }
 }

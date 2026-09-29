@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Audio;
 using Economy;
 using Events;
 using Interaction;
@@ -167,7 +168,9 @@ namespace UI
         // carried ore reads as an intentional player choice, distinct from selling it.
         private void DepositAll()
         {
-            Depot.Instance.Deposit(playerInventory.WithdrawAllOre());
+            var withdrawn = playerInventory.WithdrawAllOre();
+            Depot.Instance.Deposit(withdrawn);
+            if (withdrawn.Count > 0) GameManager.AudioService.Play(SoundId.Deposit);
         }
 
         private void Refresh()

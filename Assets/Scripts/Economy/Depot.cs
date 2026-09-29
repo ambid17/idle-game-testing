@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+using Audio;
 using Events;
 using MapGeneration;
 using Processing;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Economy
@@ -103,6 +104,7 @@ namespace Economy
             {
                 total += Sell(id, 1f);
             }
+            if (total > 0) GameManager.AudioService.Play(SoundId.Sell);
             return total;
         }
 

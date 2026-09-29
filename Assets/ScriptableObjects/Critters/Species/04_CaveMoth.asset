@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 964beaf7899f985469b5c5da476eb855, type: 3}
+  m_Name: 04_CaveMoth
+  m_EditorClassIdentifier: Assembly-CSharp::Critters.CritterDefinition
+  Id: 4
+  DisplayName: Cave Moth
+  Description: Has never seen a lamp. Is desperately looking for one.
+  Sprite: {fileID: 21300000, guid: dc88eb79b3694724da5dfaba122e6f73, type: 3}
+  Movement: 1
+  Speed: 1.8
+  WanderRadius: 2.5
+  Size: 0.67499995
+  GlowColor: {r: 0.9, g: 0.85, b: 1, a: 0.25}
+  TurnInValue: 900
+  ShopkeeperQuip: A Cave Moth! Quick, hide the lantern, it gets clingy.

@@ -84,5 +84,11 @@ namespace MapGeneration
         public float Weight;
         public float Health = 1f;
         public Color Tint = Color.white;
+        [Tooltip("Pixel color on the HUD minimap (UI.MinimapUI).")]
+        public Color MinimapColor = new(0.45f, 0.32f, 0.22f, 1f);
+
+        [Tooltip("Shown by the Analyzer ability (Player.PlayerAnalyzer) - one picked at random per scan. Hazards/PowerUps: what it does. Ores: a joke. Artifacts: a lore tidbit. Leave empty for blocks the Analyzer ignores (Dirt).")]
+        [TextArea(2, 4)]
+        public string[] AnalyzerLines;
     }
 }

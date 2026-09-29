@@ -11,7 +11,9 @@ namespace Economy
         Economy,
         Idle,
         Prestige,
-        Progression,
+        // Was Progression (its perks moved to Economy) - kept at the same position since the
+        // branch is serialized by index on every asset.
+        Hazard,
         Survival
     }
 
@@ -19,7 +21,9 @@ namespace Economy
     // one computed property per effect - see Assets/Docs/GameDesignDoc.md "# Prestige". Values are
     // explicit and are what's serialized into the PrestigeUpgradeDefinition .asset files - reorder
     // or remove members freely, but never change an existing member's number or reuse a retired
-    // one. New members take the next free number in their prefix's range.
+    // one. New members take the next free number in their prefix's range. Members that moved
+    // branches (renamed prefix) keep their original number, so a prefix's range only describes
+    // where *new* members go.
     // PrestigeUpgradeDatabase.Validate() flags any asset whose name doesn't match its Effect.
     public enum PrestigeUpgradeEffect
     {
@@ -38,6 +42,10 @@ namespace Economy
         Economy_ProcessedGoodMultiplier = 201,
         Economy_PassiveLayerBonus = 202,
         // 203 - was used for keeping the passive layer bonus between prestiges
+        // Moved from the retired Progression branch - original 500-range numbers kept.
+        Economy_OreTierOddsBonus = 500,
+        Economy_PowerUpEffectivenessBonus = 501,
+        Economy_PowerUpSpawnRateBonus = 502,
 
         // Idle 300-399
         // GameDesignDoc "Prestige > idle > auto miner" lists 4 kept-tier perks (count, speed, dig
@@ -64,19 +72,26 @@ namespace Economy
         // Each prestige ever completed adds a permanent, stacking % bonus to all sale value.
         Prestige_Legacy = 406,
 
-        // Progression 500-599
-        Progression_OreTierOddsBonus = 500,
-        Progression_PowerUpEffectivenessBonus = 501,
-        Progression_PowerUpSpawnRateBonus = 502,
+        // 500-599 - retired Progression range (its members now live in Economy above) - do not reuse.
 
         // Survival 600-699
         Survival_ShieldChargeCount = 600,
         Survival_MoveSpeedBonus = 601,
         Survival_FallDamageReduction = 602,
-        Survival_GasResistance = 603,
-        Survival_BlastResistance = 604,
-        Survival_FallingRockResistance = 605,
-        Survival_LavaResistance = 606,
+        // 603-606 moved to Hazard below.
+        // Active ability: teleports the player to the Depot (PlayerDepotRecall, Q by default).
+        // First level unlocks it; each further level halves the cooldown.
+        Survival_DepotRecall = 607,
+
+        // Hazard 700-799
+        // Active ability: scans the block in front of the player (Player.PlayerAnalyzer) and
+        // explains hazards/power-ups, jokes about ores (with their value), or shares artifact lore.
+        Hazard_Analyzer = 700,
+        // Moved from Survival - original 600-range numbers kept.
+        Hazard_GasResistance = 603,
+        Hazard_BlastResistance = 604,
+        Hazard_FallingRockResistance = 605,
+        Hazard_LavaResistance = 606,
     }
 
     [CreateAssetMenu(fileName = "PrestigeUpgradeDefinition", menuName = "Economy/Prestige Upgrade Definition")]

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -3497412490887838188}
   - component: {fileID: 2669522597533096345}
   - component: {fileID: 2136513860447419880}
+  - component: {fileID: 1551826036970398125}
   m_Layer: 0
   m_Name: MiningAutomaton
   m_TagString: Untagged
@@ -145,6 +146,22 @@ MonoBehaviour:
   idleDrainPerSecond: 0
   flyingDrainPerSecond: 5
   miningDrainPerSecond: 3
+--- !u!114 &1551826036970398125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2727616407142579150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db1bd2de0c9ffb498d6e17cc426e52b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.MinimapMarker
+  color: {r: 1, g: 0.6, b: 0.1, a: 1}
+  size: 5
+  clampToEdge: 0
+  drawOnTop: 0
 --- !u!1 &6818912752937629481
 GameObject:
   m_ObjectHideFlags: 0

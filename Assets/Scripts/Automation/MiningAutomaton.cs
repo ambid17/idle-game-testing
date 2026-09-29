@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Critters;
 using Economy;
 using Events;
 using MapGeneration;
@@ -34,6 +35,8 @@ namespace Automation
 
         private OreInventory oreInventory;
         private FuelSystem fuelSystem;
+        private SpriteRenderer bodyRenderer;
+        private SpriteRenderer hatRenderer;
         private readonly GridPathMover mover = new();
         [SerializeField] private State state = State.PickingTarget;
         [SerializeField] private MiningCrackIndicator crackIndicator;
@@ -69,6 +72,7 @@ namespace Automation
         {
             DisplayIndex = displayIndex;
             _depotLocation = depotPosition;
+            RefreshHat();
         }
 
         private void Awake()
@@ -80,6 +84,10 @@ namespace Automation
             if (fuelSystem == null) fuelSystem = gameObject.AddComponent<FuelSystem>();
 
             if (crackIndicator == null) Debug.LogError($"{nameof(MiningAutomaton)} on {name} is missing its crackIndicator reference.");
+
+            bodyRenderer = GetComponent<SpriteRenderer>();
+            if (bodyRenderer == null) Debug.LogError($"{nameof(MiningAutomaton)} on {name} is missing its body SpriteRenderer.");
+            hatRenderer = CreateHatRenderer();
         }
 
         private void Start()
@@ -96,6 +104,8 @@ namespace Automation
             RefreshCurrentCell();
             OreCarrierRegistry.Instance.Register(this);
             FuelConsumerRegistry.Instance.Register(this);
+            GameManager.EventService.Add<AutomatonHatsChangedEvent>(RefreshHat);
+            RefreshHat();
         }
         // HasInstance guard: teardown order across objects isn't guaranteed when Stopping the
         // Player, so OreCarrierRegistry's singleton may already be destroyed by the time this runs.
@@ -104,13 +114,48 @@ namespace Automation
         {
             if (OreCarrierRegistry.HasInstance) OreCarrierRegistry.Instance.Unregister(this);
             if (FuelConsumerRegistry.HasInstance) FuelConsumerRegistry.Instance.Unregister(this);
+            GameManager.EventService.Remove<AutomatonHatsChangedEvent>(RefreshHat);
+        }
+
+        // Critter Shop hat (CritterCollection.GetAutomatonHat, keyed by DisplayIndex) - a child
+        // sprite sat on top of the body, one sorting order above it, following its flip.
+        private SpriteRenderer CreateHatRenderer()
+        {
+            var hatObject = new GameObject("Hat");
+            hatObject.transform.SetParent(transform, false);
+            var renderer = hatObject.AddComponent<SpriteRenderer>();
+            renderer.sortingOrder = bodyRenderer != null ? bodyRenderer.sortingOrder + 1 : 3;
+            renderer.enabled = false;
+            return renderer;
+        }
+
+        private void RefreshHat()
+        {
+            if (hatRenderer == null || bodyRenderer == null) return;
+
+            var hat = GameManager.CritterDatabase.GetHat(CritterCollection.Instance.GetAutomatonHat(DisplayIndex));
+            hatRenderer.enabled = hat != null && hat.Sprite != null;
+            if (!hatRenderer.enabled) return;
+
+            hatRenderer.sprite = hat.Sprite;
+            // Scale to the hat's authored world width, undoing this automaton's own scale.
+            float lossyX = Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.x));
+            float scale = hat.Width / Mathf.Max(0.0001f, hat.Sprite.bounds.size.x) / lossyX;
+            hatRenderer.transform.localScale = new Vector3(scale, scale, 1f);
+
+            // Top-center of the body sprite, in local space.
+            var bodyBounds = bodyRenderer.sprite != null ? bodyRenderer.sprite.bounds : new Bounds(Vector3.zero, Vector3.one);
+            hatRenderer.transform.localPosition = new Vector3(bodyBounds.center.x, bodyBounds.max.y, 0f) + (Vector3)(hat.Offset / lossyX);
+        }
+
+        private void LateUpdate()
+        {
+            if (hatRenderer != null && hatRenderer.enabled) hatRenderer.flipX = bodyRenderer.flipX;
         }
 
         private void Update()
         {
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
-
-            fuelSystem.ConsumeIdle(Time.deltaTime);
 
             // Empty tank: abandon whatever it was doing and head for the Control Center to buy more,
             // rather than stalling in place waiting for a Fuel Drone to happen by. Consume() no-ops at

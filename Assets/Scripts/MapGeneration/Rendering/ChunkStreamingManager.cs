@@ -30,34 +30,6 @@ namespace MapGeneration
             ClearAll();
         }
 
-        private void OnEnable()
-        {
-            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradeChanged);
-            GameManager.EventService.Add<UpgradeLoadedEvent>(OnUpgradeLoaded);
-        }
-
-        private void OnDisable()
-        {
-            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradeChanged);
-            GameManager.EventService.Remove<UpgradeLoadedEvent>(OnUpgradeLoaded);
-        }
-
-        private void OnUpgradeChanged(UpgradePurchasedEvent evt) => RefreshVisualsIfHazardSense(evt.Definition);
-        private void OnUpgradeLoaded(UpgradeLoadedEvent evt) => RefreshVisualsIfHazardSense(evt.Definition);
-
-        // Movement_HazardSense's tile tint (ChunkTilemapView.BuildTerrainChange) is only recomputed
-        // on the next partial repaint, so already-revealed hazard cells wouldn't retint until the
-        // player mines something nearby - repaint every visible chunk immediately on purchase/load
-        // so the effect is visible right away for play-testing.
-        private void RefreshVisualsIfHazardSense(UpgradeDefinition def)
-        {
-            if (def == null || def.Effect != UpgradeEffect.Movement_HazardSense) return;
-            foreach (var view in tilemapsByLayer.Values)
-            {
-                if (view != null && view.gameObject.activeSelf) view.RepaintAll();
-            }
-        }
-
         public void SetFocusDepth(string entityName,float worldY)
         {
             int layerIndexAtDepth = layerConfigProvider.GetLayerIndexAtWorldY(worldY, mapGenerationConfig.CellSize);
@@ -109,6 +81,7 @@ namespace MapGeneration
             if (tilemapsByLayer.ContainsKey(layerIndex))
             {
                 tilemapsByLayer[layerIndex].gameObject.SetActive(true);
+                GameManager.EventService.Dispatch(new ChunkViewShownEvent(layerIndex));
                 return;
             }
 
@@ -124,6 +97,7 @@ namespace MapGeneration
 
             SyncBoundary(layerIndex - 1, layerIndex);
             SyncBoundary(layerIndex, layerIndex + 1);
+            GameManager.EventService.Dispatch(new ChunkViewShownEvent(layerIndex));
         }
 
         // Stitches a "ghost" copy of each chunk's boundary row into the other's own Tilemap (see
@@ -147,7 +121,11 @@ namespace MapGeneration
             //Debug.Log($"ChunkStreamingManager.Release: {layerIndex}");
             var view = tilemapsByLayer[layerIndex];
             view.gameObject.SetActive(false);
+            GameManager.EventService.Dispatch(new ChunkViewHiddenEvent(layerIndex));
         }
+
+        public bool IsLayerResident(int layerIndex) =>
+            tilemapsByLayer.TryGetValue(layerIndex, out var view) && view != null && view.gameObject.activeSelf;
 
         public void NotifyCellMined(int layerIndex, int x, int y, IReadOnlyList<Vector2Int> revealedCells)
         {
@@ -176,6 +154,7 @@ namespace MapGeneration
             {
                 if(tilemapsByLayer[layerIndex] == null) continue;
                 Destroy(tilemapsByLayer[layerIndex].gameObject);
+                GameManager.EventService.Dispatch(new ChunkViewHiddenEvent(layerIndex));
             }
             tilemapsByLayer.Clear();
             focusLayerByEntity.Clear();

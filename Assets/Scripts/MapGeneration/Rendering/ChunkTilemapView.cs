@@ -45,12 +45,10 @@ namespace MapGeneration
         // reads as a soft glow around explored ground instead of a hard boundary.
         [SerializeField] private int revealGradientRadius = 3;
 
-        // GameDesignDoc "Lantern capstones > hazard sense: highlights hazard blocks".
-        [SerializeField] private Color hazardSenseTint = new(1f, 0.4f, 0.4f);
-
         public int LayerIndex { get; private set; }
 
         private ChunkData chunk;
+        private Atmosphere.OreGlowLayer oreGlow;
 
         public void Bind(ChunkData chunkData, int layerIndex)
         {
@@ -58,6 +56,10 @@ namespace MapGeneration
             LayerIndex = layerIndex;
             RepaintAll();
             PaintBackground();
+
+            // Added in code rather than on the prefab - it needs nothing authored.
+            if (oreGlow == null) oreGlow = gameObject.AddComponent<Atmosphere.OreGlowLayer>();
+            oreGlow.Rebuild(chunk, LayerIndex, terrainTilemap);
 
             if (fogDisabled)
             {
@@ -191,10 +193,10 @@ namespace MapGeneration
 
             terrainTilemap.SetTiles(terrainChanges, true);
             fogTilemap.SetTiles(fogChanges, true);
+            oreGlow.RefreshCells(localCoords);
         }
 
-        // Tints a revealed Hazard-category cell once Movement_HazardSense is unlocked, otherwise
-        // paints the block's tile at full white (no tint).
+        // Paints the block's tile at full white (no tint).
         private TileChangeData BuildTerrainChange(Vector3Int pos, CellData cell)
         {
             if (cell.Mined) return new TileChangeData(pos, edgeBleedTile, Color.white, Matrix4x4.identity);
@@ -202,10 +204,7 @@ namespace MapGeneration
             var blockType = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
             var tile = blockType != null ? blockType.Tile : null;
 
-            bool highlightHazard = cell.Revealed && blockType != null && blockType.Category == BlockCategory.Hazard
-                && UpgradeManager.Instance != null && UpgradeManager.Instance.Movement_HazardSenseUnlocked;
-
-            return new TileChangeData(pos, tile, highlightHazard ? hazardSenseTint : Color.white, Matrix4x4.identity);
+            return new TileChangeData(pos, tile, Color.white, Matrix4x4.identity);
         }
 
         // A cell's reveal-distance fade (see BuildFogChange) depends on its neighbors' Revealed

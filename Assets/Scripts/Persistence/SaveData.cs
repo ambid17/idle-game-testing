@@ -130,6 +130,8 @@ namespace Persistence
         public List<TutorialId> ShownTutorials = new();
         // Platform.AchievementManager - cumulative across prestiges.
         public LifetimeStats LifetimeStats = new();
+        // Critters.CritterCollection - jar, lifetime collection, caught pockets and automaton hats.
+        public Critters.CritterSaveData Critters = new();
         // ISO-8601 string, since JsonUtility can't serialize DateTime directly.
         public string LastActiveUtcTimestamp;
     }

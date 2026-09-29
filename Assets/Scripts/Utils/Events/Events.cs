@@ -143,11 +143,15 @@ namespace Events
     {
         public InteractableType InteractableType;
         public InteractionType InteractionType;
+        // The specific object interacted with - lets many same-typed world objects (critters) tell
+        // which one of them was picked, where buildings only ever need the type.
+        public IInteractable Target;
 
-        public PlayerInteractedEvent(InteractableType interactableType, InteractionType interactionType)
+        public PlayerInteractedEvent(InteractableType interactableType, InteractionType interactionType, IInteractable target = null)
         {
             InteractableType = interactableType;
             InteractionType = interactionType;
+            Target = target;
         }
     }
 
@@ -522,6 +526,20 @@ namespace Events
         }
     }
 
+    // Dispatched by Player.PlayerAnalyzer when a scan finds something worth reporting. Body is the
+    // already-formatted readout (explanation / joke + value / lore); UI.AnalyzerReadoutUI shows it.
+    public class BlockAnalyzedEvent : IEvent
+    {
+        public BlockType BlockType;
+        public string Body;
+
+        public BlockAnalyzedEvent(BlockType blockType, string body)
+        {
+            BlockType = blockType;
+            Body = body;
+        }
+    }
+
     // Dispatched by Wallet.Add with the amount actually credited - unlike DollarsChangedEvent,
     // which also fires on spends and save restores.
     public class DollarsEarnedEvent : IEvent
@@ -548,6 +566,123 @@ namespace Events
         public InputSchemeChangedEvent(Settings.InputScheme scheme)
         {
             Scheme = scheme;
+        }
+    }
+
+    // Dispatched by MapGeneration.MapGenerationService.MineCell for every cell actually mined, by
+    // anyone (player, automaton, explosion) - unlike BlockMinedEvent, which is player-only.
+    // Atmosphere.MineAtmosphere's "freshly dug" dust source.
+    public class CellMinedEvent : IEvent
+    {
+        public int LayerIndex;
+        public int X;
+        public int Y;
+
+        public CellMinedEvent(int layerIndex, int x, int y)
+        {
+            LayerIndex = layerIndex;
+            X = x;
+            Y = y;
+        }
+    }
+
+    // Dispatched by MapGeneration.ChunkStreamingManager when a layer's view becomes resident /
+    // stops being resident - Critters.CritterSpawner spawns and despawns that layer's critters.
+    public class ChunkViewShownEvent : IEvent
+    {
+        public int LayerIndex;
+
+        public ChunkViewShownEvent(int layerIndex)
+        {
+            LayerIndex = layerIndex;
+        }
+    }
+
+    public class ChunkViewHiddenEvent : IEvent
+    {
+        public int LayerIndex;
+
+        public ChunkViewHiddenEvent(int layerIndex)
+        {
+            LayerIndex = layerIndex;
+        }
+    }
+
+    // Dispatched by Critters.CritterCollection when the player catches a critter into their jar.
+    public class CritterCaughtEvent : IEvent
+    {
+        public Critters.CritterDefinition Critter;
+        public Vector3 Position;
+
+        public CritterCaughtEvent(Critters.CritterDefinition critter, Vector3 position)
+        {
+            Critter = critter;
+            Position = position;
+        }
+    }
+
+    // Jar contents, collection counts or hat unlocks changed (catch, turn-in, save restore, prestige).
+    public class CritterCollectionChangedEvent { }
+
+    // Dispatched by Critters.CritterCollection.TurnInJar after paying out.
+    public class CrittersTurnedInEvent : IEvent
+    {
+        public int Count;
+        public double Dollars;
+        public IReadOnlyList<Critters.CritterDefinition> NewSpecies;
+        public IReadOnlyList<Critters.HatDefinition> NewHats;
+
+        public CrittersTurnedInEvent(int count, double dollars, IReadOnlyList<Critters.CritterDefinition> newSpecies, IReadOnlyList<Critters.HatDefinition> newHats)
+        {
+            Count = count;
+            Dollars = dollars;
+            NewSpecies = newSpecies;
+            NewHats = newHats;
+        }
+    }
+
+    // A per-automaton hat choice changed (Control Center hat picker, save restore) - every
+    // Automation.MiningAutomaton re-reads its own hat.
+    public class AutomatonHatsChangedEvent { }
+
+    // One page of a click-through conversation (UI.DialogUI).
+    public class DialogLine
+    {
+        public string Speaker;
+        public Sprite Portrait;
+        public string Text;
+
+        public DialogLine(string speaker, Sprite portrait, string text)
+        {
+            Speaker = speaker;
+            Portrait = portrait;
+            Text = text;
+        }
+    }
+
+    // Opens UI.DialogUI on Lines. ConversationId is echoed back in DialogFinishedEvent so the
+    // requester can tell its own conversation ending from anyone else's.
+    public class DialogRequestedEvent : IEvent
+    {
+        public string ConversationId;
+        public IReadOnlyList<DialogLine> Lines;
+
+        public DialogRequestedEvent(string conversationId, IReadOnlyList<DialogLine> lines)
+        {
+            ConversationId = conversationId;
+            Lines = lines;
+        }
+    }
+
+    // Dispatched by UI.DialogUI once the player clicks past the last line (or skips the whole
+    // conversation with Escape).
+    public class DialogFinishedEvent : IEvent
+    {
+        public string ConversationId;
+
+        public DialogFinishedEvent(string conversationId)
+        {
+            ConversationId = conversationId;
         }
     }
 }

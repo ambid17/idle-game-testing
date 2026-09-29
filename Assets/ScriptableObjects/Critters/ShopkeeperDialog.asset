@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e8679d6cc931204d940586bb7370293, type: 3}
+  m_Name: ShopkeeperDialog
+  m_EditorClassIdentifier: Assembly-CSharp::Critters.ShopkeeperDialog
+  SpeakerName: Grizzle Mossbeard
+  Portrait: {fileID: 21300000, guid: 9ebc1459a75abfb4c8f6cd873e21827a, type: 3}
+  IntroLines:
+  - AH! A VISITOR! Don't mind the smell, that's just Gerald. Gerald is a rock. We're
+    very close.
+  - Name's Grizzle Mossbeard. I came down here forty years ago to find a lost sandwich.
+    Never found it. Found my calling instead.
+  - The surface? Bah! Too much sky. Sky just goes UP forever. Who needs that? Down
+    here the ceiling knows its place.
+  - I collect CRITTERS, you see. Little glowy fellas, crunchy fellas, the slimy ones
+    who don't like being called slimy.
+  - Catch 'em with your hands, pop 'em in your jar, bring 'em to ol' Grizzle. I pay
+    in real surface money. Found it in a cave. Don't ask which cave.
+  - Bring me enough different kinds and I'll knit little hats for those clanky robots
+    of yours. Everyone deserves a hat. Even Gerald has a hat.
+  - Gerald's hat is also a rock.
+  Greetings:
+  - Back again! Wipe your boots. Actually, don't. The dirt's load-bearing.
+  - Welcome, welcome! Mind the stalactites, they're shy.
+  - Oh good, a face that isn't carved into a wall. What've you got?
+  - Grizzle's Critter Emporium! Open 25 hours a day. Down here we have extra hours.
+  - You smell like the surface. Fresh air. Disgusting. Come in, come in.
+  - Shh! Gerald is sleeping. He's always sleeping. He's a rock.
+  Chatter:
+  - Did you know bats are just mice that got really into jazz?|I made that up. But
+    I believe it.
+  - I once tried to leave the mine. Got as far as the second ladder.|Then I remembered
+    the sun exists and came right back down.
+  - 'The trick to living underground is simple: befriend the moss.|The moss knows
+    things.|The moss will not tell you those things. But it knows.'
+  - People ask me, 'Grizzle, don't you get lonely?'|Nobody asks me that. Nobody's
+    down here to ask.|...It's nice that you visit.
+  - My mother always said, 'Grizzle, you'll never amount to anything digging around
+    in the dirt.'|Look at me now, Ma! I'm DEEP.
+  - Every night I tuck the fireflies in.|They don't sleep. They just glow at me judgmentally.|It's
+    a good system.
+  - I've been eating mushroom soup for forty years.|Some of those mushrooms talk
+    now.|Great listeners.
+  EmptyJarLines:
+  - That jar's emptier than my social calendar. Go catch something!
+  - Nothing in there but air. I don't buy air. I have plenty of air. Well. Some air.
+  - An empty jar! Very avant-garde. Still not paying for it.
+  TurnInLines:
+  - Ooh, {0} of 'em! Let's have a look... here's ${1}. Don't spend it all on dirt.
+  - '{0} critters! My babies! Here, take ${1} before I get emotional.'
+  - Lovely, lovely. {0} little lodgers for the Emporium. That's ${1} for your trouble.
+  HatUnlockedLines:
+  - That's enough new friends for a new hat! I knitted you a {0}. Stick it on one
+    of your robots at the Control Center.
+  - Hold still, I've got something for your clanky pals... a {0}! Fits any head.
+    Or head-shaped bolt.
+  AllFoundLines:
+  - Wait. Wait wait wait. That's... that's ALL of them. Every critter in the whole
+    mine.
+  - Forty years I've been down here and you did it faster than I found my own left
+    boot.
+  - Here. The crown. I was saving it for Gerald, but he'd want you to have it.
+  - Gerald is still a rock. But he's a proud rock.

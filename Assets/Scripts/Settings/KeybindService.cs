@@ -17,6 +17,8 @@ namespace Settings
         InteractPrimary,
         InteractSecondary,
         InteractTertiary,
+        UseAbility,
+        CycleAbility,
     }
 
     // Matches the asset's two control schemes (see KeybindService.GroupFor).

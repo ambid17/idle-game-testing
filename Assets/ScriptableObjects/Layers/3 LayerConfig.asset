@@ -96,3 +96,17 @@ MonoBehaviour:
   EmptyPocketSpreadChance: 0.5
   EmptyPocketSizeMin: 2
   EmptyPocketSizeMax: 5
+  CritterTable:
+  - Critter: {fileID: 11400000, guid: c5edcc8d15ead8542a3d71b9fbf99a69, type: 2}
+    Weight: 0.7
+  - Critter: {fileID: 11400000, guid: 71012eff2ba3a2e469685b9b800e9c95, type: 2}
+    Weight: 0.7
+  - Critter: {fileID: 11400000, guid: bbf153b0e56ee5a4db8ba5bf7db03fa4, type: 2}
+    Weight: 0.7
+  - Critter: {fileID: 11400000, guid: 82dd46439531de741823b5bb3a471a5b, type: 2}
+    Weight: 1
+  CritterChancePerPocket: 0.15
+  AmbientParticleColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+  SporesPerSecond: 1
+  DripsPerSecond: 1
+  AmbientLoop: {fileID: 8300000, guid: fb1e71f99a25280428d4ae7428e1078c, type: 3}

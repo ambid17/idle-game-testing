@@ -11,7 +11,7 @@ This project has two parallel but structurally identical upgrade families. Figur
 |---|---|---|
 | Class | `Economy.UpgradeDefinition` | `Economy.PrestigeUpgradeDefinition` |
 | Base class | `Economy.UpgradeDefinitionBase` (shared) | same |
-| Branch enum | `UpgradeBranch` (Mining/Economy/Automation/Movement/Processing) | `PrestigeUpgradeBranch` (Mining/Economy/Idle/Prestige/Progression/Survival) |
+| Branch enum | `UpgradeBranch` (Mining/Economy/Automation/Movement/Processing) | `PrestigeUpgradeBranch` (Mining/Economy/Idle/Prestige/Hazard/Survival) |
 | Effect enum | `UpgradeEffect` | `PrestigeUpgradeEffect` |
 | Database asset | `Assets/ScriptableObjects/Upgrades/UpgradeDatabase.asset` (`Economy.UpgradeDatabase`) | `Assets/ScriptableObjects/PrestigeUpgrades/PrestigeUpgradeDatabase.asset` (`Economy.PrestigeUpgradeDatabase`) |
 | Manager singleton | `Economy.UpgradeManager` | `Economy.PrestigeUpgradeManager` |
@@ -40,7 +40,7 @@ Skipping any one of these produces a specific, recognizable failure - use this t
 
 Open `Assets/Scripts/Economy/UpgradeDefinition.cs` (Market) or `Assets/Scripts/Economy/PrestigeUpgradeDefinition.cs` (Prestige) and add a new member to `UpgradeEffect` / `PrestigeUpgradeEffect`.
 
-**Every member has an explicit `= N` value, and that number is what's serialized into the `.asset` files.** Members are grouped by prefix in ranges of 100 (e.g. `UpgradeEffect`: Automation 100s, Economy 200s, Mining 300s, Movement 400s, Processing 500s; `PrestigeUpgradeEffect`: Mining 100s, Economy 200s, Idle 300s, Prestige 400s, Progression 500s, Survival 600s). Rules:
+**Every member has an explicit `= N` value, and that number is what's serialized into the `.asset` files.** Members are grouped by prefix in ranges of 100 (e.g. `UpgradeEffect`: Automation 100s, Economy 200s, Mining 300s, Movement 400s, Processing 500s; `PrestigeUpgradeEffect`: Mining 100s, Economy 200s, Idle 300s, Prestige 400s, Survival 600s, Hazard 700s; 500s is the retired Progression range. Members that moved branches keep their old number, so e.g. `Economy_OreTierOddsBonus = 500` and `Hazard_GasResistance = 603` - the range only says where *new* members go). Rules:
 - Give the new member the **next free number in its prefix's range** (check the highest existing value - members aren't listed in numeric order). It can go anywhere in the source, e.g. alphabetically.
 - Reordering or deleting members is safe. **Never change an existing member's number, and never reuse a retired member's number** - either silently re-points existing assets. C# also allows duplicate values without complaint; `Validate()` catches that at startup.
 - Renaming a member is safe for the asset data, but the asset filename must be renamed to match (see Step 2).

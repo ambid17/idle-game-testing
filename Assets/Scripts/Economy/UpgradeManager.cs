@@ -130,19 +130,25 @@ namespace Economy
         // GameDesignDoc "Mining > Lantern": extra fog-of-war reveal radius on top of the base.
         public int Mining_LanternFogRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Mining_LanternRadius) * EffectValuePerLevelOf(UpgradeEffect.Mining_LanternRadius));
 
+        // HUD minimap (UI.MinimapUI): owning any level unlocks it; each level past the first widens
+        // its view by EffectValuePerLevel cells.
+        public bool Mining_MinimapUnlocked => LevelOf(UpgradeEffect.Mining_Minimap) > 0;
+        public int Mining_MinimapRangeBonus => Mathf.RoundToInt(Mathf.Max(0, LevelOf(UpgradeEffect.Mining_Minimap) - 1) * EffectValuePerLevelOf(UpgradeEffect.Mining_Minimap));
+
         // GameDesignDoc "Mining > Increase mining speed": "each tier adds 10% mining speed".
         public float Mining_SpeedMultiplier => 1f + LevelOf(UpgradeEffect.Mining_Speed) * EffectValuePerLevelOf(UpgradeEffect.Mining_Speed);
 
-        // GameDesignDoc "Survival" branch (Movement in the Market): PlayerController reads these to
-        // derive its effective movement/flight/fall-damage tunables from the serialized base values.
-        public float Movement_FallDamageReductionMultiplier => Mathf.Max(0f, 1f - LevelOf(UpgradeEffect.Movement_FallDamageReduction) * EffectValuePerLevelOf(UpgradeEffect.Movement_FallDamageReduction));
+        // GameDesignDoc "Survival" branch (Movement in the Market): PlayerHealth reads these for its
+        // max HP and incoming-damage scaling.
+        public float Movement_CoreIntegrityMaxHpBonus => LevelOf(UpgradeEffect.Movement_CoreIntegrity) * EffectValuePerLevelOf(UpgradeEffect.Movement_CoreIntegrity);
+        public float Movement_CoreStabilityDamageMultiplier => Mathf.Max(0f, 1f - LevelOf(UpgradeEffect.Movement_CoreStability) * EffectValuePerLevelOf(UpgradeEffect.Movement_CoreStability));
+
+        // PlayerController reads these to derive its effective movement/flight tunables from the
+        // serialized base values.
         public float Movement_FlightSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Movement_FlightSpeed) * EffectValuePerLevelOf(UpgradeEffect.Movement_FlightSpeed);
         public float Movement_FuelCapacityBonus => LevelOf(UpgradeEffect.Movement_FuelInventory) * EffectValuePerLevelOf(UpgradeEffect.Movement_FuelInventory);
         public float Movement_FuelEfficiencyMultiplier => Mathf.Max(0f, 1f - LevelOf(UpgradeEffect.Movement_FuelEfficiency) * EffectValuePerLevelOf(UpgradeEffect.Movement_FuelEfficiency));
         public float Movement_GravityMultiplier => 1f + LevelOf(UpgradeEffect.Movement_GravityIncrease) * EffectValuePerLevelOf(UpgradeEffect.Movement_GravityIncrease);
-
-        // GameDesignDoc "Lantern capstones > hazard sense: highlights hazard blocks".
-        public bool Movement_HazardSenseUnlocked => IsMaxedEffect(UpgradeEffect.Movement_HazardSense);
 
         public float Movement_MoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Movement_MoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.Movement_MoveSpeed);
 

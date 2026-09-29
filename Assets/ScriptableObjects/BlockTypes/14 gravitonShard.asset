@@ -22,3 +22,7 @@ MonoBehaviour:
   Weight: 8
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.06, g: 0.241, b: 0.6, a: 1}
+  AnalyzerLines:
+  - 'Heavier on Tuesdays. Nobody knows why.'
+  - 'Bends light, time, and your inventory weight limit.'

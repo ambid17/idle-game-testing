@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed887b270666c614ab7ed961f37c8f52, type: 3}
+  m_Name: CritterDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::Critters.CritterDatabase
+  Critters:
+  - {fileID: 11400000, guid: 67252e9f19fff6c43a67c05195a4813a, type: 2}
+  - {fileID: 11400000, guid: af39b233a52ec0a45ad7ef26a20c2e89, type: 2}
+  - {fileID: 11400000, guid: df8760db223dd3d4e83076e33cd2e496, type: 2}
+  - {fileID: 11400000, guid: c5edcc8d15ead8542a3d71b9fbf99a69, type: 2}
+  - {fileID: 11400000, guid: 71012eff2ba3a2e469685b9b800e9c95, type: 2}
+  - {fileID: 11400000, guid: bbf153b0e56ee5a4db8ba5bf7db03fa4, type: 2}
+  - {fileID: 11400000, guid: 82dd46439531de741823b5bb3a471a5b, type: 2}
+  - {fileID: 11400000, guid: 6c7685077f2d7bd409b755d94af0a609, type: 2}
+  - {fileID: 11400000, guid: ae4357f4044410a40b509dd12ac81dc3, type: 2}
+  - {fileID: 11400000, guid: 279c1a428fee2a3478504263deeec10e, type: 2}
+  - {fileID: 11400000, guid: 2344270e2b19b564ea941df7b82d29eb, type: 2}
+  - {fileID: 11400000, guid: 709d984bd0dff1348b14848e17f8a44b, type: 2}
+  - {fileID: 11400000, guid: 533a7db7395454e45a0513e51359df2c, type: 2}
+  - {fileID: 11400000, guid: 87665e2c23a02274c99d4005dcb88890, type: 2}
+  - {fileID: 11400000, guid: 09005ce4713e9cc4f87c5d9bb1e33ef5, type: 2}
+  - {fileID: 11400000, guid: a784979e13a271f4f80053e9bdd1cdb2, type: 2}
+  Hats:
+  - {fileID: 11400000, guid: 5a58fc5348944b245abedaed5b54f7c5, type: 2}
+  - {fileID: 11400000, guid: 60b49bc017e2d994592d062b163e703b, type: 2}
+  - {fileID: 11400000, guid: 28afca3c81f61204da8590609bdf7155, type: 2}
+  - {fileID: 11400000, guid: 1464148d194ae154d8757733e25c535e, type: 2}
+  - {fileID: 11400000, guid: b5b8dc4bedd083347a06df576b980e1c, type: 2}

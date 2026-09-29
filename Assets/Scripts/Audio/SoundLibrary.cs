@@ -17,14 +17,16 @@ namespace Audio
         public float MinInterval = 0.05f;
     }
 
-    // SoundId -> clip(s) for Audio.AudioService, plus the background music track. SoundIds with
+    // SoundId -> clip(s) for Audio.AudioService, plus the background music tracks. SoundIds with
     // no entry are allowed and simply play nothing, so audio can be filled in incrementally.
     // Follows Tutorial.TutorialDatabase's lazy-lookup-dictionary pattern.
     [CreateAssetMenu(fileName = "SoundLibrary", menuName = "Audio/Sound Library")]
     public class SoundLibrary : ScriptableObject
     {
         public List<SoundEntry> Sounds = new();
-        public AudioClip Music;
+        [Tooltip("Seamless loops, shuffled by AudioService - each plays a few loops before switching.")]
+        public AudioClip[] MusicTracks;
+        [Range(0f, 1f)] public float MusicVolume = 0.5f;
 
         private Dictionary<SoundId, SoundEntry> entriesById;
 
@@ -63,6 +65,10 @@ namespace Audio
                 {
                     Debug.LogError($"SoundLibrary entry {entry.Id} has no clips or an empty clip slot.");
                 }
+            }
+            if (MusicTracks == null || Array.Exists(MusicTracks, clip => clip == null))
+            {
+                Debug.LogError("SoundLibrary MusicTracks is missing or has an empty slot.");
             }
         }
 

@@ -30,6 +30,7 @@ namespace UI
 
             if (fillDepotButton != null) fillDepotButton.onClick.AddListener(OnFillDepotClicked);
             if (clearDepotButton != null) clearDepotButton.onClick.AddListener(() => Depot.Instance.ClearAll());
+            amountInput.text = "1";
         }
 
         private void BuildOreRows()

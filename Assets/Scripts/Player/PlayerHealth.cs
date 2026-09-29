@@ -24,7 +24,8 @@ namespace Player
         [SerializeField] private float shieldBaseRegenSeconds = 60f;
         [SerializeField] private float shieldMinRegenSeconds = 5f;
 
-        public float MaxHp => maxHp;
+        // Base maxHp plus the market's Core Integrity flat bonus.
+        public float MaxHp => maxHp + UpgradeManager.Instance.Movement_CoreIntegrityMaxHpBonus;
         public float CurrentHp { get; private set; }
         public bool IsDead { get; private set; }
 
@@ -37,12 +38,29 @@ namespace Player
 
         private void Awake()
         {
-            CurrentHp = maxHp;
+            CurrentHp = MaxHp;
             CurrentShieldCharges = MaxShieldCharges;
         }
 
-        private void OnEnable() => GameManager.EventService.Add<PlayerRevivedEvent>(HandleRevived);
-        private void OnDisable() => GameManager.EventService.Remove<PlayerRevivedEvent>(HandleRevived);
+        private void OnEnable()
+        {
+            GameManager.EventService.Add<PlayerRevivedEvent>(HandleRevived);
+            GameManager.EventService.Add<UpgradePurchasedEvent>(HandleUpgradePurchased);
+        }
+
+        private void OnDisable()
+        {
+            GameManager.EventService.Remove<PlayerRevivedEvent>(HandleRevived);
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(HandleUpgradePurchased);
+        }
+
+        // Buying a Core Integrity level grants its added max HP immediately, so the purchase reads
+        // as a gain rather than as a newly-missing chunk of the health bar.
+        private void HandleUpgradePurchased(UpgradePurchasedEvent evt)
+        {
+            if (evt.Definition == null || evt.Definition.Effect != UpgradeEffect.Movement_CoreIntegrity) return;
+            AddHp(evt.Definition.EffectValuePerLevel);
+        }
 
         private void Update()
         {
@@ -62,6 +80,8 @@ namespace Player
 
         public void TakeDamage(float amount, DeathReason reason)
         {
+            // Market "Core Stability": reduces all incoming damage by a percentage.
+            amount *= UpgradeManager.Instance.Movement_CoreStabilityDamageMultiplier;
             if (amount <= 0f || IsDead) return;
 
             if (CurrentShieldCharges > 0)
@@ -83,7 +103,7 @@ namespace Player
         public void AddHp(float amount)
         {
             if (amount <= 0f || IsDead) return;
-            CurrentHp = Mathf.Min(maxHp, CurrentHp + amount);
+            CurrentHp = Mathf.Min(MaxHp, CurrentHp + amount);
         }
 
         // Also called directly when fuel runs out (PlayerController.UpdateFuel) - fuel and HP are
@@ -99,7 +119,7 @@ namespace Player
         private void HandleRevived()
         {
             IsDead = false;
-            CurrentHp = maxHp;
+            CurrentHp = MaxHp;
             CurrentShieldCharges = MaxShieldCharges;
             shieldRegenTimer = 0f;
         }
@@ -110,7 +130,7 @@ namespace Player
         public void RestoreFromSaveData(float currentHp)
         {
             IsDead = false;
-            CurrentHp = currentHp > 0f ? Mathf.Min(currentHp, maxHp) : maxHp;
+            CurrentHp = currentHp > 0f ? Mathf.Min(currentHp, MaxHp) : MaxHp;
         }
     }
 }

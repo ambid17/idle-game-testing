@@ -45,7 +45,7 @@ namespace UI.SkillTree
             // first-appearance order; PlaceSubtree then recurses each root's own wedge down
             // through its descendants, so forks deeper in a chain - e.g. Movement's
             // FuelInventory splitting into MoveSpeed/FuelEfficiency and each of those splitting
-            // again into FlightSpeed/FallDamageReduction - branch away from each other instead
+            // again into FlightSpeed/CoreStability - branch away from each other instead
             // of drifting across the whole sector and crossing a sibling branch's connectors.
             var branchRoots = new Dictionary<int, List<ISkillTreeLayoutNode>>();
             foreach (var node in nodes)

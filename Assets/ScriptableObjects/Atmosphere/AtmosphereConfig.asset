@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad346c5e7cec7d489d197a735435643, type: 3}
+  m_Name: AtmosphereConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Atmosphere.AtmosphereConfig
+  AdditiveShader: {fileID: 4800000, guid: d6861cdc549acc84ab377c2b06a1b039, type: 3}
+  GlowSortingOrder: 3
+  GlowingOresPerLayer: 2
+  OreGlowValueMultiplier: 1.75
+  OreGlowAlpha: 0.35
+  OreGlowSize: 1.4
+  OreGlowPulseSpeed: 1.2
+  AmbientRadiusCells: 9
+  DustSecondsAfterDig: 6
+  DustPerSecondPerCell: 3
+  DustColor: {r: 0.75, g: 0.62, b: 0.48, a: 0.8}
+  DripColor: {r: 0.6, g: 0.85, b: 1, a: 0.9}
+  AmbienceVolume: 0.35
+  AmbienceCrossfadeSeconds: 2.5

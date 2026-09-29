@@ -41,9 +41,6 @@ namespace Economy
             Fuel = MaxFuel;
         }
 
-        // Call exactly once per frame regardless of activity.
-        public void ConsumeIdle(float dt) => Consume(idleDrainPerSecond * dt);
-
         // Flying/mining drain stack on top of idle drain rather than replacing it - a player can
         // mine while flying with the Prestige "keep dig while flying" perk, so both can be active
         // in the same frame.

@@ -22,3 +22,6 @@ MonoBehaviour:
   Weight: 0
   Health: 1
   Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.586, g: 0.6, b: 0.591, a: 1}
+  AnalyzerLines:
+  - 'Loose boulder. Too hard to mine, but dig out the block beneath it and it wobbles, then drops, crushing whatever is below. Rocks stacked on top follow it down. Reinforced Helmet reduces the damage.'

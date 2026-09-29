@@ -77,6 +77,26 @@
                     "priority": 0
                 },
                 {
+                    "name": "UseAbility",
+                    "type": "Button",
+                    "id": "fe9ef7e5-5493-40e2-bd1c-e800e5ea50a6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "CycleAbility",
+                    "type": "Button",
+                    "id": "bb5a4f64-f0ee-4706-a880-c780b51b8b60",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
                     "name": "Pause",
                     "type": "Button",
                     "id": "6c28f01e-998e-41c3-9f9f-f653cb9be5d4",
@@ -303,6 +323,50 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "InteractTertiary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cdd0569f-07b8-4381-a35c-8335b12c40bd",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "UseAbility",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "51d282a6-e8d3-4d73-a76a-390548a71893",
+                    "path": "<Gamepad>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "UseAbility",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1214f345-8607-4117-ac62-e3db3cd08a3b",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "CycleAbility",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "079265fe-3cdf-4e93-9716-30bf203c18e5",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "CycleAbility",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
