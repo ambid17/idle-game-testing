@@ -299,10 +299,6 @@ namespace Player
         {
             float previousFuelFraction = FuelFraction;
 
-            // Idle drain always applies (no passive regen), flying drain stacks on top of it while
-            // airborne - mining drain is charged separately by PlayerMining via ConsumeMiningFuel,
-            // since it can happen simultaneously with flying (Prestige "keep dig while flying" perk).
-            fuelSystem.ConsumeIdle(dt);
             if (IsFlying) fuelSystem.ConsumeFlying(dt);
 
             // Edge-triggered: only fires the tick fuel first crosses at/below half, not every

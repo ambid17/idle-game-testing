@@ -110,8 +110,6 @@ namespace Automation
         {
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
 
-            fuelSystem.ConsumeIdle(Time.deltaTime);
-
             // Empty tank: abandon whatever it was doing and head for the Control Center to buy more,
             // rather than stalling in place waiting for a Fuel Drone to happen by. Consume() no-ops at
             // 0 fuel, so the trip home costs nothing further - it's running on fumes.
