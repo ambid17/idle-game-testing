@@ -155,7 +155,7 @@ namespace MapGeneration
             surfaceFloorSegmentsByX.Clear();
 
             float cellSize = mapGenerationConfig.CellSize;
-            float segmentY = CellToWorldCenter(0, 0, 0).y + cellSize * 0.5f + SurfaceFloorThickness * 0.5f;
+            float segmentY = CellToWorldCenter(0, 0, 0).y + (cellSize * 0.5f) - (SurfaceFloorThickness * 0.5f);
 
             for (int x = 0; x < World.GridWidth; x++)
             {
