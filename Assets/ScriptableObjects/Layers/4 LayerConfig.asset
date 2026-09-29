@@ -105,3 +105,4 @@ MonoBehaviour:
   SporesPerSecond: 1.5
   DripsPerSecond: 0.8
   AmbientLoop: {fileID: 8300000, guid: fb1e71f99a25280428d4ae7428e1078c, type: 3}
+  GradingProfile: {fileID: 11400000, guid: a743123891fbc584dae83b14630ed736, type: 2}

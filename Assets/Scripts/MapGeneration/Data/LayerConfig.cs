@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Critters;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace MapGeneration
 {
@@ -78,5 +79,7 @@ namespace MapGeneration
         [Min(0f)] public float DripsPerSecond = 0.5f;
         [Tooltip("Looping ambience that crossfades in while the player is in this layer. Null keeps whatever is already playing.")]
         public AudioClip AmbientLoop;
+        [Tooltip("Colour grading (Atmosphere.BiomeGrading) that fades in over the base post-processing while the player is in this layer. Layers of one biome share a profile. Null = base grading only.")]
+        public VolumeProfile GradingProfile;
     }
 }

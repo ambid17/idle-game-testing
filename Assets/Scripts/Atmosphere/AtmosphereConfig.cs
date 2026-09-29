@@ -40,6 +40,10 @@ namespace Atmosphere
         [Range(0f, 1f)] public float AmbienceVolume = 0.35f;
         [Min(0f)] public float AmbienceCrossfadeSeconds = 2.5f;
 
+        [Header("Colour grading")]
+        [Tooltip("How long BiomeGrading takes to fade between layers' GradingProfiles.")]
+        [Min(0.01f)] public float GradingCrossfadeSeconds = 2.5f;
+
         public void Validate()
         {
             if (GlowSortingOrder <= 1) Debug.LogError("AtmosphereConfig.GlowSortingOrder must be above the fog tilemap's sorting order (1).");
