@@ -38,6 +38,7 @@ namespace Audio
         Prestige = 63,
         ProcessingStarted = 64,
         ProcessingCompleted = 65,
+        Deposit = 66,
 
         // UI
         UIClick = 80,

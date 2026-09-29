@@ -348,6 +348,20 @@ def sell():
     return buf
 
 
+def deposit():
+    # Ore tipped into the depot crate: a soft wooden thump, then stones settling. Kept below
+    # ~3kHz on purpose - the brighter clatter reads as glassy/harsh.
+    rng = np.random.default_rng(20)
+    d = 0.55
+    thump = osc(sweep(130, 70, 0.2), 0.2) * env_exp(0.2, 0.05, attack=0.002)
+    knock = filt(noise(0.05, rng), "lowpass", 900) * env_exp(0.05, 0.012, 0) * 0.6
+    settle = crunch(0.45, rng, 300, 2800, grain_rate=110, decay=0.15) * 1.1
+    buf = np.zeros(int(SR * d))
+    place(buf, mix(thump, knock), 0)
+    place(buf, settle, 0.03)
+    return soft(buf, 3500)
+
+
 def upgrade_purchased():
     d = 0.6
     buf = np.zeros(int(SR * d))
@@ -468,6 +482,7 @@ SOUNDS = {
     "GasRelease": gas_release,
     "LavaSizzle": lava_sizzle,
     "Sell": sell,
+    "Deposit": deposit,
     "UpgradePurchased": upgrade_purchased,
     "PrestigeUpgradeQueued": prestige_upgrade_queued,
     "Prestige": prestige,
