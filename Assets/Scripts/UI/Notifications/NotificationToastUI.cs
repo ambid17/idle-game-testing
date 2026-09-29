@@ -18,6 +18,9 @@ namespace UI.Notifications
         private const float HoldSeconds = 2f;
         private const float TimeSensitiveFadeSeconds = 0.3f;
         private const float QueuedRiseDistance = 60f;
+        // Longer Queued messages (e.g. power-up explanations) stay up longer so they can be read;
+        // short ones (deposit reports) still take the base HoldSeconds.
+        private const float QueuedSecondsPerCharacter = 0.04f;
 
         private static readonly Vector2 TimeSensitiveAnchor = new(0.5f, 1f);
         private static readonly Vector2 TimeSensitivePosition = new(0f, -40f);
@@ -29,12 +32,14 @@ namespace UI.Notifications
 
         private RectTransform rectTransform;
         private CanvasGroup canvasGroup;
+        private float baseHeight;
 
         private void Awake()
         {
             if (messageLabel == null) Debug.LogError("NotificationToastUI.messageLabel is not assigned.");
 
             rectTransform = GetComponent<RectTransform>();
+            baseHeight = rectTransform.sizeDelta.y;
             canvasGroup = GetComponent<CanvasGroup>();
             if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
@@ -48,12 +53,15 @@ namespace UI.Notifications
                 iconImage.gameObject.SetActive(icon != null);
             }
 
+            FitHeightToMessage(message);
+
             bool timeSensitive = urgency == NotificationUrgency.TimeSensitive;
             rectTransform.anchorMin = rectTransform.anchorMax = rectTransform.pivot = timeSensitive ? TimeSensitiveAnchor : QueuedAnchor;
             rectTransform.anchoredPosition = timeSensitive ? TimeSensitivePosition : QueuedPosition;
             canvasGroup.alpha = 1f;
 
-            StartCoroutine(timeSensitive ? PlayTimeSensitive(onComplete) : PlayQueued(onComplete));
+            float queuedSeconds = Mathf.Max(HoldSeconds, message.Length * QueuedSecondsPerCharacter);
+            StartCoroutine(timeSensitive ? PlayTimeSensitive(onComplete) : PlayQueued(queuedSeconds, onComplete));
         }
 
         // Solid display for HoldSeconds, then a quick fade-out - no movement.
@@ -72,21 +80,37 @@ namespace UI.Notifications
             Finish(onComplete);
         }
 
-        // Rises and fades together across the full HoldSeconds - no separate static phase.
-        private IEnumerator PlayQueued(Action onComplete)
+        // Rises and fades together across the full duration - no separate static phase.
+        private IEnumerator PlayQueued(float duration, Action onComplete)
         {
             Vector2 startPosition = rectTransform.anchoredPosition;
             float elapsed = 0f;
-            while (elapsed < HoldSeconds)
+            while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / HoldSeconds);
+                float t = Mathf.Clamp01(elapsed / duration);
                 canvasGroup.alpha = 1f - t;
                 rectTransform.anchoredPosition = startPosition + Vector2.up * (QueuedRiseDistance * t);
                 yield return null;
             }
 
             Finish(onComplete);
+        }
+
+        // Grows the toast (never below its prefab height) so long messages - e.g. power-up
+        // explanations - stay inside the background. The label is stretched with a fixed inset, so
+        // the toast needs the text's height plus that inset. Auto-sizing labels (text-only prefab)
+        // already shrink to fit and are left alone. Each pivot sits on the screen edge, so the toast
+        // grows away from it.
+        private void FitHeightToMessage(string message)
+        {
+            if (messageLabel == null || messageLabel.enableAutoSizing) return;
+
+            var labelRect = messageLabel.rectTransform;
+            float labelWidth = rectTransform.sizeDelta.x + labelRect.sizeDelta.x;
+            float textHeight = messageLabel.GetPreferredValues(message, labelWidth, 0f).y;
+            float height = Mathf.Max(baseHeight, textHeight - labelRect.sizeDelta.y);
+            rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, height);
         }
 
         private void Finish(Action onComplete)
