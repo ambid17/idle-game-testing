@@ -169,6 +169,16 @@ namespace Player
             lastFallSpeed = 0f;
         }
 
+        // Used by PlayerDepotRecall. Clears fall tracking so arriving mid-air (or from a long fall)
+        // doesn't register as a fall-damage landing.
+        public void TeleportTo(Vector3 position)
+        {
+            rb.position = position;
+            transform.position = position;
+            rb.linearVelocity = Vector2.zero;
+            lastFallSpeed = 0f;
+        }
+
         private void Update()
         {
             var keybinds = GameManager.KeybindService;

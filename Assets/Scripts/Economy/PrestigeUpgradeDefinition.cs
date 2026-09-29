@@ -77,6 +77,9 @@ namespace Economy
         Survival_BlastResistance = 604,
         Survival_FallingRockResistance = 605,
         Survival_LavaResistance = 606,
+        // Active ability: teleports the player to the Depot (PlayerDepotRecall, Q by default).
+        // First level unlocks it; each further level halves the cooldown.
+        Survival_DepotRecall = 607,
     }
 
     [CreateAssetMenu(fileName = "PrestigeUpgradeDefinition", menuName = "Economy/Prestige Upgrade Definition")]

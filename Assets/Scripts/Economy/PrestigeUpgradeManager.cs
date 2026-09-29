@@ -202,6 +202,11 @@ namespace Economy
         public bool Survival_ShieldUnlocked => LevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount) > 0;
         public float Survival_ShieldRegenReductionSeconds => Mathf.Max(0, LevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount) - 1) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_ShieldChargeCount);
 
+        // Depot Recall: owning any level unlocks the recall ability (Player.PlayerDepotRecall). Each
+        // level past the first multiplies its base cooldown by EffectValuePerLevel (0.5 = halved).
+        public bool Survival_DepotRecallUnlocked => LevelOf(PrestigeUpgradeEffect.Survival_DepotRecall) > 0;
+        public float Survival_DepotRecallCooldownMultiplier => Mathf.Pow(EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_DepotRecall), Mathf.Max(0, LevelOf(PrestigeUpgradeEffect.Survival_DepotRecall) - 1));
+
         // Gameplay-effect flag for a capstone: applied (post-prestige) level only. Distinct from the
         // base class's IsMaxed, which now also counts not-yet-applied queued levels for
         // purchase-gating/UI purposes (see PurchaseLevel override above) - a queued-but-uncommitted
