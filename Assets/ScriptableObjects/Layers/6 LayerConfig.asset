@@ -74,6 +74,8 @@ MonoBehaviour:
   DripsPerSecond: 1.2
   AmbientLoop: {fileID: 8300000, guid: 606040b0bd4a6324299e2e207de6eef3, type: 3}
   GradingProfile: {fileID: 11400000, guid: 9a468fd7b5b3b704996126004ef38e65, type: 2}
+  BackgroundTexture: {fileID: 2800000, guid: 4ca5f702fdcda924bb9e9bb787a46348, type: 3}
+  BackgroundRepeatCells: 8
   VeinSpreadChance: 0.3
   VeinSizeMin: 2
   VeinSizeMax: 6

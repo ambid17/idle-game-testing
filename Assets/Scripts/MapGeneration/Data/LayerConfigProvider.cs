@@ -115,6 +115,10 @@ namespace MapGeneration
                 {
                     Debug.LogError($"LayerConfig '{layer.name}' has an invalid LayerHeight.");
                 }
+                if (layer.BackgroundTexture != null && (layer.BackgroundTexture.width != layer.BackgroundTexture.height || layer.BackgroundTexture.width % layer.BackgroundRepeatCells != 0))
+                {
+                    Debug.LogError($"LayerConfig '{layer.name}' BackgroundTexture must be square with a width divisible by BackgroundRepeatCells ({layer.BackgroundRepeatCells}).");
+                }
                 if (layer.OreTable == null || layer.OreTable.Count == 0)
                 {
                     Debug.LogError($"LayerConfig '{layer.name}' has no OreTable entries.");

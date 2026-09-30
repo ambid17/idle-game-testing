@@ -23,10 +23,15 @@ namespace MapGeneration
         [SerializeField] private bool fogDisabled;
 
         // Background tint: brown at the surface fading to purple by backgroundGradientLayers,
-        // then flat purple for every layer beyond that.
+        // then flat purple for every layer beyond that. Used for layers without a
+        // LayerConfig.BackgroundTexture.
         [SerializeField] private Color surfaceBackgroundColor = new(0.45f, 0.32f, 0.2f);
         [SerializeField] private Color deepBackgroundColor = new(0.25f, 0.1f, 0.35f);
         [SerializeField] private int backgroundGradientLayers = 10;
+        // Same gradient for textured (biome back-wall) layers - a neutral dim so the art keeps
+        // its own colours but still sits behind the terrain and darkens with depth.
+        [SerializeField] private Color surfaceBackgroundTextureTint = new(0.85f, 0.85f, 0.85f);
+        [SerializeField] private Color deepBackgroundTextureTint = new(0.6f, 0.6f, 0.6f);
 
 #if UNITY_EDITOR
         // Editor-only cell debug overlay (world position + cell index), drawn via Gizmos/Handles
@@ -73,9 +78,11 @@ namespace MapGeneration
             fogTilemap.gameObject.SetActive(!hidden && !fogDisabled);
         }
 
-        // Background is a flat, per-layer tint rather than per-cell data, so it's filled once
-        // on bind rather than touched by RepaintCells - every cell gets the same tile, and the
-        // whole tilemap's color is set once instead of per-tile.
+        // Background isn't per-cell data, so it's filled once on bind rather than touched by
+        // RepaintCells, and the whole tilemap's color is set once instead of per-tile. With a
+        // biome texture, each cell gets the slice of it at (x, world row) mod the repeat size -
+        // indexed by world depth rather than row-within-layer, so the wall continues unbroken
+        // into the next layer of the same biome whatever height (upgrades) this layer ended up.
         private void PaintBackground()
         {
             if (backgroundTilemap == null) return;
@@ -83,6 +90,12 @@ namespace MapGeneration
             int w = chunk.Width;
             int h = chunk.Height;
             int count = w * h;
+
+            var config = GameManager.LayerConfigProvider.GetConfig(LayerIndex);
+            var texture = config.BackgroundTexture;
+            int repeat = config.BackgroundRepeatCells;
+            var textureTiles = texture != null ? BackgroundTileCache.Get(texture, repeat) : null;
+            int layerOffset = GameManager.LayerConfigProvider.GetLayerOffset(LayerIndex);
 
             var positions = new Vector3Int[count];
             var tiles = new TileBase[count];
@@ -92,14 +105,16 @@ namespace MapGeneration
                 for (int x = 0; x < w; x++)
                 {
                     positions[n] = new Vector3Int(x, -y, 0);
-                    tiles[n] = backgroundTile;
+                    tiles[n] = textureTiles != null ? textureTiles[(layerOffset + y) % repeat * repeat + x % repeat] : backgroundTile;
                     n++;
                 }
             }
             backgroundTilemap.SetTiles(positions, tiles);
 
             float t = backgroundGradientLayers > 0 ? Mathf.Clamp01(LayerIndex / (float)backgroundGradientLayers) : 1f;
-            backgroundTilemap.color = Color.Lerp(surfaceBackgroundColor, deepBackgroundColor, t);
+            backgroundTilemap.color = textureTiles != null
+                ? Color.Lerp(surfaceBackgroundTextureTint, deepBackgroundTextureTint, t)
+                : Color.Lerp(surfaceBackgroundColor, deepBackgroundColor, t);
         }
 
         public void RepaintAll()
