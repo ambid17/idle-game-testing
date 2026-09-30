@@ -71,6 +71,14 @@ namespace RunModifiers
             return true;
         }
 
+        // A single modifier with freshly rolled parameters, bypassing the offer rules - for the Dev
+        // Panel's "prestige with modifier" buttons.
+        public static RunModifierState RollFor(RunModifierDefinition def, LayerConfigProvider layers, int seed)
+        {
+            var rng = new System.Random(unchecked((int)MapRng.HashCell(seed, 0, 0, 0, 0xDE7)));
+            return RollParameters(def, layers, rng);
+        }
+
         private static RunModifierState RollParameters(RunModifierDefinition def, LayerConfigProvider layers, System.Random rng)
         {
             var state = new RunModifierState { ModifierId = def.Id };

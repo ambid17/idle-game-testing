@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 using Economy;
+using Events;
+using RunModifiers;
+using TMPro;
+using UI.Reuseable;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +24,12 @@ namespace UI
         [SerializeField] private Button maxAllPrestigeUpgradesButton;
         [SerializeField] private Button removeAllPrestigeUpgradesButton;
         [SerializeField] private Button forcePrestigeButton;
+        // One button per run modifier: prestiges straight into a run with that modifier.
+        [SerializeField] private Transform runModifierButtonContainer;
+        [SerializeField] private Button runModifierButtonTemplate;
+        // Shared description tooltip for those buttons - lives outside the scroll mask so it isn't clipped.
+        [SerializeField] private RectTransform runModifierTooltip;
+        [SerializeField] private TMP_Text runModifierTooltipText;
 
         private readonly List<DevProgressionUpgradeRowUI> upgradeRows = new();
         private readonly List<DevProgressionUpgradeRowUI> prestigeUpgradeRows = new();
@@ -35,9 +45,14 @@ namespace UI
             if (maxAllPrestigeUpgradesButton == null) Debug.LogError("DevPanelProgressionTab.maxAllPrestigeUpgradesButton is not assigned.");
             if (removeAllPrestigeUpgradesButton == null) Debug.LogError("DevPanelProgressionTab.removeAllPrestigeUpgradesButton is not assigned.");
             if (forcePrestigeButton == null) Debug.LogError("DevPanelProgressionTab.forcePrestigeButton is not assigned.");
+            if (runModifierButtonContainer == null) Debug.LogError("DevPanelProgressionTab.runModifierButtonContainer is not assigned.");
+            if (runModifierButtonTemplate == null) Debug.LogError("DevPanelProgressionTab.runModifierButtonTemplate is not assigned.");
+            if (runModifierTooltip == null) Debug.LogError("DevPanelProgressionTab.runModifierTooltip is not assigned.");
+            if (runModifierTooltipText == null) Debug.LogError("DevPanelProgressionTab.runModifierTooltipText is not assigned.");
 
             BuildUpgradeRows();
             BuildPrestigeUpgradeRows();
+            BuildRunModifierButtons();
 
             if (maxAllUpgradesButton != null) maxAllUpgradesButton.onClick.AddListener(OnMaxAllUpgradesClicked);
             if (removeAllUpgradesButton != null) removeAllUpgradesButton.onClick.AddListener(OnRemoveAllUpgradesClicked);
@@ -78,6 +93,53 @@ namespace UI
                     () => OnDecrementPrestigeUpgradeClicked(def));
                 prestigeUpgradeRows.Add(row);
             }
+        }
+
+        private void BuildRunModifierButtons()
+        {
+            if (runModifierButtonContainer == null || runModifierButtonTemplate == null) return;
+
+            runModifierButtonTemplate.gameObject.SetActive(false);
+            if (runModifierTooltip != null) runModifierTooltip.gameObject.SetActive(false);
+            foreach (var def in GameManager.RunModifierDatabase.Modifiers)
+            {
+                if (def == null) continue;
+                var button = Instantiate(runModifierButtonTemplate, runModifierButtonContainer);
+                button.gameObject.name = $"RunModifierButton_{def.Id}";
+                button.GetComponentInChildren<TMP_Text>().text = $"{(def.Kind == RunModifierKind.Blessing ? "<color=#7CFC00>B</color>" : "<color=#FF6060>G</color>")} {def.DisplayName}";
+                button.onClick.AddListener(() => PrestigeWithModifier(def));
+                var buttonRect = (RectTransform)button.transform;
+                button.gameObject.AddComponent<HoverCallbackTrigger>().Bind(hovered => OnRunModifierHoverChanged(def, buttonRect, hovered));
+                button.gameObject.SetActive(true);
+            }
+        }
+
+        // Rolls the same parameters a click would right now, so {oreA}/{layer}/{amount} show real values.
+        private void OnRunModifierHoverChanged(RunModifierDefinition def, RectTransform buttonRect, bool hovered)
+        {
+            if (runModifierTooltip == null || runModifierTooltipText == null) return;
+
+            runModifierTooltip.gameObject.SetActive(hovered);
+            if (!hovered) return;
+
+            var state = RunModifierOfferRoller.RollFor(def, GameManager.LayerConfigProvider, PrestigeManager.Instance.NextSeed);
+            runModifierTooltipText.text = $"<b>{def.DisplayName}</b> ({def.Kind})\n{GameManager.RunModifierService.Describe(def, state)}";
+
+            // Tooltip pivot is bottom-center, so this sits it just above the hovered button.
+            var corners = new Vector3[4];
+            buttonRect.GetWorldCorners(corners);
+            runModifierTooltip.position = (corners[1] + corners[2]) * 0.5f;
+            runModifierTooltip.SetAsLastSibling();
+        }
+
+        // Skips the pick-1-of-3 screen and forces the chosen modifier, with parameters (ores,
+        // target layer, contract amount) rolled from the next seed like a real offer would be.
+        private void PrestigeWithModifier(RunModifierDefinition def)
+        {
+            var prestige = PrestigeManager.Instance;
+            var state = RunModifierOfferRoller.RollFor(def, GameManager.LayerConfigProvider, prestige.NextSeed);
+            prestige.ExecutePrestige(state);
+            GameManager.EventService.Dispatch(new NotificationEvent($"Dev prestige: {def.DisplayName} - {GameManager.RunModifierService.Describe(def, state)}", NotificationUrgency.Queued));
         }
 
         private void OnIncrementUpgradeClicked(UpgradeDefinition def)
