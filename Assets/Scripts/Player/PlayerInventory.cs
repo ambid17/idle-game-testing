@@ -28,6 +28,9 @@ namespace Player
         public float MaxWeight => baseMaxWeight + UpgradeManager.Instance.Economy_InventoryCapacityBonus;
         public float CurrentWeight => oreInventory.CurrentWeight;
         public bool IsFull => oreInventory.IsFull;
+        public float RemainingWeight => oreInventory.RemainingWeight;
+        public bool CanFit(BlockType blockType, int amount = 1) => oreInventory.CanFit(blockType, amount);
+        public int MaxAmountThatFits(BlockType blockType, int amount) => oreInventory.MaxAmountThatFits(blockType, amount);
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreInventory.OreCounts;
 
         public Transform CarrierTransform => transform;

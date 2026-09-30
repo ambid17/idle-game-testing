@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Audio;
 using Economy;
 using Events;
@@ -38,7 +39,8 @@ namespace Player
         private int targetLayer, targetX, targetY;
         private float miningProgress;
         private float miningHitTimer;
-        private bool wasBlockedByFullInventory;
+        private enum InventoryBlockReason { None, Full, TooHeavy }
+        private InventoryBlockReason lastInventoryBlock;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
         // True only while actually working on a mineable block - PlayerAnimation plays the drill
@@ -75,7 +77,7 @@ namespace Player
             if (!canMine || direction == null || InputBlocker.IsBlocked || playerController.IsInPortal)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
-                wasBlockedByFullInventory = false;
+                lastInventoryBlock = InventoryBlockReason.None;
                 ResetTarget();
                 return;
             }
@@ -83,7 +85,7 @@ namespace Player
             if (!TryResolveTargetCell(direction.Value, out int layerIndex, out int targetCellX, out int targetCellY))
             {
                 if (debug) Debug.LogWarning($"PlayerMining: failed to resolve target cell (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()}). Resolved Cell: ({targetCellX}, {targetCellY})");
-                wasBlockedByFullInventory = false;
+                lastInventoryBlock = InventoryBlockReason.None;
                 ResetTarget();
                 return;
             }
@@ -103,18 +105,30 @@ namespace Player
             }
 
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, targetCellX, targetCellY);
-            bool blockedByFullInventory = blockType != null && blockType.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow;
-            
+            // Blocked when the ore wouldn't fit in the remaining capacity, not just when the bag is
+            // at 100% - otherwise a heavy ore could push the player over their max weight (Chest
+            // looting already refuses to overfill, so mining matches it).
+            var inventoryBlock = InventoryBlockReason.None;
+            if (blockType != null && blockType.Category == BlockCategory.Ore && !CanOverflow)
+            {
+                if (playerInventory.IsFull) inventoryBlock = InventoryBlockReason.Full;
+                else if (!playerInventory.CanFit(blockType)) inventoryBlock = InventoryBlockReason.TooHeavy;
+            }
+            bool blockedByFullInventory = inventoryBlock != InventoryBlockReason.None;
+
             // Edge-triggered like PlayerController's low-fuel check: fires once when mining first
             // becomes blocked, not every frame it stays blocked, so it can't drown out other HUD
             // notifications sharing the same toast.
-            if (blockedByFullInventory && !wasBlockedByFullInventory)
+            if (blockedByFullInventory && inventoryBlock != lastInventoryBlock)
             {
-                GameManager.EventService.Dispatch(new NotificationEvent("Inventory is full!", NotificationUrgency.TimeSensitive));
+                string message = inventoryBlock == InventoryBlockReason.Full
+                    ? "Inventory is full!"
+                    : $"Not enough space for {blockType.DisplayName}! (needs {blockType.Weight:0.#} weight, {playerInventory.RemainingWeight:0.#} free)";
+                GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.TimeSensitive));
                 GameManager.AudioService.Play(SoundId.Warning);
                 TutorialManager.Instance.TryShow(TutorialId.InventoryFull);
             }
-            wasBlockedByFullInventory = blockedByFullInventory;
+            lastInventoryBlock = inventoryBlock;
 
             if (blockType == null
                 || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
@@ -266,15 +280,24 @@ namespace Player
 
             for (int i = 0; i < amount; i++) ApplyLayerBonus(blockType, layerIndex);
 
-            if (playerInventory.IsFull && CanOverflow)
+            // Only what fits goes in the bag, so a multi-unit yield (Lucky Strike, Dark Layer) can't
+            // overfill it. The rest is auto-sold with Overflow, else spilled into a chest at the
+            // mined cell (same as the Treasure Chest power-up's overflow).
+            int toInventory = playerInventory.MaxAmountThatFits(blockType, amount);
+            int excess = amount - toInventory;
+            if (toInventory > 0) playerInventory.AddOre(blockType, toInventory);
+            if (excess <= 0) return;
+
+            if (CanOverflow)
             {
                 var upgrades = UpgradeManager.Instance;
-                double value = blockType.Value * amount * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier * GameManager.RunModifierService.SellValueMultiplier(blockType.Id);
+                double value = blockType.Value * excess * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier * GameManager.RunModifierService.SellValueMultiplier(blockType.Id);
                 if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
             }
             else
             {
-                playerInventory.AddOre(blockType, amount);
+                var spilled = new Dictionary<BlockTypeId, int> { { blockType.Id, excess } };
+                GameManager.EventService.Dispatch(new ChestSpawnRequestedEvent(mapGenerationService.CellToWorldCenter(layerIndex, x, y), spilled));
             }
         }
 
@@ -307,7 +330,7 @@ namespace Player
             {
                 var bonusBlock = mapGenerationService.GetBlockTypeAt(layerIndex, cell.x, cell.y);
                 if (bonusBlock == null) continue;
-                if (bonusBlock.Category == BlockCategory.Ore && playerInventory.IsFull && !CanOverflow) continue;
+                if (bonusBlock.Category == BlockCategory.Ore && !playerInventory.CanFit(bonusBlock) && !CanOverflow) continue;
 
                 if (!mapGenerationService.MineCell(layerIndex, cell.x, cell.y, minedByPlayer: true)) continue;
 

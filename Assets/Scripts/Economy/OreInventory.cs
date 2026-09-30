@@ -18,7 +18,21 @@ namespace Economy
         public float CurrentWeight => oreCounts.Sum(kvp => blockTypeDatabase.Get((byte)kvp.Key).Weight * kvp.Value);
         public float MaxWeight => maxWeightProvider != null ? maxWeightProvider() : 0f;
         public bool IsFull => CurrentWeight >= MaxWeight;
+        public float RemainingWeight => Mathf.Max(0f, MaxWeight - CurrentWeight);
         public IReadOnlyDictionary<BlockTypeId, int> OreCounts => oreCounts;
+
+        // Tolerance for summed float weights (e.g. 0.1 * 10 landing a hair over 1.0).
+        private const float WeightEpsilon = 0.0001f;
+
+        public bool CanFit(BlockType blockType, int amount = 1) => MaxAmountThatFits(blockType, amount) >= amount;
+
+        // How many of `amount` units of blockType fit in the remaining capacity without overfilling.
+        public int MaxAmountThatFits(BlockType blockType, int amount)
+        {
+            if (blockType.Weight <= 0f) return amount;
+            int fits = Mathf.FloorToInt((RemainingWeight + WeightEpsilon) / blockType.Weight);
+            return Mathf.Clamp(fits, 0, amount);
+        }
 
         // Owner injects its own capacity formula (base + upgrades) since that varies per entity type.
         public void Initialize(System.Func<float> maxWeightProvider)
