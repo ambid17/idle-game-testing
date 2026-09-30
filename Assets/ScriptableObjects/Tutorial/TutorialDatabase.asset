@@ -16,8 +16,8 @@ MonoBehaviour:
   - Id: 0
     DisplayType: 0
     Title: Welcome!
-    Body: Dig down, get rich. Mine ore and sell it at the Depot for Dollars, spend
-      Dollars at the Market on upgrades and automation, and keep an eye out for rare
+    Body: Dig down, get rich. Mine ore and sell it at the Depot for Coins, spend
+      Coins at the Market on upgrades and automation, and keep an eye out for rare
       Artifacts.
   - Id: 1
     DisplayType: 0
