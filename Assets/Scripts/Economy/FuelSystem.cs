@@ -57,7 +57,8 @@ namespace Economy
         public void AddFuel(float amount)
         {
             if (amount <= 0f) return;
-            Fuel = Mathf.Min(MaxFuel, Fuel + amount);
+            var roundedUp = Mathf.Ceil(Fuel + amount);
+            Fuel = Mathf.Min(MaxFuel, roundedUp);
         }
 
         // Restore for SaveService/PlayerRevivedEvent.
