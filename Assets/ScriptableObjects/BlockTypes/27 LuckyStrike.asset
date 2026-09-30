@@ -17,11 +17,13 @@ MonoBehaviour:
   Category: 3
   CustomBehavior: 11
   Tile: {fileID: 11400000, guid: d51e73263bb1c6345992d4f2a4ad9aaf, type: 2}
+  DrawDirtBehind: 1
   Icon: {fileID: 21300000, guid: 2c3147eb5c2ed2c46a600055845583af, type: 3}
   Value: 0
   Weight: 0
   Health: 1
+  Unmineable: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.722, g: 0.542, b: 0.094, a: 1}
   AnalyzerLines:
-  - 'Lucky charm. Mine it and your next 10 ores are doubled.'
+  - Lucky charm. Mine it and your next 10 ores are doubled.

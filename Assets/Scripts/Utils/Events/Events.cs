@@ -96,12 +96,15 @@ namespace Events
         public string Message;
         public NotificationUrgency Urgency;
         public Sprite Icon;
+        // Drawn behind Icon (see Image.SetIcon) - BlockType.IconBackground for ore icons.
+        public Sprite IconBackground;
 
-        public NotificationEvent(string message, NotificationUrgency urgency, Sprite icon = null)
+        public NotificationEvent(string message, NotificationUrgency urgency, Sprite icon = null, Sprite iconBackground = null)
         {
             Message = message;
             Urgency = urgency;
             Icon = icon;
+            IconBackground = iconBackground;
         }
     }
 

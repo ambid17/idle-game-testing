@@ -17,12 +17,15 @@ MonoBehaviour:
   Category: 1
   CustomBehavior: 0
   Tile: {fileID: 11400000, guid: b7b53277877d09d488077e44946335ea, type: 2}
-  Icon: {fileID: 21300000, guid: 003571b837d1e8c478847174a3151e1d, type: 3}
+  DrawDirtBehind: 1
+  Icon: {fileID: 21300000, guid: 645a43c77e0075a4e94937f2e9d023a1, type: 3}
   Value: 3800
   Weight: 9
   Health: 1
+  Unmineable: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.308, g: 0.194, b: 0.6, a: 1}
   AnalyzerLines:
-  - 'Infinitely dense, yet it somehow fits in your backpack. Don''t think about it too hard.'
-  - 'The Analyzer''s needle is pointing... inward.'
+  - Infinitely dense, yet it somehow fits in your backpack. Don't think about it
+    too hard.
+  - The Analyzer's needle is pointing... inward.

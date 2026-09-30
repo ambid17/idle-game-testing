@@ -17,11 +17,13 @@ MonoBehaviour:
   Category: 3
   CustomBehavior: 10
   Tile: {fileID: 11400000, guid: ec98ce875acf8254984b1f2446540883, type: 2}
+  DrawDirtBehind: 1
   Icon: {fileID: 21300000, guid: 531fe744c82d38f458a2557b64817a81, type: 3}
   Value: 0
   Weight: 0
   Health: 1
+  Unmineable: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.593, g: 0.519, b: 0.6, a: 1}
   AnalyzerLines:
-  - 'Field repair kit. Mine it to restore 40% of your max health.'
+  - Field repair kit. Mine it to restore 40% of your max health.

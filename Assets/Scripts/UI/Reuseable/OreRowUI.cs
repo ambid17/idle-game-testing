@@ -41,7 +41,7 @@ namespace UI
         {
             this.blockType = blockType;
             nameLabel.text = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
-            icon.sprite = blockType.Icon;
+            icon.SetIcon(blockType.Icon, blockType.IconBackground);
         }
 
         public float SetCount(int count)

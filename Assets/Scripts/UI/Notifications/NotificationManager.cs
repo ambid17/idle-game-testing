@@ -85,7 +85,7 @@ namespace UI.Notifications
 
                 playing = true;
                 var item = Object.Instantiate(prefab, container);
-                item.Play(evt.Message, evt.Icon, evt.Urgency, () => playing = false);
+                item.Play(evt.Message, evt.Icon, evt.IconBackground, evt.Urgency, () => playing = false);
             }
         }
     }

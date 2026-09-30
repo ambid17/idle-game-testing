@@ -49,7 +49,7 @@ namespace UI.Processing
             {
                 var row = Instantiate(ingredientRowPrefab, transform);
                 var blockType =GameManager.BlockTypeDatabase.Get((byte)ingredient.Material);
-                row.Bind(ingredient.Count, blockType.Icon);
+                row.Bind(ingredient.Count, blockType.Icon, blockType.IconBackground);
                 row.gameObject.name = $"ProcessingIngredientRowUI_{blockType.DisplayName}";
                 spawnedRows.Add(row.gameObject);
             }

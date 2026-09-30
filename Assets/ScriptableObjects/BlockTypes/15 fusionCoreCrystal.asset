@@ -17,12 +17,14 @@ MonoBehaviour:
   Category: 1
   CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 6d3ee3c2f5576fa4f9fb9815d782cb57, type: 2}
-  Icon: {fileID: 21300000, guid: aad9da2c93ffbf54d8443b92e425dc88, type: 3}
+  DrawDirtBehind: 1
+  Icon: {fileID: 21300000, guid: 92592aebf58583040a7bb7db1d9be8d5, type: 3}
   Value: 2400
   Weight: 8
   Health: 1
+  Unmineable: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 1, g: 0.75, b: 0.3, a: 1}
   AnalyzerLines:
-  - 'A tiny sun wrapped in a rock. Handle with oven mitts.'
-  - 'Warranty void if detonated.'
+  - A tiny sun wrapped in a rock. Handle with oven mitts.
+  - Warranty void if detonated.

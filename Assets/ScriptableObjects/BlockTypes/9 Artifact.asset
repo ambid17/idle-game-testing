@@ -17,19 +17,29 @@ MonoBehaviour:
   Category: 4
   CustomBehavior: 0
   Tile: {fileID: 11400000, guid: e33ec1993cbc7b1478a0ed2160569872, type: 2}
-  Icon: {fileID: 21300000, guid: 9f6ac16933abab144a2499151b7afd9b, type: 3}
+  DrawDirtBehind: 1
+  Icon: {fileID: 21300000, guid: 3c2c34e85aa069e46a2efbf2284e4ee6, type: 3}
   Value: 0
   Weight: 0
   Health: 5
+  Unmineable: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.773, g: 0.42, b: 0.812, a: 1}
   AnalyzerLines:
-  - 'A cracked stone tablet: ''DAY 412. STILL DIGGING. THE DEPOT SAYS THE BONUS IS COMING.'''
-  - 'A precursor coin stamped with a pickaxe crossed over a star. Their currency was, apparently, also ore.'
-  - 'A mural fragment showing tiny figures carrying glowing stones toward a tower of light.'
-  - 'An ancient helmet lamp, still faintly warm. Whoever wore it was digging in the same direction you are.'
-  - 'A rusted automaton gear, inscribed with a serial number older than any known civilization.'
-  - 'A carved warning in an unknown script. The Analyzer''s best guess: ''Below the fire, the silence. Below the silence, the Makers.'''
-  - 'A curator''s tag sealed in resin: ''Exhibit 1 of many. Return to Museum.'' Someone expected you.'
-  - 'A child''s toy shaped like a little drill. Some things never change.'
-  - 'A map etched into bone, showing the layers as rings around a sleeping heart at the center of the world.'
+  - 'A cracked stone tablet: ''DAY 412. STILL DIGGING. THE DEPOT SAYS THE BONUS IS
+    COMING.'''
+  - A precursor coin stamped with a pickaxe crossed over a star. Their currency was,
+    apparently, also ore.
+  - A mural fragment showing tiny figures carrying glowing stones toward a tower
+    of light.
+  - An ancient helmet lamp, still faintly warm. Whoever wore it was digging in the
+    same direction you are.
+  - A rusted automaton gear, inscribed with a serial number older than any known
+    civilization.
+  - 'A carved warning in an unknown script. The Analyzer''s best guess: ''Below the
+    fire, the silence. Below the silence, the Makers.'''
+  - 'A curator''s tag sealed in resin: ''Exhibit 1 of many. Return to Museum.'' Someone
+    expected you.'
+  - A child's toy shaped like a little drill. Some things never change.
+  - A map etched into bone, showing the layers as rings around a sleeping heart at
+    the center of the world.

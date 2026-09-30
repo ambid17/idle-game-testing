@@ -46,7 +46,7 @@ namespace UI
         private void OnBlockAnalyzed(BlockAnalyzedEvent evt)
         {
             var block = evt.BlockType;
-            iconImage.sprite = block.Icon;
+            iconImage.SetIcon(block.Icon, block.IconBackground);
             iconImage.gameObject.SetActive(block.Icon != null);
             titleLabel.text = $"<size=70%>{CategoryLabel(block.Category)}</size>\n{block.DisplayName}";
             titleLabel.color = CategoryColor(block.Category);

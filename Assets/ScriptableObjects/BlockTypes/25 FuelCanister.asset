@@ -17,11 +17,13 @@ MonoBehaviour:
   Category: 3
   CustomBehavior: 9
   Tile: {fileID: 11400000, guid: ac59dacc7e345384f9815adc92355c95, type: 2}
+  DrawDirtBehind: 1
   Icon: {fileID: 21300000, guid: eacc0d722f3a46b4aa7bd711170ad17d, type: 3}
   Value: 0
   Weight: 0
   Health: 1
+  Unmineable: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.129, g: 0.6, b: 0.509, a: 1}
   AnalyzerLines:
-  - 'Sealed jetpack fuel. Mine it to refill your tank completely.'
+  - Sealed jetpack fuel. Mine it to refill your tank completely.

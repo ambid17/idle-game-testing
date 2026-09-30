@@ -5,12 +5,18 @@ using UnityEngine.Tilemaps;
 
 namespace MapGeneration
 {
-    // One pooled instance per resident chunk: a terrain Tilemap (mined cells cleared) plus a
-    // fog overlay Tilemap (revealed cells cleared). Repaints are batched via SetTiles so a
+    // One pooled instance per resident chunk: a terrain Tilemap (mined cells cleared), a
+    // foreground Tilemap for BlockType.DrawDirtBehind blocks, plus a fog overlay Tilemap
+    // (revealed cells cleared). Repaints are batched via SetTiles so a
     // TilemapCollider2D/CompositeCollider2D on the terrain object doesn't refresh per-cell.
     public class ChunkTilemapView : MonoBehaviour
     {
         [SerializeField] private Tilemap terrainTilemap;
+        // Ores/power-ups drawn as transparent foregrounds over the tinted dirt the terrain
+        // Tilemap paints in their cells. A child of terrainTilemap sorted above it inside the
+        // terrain's SortingGroup, so the pair still sorts as one layer against fog and effects.
+        // No collider - the dirt underneath keeps the cell's full-square collision.
+        [SerializeField] private Tilemap foregroundTilemap;
         [SerializeField] private Tilemap fogTilemap;
         [SerializeField] private TileBase fogTile;
         [SerializeField] private Tilemap backgroundTilemap;
@@ -53,12 +59,19 @@ namespace MapGeneration
         private Atmosphere.OreGlowLayer oreGlow;
         // This layer's LayerConfig.LayerDirtTint, cached on Bind.
         private Color dirtTint = Color.white;
+        private TileBase dirtTile;
+
+        private void Awake()
+        {
+            if (foregroundTilemap == null) Debug.LogError("ChunkTilemapView.foregroundTilemap is not assigned.");
+        }
 
         public void Bind(ChunkData chunkData, int layerIndex)
         {
             chunk = chunkData;
             LayerIndex = layerIndex;
             dirtTint = GameManager.LayerConfigProvider.GetConfig(layerIndex).LayerDirtTint;
+            dirtTile = blockTypes.Get((byte)BlockTypeId.Dirt).Tile;
             RepaintAll();
             PaintBackground();
 
@@ -118,6 +131,7 @@ namespace MapGeneration
             int count = w * h;
 
             var terrainChanges = new TileChangeData[count];
+            var foregroundChanges = new TileChangeData[count];
             var fogChanges = new TileChangeData[count];
 
             int n = 0;
@@ -129,6 +143,7 @@ namespace MapGeneration
                     var pos = new Vector3Int(x, -y, 0);
 
                     terrainChanges[n] = BuildTerrainChange(pos, cell);
+                    foregroundChanges[n] = BuildForegroundChange(pos, cell);
                     fogChanges[n] = BuildFogChange(pos, x, y, cell.Revealed);
 
                     n++;
@@ -136,6 +151,7 @@ namespace MapGeneration
             }
 
             terrainTilemap.SetTiles(terrainChanges, true);
+            foregroundTilemap.SetTiles(foregroundChanges, true);
             fogTilemap.SetTiles(fogChanges, true);
         }
 
@@ -194,6 +210,7 @@ namespace MapGeneration
             var expandedCoords = ExpandForFogGradient(localCoords);
             int count = expandedCoords.Count;
             var terrainChanges = new TileChangeData[count];
+            var foregroundChanges = new TileChangeData[count];
             var fogChanges = new TileChangeData[count];
 
             for (int i = 0; i < count; i++)
@@ -204,25 +221,35 @@ namespace MapGeneration
                 var pos = new Vector3Int(x, -y, 0);
 
                 terrainChanges[i] = BuildTerrainChange(pos, cell);
+                foregroundChanges[i] = BuildForegroundChange(pos, cell);
                 fogChanges[i] = BuildFogChange(pos, x, y, cell.Revealed);
             }
 
             terrainTilemap.SetTiles(terrainChanges, true);
+            foregroundTilemap.SetTiles(foregroundChanges, true);
             fogTilemap.SetTiles(fogChanges, true);
             oreGlow.RefreshCells(localCoords);
         }
 
-        // Dirt and the edge-bleed debris in mined cells take the layer's dirt tint so the ground
-        // matches its biome; every other block paints at full white (no tint).
+        // Dirt, the dirt behind DrawDirtBehind blocks, and the edge-bleed debris in mined cells
+        // take the layer's dirt tint so the ground matches its biome; every other block (hazards,
+        // structure blocks) paints its own opaque tile at full white.
         private TileChangeData BuildTerrainChange(Vector3Int pos, CellData cell)
         {
             if (cell.Mined) return new TileChangeData(pos, edgeBleedTile, dirtTint, Matrix4x4.identity);
 
-            var blockType = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
-            var tile = blockType != null ? blockType.Tile : null;
-            var color = cell.BlockTypeId == (byte)BlockTypeId.Dirt ? dirtTint : Color.white;
+            var blockType = blockTypes.Get(cell.BlockTypeId);
+            if (blockType == null) return new TileChangeData(pos, null, Color.white, Matrix4x4.identity);
+            if (blockType.DrawDirtBehind || blockType.Id == BlockTypeId.Dirt) return new TileChangeData(pos, dirtTile, dirtTint, Matrix4x4.identity);
 
-            return new TileChangeData(pos, tile, color, Matrix4x4.identity);
+            return new TileChangeData(pos, blockType.Tile, Color.white, Matrix4x4.identity);
+        }
+
+        private TileChangeData BuildForegroundChange(Vector3Int pos, CellData cell)
+        {
+            var blockType = cell.Mined ? null : blockTypes.Get(cell.BlockTypeId);
+            var tile = blockType != null && blockType.DrawDirtBehind ? blockType.Tile : null;
+            return new TileChangeData(pos, tile, Color.white, Matrix4x4.identity);
         }
 
         // A cell's reveal-distance fade (see BuildFogChange) depends on its neighbors' Revealed

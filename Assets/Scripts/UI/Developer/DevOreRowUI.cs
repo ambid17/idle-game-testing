@@ -17,7 +17,7 @@ namespace UI
 
         public void Bind(BlockType blockType, Action<BlockType> onGiveClicked)
         {
-            if (icon != null) icon.sprite = blockType.Icon;
+            if (icon != null) icon.SetIcon(blockType.Icon, blockType.IconBackground);
             if (nameLabel != null) nameLabel.text = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
             if (giveButton != null) giveButton.onClick.AddListener(() => onGiveClicked(blockType));
         }

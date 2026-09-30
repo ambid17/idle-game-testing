@@ -85,7 +85,16 @@ namespace MapGeneration
         public BlockCategory Category;
         public CustomBehavior CustomBehavior = CustomBehavior.None;
         public TileBase Tile;
+        [Tooltip("Tile is a transparent foreground: ChunkTilemapView paints the layer's (tinted) Dirt tile in the terrain layer and draws Tile on top, so the ground matches the surrounding dirt in every biome.")]
+        public bool DrawDirtBehind;
         public Sprite Icon;
+
+        // Ores/artifacts use their transparent tile foreground as their icon, so UI draws the Dirt
+        // icon behind it (Image.SetIcon) the same way the tilemap does. Null for blocks with their
+        // own opaque icon art (power-ups, hazards, dirt itself).
+        public Sprite IconBackground => DrawDirtBehind && Tile is UnityEngine.Tilemaps.Tile tile && tile.sprite == Icon
+            ? GameManager.BlockTypeDatabase.Get((byte)BlockTypeId.Dirt).Icon
+            : null;
 
         [Tooltip("Sell value.")]
         public float Value;

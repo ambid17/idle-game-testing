@@ -44,12 +44,12 @@ namespace UI.Notifications
             if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
 
-        public void Play(string message, Sprite icon, NotificationUrgency urgency, Action onComplete)
+        public void Play(string message, Sprite icon, Sprite iconBackground, NotificationUrgency urgency, Action onComplete)
         {
             if (messageLabel != null) messageLabel.text = message;
             if (iconImage != null)
             {
-                iconImage.sprite = icon;
+                iconImage.SetIcon(icon, iconBackground);
                 iconImage.gameObject.SetActive(icon != null);
             }
 

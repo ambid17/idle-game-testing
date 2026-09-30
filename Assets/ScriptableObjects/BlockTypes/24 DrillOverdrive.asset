@@ -17,11 +17,13 @@ MonoBehaviour:
   Category: 3
   CustomBehavior: 8
   Tile: {fileID: 11400000, guid: 1bc8574f1920ae442a26325c699b4997, type: 2}
+  DrawDirtBehind: 1
   Icon: {fileID: 21300000, guid: 65214ba559587a746bb82109f31c53b0, type: 3}
   Value: 0
   Weight: 0
   Health: 1
+  Unmineable: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.593, g: 0.6, b: 0.588, a: 1}
   AnalyzerLines:
-  - 'Overclocked drill bit. Mine it for triple mining speed for 15 seconds.'
+  - Overclocked drill bit. Mine it for triple mining speed for 15 seconds.

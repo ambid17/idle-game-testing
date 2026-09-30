@@ -17,12 +17,14 @@ MonoBehaviour:
   Category: 1
   CustomBehavior: 0
   Tile: {fileID: 11400000, guid: 5af1c4e17744a2346b2e82fce5887d08, type: 2}
-  Icon: {fileID: 21300000, guid: d934b7b14a2d91e4b9577b60a0c250d7, type: 3}
+  DrawDirtBehind: 1
+  Icon: {fileID: 21300000, guid: 14b1f068dc1f36342be7e35ca2e59381, type: 3}
   Value: 6000
   Weight: 9
   Health: 1
+  Unmineable: 0
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.2, g: 0.9, b: 0.75, a: 1}
   AnalyzerLines:
-  - 'Naturally occurring circuit boards. Evolution clearly took a detour.'
-  - 'Picking up faint signals. Mostly ads.'
+  - Naturally occurring circuit boards. Evolution clearly took a detour.
+  - Picking up faint signals. Mostly ads.

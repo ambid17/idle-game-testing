@@ -265,7 +265,7 @@ namespace Player
             }
             if (blockType.Category == BlockCategory.Artifact)
             {
-                GameManager.EventService.Dispatch(new NotificationEvent($"+1 <color=purple>Artifact</color>", NotificationUrgency.Queued, blockType.Icon));
+                GameManager.EventService.Dispatch(new NotificationEvent($"+1 <color=purple>Artifact</color>", NotificationUrgency.Queued, blockType.Icon, blockType.IconBackground));
                 Wallet.Instance.AddArtifact();
                 digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, 1);
                 return;
@@ -275,7 +275,7 @@ namespace Player
             // Lucky Strike power-up (see PlayerPowerUps): 2 while charges remain, else 1.
             // Run modifier (Dark Layer) multiplies on top.
             int amount = playerPowerUps.ConsumeLuckyStrikeMultiplier() * GameManager.RunModifierService.OreYieldMultiplier(layerIndex);
-            GameManager.EventService.Dispatch(new NotificationEvent($"+{amount} {blockType.DisplayName}", NotificationUrgency.Queued, blockType.Icon));
+            GameManager.EventService.Dispatch(new NotificationEvent($"+{amount} {blockType.DisplayName}", NotificationUrgency.Queued, blockType.Icon, blockType.IconBackground));
             digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, amount);
 
             for (int i = 0; i < amount; i++) ApplyLayerBonus(blockType, layerIndex);

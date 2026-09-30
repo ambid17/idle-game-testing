@@ -15,9 +15,9 @@ public class ProcessingIngredientRow : MonoBehaviour
     }
 
     // Update is called once per frame
-    public void Bind(int count, Sprite materialIcon)
+    public void Bind(int count, Sprite materialIcon, Sprite materialIconBackground)
     {
         countText.text = count.ToString();
-        this.materialIcon.sprite = materialIcon;
+        this.materialIcon.SetIcon(materialIcon, materialIconBackground);
     }
 }
