@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2669522597533096345}
   - component: {fileID: 2136513860447419880}
   - component: {fileID: 1551826036970398125}
+  - component: {fileID: 4540340400991499549}
   m_Layer: 0
   m_Name: MiningAutomaton
   m_TagString: Untagged
@@ -86,8 +87,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1235984715, guid: 48ec1ffa380f0ec4eac415d25a3434a2, type: 3}
-  m_Color: {r: 1, g: 0.9725427, b: 0.3160377, a: 1}
+  m_Sprite: {fileID: -4108333124764306383, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -162,6 +163,47 @@ MonoBehaviour:
   size: 5
   clampToEdge: 0
   drawOnTop: 0
+--- !u!114 &4540340400991499549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2727616407142579150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf88bfe6d4cf1841a90d55c3fc21881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Automation.AutomatonAnimation
+  idleFrames:
+  - {fileID: -4108333124764306383, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: 5618838666857993717, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: 8637000601859376473, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: 8482484221167195235, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  moveFrames:
+  - {fileID: 1121564557869525672, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: 2751971114113230911, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: 7444616743902067489, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: -5488733574184345003, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  flyFrames:
+  - {fileID: 2274332968342462284, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: 8294352238455617922, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: 4075316247213311026, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  - {fileID: 2606194215110240188, guid: 662fc9376e094f52902e919b56c2f1bc, type: 3}
+  mineFrames:
+  - {fileID: 1235984715, guid: eceb93cb22e5483199a95544b4a093fc, type: 3}
+  - {fileID: 1024827956, guid: eceb93cb22e5483199a95544b4a093fc, type: 3}
+  - {fileID: 309319460, guid: eceb93cb22e5483199a95544b4a093fc, type: 3}
+  - {fileID: -1692041523, guid: eceb93cb22e5483199a95544b4a093fc, type: 3}
+  - {fileID: 724770353, guid: eceb93cb22e5483199a95544b4a093fc, type: 3}
+  - {fileID: 1848622467, guid: eceb93cb22e5483199a95544b4a093fc, type: 3}
+  - {fileID: 1726639916, guid: eceb93cb22e5483199a95544b4a093fc, type: 3}
+  - {fileID: -213997731, guid: eceb93cb22e5483199a95544b4a093fc, type: 3}
+  idleFps: 6
+  moveFps: 10
+  flyFps: 12
+  mineFps: 14
+  facingDeadZone: 0.05
 --- !u!1 &6818912752937629481
 GameObject:
   m_ObjectHideFlags: 0

@@ -60,6 +60,12 @@ namespace Automation
         public Transform CarrierTransform => transform;
         public OreInventory Inventory => oreInventory;
 
+        // Read by AutomatonAnimation. IsMining is only true on frames that actually accrue dig
+        // progress (reset at the top of every Update), MiningTargetPosition is that block's center.
+        public bool IsMining { get; private set; }
+        public Vector3 MiningTargetPosition { get; private set; }
+        public bool IsFlying => state is State.FlyingToDepot or State.ReturningToRefuel;
+
         // IFuelConsumer - lets Fuel Drones find and refuel this automaton.
         public Transform FuelTransform => transform;
         public float FuelMissing => fuelSystem.FuelMissing;
@@ -156,6 +162,7 @@ namespace Automation
         private void Update()
         {
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
+            IsMining = false;
 
             // Empty tank: abandon whatever it was doing and head for the Control Center to buy more,
             // rather than stalling in place waiting for a Fuel Drone to happen by. Consume() no-ops at
@@ -305,6 +312,8 @@ namespace Automation
             float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.Automation_AutomatonMiningSpeedMultiplier;
             miningProgress += Time.deltaTime * miningSpeed;
             fuelSystem.ConsumeMining(Time.deltaTime);
+            IsMining = true;
+            MiningTargetPosition = mapGenerationService.CellToWorldCenter(digTargetLayer, digTargetCell.x, digTargetCell.y);
             float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(digTargetLayer);
             if (miningProgress < targetHealth)
             {
@@ -344,6 +353,8 @@ namespace Automation
             float miningSpeed = config.AutomatonBaseMiningSpeed * upgrades.Automation_AutomatonMiningSpeedMultiplier;
             miningProgress += Time.deltaTime * miningSpeed;
             fuelSystem.ConsumeMining(Time.deltaTime);
+            IsMining = true;
+            MiningTargetPosition = mapGenerationService.CellToWorldCenter(layer, x, y);
             float targetHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layer);
             if (miningProgress < targetHealth)
             {
