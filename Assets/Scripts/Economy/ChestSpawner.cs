@@ -47,6 +47,7 @@ namespace Economy
             GameManager.EventService.Add<PlayerInventoryDroppedEvent>(OnPlayerInventoryDropped);
             GameManager.EventService.Add<ChestSpawnRequestedEvent>(OnChestSpawnRequested);
             GameManager.EventService.Add<PlayerRevivedEvent>(OnPlayerRevived);
+            GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
         }
 
         private void OnDisable()
@@ -54,6 +55,7 @@ namespace Economy
             GameManager.EventService.Remove<PlayerInventoryDroppedEvent>(OnPlayerInventoryDropped);
             GameManager.EventService.Remove<ChestSpawnRequestedEvent>(OnChestSpawnRequested);
             GameManager.EventService.Remove<PlayerRevivedEvent>(OnPlayerRevived);
+            GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
         }
 
         private void OnPlayerInventoryDropped(PlayerInventoryDroppedEvent evt)
@@ -74,6 +76,19 @@ namespace Economy
         }
 
         private void OnPlayerRevived() => SpawnPendingDeathChest();
+
+        // Prestige wipes carried ore and regenerates the map, so chests from the previous run (death
+        // drops and Treasure Chest overflow alike) would otherwise hand pre-prestige ore back. Runs
+        // on PrestigeCompletedEvent, which PrestigeManager dispatches after its PlayerRevivedEvent,
+        // so a pending death chest spawned by that revive is swept up here too.
+        private void OnPrestigeCompleted(PrestigeCompletedEvent evt)
+        {
+            pendingDeathChest = null;
+            foreach (var chest in new List<Chest>(ChestRegistry.Instance.ActiveChests))
+            {
+                Destroy(chest.gameObject);
+            }
+        }
 
         private void SpawnPendingDeathChest()
         {
