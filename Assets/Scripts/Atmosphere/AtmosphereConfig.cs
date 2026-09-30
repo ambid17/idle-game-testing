@@ -15,15 +15,26 @@ namespace Atmosphere
         public int GlowSortingOrder = 3;
 
         [Header("Ore glow")]
-        [Tooltip("Ores worth at least as much as this layer's Nth most valuable ore glow - the top of each layer's table, plus anything rarer swapped in from deeper.")]
+        [Tooltip("Ores worth at least as much as this layer's Nth most valuable ore glint - the top of each layer's table, plus anything rarer swapped in from deeper.")]
         [Min(1)] public int GlowingOresPerLayer = 2;
-        [Tooltip("...and also worth at least this multiple of the layer's weighted-average ore value, so layers of only common ores (the surface) don't glow at all.")]
+        [Tooltip("...and also worth at least this multiple of the layer's weighted-average ore value, so layers of only common ores (the surface) don't glint at all.")]
         [Min(1f)] public float OreGlowValueMultiplier = 1.75f;
-        [Tooltip("Peak alpha of an ore's glow.")]
-        [Range(0f, 1f)] public float OreGlowAlpha = 0.35f;
-        [Tooltip("Glow diameter in cells.")]
-        [Min(0.1f)] public float OreGlowSize = 1.8f;
-        [Min(0f)] public float OreGlowPulseSpeed = 1.2f;
+        [Tooltip("A vein only glints through the fog once one of its hidden cells is within this many cells of revealed ground - full strength when adjacent, fading out at this distance.")]
+        [Min(1)] public int OreGlowHintRadius = 7;
+        [Tooltip("Visibility change per second as a vein's glint fades in/out.")]
+        [Min(0.01f)] public float OreGlowFadeSpeed = 2f;
+
+        [Header("Ore glint")]
+        [Tooltip("Custom/OreShine - the diagonal shine line swept across a vein's hidden cells.")]
+        public Shader OreShineShader;
+        [Tooltip("Half-width of the shine line's bright core, in cells (a faint halo spreads 3x wider).")]
+        [Min(0.01f)] public float OreGlintLineWidth = 0.08f;
+        [Range(0f, 1f)] public float OreGlintAlpha = 0.9f;
+        [Tooltip("How fast the line travels from the vein's bottom-left to its top-right, in cells per second.")]
+        [Min(0.1f)] public float OreGlintSpeed = 6f;
+        [Tooltip("Seconds between a vein's glints (random in range).")]
+        [Min(0f)] public float OreGlintIntervalMin = 2.5f;
+        [Min(0f)] public float OreGlintIntervalMax = 6f;
 
         [Header("Particles")]
         [Tooltip("Cells around the player (radius) that drips and spores are sampled from.")]
@@ -48,6 +59,7 @@ namespace Atmosphere
         {
             if (GlowSortingOrder <= 1) Debug.LogError("AtmosphereConfig.GlowSortingOrder must be above the fog tilemap's sorting order (1).");
             if (AdditiveShader == null) Debug.LogError("AtmosphereConfig.AdditiveShader is not assigned - glows fall back to the default sprite shader.");
+            if (OreShineShader == null) Debug.LogError("AtmosphereConfig.OreShineShader is not assigned - ore veins won't glint.");
         }
     }
 }

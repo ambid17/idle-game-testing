@@ -16,9 +16,14 @@ MonoBehaviour:
   GlowSortingOrder: 3
   GlowingOresPerLayer: 2
   OreGlowValueMultiplier: 1.75
-  OreGlowAlpha: 0.35
-  OreGlowSize: 1.4
-  OreGlowPulseSpeed: 1.2
+  OreGlowHintRadius: 7
+  OreGlowFadeSpeed: 2
+  OreShineShader: {fileID: 4800000, guid: 9f2fa27821fb8934cb85d4c63f970562, type: 3}
+  OreGlintLineWidth: 0.08
+  OreGlintAlpha: 0.9
+  OreGlintSpeed: 6
+  OreGlintIntervalMin: 2.5
+  OreGlintIntervalMax: 6
   AmbientRadiusCells: 9
   DustSecondsAfterDig: 6
   DustPerSecondPerCell: 3
@@ -26,3 +31,4 @@ MonoBehaviour:
   DripColor: {r: 0.6, g: 0.85, b: 1, a: 0.9}
   AmbienceVolume: 0.35
   AmbienceCrossfadeSeconds: 2.5
+  GradingCrossfadeSeconds: 2.5

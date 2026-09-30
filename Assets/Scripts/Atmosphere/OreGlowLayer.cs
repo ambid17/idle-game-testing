@@ -5,119 +5,294 @@ using UnityEngine.Tilemaps;
 
 namespace Atmosphere
 {
-    // Soft pulsing glows over a chunk's valuable ore cells, sorted above the fog so a rich vein
-    // shows faintly through unexplored dirt - rewarding the player for scanning the screen.
+    // Hints at valuable ore veins still hidden in the fog near explored ground - rewarding the
+    // player for digging toward them. Each connected vein (same ore, 4-neighbour) gets an
+    // occasional glint - a thin white diagonal line (Custom/OreShine) sweeping across its
+    // still-hidden cells from bottom-left to top-right.
+    // A vein only glints once its nearest hidden cell is within AtmosphereConfig.OreGlowHintRadius
+    // of revealed ground (fading in as the player closes in), and goes dark once every cell is
+    // revealed - by then the ore sprite speaks for itself.
     // "Valuable" is relative to the layer: anything worth at least as much as the layer's
-    // AtmosphereConfig.GlowingOresPerLayer-th most valuable ore glows (so deeper, rarer ores
-    // swapped in by the ore-tier perk glow too), tinted by the ore's minimap colour and brighter
+    // AtmosphereConfig.GlowingOresPerLayer-th most valuable ore glints (so deeper, rarer ores
+    // swapped in by the ore-tier perk glint too), tinted by the ore's minimap colour and brighter
     // the rarer it is. Added and driven by ChunkTilemapView (Rebuild on bind, RefreshCells on repaint).
     public class OreGlowLayer : MonoBehaviour
     {
-        private struct Glow
+        private class Vein
         {
-            public int CellIndex;
-            public SpriteRenderer Renderer;
+            public readonly List<int> HiddenCells = new();
+            public RectInt Bounds;
             public Color Color;
-            public float Phase;
+            public float Visibility;
+            public float TargetVisibility;
+            // One shine quad per hidden cell while a glint is sweeping, empty otherwise.
+            public readonly List<SpriteRenderer> Glints = new();
+            public float GlintTimer;
+            // World x + y of the shine line; it runs from GlintSweep up to GlintSweepEnd.
+            public float GlintSweep;
+            public float GlintSweepEnd;
         }
 
         private static AtmosphereConfig config => GameManager.AtmosphereConfig;
         private static BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
+        private static readonly int SweepId = Shader.PropertyToID("_Sweep");
+        private static readonly int LineWidthId = Shader.PropertyToID("_LineWidth");
 
-        private readonly List<Glow> glows = new();
-        private readonly Dictionary<int, int> glowByCell = new();
-        private readonly Stack<SpriteRenderer> pool = new();
-        private Transform glowRoot;
+        private readonly List<Vein> veins = new();
+        private readonly Dictionary<int, Vein> veinByCell = new();
+        private readonly Stack<SpriteRenderer> glintPool = new();
+        private Transform glintRoot;
         private ChunkData chunk;
+        private Tilemap tilemap;
+        private MaterialPropertyBlock glintProperties;
 
         public void Rebuild(ChunkData chunkData, int layerIndex, Tilemap terrainTilemap)
         {
             chunk = chunkData;
-            if (glowRoot == null)
+            tilemap = terrainTilemap;
+            glintProperties ??= new MaterialPropertyBlock();
+            if (glintRoot == null)
             {
-                glowRoot = new GameObject("OreGlows").transform;
-                glowRoot.SetParent(transform, false);
+                glintRoot = new GameObject("OreGlints").transform;
+                glintRoot.SetParent(transform, false);
             }
 
-            foreach (var glow in glows) Release(glow.Renderer);
-            glows.Clear();
-            glowByCell.Clear();
+            foreach (var vein in veins) ReleaseVein(vein);
+            veins.Clear();
+            veinByCell.Clear();
 
             var layerConfig = GameManager.LayerConfigProvider.GetConfig(layerIndex);
             if (layerConfig == null) return;
             float threshold = GetValueThreshold(layerConfig);
             float topValue = GetTopValue(layerConfig);
 
+            var visited = new HashSet<int>();
             for (int y = 0; y < chunk.Height; y++)
             {
                 for (int x = 0; x < chunk.Width; x++)
                 {
                     int index = chunk.Index(x, y);
-                    var cell = chunk.Cells[index];
-                    if (cell.Mined) continue;
+                    if (visited.Contains(index) || !IsGlowingOre(chunk.Cells[index], threshold)) continue;
 
-                    var block = blockTypes.Get(cell.BlockTypeId);
-                    if (block == null || block.Category != BlockCategory.Ore || block.Value <= 0f || block.Value < threshold) continue;
+                    var block = blockTypes.Get(chunk.Cells[index].BlockTypeId);
+                    var vein = FloodFillVein(x, y, chunk.Cells[index].BlockTypeId, threshold, visited);
+                    if (vein.HiddenCells.Count == 0) continue;
 
-                    // Rarer = brighter: the threshold ore glows at 60%, the layer's best (or better) at 100%.
+                    // Rarer = brighter: the threshold ore glints at 60%, the layer's best (or better) at 100%.
                     float strength = topValue > threshold ? Mathf.Lerp(0.6f, 1f, Mathf.InverseLerp(threshold, topValue, block.Value)) : 1f;
-                    // Full-brightness version of the minimap hue - additive glow from a dark
+                    // Full-brightness version of the minimap hue - an additive tint from a dark
                     // colour (coal's grey) would barely register.
                     var color = block.MinimapColor;
                     float brightest = Mathf.Max(color.r, Mathf.Max(color.g, color.b));
                     if (brightest > 0f) color = new Color(color.r / brightest, color.g / brightest, color.b / brightest);
-                    color.a = config.OreGlowAlpha * strength;
+                    color.a = strength;
 
-                    var renderer = Acquire();
-                    renderer.transform.position = terrainTilemap.GetCellCenterWorld(new Vector3Int(x, -y, 0));
-                    renderer.color = color;
-
-                    glowByCell[index] = glows.Count;
-                    glows.Add(new Glow { CellIndex = index, Renderer = renderer, Color = color, Phase = Random.value * Mathf.PI * 2f });
+                    vein.Color = color;
+                    vein.GlintTimer = Random.Range(0f, config.OreGlintIntervalMax);
+                    vein.TargetVisibility = ComputeVisibility(vein);
+                    // Snap on bind so re-entering a layer doesn't fade every vein in from nothing.
+                    vein.Visibility = vein.TargetVisibility;
+                    veins.Add(vein);
                 }
             }
         }
 
-        // Mined cells lose their glow. Only ever removes - mining never creates ore.
+        // Newly revealed/mined cells drop out of their vein (killing it once none are left hidden),
+        // and any vein within hint range of a change re-checks how close explored ground now is.
         public void RefreshCells(IReadOnlyList<Vector2Int> localCoords)
         {
-            if (chunk == null) return;
+            if (chunk == null || localCoords.Count == 0) return;
 
+            var changedVeins = new HashSet<Vein>();
+            var changedArea = new RectInt(localCoords[0], Vector2Int.zero);
             foreach (var coord in localCoords)
             {
+                changedArea.SetMinMax(Vector2Int.Min(changedArea.min, coord), Vector2Int.Max(changedArea.max, coord));
+
                 int index = chunk.Index(coord.x, coord.y);
-                if (!chunk.Cells[index].Mined || !glowByCell.TryGetValue(index, out int glowIndex)) continue;
-                RemoveAt(glowIndex);
+                if (!veinByCell.TryGetValue(index, out var vein) || IsHidden(chunk.Cells[index])) continue;
+
+                vein.HiddenCells.Remove(index);
+                veinByCell.Remove(index);
+                changedVeins.Add(vein);
+                // Its shine quads were laid out over the old cells - cut the sweep short.
+                StopGlint(vein);
+            }
+
+            int radius = config.OreGlowHintRadius;
+            var reach = new RectInt(changedArea.xMin - radius, changedArea.yMin - radius, changedArea.width + radius * 2 + 1, changedArea.height + radius * 2 + 1);
+            for (int i = veins.Count - 1; i >= 0; i--)
+            {
+                var vein = veins[i];
+                if (vein.HiddenCells.Count == 0)
+                {
+                    ReleaseVein(vein);
+                    veins.RemoveAt(i);
+                    continue;
+                }
+
+                if (changedVeins.Contains(vein) || reach.Overlaps(vein.Bounds)) vein.TargetVisibility = ComputeVisibility(vein);
             }
         }
 
         private void Update()
         {
-            float t = Time.time * config.OreGlowPulseSpeed;
-            foreach (var glow in glows)
+            float dt = Time.deltaTime;
+            foreach (var vein in veins)
             {
-                float pulse = 0.7f + 0.3f * Mathf.Sin(t + glow.Phase);
-                var color = glow.Color;
-                color.a *= pulse;
-                glow.Renderer.color = color;
+                vein.Visibility = Mathf.MoveTowards(vein.Visibility, vein.TargetVisibility, dt * config.OreGlowFadeSpeed);
+                UpdateGlint(vein, vein.Visibility > 0.001f, dt);
             }
         }
 
-        // Swap-remove so the list stays dense for Update.
-        private void RemoveAt(int glowIndex)
+        // Idle for a random interval, then sweep a shine line across every hidden cell from the
+        // vein's bottom-left to its top-right at OreGlintSpeed.
+        private void UpdateGlint(Vein vein, bool visible, float dt)
         {
-            var removed = glows[glowIndex];
-            Release(removed.Renderer);
-            glowByCell.Remove(removed.CellIndex);
-
-            int last = glows.Count - 1;
-            if (glowIndex != last)
+            if (vein.Glints.Count == 0)
             {
-                glows[glowIndex] = glows[last];
-                glowByCell[glows[glowIndex].CellIndex] = glowIndex;
+                vein.GlintTimer -= dt;
+                if (vein.GlintTimer > 0f || !visible) return;
+                StartGlint(vein);
             }
-            glows.RemoveAt(last);
+
+            float cellSize = tilemap.cellSize.x;
+            // The line moves perpendicular to itself, so x + y advances sqrt(2) per unit travelled.
+            vein.GlintSweep += config.OreGlintSpeed * cellSize * 1.41421356f * dt;
+            if (vein.GlintSweep >= vein.GlintSweepEnd)
+            {
+                StopGlint(vein);
+                return;
+            }
+
+            // Mostly white with a hint of the ore's hue, so it reads as a shine, not more glow.
+            var color = Color.Lerp(vein.Color, Color.white, 0.6f);
+            color.a = vein.Color.a * config.OreGlintAlpha * vein.Visibility;
+            glintProperties.SetFloat(SweepId, vein.GlintSweep);
+            glintProperties.SetFloat(LineWidthId, config.OreGlintLineWidth * cellSize);
+            foreach (var glint in vein.Glints)
+            {
+                glint.color = color;
+                glint.SetPropertyBlock(glintProperties);
+            }
         }
+
+        // Lays a shine quad over each hidden cell and starts the line just outside the vein's
+        // bottom-left-most cell, ending just past its top-right-most.
+        private void StartGlint(Vein vein)
+        {
+            float cellSize = tilemap.cellSize.x;
+            float minDiagonal = float.MaxValue;
+            float maxDiagonal = float.MinValue;
+            foreach (int cell in vein.HiddenCells)
+            {
+                var center = CellCenter(cell);
+                var glint = AcquireGlint();
+                glint.transform.position = center;
+                glint.transform.localScale = Vector3.one * cellSize;
+                glint.color = Color.clear;
+                vein.Glints.Add(glint);
+
+                minDiagonal = Mathf.Min(minDiagonal, center.x + center.y);
+                maxDiagonal = Mathf.Max(maxDiagonal, center.x + center.y);
+            }
+
+            vein.GlintSweep = minDiagonal - cellSize * 2f;
+            vein.GlintSweepEnd = maxDiagonal + cellSize * 2f;
+        }
+
+        private void StopGlint(Vein vein)
+        {
+            if (vein.Glints.Count == 0) return;
+
+            foreach (var glint in vein.Glints) ReleaseGlint(glint);
+            vein.Glints.Clear();
+            vein.GlintTimer = Random.Range(config.OreGlintIntervalMin, config.OreGlintIntervalMax);
+        }
+
+        // 4-neighbour flood fill over unmined cells of the same glowing ore. Revealed cells still
+        // join (so the vein's shape is stable) but only hidden ones are tracked.
+        private Vein FloodFillVein(int startX, int startY, byte blockTypeId, float threshold, HashSet<int> visited)
+        {
+            var vein = new Vein();
+            var min = new Vector2Int(startX, startY);
+            var max = min;
+            var stack = new Stack<Vector2Int>();
+            stack.Push(min);
+            visited.Add(chunk.Index(startX, startY));
+
+            while (stack.Count > 0)
+            {
+                var p = stack.Pop();
+                int index = chunk.Index(p.x, p.y);
+                if (IsHidden(chunk.Cells[index]))
+                {
+                    vein.HiddenCells.Add(index);
+                    veinByCell[index] = vein;
+                    min = Vector2Int.Min(min, p);
+                    max = Vector2Int.Max(max, p);
+                }
+
+                TryVisit(p.x + 1, p.y);
+                TryVisit(p.x - 1, p.y);
+                TryVisit(p.x, p.y + 1);
+                TryVisit(p.x, p.y - 1);
+            }
+
+            vein.Bounds = new RectInt(min, max - min + Vector2Int.one);
+            return vein;
+
+            void TryVisit(int x, int y)
+            {
+                if (x < 0 || y < 0 || x >= chunk.Width || y >= chunk.Height) return;
+                int index = chunk.Index(x, y);
+                var cell = chunk.Cells[index];
+                if (cell.BlockTypeId != blockTypeId || visited.Contains(index) || !IsGlowingOre(cell, threshold)) return;
+                visited.Add(index);
+                stack.Push(new Vector2Int(x, y));
+            }
+        }
+
+        // 1 when a hidden cell touches revealed ground, fading to 0 at OreGlowHintRadius and beyond.
+        private float ComputeVisibility(Vein vein)
+        {
+            int radius = config.OreGlowHintRadius;
+            float nearestSq = float.MaxValue;
+            foreach (int cell in vein.HiddenCells)
+            {
+                int x = cell % chunk.Width;
+                int y = cell / chunk.Width;
+                for (int dy = -radius; dy <= radius; dy++)
+                {
+                    int ny = y + dy;
+                    if (ny < 0 || ny >= chunk.Height) continue;
+
+                    for (int dx = -radius; dx <= radius; dx++)
+                    {
+                        int nx = x + dx;
+                        if (nx < 0 || nx >= chunk.Width) continue;
+
+                        int distSq = dx * dx + dy * dy;
+                        if (distSq >= nearestSq || !chunk.Cells[chunk.Index(nx, ny)].Revealed) continue;
+                        nearestSq = distSq;
+                    }
+                }
+            }
+
+            if (nearestSq > radius * (float)radius) return 0f;
+            return 1f - Mathf.InverseLerp(1f, radius, Mathf.Sqrt(nearestSq));
+        }
+
+        private bool IsGlowingOre(CellData cell, float threshold)
+        {
+            if (cell.Mined) return false;
+            var block = blockTypes.Get(cell.BlockTypeId);
+            return block != null && block.Category == BlockCategory.Ore && block.Value > 0f && block.Value >= threshold;
+        }
+
+        private static bool IsHidden(CellData cell) => !cell.Mined && !cell.Revealed;
+
+        private Vector3 CellCenter(int cellIndex) => tilemap.GetCellCenterWorld(new Vector3Int(cellIndex % chunk.Width, -(cellIndex / chunk.Width), 0));
 
         // Both must hold: among the layer's GlowingOresPerLayer most valuable ores, and well above
         // what a typical ore there is worth (weighted by spawn weight).
@@ -150,24 +325,33 @@ namespace Atmosphere
             return top;
         }
 
-        private SpriteRenderer Acquire()
+        private SpriteRenderer AcquireGlint()
         {
-            if (pool.Count > 0)
+            if (glintPool.Count > 0)
             {
-                var pooled = pool.Pop();
+                var pooled = glintPool.Pop();
                 pooled.gameObject.SetActive(true);
                 return pooled;
             }
 
-            var renderer = GlowSprites.CreateGlow(glowRoot, Color.clear, config.OreGlowSize);
-            renderer.gameObject.name = "OreGlow";
+            var renderer = GlowSprites.CreateGlow(glintRoot, Color.clear, 1f);
+            renderer.sprite = GlowSprites.Square;
+            renderer.sharedMaterial = GlowSprites.OreShineMaterial;
+            renderer.gameObject.name = "OreGlint";
             return renderer;
         }
 
-        private void Release(SpriteRenderer renderer)
+        private void ReleaseVein(Vein vein)
         {
-            renderer.gameObject.SetActive(false);
-            pool.Push(renderer);
+            foreach (int cell in vein.HiddenCells) veinByCell.Remove(cell);
+            foreach (var glint in vein.Glints) ReleaseGlint(glint);
+            vein.Glints.Clear();
+        }
+
+        private void ReleaseGlint(SpriteRenderer glint)
+        {
+            glint.gameObject.SetActive(false);
+            glintPool.Push(glint);
         }
     }
 }

@@ -11,14 +11,19 @@ namespace Atmosphere
 
         private static Sprite radialGlow;
         private static Sprite softDot;
+        private static Sprite square;
         private static Material glowMaterial;
         private static Material particleMaterial;
+        private static Material oreShineMaterial;
 
         // 1 world unit across, smooth quadratic falloff to fully transparent at the edge.
         public static Sprite RadialGlow => radialGlow != null ? radialGlow : radialGlow = CreateRadial(GlowResolution, 2f, "RadialGlow");
 
         // 1 world unit across, tighter falloff - reads as a small solid speck when scaled down.
         public static Sprite SoftDot => softDot != null ? softDot : softDot = CreateRadial(DotResolution, 0.6f, "SoftDot");
+
+        // 1 world unit across, solid white - a plain quad for shaders that ignore the texture.
+        public static Sprite Square => square != null ? square : square = CreateSquare();
 
         // Shared by every glow SpriteRenderer (the renderer supplies the sprite texture).
         public static Material GlowMaterial => glowMaterial != null ? glowMaterial : glowMaterial = new Material(ResolveShader()) { name = "AtmosphereGlow" };
@@ -27,6 +32,11 @@ namespace Atmosphere
         public static Material ParticleMaterial => particleMaterial != null
             ? particleMaterial
             : particleMaterial = new Material(ResolveShader()) { name = "AtmosphereParticles", mainTexture = SoftDot.texture };
+
+        // Custom/OreShine - the vein glint's diagonal line (see OreGlowLayer).
+        public static Material OreShineMaterial => oreShineMaterial != null
+            ? oreShineMaterial
+            : oreShineMaterial = new Material(GameManager.AtmosphereConfig.OreShineShader) { name = "OreShine" };
 
         private static Shader ResolveShader()
         {
@@ -48,15 +58,16 @@ namespace Atmosphere
             return renderer;
         }
 
+        private static Sprite CreateSquare()
+        {
+            const int size = 4;
+            var pixels = new Color32[size * size];
+            for (int i = 0; i < pixels.Length; i++) pixels[i] = new Color32(255, 255, 255, 255);
+            return CreateSprite(size, pixels, "Square");
+        }
+
         private static Sprite CreateRadial(int size, float falloffPower, string spriteName)
         {
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
-            {
-                name = spriteName,
-                wrapMode = TextureWrapMode.Clamp,
-                filterMode = FilterMode.Bilinear,
-            };
-
             var pixels = new Color32[size * size];
             float center = (size - 1) * 0.5f;
             for (int y = 0; y < size; y++)
@@ -70,10 +81,21 @@ namespace Atmosphere
                     pixels[y * size + x] = new Color32(255, 255, 255, alpha);
                 }
             }
+            return CreateSprite(size, pixels, spriteName);
+        }
+
+        private static Sprite CreateSprite(int size, Color32[] pixels, string spriteName)
+        {
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                name = spriteName,
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+            };
             texture.SetPixels32(pixels);
             texture.Apply(false, true);
 
-            return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
+            return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size, 0, SpriteMeshType.FullRect);
         }
     }
 }
