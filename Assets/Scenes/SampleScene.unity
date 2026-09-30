@@ -46794,7 +46794,7 @@ Transform:
   m_GameObject: {fileID: 1150534566}
   serializedVersion: 2
   m_LocalRotation: {x: -4.6565474e-10, y: 0.000000029816878, z: 1.388437e-17, w: 1}
-  m_LocalPosition: {x: 18.713636, y: 2.1699998, z: -10}
+  m_LocalPosition: {x: 20.542727, y: 2.1699998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -80350,6 +80350,7 @@ GameObject:
   - component: {fileID: 2055974206}
   - component: {fileID: 2055974207}
   - component: {fileID: 2055974208}
+  - component: {fileID: 2055974209}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -80703,7 +80704,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerDepotRecall
   baseCooldownSeconds: 300
-  depotRecallPoint: {fileID: 613501362}
 --- !u!114 &2055974205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80775,6 +80775,28 @@ MonoBehaviour:
   nuggetPopSeconds: 0.3
   nuggetHomingAcceleration: 60
   nuggetMaxSpeed: 22
+--- !u!114 &2055974209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2055974188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2d70f28c6808a748b24e5551d0e9619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerPortalTravel
+  depotArrivalPoint: {fileID: 613501362}
+  portalSprite: {fileID: 21300000, guid: bd0c788adc904624391af8dc0bfd7199, type: 3}
+  portalDiameter: 1.8
+  portalSpinSpeed: -360
+  portalOpenSeconds: 0.3
+  suckInSeconds: 0.55
+  portalCloseSeconds: 0.2
+  transitSeconds: 0.35
+  spitOutSeconds: 0.4
+  playerSpinDegrees: 720
 --- !u!1 &2056435485
 GameObject:
   m_ObjectHideFlags: 0

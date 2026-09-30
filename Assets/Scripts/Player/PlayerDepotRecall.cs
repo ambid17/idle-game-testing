@@ -3,20 +3,18 @@ using UnityEngine;
 
 namespace Player
 {
-    // Active ability unlocked by the Museum's Survival_DepotRecall perk: teleports the player to
-    // the Depot. The base cooldown is scaled by
+    // Active ability unlocked by the Museum's Survival_DepotRecall perk: portals the player to
+    // the Depot (PlayerPortalTravel, shared with the Portal power-up). The base cooldown is scaled by
     // PrestigeUpgradeManager.Survival_DepotRecallCooldownMultiplier (halved per level past the
     // first), read at the moment of use. Works while stranded without fuel, since getting out of a
     // hole is the point. The cooldown isn't saved - a reload starts it ready. Input is handled by
     // PlayerAbilities.
-    [RequireComponent(typeof(PlayerController))]
+    [RequireComponent(typeof(PlayerPortalTravel))]
     public class PlayerDepotRecall : PlayerAbility
     {
         [SerializeField] private float baseCooldownSeconds = 300f;
-        [Tooltip("Where the player lands - a point in front of the Depot building.")]
-        [SerializeField] private Transform depotRecallPoint;
 
-        private PlayerController playerController;
+        private PlayerPortalTravel portalTravel;
 
         private PrestigeUpgradeManager prestigeUpgrades => PrestigeUpgradeManager.Instance;
 
@@ -28,18 +26,10 @@ namespace Player
 
         private void Awake()
         {
-            playerController = GetComponent<PlayerController>();
+            portalTravel = GetComponent<PlayerPortalTravel>();
         }
 
-        private void Start()
-        {
-            if (depotRecallPoint == null) Debug.LogError($"{nameof(PlayerDepotRecall)} on {name} is missing depotRecallPoint.");
-        }
-
-        protected override bool Activate()
-        {
-            playerController.TeleportTo(depotRecallPoint.position);
-            return true;
-        }
+        // Refused (no cooldown spent) while a trip is already underway.
+        protected override bool Activate() => portalTravel.TryTravelToDepot();
     }
 }

@@ -175,7 +175,21 @@ namespace Player
             lastFallSpeed = 0f;
         }
 
-        // Used by PlayerDepotRecall. Clears fall tracking so arriving mid-air (or from a long fall)
+        // Set by PlayerPortalTravel for its whole suck-in/spit-out animation: the body leaves
+        // physics entirely (no gravity, contacts or hazard triggers) and input is ignored.
+        // rb.simulated rather than bodyType, so it can't fight InputBlocker's Kinematic toggle.
+        public bool IsInPortal { get; private set; }
+
+        public void SetInPortal(bool inPortal)
+        {
+            IsInPortal = inPortal;
+            movementInput = Vector2.zero;
+            brakeHeld = false;
+            rb.linearVelocity = Vector2.zero;
+            rb.simulated = !inPortal;
+        }
+
+        // Used by PlayerPortalTravel. Clears fall tracking so arriving mid-air (or from a long fall)
         // doesn't register as a fall-damage landing.
         public void TeleportTo(Vector3 position)
         {
@@ -214,7 +228,7 @@ namespace Player
                 }
             }
 
-            if (health.IsDead || !HasFuel) return;
+            if (health.IsDead || !HasFuel || IsInPortal) return;
 
             // Unlike death (which zeroes movementInput once via HandleDied), blocking can start/end
             // mid-motion, so it has to actively zero the stale input each frame it's active -
@@ -282,7 +296,7 @@ namespace Player
             // The Kinematic switch in Update already removes the Rigidbody2D from physics
             // simulation, but this also skips fuel drain and fall-damage tracking so a blocked
             // modal doesn't silently cost fuel or attribute fall damage to time spent paused.
-            if (health.IsDead || InputBlocker.IsBlocked)
+            if (health.IsDead || InputBlocker.IsBlocked || IsInPortal)
             {
                 GameManager.AudioService.SetLoopActive(SoundId.Jetpack, false);
                 return;

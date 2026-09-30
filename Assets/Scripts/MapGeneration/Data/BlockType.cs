@@ -49,6 +49,8 @@ namespace MapGeneration
         // Structure blocks (Category.Dirt, Unmineable) - placed by MapFeatureDefinitions such as
         // BandFeature. Append-only, same rule as every id above.
         Hardpan = 28,
+        // PowerUp - see the PowerUp block comment above.
+        Portal = 29,
     }
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)
@@ -67,7 +69,8 @@ namespace MapGeneration
         DrillOverdrive = 8,
         FuelCanister = 9,
         RepairKit = 10,
-        LuckyStrike = 11
+        LuckyStrike = 11,
+        Portal = 12
     }
 
     [CreateAssetMenu(fileName = "BlockType", menuName = "Map Generation/Block Type")]

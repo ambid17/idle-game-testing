@@ -17,6 +17,7 @@ namespace Player
     [RequireComponent(typeof(PlayerInventory))]
     [RequireComponent(typeof(PlayerHealth))]
     [RequireComponent(typeof(PlayerController))]
+    [RequireComponent(typeof(PlayerPortalTravel))]
     public class PlayerPowerUps : MonoBehaviour
     {
         [Header("Treasure Chest")]
@@ -42,6 +43,7 @@ namespace Player
         private PlayerInventory playerInventory;
         private PlayerHealth playerHealth;
         private PlayerController playerController;
+        private PlayerPortalTravel portalTravel;
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
 
         private float overdriveEndTime;
@@ -68,6 +70,9 @@ namespace Player
 
             playerController = GetComponent<PlayerController>();
             if (playerController == null) Debug.LogError($"{nameof(PlayerPowerUps)} on {name} requires a PlayerController component.");
+
+            portalTravel = GetComponent<PlayerPortalTravel>();
+            if (portalTravel == null) Debug.LogError($"{nameof(PlayerPowerUps)} on {name} requires a PlayerPortalTravel component.");
         }
 
         public void Apply(BlockType blockType, int layerIndex, int x, int y)
@@ -79,6 +84,7 @@ namespace Player
                 case CustomBehavior.FuelCanister: ApplyFuelCanister(blockType); break;
                 case CustomBehavior.RepairKit: ApplyRepairKit(blockType); break;
                 case CustomBehavior.LuckyStrike: ApplyLuckyStrike(blockType); break;
+                case CustomBehavior.Portal: ApplyPortal(blockType); break;
                 default:
                     Debug.LogError($"{nameof(PlayerPowerUps)}: PowerUp block '{blockType.name}' has unhandled CustomBehavior {blockType.CustomBehavior}.");
                     break;
@@ -210,6 +216,14 @@ namespace Player
             luckyStrikeChargesAtPickup = remainingLuckyStrikeCharges;
             luckyStrikeIcon = block.Icon;
             Notify($"Lucky Strike: the next {remainingLuckyStrikeCharges} ores you mine are doubled", block);
+        }
+
+        // A free Depot Recall - same trip, no cooldown touched. Nothing to scale with
+        // Effectiveness. Mining is off for the whole trip, so a second one can't overlap.
+        private void ApplyPortal(BlockType block)
+        {
+            portalTravel.TryTravelToDepot();
+            Notify("Portal: whisked back to the Depot", block);
         }
 
         // Queued, not TimeSensitive - a pickup is informational, it never needs to cut in front of

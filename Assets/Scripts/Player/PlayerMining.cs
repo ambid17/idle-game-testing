@@ -72,7 +72,7 @@ namespace Player
             // drain - see PlayerController.ConsumeMiningFuel), so an empty tank blocks it too.
             bool isDiggingUp = direction == Vector2Int.up;
             bool canMine = (playerController.IsGrounded || isDiggingUp || PrestigeUpgradeManager.Instance.Mining_DigWhileFlyingUnlocked) && playerController.HasFuel;
-            if (!canMine || direction == null || InputBlocker.IsBlocked)
+            if (!canMine || direction == null || InputBlocker.IsBlocked || playerController.IsInPortal)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
                 wasBlockedByFullInventory = false;
