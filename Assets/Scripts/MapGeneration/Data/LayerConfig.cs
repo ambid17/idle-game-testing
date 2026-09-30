@@ -11,13 +11,6 @@ namespace MapGeneration
     {
         public BlockType BlockType;
         [Min(0f)] public float Weight = 1f;
-
-        [Header("Vein (applies only when BlockType.Category is Ore - every ore entry veins by default; set VeinSizeMin/Max to 1 to opt a specific ore out)")]
-        [Tooltip("Chance, checked per candidate cell, that the vein spreads into it. Higher = denser/more compact veins.")]
-        [Range(0f, 1f)] public float VeinSpreadChance = 0.5f;
-        [Tooltip("Total cells in the vein including the seed cell. A random value in [Min, Max] is picked per seed.")]
-        [Min(1)] public int VeinSizeMin = 2;
-        [Min(1)] public int VeinSizeMax = 4;
     }
 
     [Serializable]
@@ -85,5 +78,13 @@ namespace MapGeneration
         public AudioClip AmbientLoop;
         [Tooltip("Colour grading (Atmosphere.BiomeGrading) that fades in over the base post-processing while the player is in this layer. Layers of one biome share a profile. Null = base grading only.")]
         public VolumeProfile GradingProfile;
+
+
+        [Header("Vein (applies only when BlockType.Category is Ore - every ore entry veins by default; set VeinSizeMin/Max to 1 to opt a specific ore out)")]
+        [Tooltip("Chance, checked per candidate cell, that the vein spreads into it. Higher = denser/more compact veins.")]
+        [Range(0f, 1f)] public float VeinSpreadChance = 0.5f;
+        [Tooltip("Total cells in the vein including the seed cell. A random value in [Min, Max] is picked per seed.")]
+        [Min(1)] public int VeinSizeMin = 2;
+        [Min(1)] public int VeinSizeMax = 4;
     }
 }

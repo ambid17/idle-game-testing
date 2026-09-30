@@ -248,7 +248,7 @@ namespace MapGeneration
         private static void GrowVein(MapEditContext ctx, int seedX, int seedY, WeightedBlockEntry entry, LayerGenerationTweaks tweaks)
         {
             float sizeRoll = ctx.Value01(seedX, seedY, (int)Salt.VeinSize);
-            int targetSize = MapEditContext.RollRange(sizeRoll, entry.VeinSizeMin, entry.VeinSizeMax);
+            int targetSize = MapEditContext.RollRange(sizeRoll, ctx.Config.VeinSizeMin, ctx.Config.VeinSizeMax);
 
             float sizeMultiplier = tweaks.VeinSizeMultiplier;
             if (tweaks.OreVeinSizeMultipliers != null && tweaks.OreVeinSizeMultipliers.TryGetValue(entry.BlockType.Id, out float oreMultiplier)) sizeMultiplier *= oreMultiplier;
@@ -256,7 +256,7 @@ namespace MapGeneration
             if (targetSize <= 1) return;
 
             byte targetId = (byte)entry.BlockType.Id;
-            ctx.GrowBlob(seedX, seedY, targetSize, entry.VeinSpreadChance, (int)Salt.VeinSpread, CellFilters.UnclaimedDirt,
+            ctx.GrowBlob(seedX, seedY, targetSize, ctx.Config.VeinSpreadChance, (int)Salt.VeinSpread, CellFilters.UnclaimedDirt,
                 (x, y) => ctx.SetBlock(x, y, targetId));
         }
 

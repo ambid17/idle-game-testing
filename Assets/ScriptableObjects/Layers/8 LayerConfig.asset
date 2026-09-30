@@ -19,96 +19,42 @@ MonoBehaviour:
   OreTable:
   - BlockType: {fileID: 11400000, guid: 6ff86b5bdf2db464eb95a3b610508372, type: 2}
     Weight: 10
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: 802b8d22aa20ea74ba07477fa7878444, type: 2}
     Weight: 10
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: 4a6696e1aebea36419409154ec9952d1, type: 2}
     Weight: 8
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: e0c298f67497ad341839a5fcc57cd0d1, type: 2}
     Weight: 8
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: 50689c48e9afafd40913588917c87dc0, type: 2}
     Weight: 6
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: cc357cec3ca14cf44b3627c423bdc1d8, type: 2}
     Weight: 6
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: 4419a2c22866bf945bf17f8f0275480a, type: 2}
     Weight: 4
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: 8d4b330439a15654ca8a101a085e31b9, type: 2}
     Weight: 3
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: 6f36a8a76c9612247b533c8c05e9489a, type: 2}
     Weight: 1
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   HazardTable:
   - BlockType: {fileID: 11400000, guid: 9a07d8f2100e20341b44ac6fe2e68fb7, type: 2}
     Weight: 11
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: 37f9cb9390fb28a4a9b17770045b99c9, type: 2}
     Weight: 11
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: 4640d795a487d634684e857c330c5a2a, type: 2}
     Weight: 10
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   - BlockType: {fileID: 11400000, guid: be435c6e0e35a734991efc9fc6c1f4fa, type: 2}
     Weight: 16
-    VeinSpreadChance: 0.5
-    VeinSizeMin: 2
-    VeinSizeMax: 4
   PowerUpTable:
   - BlockType: {fileID: 11400000, guid: 5c01e228e5d50a34b963db1ba5b3eb5d, type: 2}
     Weight: 10
-    VeinSpreadChance: 0
-    VeinSizeMin: 1
-    VeinSizeMax: 1
   - BlockType: {fileID: 11400000, guid: 4c4e77aba607b7e4b9b95f1b86f69207, type: 2}
     Weight: 20
-    VeinSpreadChance: 0
-    VeinSizeMin: 1
-    VeinSizeMax: 1
   - BlockType: {fileID: 11400000, guid: a50ef82158eae014ca7328823a28d356, type: 2}
     Weight: 20
-    VeinSpreadChance: 0
-    VeinSizeMin: 1
-    VeinSizeMax: 1
   - BlockType: {fileID: 11400000, guid: db38c713e0035224185186a57bd4f079, type: 2}
     Weight: 20
-    VeinSpreadChance: 0
-    VeinSizeMin: 1
-    VeinSizeMax: 1
   - BlockType: {fileID: 11400000, guid: 2e26e91dd3bd42e4784785d329de2383, type: 2}
     Weight: 20
-    VeinSpreadChance: 0
-    VeinSizeMin: 1
-    VeinSizeMax: 1
   HazardChancePerCell: 0.022
   PowerUpChancePerCell: 0.0072
   ArtifactBonusChance: 0.1
@@ -116,6 +62,7 @@ MonoBehaviour:
   EmptyPocketSpreadChance: 0.5
   EmptyPocketSizeMin: 2
   EmptyPocketSizeMax: 5
+  Features: []
   CritterTable:
   - Critter: {fileID: 11400000, guid: 709d984bd0dff1348b14848e17f8a44b, type: 2}
     Weight: 0.7
@@ -129,3 +76,6 @@ MonoBehaviour:
   DripsPerSecond: 0.5
   AmbientLoop: {fileID: 8300000, guid: 606040b0bd4a6324299e2e207de6eef3, type: 3}
   GradingProfile: {fileID: 11400000, guid: 9a468fd7b5b3b704996126004ef38e65, type: 2}
+  VeinSpreadChance: 0.3
+  VeinSizeMin: 2
+  VeinSizeMax: 6
