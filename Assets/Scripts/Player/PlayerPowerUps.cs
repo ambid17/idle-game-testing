@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Economy;
 using Events;
 using MapGeneration;
+using Tutorial;
 using UnityEngine;
 
 namespace Player
@@ -145,6 +146,9 @@ namespace Player
             {
                 GameManager.EventService.Dispatch(new ChestSpawnRequestedEvent(mapGenerationService.CellToWorldCenter(layerIndex, x, y), overflow));
                 message += $" ({count - addedToInventory} more spilled into a chest)";
+                // Filled the bag without going through PlayerMining's full-inventory block, which
+                // is otherwise the only place this tutorial fires.
+                TutorialManager.Instance.TryShow(TutorialId.InventoryFull);
             }
             Notify(message, chestBlock);
         }

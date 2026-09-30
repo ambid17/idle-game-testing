@@ -47,11 +47,67 @@ MonoBehaviour:
   - Id: 6
     DisplayType: 2
     Title: Museum
-    Body: The Museum is where you spend Artifacts on permanent perks. Purchases
-      queue up and only take effect once you prestige, which resets everything
-      including money and upgrades - but your next run will be faster!
+    Body: The Museum is where you spend Artifacts on permanent perks. Purchases queue
+      up and only take effect once you prestige, which resets everything including
+      money and upgrades - but your next run will be faster!
   - Id: 7
     DisplayType: 2
     Title: Processing Center
-    Body: The Processing Center turns raw ore into refined goods you can sell for
-      more at the Market.
+    Body: The Processing Center turns raw ore into refined goods worth more than
+      the raw ore. Finished goods go to the Depot, where you can sell them.
+  - Id: 8
+    DisplayType: 0
+    Title: Low Fuel
+    Body: Your jetpack burns fuel, and you use a little even while standing still.
+      Head back up to the Control Center to refuel. If your tank runs dry, you'll
+      black out and respawn at the surface.
+  - Id: 9
+    DisplayType: 0
+    Title: Inventory Full
+    Body: Your storage is full, so you can't pick up any more ore. Bring it back
+      to the Depot to store/sell it, or buy a bigger inventory at the Market.
+  - Id: 10
+    DisplayType: 0
+    Title: Lost Ore Chest
+    Body: When you die, the ore you were carrying stays behind in a chest where you
+      fell. Dig back down to it and pick it up to get your ore back.
+  - Id: 11
+    DisplayType: 0
+    Title: Deeper Layers
+    Body: 'Deeper layers have richer ore, but the dirt is harder to dig. Hazards
+      show up from here on: explosive blocks, falling rocks, gas pockets and lava.
+      Watch your health!'
+  - Id: 12
+    DisplayType: 0
+    Title: Mining Automatons
+    Body: Your automaton digs through the mine on its own and brings full loads of
+      ore back to the Depot. It needs fuel too! Check their earnings from the Control
+      Center.
+  - Id: 13
+    DisplayType: 0
+    Title: Storage Drones
+    Body: Storage Drones fly out, take ore from you or your automatons, and bring
+      it back to the Depot. You can pick who they collect from at the Control Center.
+  - Id: 14
+    DisplayType: 0
+    Title: Fuel Drones
+    Body: Fuel Drones deliver fuel to you and your automatons. With one around, an
+      empty tank leaves you stranded instead of knocked out. Wait for a drone, or
+      use the respawn prompt to head back to the surface.
+  - Id: 15
+    DisplayType: 0
+    Title: Run Modifiers
+    Body: Pick one modifier for your next run. Blessings are pure upside. Gambles
+      give a bigger bonus but come with a drawback. Contracts pay out Artifacts when
+      you deliver enough of one ore.
+  - Id: 16
+    DisplayType: 0
+    Title: A New Run
+    Body: Your money, Market upgrades and the mine have been reset. You keep your
+      Artifacts and Museum perks, which now take effect. Check the HUD for your run
+      modifier and its contract progress.
+  - Id: 17
+    DisplayType: 0
+    Title: Critter Caught!
+    Body: You caught a critter! Find the Critter Shop in a cave somewhere in the
+      upper layers and turn your critters in there for rewards!

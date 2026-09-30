@@ -3,6 +3,7 @@ using Automation;
 using Economy;
 using Events;
 using Settings;
+using Tutorial;
 using UI;
 using UnityEngine;
 
@@ -339,6 +340,7 @@ namespace Player
             {
                 GameManager.EventService.Dispatch(new NotificationEvent("Fuel is running low!", NotificationUrgency.TimeSensitive));
                 GameManager.AudioService.Play(SoundId.Warning);
+                TutorialManager.Instance.TryShow(TutorialId.LowFuel);
             }
 
             if (FuelFraction <= CriticalFuelWarningFraction && previousFuelFraction > CriticalFuelWarningFraction)

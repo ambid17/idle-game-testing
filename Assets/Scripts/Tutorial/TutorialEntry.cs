@@ -13,6 +13,17 @@ namespace Tutorial
         Building_ControlCenter,
         MuseumReveal,
         ProcessingReveal,
+        // Append only - ids are serialized as ints in TutorialDatabase.asset and save.json.
+        LowFuel,
+        InventoryFull,
+        DeathAndChests,
+        DeeperLayers,
+        Automatons,
+        StorageDrones,
+        FuelDrones,
+        RunModifierPick,
+        NewRun,
+        Critters,
     }
 
     // Which UI component should render this tutorial when TutorialManager dispatches it - each of

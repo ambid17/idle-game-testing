@@ -3,6 +3,7 @@ using Economy;
 using Events;
 using MapGeneration;
 using Settings;
+using Tutorial;
 using UnityEngine;
 
 namespace Player
@@ -111,6 +112,7 @@ namespace Player
             {
                 GameManager.EventService.Dispatch(new NotificationEvent("Inventory is full!", NotificationUrgency.TimeSensitive));
                 GameManager.AudioService.Play(SoundId.Warning);
+                TutorialManager.Instance.TryShow(TutorialId.InventoryFull);
             }
             wasBlockedByFullInventory = blockedByFullInventory;
 

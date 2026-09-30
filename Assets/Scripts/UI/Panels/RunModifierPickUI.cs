@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Economy;
 using RunModifiers;
 using TMPro;
+using Tutorial;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,6 +43,7 @@ namespace UI
             root.SetActive(true);
             SetOpened();
             Rebuild();
+            TutorialManager.Instance.TryShow(TutorialId.RunModifierPick);
         }
 
         public override void Close()

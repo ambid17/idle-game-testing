@@ -8,8 +8,9 @@ using UnityEngine;
 
 namespace Tutorial
 {
-    // Drives the tutorial popup system: listens for the trigger events for first-Artifact-mined and
-    // first-open-of-each-building-UI, and - the first time only, tracked by TutorialId and persisted
+    // Drives the tutorial popup system: listens for the event-driven triggers (load, first open of
+    // each building UI, first revive after a death, first automation purchases, first prestige,
+    // first critter catch) and polls for the player first reaching layer 1, and - the first time only, tracked by TutorialId and persisted
     // via RestoreFromSaveData/ShownTutorials - dispatches ShowTutorialEvent with that tutorial's copy
     // from GameManager.TutorialDatabase. TryShow is public so any system with its own display
     // mechanism (e.g. Economy.MuseumRevealController/Processing.ProcessingCenterRevealController's
@@ -26,6 +27,10 @@ namespace Tutorial
         private readonly HashSet<TutorialId> shownTutorials = new();
         public IReadOnlyCollection<TutorialId> ShownTutorials => shownTutorials;
 
+        // PlayerRevivedEvent also fires on prestige and from dev tools - only a revive that
+        // follows an actual death should explain the lost-ore chest.
+        private bool diedSinceLastRevive;
+
         protected override void Initialize()
         {
             base.Initialize();
@@ -39,18 +44,65 @@ namespace Tutorial
         {
             GameManager.EventService.Add<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Add<LoadCompletedEvent>(OnLoadCompleted);
+            GameManager.EventService.Add<PlayerDiedEvent>(OnPlayerDied);
+            GameManager.EventService.Add<PlayerRevivedEvent>(OnPlayerRevived);
+            GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
+            GameManager.EventService.Add<CritterCaughtEvent>(OnCritterCaught);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<PlayerInteractedEvent>(OnBuildingInteracted);
             GameManager.EventService.Remove<LoadCompletedEvent>(OnLoadCompleted);
+            GameManager.EventService.Remove<PlayerDiedEvent>(OnPlayerDied);
+            GameManager.EventService.Remove<PlayerRevivedEvent>(OnPlayerRevived);
+            GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
+            GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
+            GameManager.EventService.Remove<CritterCaughtEvent>(OnCritterCaught);
+        }
+
+        // Hazards start on layer 1 (layer 0's HazardTable is empty), so the first time the player
+        // gets there is when richer ore, harder dirt and hazards all need explaining.
+        private void Update()
+        {
+            // Wait for the save to restore both the player's position and shownTutorials.
+            if (!SaveService.Instance.HasLoadedData || HasShown(TutorialId.DeeperLayers)) return;
+
+            var map = GameManager.MapGenerationService;
+            int layerIndex = GameManager.LayerConfigProvider.GetLayerIndexAtWorldY(playerController.transform.position.y, map.CellSize);
+            if (layerIndex >= 1) TryShow(TutorialId.DeeperLayers);
         }
 
         private void OnLoadCompleted()
         {
             TryShow(TutorialId.CoreGoal);
         }
+
+        private void OnPlayerDied(PlayerDiedEvent evt) => diedSinceLastRevive = true;
+
+        private void OnPlayerRevived()
+        {
+            if (!diedSinceLastRevive) return;
+            diedSinceLastRevive = false;
+            TryShow(TutorialId.DeathAndChests);
+        }
+
+        private void OnUpgradePurchased(UpgradePurchasedEvent evt)
+        {
+            if (evt.NewLevel != 1) return;
+
+            switch (evt.Definition.Effect)
+            {
+                case UpgradeEffect.Automation_AutomatonCount: TryShow(TutorialId.Automatons); break;
+                case UpgradeEffect.Automation_StorageDroneCount: TryShow(TutorialId.StorageDrones); break;
+                case UpgradeEffect.Automation_FuelDroneCount: TryShow(TutorialId.FuelDrones); break;
+            }
+        }
+
+        private void OnPrestigeCompleted(PrestigeCompletedEvent evt) => TryShow(TutorialId.NewRun);
+
+        private void OnCritterCaught(CritterCaughtEvent evt) => TryShow(TutorialId.Critters, evt.Position);
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {

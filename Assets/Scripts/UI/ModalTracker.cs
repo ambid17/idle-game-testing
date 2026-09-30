@@ -3,7 +3,7 @@ using UnityEngine;
 namespace UI
 {
     // Tracks whether any modal nested inside a panel (ProcessingRecipeListModalUI,
-    // MuseumPrestigeConfirmUI) or standalone (TutorialModalUI,
+    // MuseumPrestigeConfirmUI) or standalone (TutorialModalUI, OfflineEarningsUI,
     // WorldTutorialPopupUI) is currently open, so PlayerController.Update can close just the
     // modal on Escape before it closes the panel underneath. Ref-counted like
     // Player.InputBlocker, in case more than one modal is ever open at once.

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Events;
 using Player;
 using TMPro;
@@ -11,6 +12,9 @@ namespace UI
     // any ShowTutorialEvent whose Entry.DisplayType is Modal - the core-goal tutorial and each
     // building's first-open tutorial, which sit over whatever panel (or nothing yet) is already on
     // screen.
+    // Tutorials that fire while one is already showing (e.g. several triggers landing together)
+    // queue up and show one after another. Tutorials also wait while any other ModalBase modal is
+    // open (UI.ModalTracker) - except RunModifierPick, which explains the pick modal underneath.
     // Its Canvas should use a higher sort order than every other panel so it always renders on top.
     // See UI.Panels.WorldTutorialPopupUI for the world-anchored counterpart. Inherits ModalBase so
     // Escape can dismiss it without also closing a panel or opening the pause menu underneath.
@@ -20,6 +24,8 @@ namespace UI
         [SerializeField] private TMP_Text titleLabel;
         [SerializeField] private TMP_Text bodyLabel;
         [SerializeField] private Button closeButton;
+
+        private readonly Queue<TutorialEntry> pending = new();
 
         private void Start()
         {
@@ -47,23 +53,40 @@ namespace UI
         private void OnShowTutorial(ShowTutorialEvent evt)
         {
             if (evt.Entry.DisplayType != TutorialDisplayType.Modal) return;
+
+            pending.Enqueue(evt.Entry);
+            TryShowNext();
+        }
+
+        // Polls so a tutorial deferred behind another modal shows as soon as that modal closes.
+        private void Update()
+        {
+            if (pending.Count > 0) TryShowNext();
+        }
+
+        private void TryShowNext()
+        {
+            if (IsOpen || pending.Count == 0) return;
+            if (ModalTracker.IsAnyModalOpen && !ShowsOverOtherModals(pending.Peek())) return;
             if (rendererRoot == null || titleLabel == null || bodyLabel == null) return;
 
-            titleLabel.text = evt.Entry.Title;
-            bodyLabel.text = evt.Entry.Body;
+            var entry = pending.Dequeue();
+            titleLabel.text = entry.Title;
+            bodyLabel.text = entry.Body;
 
-            InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
             SetOpened();
         }
+
+        private static bool ShowsOverOtherModals(TutorialEntry entry) => entry.Id == TutorialId.RunModifierPick;
 
         public override void Close()
         {
             if (rendererRoot == null || !rendererRoot.activeSelf) return;
 
-            InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
             SetClosed();
+            TryShowNext();
         }
     }
 }

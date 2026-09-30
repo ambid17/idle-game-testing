@@ -14,8 +14,9 @@ namespace UI
     // Automation.IdleEarningsTracker/Persistence.SaveService). Follows DeathUI's full-screen-modal
     // pattern. Per the resolved design decisions, ore is only actually deposited into the Depot
     // once the player acknowledges via the Collect button, and the player's input is blocked while
-    // this is open (InputBlocker).
-    public class OfflineEarningsUI : MonoBehaviour
+    // this is open (InputBlocker). Inherits ModalBase so TutorialModalUI waits for it to close
+    // (and Escape collects).
+    public class OfflineEarningsUI : ModalBase
     {
         [SerializeField] private GameObject rendererRoot;
         [SerializeField] private Transform rowContainer;
@@ -32,8 +33,17 @@ namespace UI
             if (collectButton != null) collectButton.onClick.AddListener(Collect);
         }
 
-        private void OnEnable() => GameManager.EventService.Add<OfflineEarningsReadyEvent>(Open);
-        private void OnDisable() => GameManager.EventService.Remove<OfflineEarningsReadyEvent>(Open);
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            GameManager.EventService.Add<OfflineEarningsReadyEvent>(Open);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            GameManager.EventService.Remove<OfflineEarningsReadyEvent>(Open);
+        }
 
         private void Open(OfflineEarningsReadyEvent evt)
         {
@@ -44,6 +54,7 @@ namespace UI
 
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
+            SetOpened();
         }
 
         private void BuildRows(IReadOnlyDictionary<BlockTypeId, int> oreGained)
@@ -78,13 +89,17 @@ namespace UI
             rows.Clear();
         }
 
+        public override void Close() => Collect();
+
         private void Collect()
         {
+            if (!IsOpen) return;
             if (pendingOre != null) Depot.Instance.Deposit(pendingOre);
             pendingOre = null;
 
             InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);
+            SetClosed();
         }
     }
 }
