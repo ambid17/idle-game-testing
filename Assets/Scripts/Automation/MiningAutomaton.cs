@@ -477,35 +477,9 @@ namespace Automation
             bool arrived = mover.StepDirect(transform, _depotLocation, speed);
             if (!arrived) return;
 
-            PurchaseFuel();
-            // If funds ran out, stay parked here rather than bouncing back to PickingTarget only to
-            // immediately re-trigger this same state - wait for more money or a passing Fuel Drone.
-            if (!fuelSystem.IsEmpty)
-            {
-                if(oreInventory.CurrentWeight > 0f)
-                {
-                    state = State.FlyingToDepot;
-                }
-                else
-                {
-                    state = State.PickingTarget;
-                }
-            }
-        }
-
-        // Mirrors UI.ResourceRefillUI.TryFillFuel's player-facing purchase - buys as much of the
-        // missing fuel as the wallet can afford, same per-unit price.
-        private void PurchaseFuel()
-        {
-            float unitsNeeded = fuelSystem.FuelMissing;
-            if (unitsNeeded <= 0f) return;
-
-            float unitsAffordable = Mathf.FloorToInt((float)(Wallet.Instance.Dollars / config.FuelCostPerUnit));
-            float unitsToBuy = Mathf.Min(unitsNeeded, unitsAffordable);
-            if (unitsToBuy <= 0f) return;
-
-            if (!Wallet.Instance.TrySpend(unitsToBuy * config.FuelCostPerUnit)) return;
-            fuelSystem.AddFuel(unitsToBuy);
+            // Fuel is free, so this always fills the tank.
+            fuelSystem.FillFull();
+            state = oreInventory.CurrentWeight > 0f ? State.FlyingToDepot : State.PickingTarget;
         }
 
 #if UNITY_EDITOR

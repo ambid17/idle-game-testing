@@ -35,11 +35,7 @@ namespace Automation
         [Header("Fuel Drone")]
         public float FuelDroneBaseMoveSpeed = 4f;
         public float FuelDroneBaseFuelCapacity = 20f;
-        public float FuelCostPerUnit = 5f;
         [Range(0f, 1f)] public float FuelNeedThresholdFraction = 0.10f;
-
-        [Header("Player HP Refill")]
-        public float HpCostPerUnit = 5f;
 
         public void Validate()
         {
@@ -61,10 +57,6 @@ namespace Automation
                 Debug.LogError("AutomationConfig has an invalid FuelDroneBaseMoveSpeed.");
             if (FuelDroneBaseFuelCapacity <= 0)
                 Debug.LogError("AutomationConfig has an invalid FuelDroneBaseFuelCapacity.");
-            if (FuelCostPerUnit <= 0)
-                Debug.LogError("AutomationConfig has an invalid FuelCostPerUnit.");
-            if (HpCostPerUnit <= 0)
-                Debug.LogError("AutomationConfig has an invalid HpCostPerUnit.");
         }
     }
 }

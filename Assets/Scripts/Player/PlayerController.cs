@@ -93,7 +93,7 @@ namespace Player
         // IFuelConsumer - lets Fuel Drones target the player the same way they target automatons.
         public Transform FuelTransform => transform;
 
-        // Used by Fuel Drones (Automation.FuelDrone) and ResourceRefillUI's manual purchase buttons -
+        // Used by Fuel Drones (Automation.FuelDrone) and PlayerDepotResupply's free top-off -
         // both deposit fuel into the player through this rather than touching FuelSystem directly.
         public void AddFuel(float amount) => fuelSystem.AddFuel(amount);
 

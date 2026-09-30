@@ -22,8 +22,10 @@ MonoBehaviour:
   - Id: 1
     DisplayType: 0
     Title: Storage Depot
-    Body: Deposit the ore you're carrying here, then sell it. Ores stored here can
-      also be used in the Processing Center to trade time for extra money!
+    Body: 'Deposit the ore you''re carrying here, then sell it. Ores stored here can
+      also be used in the Processing Center to trade time for extra money! Just being
+      near the Depot refuels and repairs you for free, automatically - no need to
+      buy anything.'
   - Id: 2
     DisplayType: 0
     Title: Market
@@ -42,8 +44,8 @@ MonoBehaviour:
   - Id: 5
     DisplayType: 0
     Title: Control Center
-    Body: 'Refuel/Repair yourself here. Once unlocked: monitor your automatons and
-      drones and adjust their settings.'
+    Body: 'Once unlocked: monitor your automatons and drones and adjust their settings
+      here. Refueling and repairs happen for free at the Depot.'
   - Id: 6
     DisplayType: 2
     Title: Museum
@@ -58,9 +60,9 @@ MonoBehaviour:
   - Id: 8
     DisplayType: 0
     Title: Low Fuel
-    Body: Your jetpack burns fuel, and you use a little even while standing still.
-      Head back up to the Control Center to refuel. If your tank runs dry, you'll
-      black out and respawn at the surface.
+    Body: 'Your jetpack burns fuel, and you use a little even while standing still.
+      Head back up to the Depot: being near it refuels and repairs you automatically,
+      for free. If your tank runs dry, you''ll black out and respawn at the surface.'
   - Id: 9
     DisplayType: 0
     Title: Inventory Full

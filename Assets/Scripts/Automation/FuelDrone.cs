@@ -7,8 +7,8 @@ using UnityEngine;
 namespace Automation
 {
     // GameDesignDoc "Automation > Fuel Drones": flies to whichever IFuelConsumer needs fuel (the
-    // player or a Mining Automaton - see FuelConsumerRegistry) and tops it off, buying more fuel
-    // for itself at the Control Center within the player-set spending cap. Per the resolved design
+    // player or a Mining Automaton - see FuelConsumerRegistry) and tops it off, reloading its own
+    // payload for free at the Control Center (fuel costs nothing). Per the resolved design
     // decision, a drone delivers up to its full (upgradeable) capacity per visit rather than a
     // separate flat amount - "10 units" in the doc is just the level-0 base capacity.
     //
@@ -125,30 +125,8 @@ namespace Automation
             currentTarget = FindTarget();
             if (currentTarget == null) return;
 
-            RefuelSelfWithinSpendingCap();
-            if (payload <= 0f)
-            {
-                // Couldn't afford any fuel within the cap - release the claim and stay idle.
-                FuelConsumerRegistry.Instance.ReleaseClaim(this);
-                currentTarget = null;
-                return;
-            }
-
+            payload = Capacity;
             state = State.FlyingToTarget;
-        }
-
-        private void RefuelSelfWithinSpendingCap()
-        {
-            float unitsNeeded = Capacity - payload;
-            if (unitsNeeded <= 0f) return;
-
-            double maxSpend = Wallet.Instance.Dollars * settings.FuelSpendingCapPercent;
-            float unitsAffordable = (float)(maxSpend / config.FuelCostPerUnit);
-            float unitsToBuy = Mathf.Min(unitsNeeded, unitsAffordable);
-            if (unitsToBuy <= 0f) return;
-
-            if (!Wallet.Instance.TrySpend(unitsToBuy * config.FuelCostPerUnit)) return;
-            payload += unitsToBuy;
         }
 
         private void UpdateFlyingToTarget()

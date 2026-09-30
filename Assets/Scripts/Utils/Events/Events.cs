@@ -384,12 +384,6 @@ namespace Events
         public SetFuelDroneTargetModeRequestedEvent(TargetMode mode) => Mode = mode;
     }
 
-    public class SetFuelSpendingCapRequestedEvent : IEvent
-    {
-        public float Percent;
-        public SetFuelSpendingCapRequestedEvent(float percent) => Percent = percent;
-    }
-
     public class SetStorageDroneDepositModeRequestedEvent : IEvent
     {
         public StorageDroneDepositMode Mode;

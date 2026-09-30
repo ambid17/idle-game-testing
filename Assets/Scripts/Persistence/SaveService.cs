@@ -88,7 +88,6 @@ namespace Persistence
                 {
                     StorageDroneTargetMode = AutomationSettings.Instance.StorageDroneTargetMode,
                     FuelDroneTargetMode = AutomationSettings.Instance.FuelDroneTargetMode,
-                    FuelSpendingCapPercent = AutomationSettings.Instance.FuelSpendingCapPercent,
                     StorageDroneDepositMode = AutomationSettings.Instance.StorageDroneDepositMode
                 }
             };
@@ -297,7 +296,6 @@ namespace Persistence
                 AutomationSettings.Instance.RestoreFromSaveData(
                     data.AutomationSettings.StorageDroneTargetMode,
                     data.AutomationSettings.FuelDroneTargetMode,
-                    data.AutomationSettings.FuelSpendingCapPercent,
                     data.AutomationSettings.StorageDroneDepositMode);
             }
 

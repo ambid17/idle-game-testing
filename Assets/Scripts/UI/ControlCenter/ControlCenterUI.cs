@@ -17,7 +17,6 @@ namespace UI
         [SerializeField] private GameObject rendererRoot;
         [SerializeField] private Button closeButton;
         [SerializeField] private Button droneTabButton;
-        [SerializeField] private ResourceRefillUI resourceRefillUI;
 
         private void Start()
         {
@@ -31,7 +30,6 @@ namespace UI
             if (rendererRoot == null) Debug.LogError("ControlCenterUI: rendererRoot not assigned in the Inspector.");
             if (closeButton == null) Debug.LogError("ControlCenterUI: closeButton not assigned in the Inspector.");
             if (droneTabButton == null) Debug.LogError("ControlCenterUI: droneTabButton not assigned in the Inspector.");
-            if (resourceRefillUI == null) Debug.LogError("ControlCenterUI: resourceRefillUI not assigned in the Inspector.");
         }
 
         private void OnEnable() {
@@ -70,24 +68,9 @@ namespace UI
                 return;
             }
 
-            switch(evt.InteractionType )
-            {
-                case InteractionType.Primary:
-                    Open();
-                    break;
-                case InteractionType.Secondary:
-                    resourceRefillUI.TryFillFuel();
-                    // TODO: show toast with money spent, and animation of the HUD bar refill
-                    break;
-                case InteractionType.Tertiary:
-                    resourceRefillUI.TryFillHp();
-                    // TODO: show toast with money spent, and animation of the HUD bar refill
-                    break;
-                default:
-                    Close();
-                    break;
-            }
-            
+            // Refuel/repair moved to the Depot's free resupply zone (Player.PlayerDepotResupply).
+            if (evt.InteractionType == InteractionType.Primary) Open();
+            else Close();
         }
 
         private void Open()

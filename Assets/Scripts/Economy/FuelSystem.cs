@@ -15,7 +15,7 @@ namespace Economy
     {
         [SerializeField] private float baseMaxFuel = 100f;
         // Drains constantly regardless of activity - there's no passive regen, fuel only ever goes
-        // back up via AddFuel (Fuel Drones / ResourceRefillUI purchases).
+        // back up via AddFuel (Fuel Drones / the Depot's free resupply zone).
         [SerializeField] private float idleDrainPerSecond = 1f;
         [SerializeField] private float flyingDrainPerSecond = 5f;
         [SerializeField] private float miningDrainPerSecond = 3f;
