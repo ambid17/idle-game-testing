@@ -27,6 +27,15 @@ namespace UI
 
         private readonly Queue<TutorialEntry> pending = new();
 
+        // Hides the root in Awake rather than Start: on a fresh game the CoreGoal tutorial is
+        // dispatched during load, which can land before this component's Start. Hiding it in Start
+        // would then leave it invisible but still IsOpen, holding ModalTracker open forever and
+        // queueing every later tutorial behind it.
+        private void Awake()
+        {
+            if (rendererRoot != null) rendererRoot.SetActive(false);
+        }
+
         private void Start()
         {
             if (rendererRoot == null) Debug.LogError("TutorialModalUI.rendererRoot is not assigned.");
@@ -35,7 +44,6 @@ namespace UI
             if (closeButton == null) Debug.LogError("TutorialModalUI.closeButton is not assigned.");
 
             if (closeButton != null) closeButton.onClick.AddListener(Close);
-            if (rendererRoot != null) rendererRoot.SetActive(false);
         }
 
         protected override void OnEnable()
