@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
   LayerIndex: 8
   LayerHeight: 30
-  LayerDirtTint: {r: 1, g: 1, b: 1, a: 1}
+  LayerDirtTint: {r: 0.62, g: 1, b: 0.78, a: 1}
   BlockHealth: 2.3
   OreTable:
   - BlockType: {fileID: 11400000, guid: 6ff86b5bdf2db464eb95a3b610508372, type: 2}

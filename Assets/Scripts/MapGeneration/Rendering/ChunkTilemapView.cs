@@ -51,11 +51,14 @@ namespace MapGeneration
 
         private ChunkData chunk;
         private Atmosphere.OreGlowLayer oreGlow;
+        // This layer's LayerConfig.LayerDirtTint, cached on Bind.
+        private Color dirtTint = Color.white;
 
         public void Bind(ChunkData chunkData, int layerIndex)
         {
             chunk = chunkData;
             LayerIndex = layerIndex;
+            dirtTint = GameManager.LayerConfigProvider.GetConfig(layerIndex).LayerDirtTint;
             RepaintAll();
             PaintBackground();
 
@@ -136,20 +139,20 @@ namespace MapGeneration
             fogTilemap.SetTiles(fogChanges, true);
         }
 
-        // The terrain tiles that would render along this chunk's shallow (row 0) or deep
+        // The terrain tiles (and their tints) that would render along this chunk's shallow (row 0) or deep
         // (last row) edge. ChunkStreamingManager copies these into the vertically adjacent
         // chunk's own Tilemap as a "ghost" row (see PaintGhostRow) - RuleTile neighbor lookups
         // only ever query the Tilemap component they live on, so without this, the cell just
         // across a layer boundary always reads as a null (empty) neighbor even when it's solid
         // ground, and edgeBleedTile draws a false edge along every layer seam.
-        public TileBase[] GetBoundaryRowTiles(bool bottomRow)
+        public TileChangeData[] GetBoundaryRowTiles(bool bottomRow)
         {
             int w = chunk.Width;
             int y = bottomRow ? chunk.Height - 1 : 0;
-            var tiles = new TileBase[w];
+            var tiles = new TileChangeData[w];
             for (int x = 0; x < w; x++)
             {
-                tiles[x] = BuildTerrainChange(new Vector3Int(x, -y, 0), chunk.Cells[chunk.Index(x, y)]).tile;
+                tiles[x] = BuildTerrainChange(new Vector3Int(x, -y, 0), chunk.Cells[chunk.Index(x, y)]);
             }
             return tiles;
         }
@@ -159,8 +162,9 @@ namespace MapGeneration
         // shallower layer's deepest row) or one cell beyond its last row (aboveChunk=false -
         // mirrors the deeper layer's shallowest row). These ghost cells are never part of this
         // chunk's visible Width x Height area; they exist purely so this Tilemap's own RuleTiles
-        // see a real neighbor instead of null at the seam.
-        public void PaintGhostRow(bool aboveChunk, TileBase[] tiles)
+        // see a real neighbor instead of null at the seam. They keep the source layer's tint so
+        // they match the real cells they overlap.
+        public void PaintGhostRow(bool aboveChunk, TileChangeData[] tiles)
         {
             int w = chunk.Width;
             int ghostY = aboveChunk ? 1 : -chunk.Height;
@@ -168,7 +172,7 @@ namespace MapGeneration
             var changes = new TileChangeData[w];
             for (int x = 0; x < w; x++)
             {
-                changes[x] = new TileChangeData(new Vector3Int(x, ghostY, 0), tiles[x], Color.white, Matrix4x4.identity);
+                changes[x] = new TileChangeData(new Vector3Int(x, ghostY, 0), tiles[x].tile, tiles[x].color, Matrix4x4.identity);
             }
             terrainTilemap.SetTiles(changes, true);
         }
@@ -208,15 +212,17 @@ namespace MapGeneration
             oreGlow.RefreshCells(localCoords);
         }
 
-        // Paints the block's tile at full white (no tint).
+        // Dirt and the edge-bleed debris in mined cells take the layer's dirt tint so the ground
+        // matches its biome; every other block paints at full white (no tint).
         private TileChangeData BuildTerrainChange(Vector3Int pos, CellData cell)
         {
-            if (cell.Mined) return new TileChangeData(pos, edgeBleedTile, Color.white, Matrix4x4.identity);
+            if (cell.Mined) return new TileChangeData(pos, edgeBleedTile, dirtTint, Matrix4x4.identity);
 
             var blockType = blockTypes != null ? blockTypes.Get(cell.BlockTypeId) : null;
             var tile = blockType != null ? blockType.Tile : null;
+            var color = cell.BlockTypeId == (byte)BlockTypeId.Dirt ? dirtTint : Color.white;
 
-            return new TileChangeData(pos, tile, Color.white, Matrix4x4.identity);
+            return new TileChangeData(pos, tile, color, Matrix4x4.identity);
         }
 
         // A cell's reveal-distance fade (see BuildFogChange) depends on its neighbors' Revealed
