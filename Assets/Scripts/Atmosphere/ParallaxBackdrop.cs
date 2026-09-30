@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Events;
 using UnityEngine;
@@ -11,8 +12,21 @@ namespace Atmosphere
     // next Build) and crossfade into the next biome's planes over fadeLength at the boundary.
     // Custom/SpriteParallaxBackdrop clips every plane to the mine's own rect (as seen from the
     // camera), so nothing leaks above the surface or past the grid's sides.
+    //
+    // The sky above the surface works the same way with its own stack of SkyBands (low sky,
+    // clouds, space...), clipped the other way round - only above the surface, at any x. Each
+    // band's farthest plane stays opaque under the band above's fade-in, so the camera's skybox
+    // never shows through a transition.
     public class ParallaxBackdrop : MonoBehaviour
     {
+        [Serializable]
+        public class SkyBand
+        {
+            public BiomeBackdrop Backdrop;
+            [Tooltip("World units this band covers above the one below it. Ignored on the last band, which extends forever (skyTopExtent).")]
+            [Min(1f)] public float Height = 100f;
+        }
+
         // The mine's tilemaps sit at z = 0 (ChunkStreamingManager positions views on x/y only).
         private const float MineZ = 0f;
         // A fade edge far enough away that it never fades (float.MaxValue overflows in the shader).
@@ -31,6 +45,14 @@ namespace Atmosphere
         [Tooltip("How far below its top the deepest biome's planes extend - it repeats forever past the last authored layer, like LayerConfigProvider does.")]
         [SerializeField] private float deepestBiomeExtent = 4000f;
 
+        [Header("Sky (above the surface)")]
+        [Tooltip("Bands stacked upward from the surface; the last one repeats forever.")]
+        [SerializeField] private List<SkyBand> skyBands = new();
+        [Tooltip("World units (on each plane) over which one sky band fades into the next.")]
+        [SerializeField] private float skyFadeLength = 40f;
+        [Tooltip("How far the sky extends past the surface in both directions: up for the last band, and down under the first so a camera high above the surface still sees sky when looking down through it at a steep parallax angle. Clipped at the surface anyway.")]
+        [SerializeField] private float skyExtent = 4000f;
+
         [Header("Backing (behind every plane, so crossfades and transparent planes never show the sky)")]
         [SerializeField] private Color backingColor = new(0.02f, 0.015f, 0.03f, 1f);
         [SerializeField] private float backingDepth = 80f;
@@ -44,6 +66,7 @@ namespace Atmosphere
         private static readonly int FadeTopId = Shader.PropertyToID("_FadeTop");
         private static readonly int FadeBottomId = Shader.PropertyToID("_FadeBottom");
         private static readonly int FadeLengthId = Shader.PropertyToID("_FadeLength");
+        private static readonly int SkyClipId = Shader.PropertyToID("_SkyClip");
 
         private void OnEnable()
         {
@@ -103,10 +126,56 @@ namespace Atmosphere
                         float scale = 1f + plane.Depth / referenceCameraDistance;
                         float top = isFirst ? surfaceY + surfaceOverhang * scale : LayerTopY(spanStart);
                         float bottom = isLast ? LayerTopY(spanStart) - deepestBiomeExtent : LayerTopY(i);
-                        BuildPlane(plane, top, bottom, !isFirst, !isLast, gridWorldWidth, mineRect, sortingOrders[plane.Depth]);
+                        BuildPlane(plane, top, bottom, !isFirst, !isLast, fadeLength, false, gridWorldWidth, mineRect, sortingOrders[plane.Depth]);
                     }
                 }
                 spanStart = i;
+            }
+
+            BuildSky(surfaceY, gridWorldWidth, mineRect);
+        }
+
+        private void BuildSky(float surfaceY, float gridWorldWidth, Vector4 mineRect)
+        {
+            // Farthest first; at the same depth the higher band draws on top, so it can fade in
+            // over the lower band's still-opaque plane. Sky and mine planes never overlap on screen
+            // (opposite clips), so their orders don't need to be distinct.
+            var skyPlanes = new List<(int band, BackdropPlane plane)>();
+            for (int b = 0; b < skyBands.Count; b++)
+            {
+                if (skyBands[b].Backdrop == null)
+                {
+                    Debug.LogError($"{nameof(ParallaxBackdrop)} sky band {b} has no Backdrop.");
+                    continue;
+                }
+                foreach (var plane in skyBands[b].Backdrop.Planes) skyPlanes.Add((b, plane));
+            }
+            skyPlanes.Sort((x, y) => x.plane.Depth != y.plane.Depth ? y.plane.Depth.CompareTo(x.plane.Depth) : x.band.CompareTo(y.band));
+
+            float bandBottom = surfaceY;
+            var bandBottoms = new float[skyBands.Count];
+            for (int b = 0; b < skyBands.Count; b++)
+            {
+                bandBottoms[b] = bandBottom;
+                bandBottom += skyBands[b].Height;
+            }
+
+            for (int i = 0; i < skyPlanes.Count; i++)
+            {
+                var (b, plane) = skyPlanes[i];
+                bool isFirst = b == 0;
+                bool isLast = b == skyBands.Count - 1;
+                float bottom = isFirst ? surfaceY - skyExtent : bandBottoms[b];
+                float top = isLast ? bandBottoms[b] + skyExtent : bandBottoms[b] + skyBands[b].Height;
+
+                // The band's farthest (opaque) plane runs on under the next band's fade-in instead
+                // of fading out itself; nearer (transparent) planes crossfade as usual.
+                bool isFarthest = true;
+                foreach (var other in skyBands[b].Backdrop.Planes) isFarthest &= other.Depth <= plane.Depth;
+                bool fadeTop = !isLast && !isFarthest;
+                if (!isLast && isFarthest) top += skyFadeLength * 0.5f;
+
+                BuildPlane(plane, top, bottom, fadeTop, !isFirst, skyFadeLength, true, gridWorldWidth, mineRect, backingSortingOrder + 1 + i);
             }
         }
 
@@ -138,11 +207,11 @@ namespace Atmosphere
         }
 
         private void BuildPlane(BackdropPlane plane, float top, float bottom, bool fadeTop, bool fadeBottom,
-            float gridWorldWidth, Vector4 mineRect, int sortingOrder)
+            float fade, bool sky, float gridWorldWidth, Vector4 mineRect, int sortingOrder)
         {
             // Overlap the neighbouring biome by half a fade on each shared edge.
-            if (fadeTop) top += fadeLength * 0.5f;
-            if (fadeBottom) bottom -= fadeLength * 0.5f;
+            if (fadeTop) top += fade * 0.5f;
+            if (fadeBottom) bottom -= fade * 0.5f;
 
             var renderer = CreateRenderer($"{plane.Sprite.name} (z {plane.Depth})", plane.Sprite, plane.Tint, sortingOrder);
             renderer.drawMode = SpriteDrawMode.Tiled;
@@ -156,7 +225,7 @@ namespace Atmosphere
             renderer.transform.position = new Vector3(gridWorldWidth * 0.5f, (top + bottom) * 0.5f, MineZ + plane.Depth);
             renderer.size = new Vector2(width, top - bottom) / scale;
 
-            ApplyClip(renderer, mineRect, fadeTop ? top : NoFade, fadeBottom ? bottom : -NoFade);
+            ApplyClip(renderer, mineRect, fadeTop ? top : NoFade, fadeBottom ? bottom : -NoFade, fade, sky);
         }
 
         private void BuildBacking(float gridWorldWidth, float surfaceY, Vector4 mineRect)
@@ -174,7 +243,7 @@ namespace Atmosphere
             renderer.transform.position = new Vector3(gridWorldWidth * 0.5f, (top + bottom) * 0.5f, MineZ + backingDepth);
             renderer.transform.localScale = new Vector3((gridWorldWidth + horizontalMargin * 2f) * scale, top - bottom, 1f);
 
-            ApplyClip(renderer, mineRect, NoFade, -NoFade);
+            ApplyClip(renderer, mineRect, NoFade, -NoFade, fadeLength, false);
         }
 
         private SpriteRenderer CreateRenderer(string objectName, Sprite sprite, Color color, int sortingOrder)
@@ -191,14 +260,15 @@ namespace Atmosphere
             return renderer;
         }
 
-        private void ApplyClip(SpriteRenderer renderer, Vector4 mineRect, float fadeTop, float fadeBottom)
+        private void ApplyClip(SpriteRenderer renderer, Vector4 mineRect, float fadeTop, float fadeBottom, float fade, bool sky)
         {
             var block = new MaterialPropertyBlock();
             renderer.GetPropertyBlock(block);
             block.SetVector(MineRectId, mineRect);
             block.SetFloat(FadeTopId, fadeTop);
             block.SetFloat(FadeBottomId, fadeBottom);
-            block.SetFloat(FadeLengthId, fadeLength);
+            block.SetFloat(FadeLengthId, fade);
+            block.SetFloat(SkyClipId, sky ? 1f : 0f);
             renderer.SetPropertyBlock(block);
         }
     }

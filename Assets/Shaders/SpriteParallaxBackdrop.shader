@@ -4,6 +4,7 @@
 //    the camera. Each fragment casts the camera ray back to the mine's own z = 0 plane and is
 //    discarded unless it lands inside the mine (_MineRect: x min, x max, surface y) - so the
 //    backdrop only ever shows through the mine, never above the surface or past its sides.
+//    Sky planes (_SkyClip = 1) flip that: they only show above the surface, at any x.
 //  - Biome crossfade: alpha ramps to 0 over _FadeLength world units at the plane's _FadeTop /
 //    _FadeBottom edges, where the neighbouring biome's plane overlaps it.
 // Built on Unity's sprite include so SpriteRenderer colour (_RendererColor) and Tiled draw mode
@@ -22,6 +23,7 @@ Shader "Custom/SpriteParallaxBackdrop"
         [PerRendererData] _FadeTop ("Fade Top Y", Float) = 100000
         [PerRendererData] _FadeBottom ("Fade Bottom Y", Float) = -100000
         [PerRendererData] _FadeLength ("Fade Length", Float) = 1
+        [PerRendererData] _SkyClip ("Sky Clip (1 = above the surface only)", Float) = 0
     }
 
     SubShader
@@ -55,6 +57,7 @@ Shader "Custom/SpriteParallaxBackdrop"
             float _FadeTop;
             float _FadeBottom;
             float _FadeLength;
+            float _SkyClip;
 
             struct v2fBackdrop
             {
@@ -83,7 +86,9 @@ Shader "Custom/SpriteParallaxBackdrop"
                 float3 cam = _WorldSpaceCameraPos;
                 float t = (_MineRect.w - cam.z) / (IN.worldPos.z - cam.z);
                 float2 onMine = cam.xy + (IN.worldPos.xy - cam.xy) * t;
-                clip(min(min(onMine.x - _MineRect.x, _MineRect.y - onMine.x), _MineRect.z - onMine.y));
+                float belowSurface = _MineRect.z - onMine.y;
+                float insideMine = min(min(onMine.x - _MineRect.x, _MineRect.y - onMine.x), belowSurface);
+                clip(_SkyClip > 0.5 ? -belowSurface : insideMine);
 
                 fixed4 c = SampleSpriteTexture(IN.texcoord) * IN.color;
                 float y = IN.worldPos.y;

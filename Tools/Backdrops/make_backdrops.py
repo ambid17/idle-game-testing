@@ -148,4 +148,5 @@ def main():
     print("\n".join(report))
 
 
-main()
+if __name__ == "__main__":
+    main()
