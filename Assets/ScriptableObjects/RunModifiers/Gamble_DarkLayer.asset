@@ -47,7 +47,7 @@ MonoBehaviour:
   TargetLayerOreWeightMultiplier: 1
   TargetLayerFeatures: []
   BlockHealthMultiplier: 1
-  TargetLayerFogRadiusMultiplier: 0.4
+  TargetLayerVisionRadiusMultiplier: 0.4
   TargetLayerOreYieldMultiplier: 2
   SellValueMultiplier: 1
   OreASellMultiplier: 1

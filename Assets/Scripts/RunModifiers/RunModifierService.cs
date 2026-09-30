@@ -39,10 +39,10 @@ namespace RunModifiers
             }
         }
 
-        public float FogRadiusMultiplier(int layerIndex)
+        public float VisionRadiusMultiplier(int layerIndex)
         {
             var def = ActiveDefinition;
-            return RunModifierResolver.IsTargetLayer(def, ActiveState, layerIndex) ? def.TargetLayerFogRadiusMultiplier : 1f;
+            return RunModifierResolver.IsTargetLayer(def, ActiveState, layerIndex) ? def.TargetLayerVisionRadiusMultiplier : 1f;
         }
 
         public int OreYieldMultiplier(int layerIndex)

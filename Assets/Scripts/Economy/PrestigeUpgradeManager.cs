@@ -145,8 +145,8 @@ namespace Economy
         // authored LayerHeight once per prestige, for not-yet-generated layers only.
         public float Mining_LayerSizeReduction => LevelOf(PrestigeUpgradeEffect.Mining_LayerSizeReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Mining_LayerSizeReduction);
 
-        // GameDesignDoc "Prestige > Mining > true sight": reveals all fog of war - read by
-        // MapGenerationService.GetFogRevealRadius.
+        // GameDesignDoc "Prestige > Mining > true sight": unlimited vision radius - read by
+        // MapGenerationService.GetVisionRadius.
         public bool Mining_TrueSightUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_TrueSight);
 
         // GameDesignDoc "Prestige > Prestige": artifact spawn rate / value-per-mine / passive gain.

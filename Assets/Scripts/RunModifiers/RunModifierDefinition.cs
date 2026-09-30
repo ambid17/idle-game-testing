@@ -83,8 +83,8 @@ namespace RunModifiers
 
         [Header("Mining")]
         [Min(0.05f)] public float BlockHealthMultiplier = 1f;
-        [Tooltip("Fog reveal radius multiplier while mining on the target layer (< 1 = darker).")]
-        [Min(0f)] public float TargetLayerFogRadiusMultiplier = 1f;
+        [Tooltip("Vision radius multiplier while mining on the target layer (< 1 = darker).")]
+        [Min(0f)] public float TargetLayerVisionRadiusMultiplier = 1f;
         [Tooltip("Ore picked up per mined ore cell on the target layer.")]
         [Min(1)] public int TargetLayerOreYieldMultiplier = 1;
 

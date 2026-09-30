@@ -17,7 +17,7 @@ namespace MapGeneration
         private MapGenerationConfig mapGenerationConfig => GameManager.MapGenerationConfig;
 
         [Tooltip("Placeholder default - exact base radius and Lantern-tier scaling is an open design item (see MapGenerationImplementation.md).")]
-        [SerializeField] private int baseFogRevealRadius = 2;
+        [SerializeField] private int baseVisionRadius = 2;
 
         // Invisible physical walls (BoxCollider2D, no renderer) at the grid's horizontal extent -
         // stop the player's Rigidbody2D from walking/flying past the edge. Tall enough to cover
@@ -220,11 +220,11 @@ namespace MapGeneration
         /// <param name="layerIndex"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        /// <param name="fogRadiusOverride"></param>
+        /// <param name="visionRadiusOverride"></param>
         /// <param name="minedByPlayer">PowerUp blocks are player-only - every other caller (automatons, explosions) is refused them.</param>
         /// <param name="canMineFallingRock">Player with the Rock Breaker upgrade - FallingRock is otherwise refused.</param>
         /// <returns>True if the cell was able to be mined.</returns>
-        public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1, bool minedByPlayer = false, bool canMineFallingRock = false)
+        public bool MineCell(int layerIndex, int x, int y, int visionRadiusOverride = -1, bool minedByPlayer = false, bool canMineFallingRock = false)
         {
             // Can't mine if: already mined, target is a building support, or a PowerUp not mined by the player
             if (!World.TryMineCell(layerIndex, x, y, minedByPlayer, out var block, canMineFallingRock)) return false;
@@ -233,7 +233,7 @@ namespace MapGeneration
             // through gap at that column - see the SurfaceFloor* fields' comment above.
             if (layerIndex == 0 && y == 1) UpdateSurfaceFloorSegmentEnabled(x);
 
-            HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);
+            HandleFogUpdate(layerIndex, x, y, visionRadiusOverride);
             // PowerUps aren't dispatched here - Player.PlayerMining applies them directly, since
             // only the player can ever mine one.
             // A FallingRock mined directly (Rock Breaker upgrade) is just gone - triggering its
@@ -265,9 +265,9 @@ namespace MapGeneration
             GameManager.EventService.Dispatch(new CustomBlockTriggeredEvent(aboveLayer, aboveX, aboveY, CustomBehavior.FallingRock));
         }
 
-        private void HandleFogUpdate(int layerIndex, int x, int y, int fogRadiusOverride = -1)
+        private void HandleFogUpdate(int layerIndex, int x, int y, int visionRadiusOverride = -1)
         {
-            int radius = fogRadiusOverride >= 0 ? fogRadiusOverride : GetFogRevealRadius(layerIndex);
+            int radius = visionRadiusOverride >= 0 ? visionRadiusOverride : GetVisionRadius(layerIndex);
             var revealedByLayer = World.RevealFog(layerIndex, x, y, radius);
 
             revealedByLayer.TryGetValue(layerIndex, out var revealedInOriginLayer);
@@ -283,12 +283,12 @@ namespace MapGeneration
         // GameDesignDoc "Market Upgrades > Mining > Lantern": base radius plus purchased levels,
         // or the whole chunk width once the "true sight" prestige perk is unlocked. The run
         // modifier's Dark Layer shrinks it (never below 1) on its target layer; True Sight still wins.
-        private int GetFogRevealRadius(int layerIndex)
+        private int GetVisionRadius(int layerIndex)
         {
             if (PrestigeUpgradeManager.Instance.Mining_TrueSightUnlocked) return mapGenerationConfig.GridWidth;
             var upgrades = UpgradeManager.Instance;
-            int radius = baseFogRevealRadius + (upgrades != null ? upgrades.Mining_LanternFogRadiusBonus : 0);
-            return Mathf.Max(1, Mathf.RoundToInt(radius * GameManager.RunModifierService.FogRadiusMultiplier(layerIndex)));
+            int radius = baseVisionRadius + (upgrades != null ? upgrades.Mining_LanternVisionRadiusBonus : 0);
+            return Mathf.Max(1, Mathf.RoundToInt(radius * GameManager.RunModifierService.VisionRadiusMultiplier(layerIndex)));
         }
 
         // Inverts ChunkTilemapView's cell->world placement (pos = (x, -y) within a chunk root

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mining_LanternRadius
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Lantern
-  Description: +1 block of fog-of-war reveal radius around you per level (base 3, up to 8 at max level).
+  Description: +1 block of vision radius around you per level (base 3, up to 8 at max level).
   Icon: {fileID: 21300000, guid: abbf0d3234a4e524bae6e7e7d8607ec0, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 5

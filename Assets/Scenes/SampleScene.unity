@@ -24395,7 +24395,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5daf4f593b8f66249909941cb566eb84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.MapGenerationService
-  baseFogRevealRadius: 3
+  baseVisionRadius: 3
 --- !u!114 &528579659
 MonoBehaviour:
   m_ObjectHideFlags: 0

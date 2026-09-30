@@ -131,8 +131,8 @@ namespace Economy
         // ScrapAlloy, the lowest-tier Ore block.
         public bool Mining_InstantMineScrapAlloy => IsMaxedEffect(UpgradeEffect.Mining_ScrapAlloyInstaMine);
 
-        // GameDesignDoc "Mining > Lantern": extra fog-of-war reveal radius on top of the base.
-        public int Mining_LanternFogRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Mining_LanternRadius) * EffectValuePerLevelOf(UpgradeEffect.Mining_LanternRadius));
+        // GameDesignDoc "Mining > Lantern": extra vision radius on top of the base.
+        public int Mining_LanternVisionRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Mining_LanternRadius) * EffectValuePerLevelOf(UpgradeEffect.Mining_LanternRadius));
 
         // HUD minimap (UI.MinimapUI): owning any level unlocks it; each level past the first widens
         // its view by EffectValuePerLevel cells.

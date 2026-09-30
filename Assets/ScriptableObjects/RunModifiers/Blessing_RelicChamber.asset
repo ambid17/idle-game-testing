@@ -45,7 +45,7 @@ MonoBehaviour:
   TargetLayerFeatures:
   - {fileID: 11400000, guid: 82263b42f83a1ae498ac4c0fb4df488f, type: 2}
   BlockHealthMultiplier: 1
-  TargetLayerFogRadiusMultiplier: 1
+  TargetLayerVisionRadiusMultiplier: 1
   TargetLayerOreYieldMultiplier: 1
   SellValueMultiplier: 1
   OreASellMultiplier: 1

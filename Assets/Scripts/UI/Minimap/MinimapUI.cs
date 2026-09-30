@@ -8,7 +8,7 @@ namespace UI
 {
     // HUD minimap unlocked by the Market's Mining_Minimap upgrade. The terrain is drawn straight from
     // MineWorld's cell data at one texel per cell - BlockType.MinimapColor for revealed blocks,
-    // tunnel/fog/sky colors otherwise - so it respects fog of war and never renders the scene twice.
+    // tunnel/fog/sky colors otherwise - so it respects the vision reveal and never renders the scene twice.
     // Artifact cells pulse so they stand out. The view is centered on the player and scrolls
     // smoothly: the texture carries a one-cell margin and the RawImage's uvRect slides by the
     // player's sub-cell offset. MinimapMarker dots are pooled Images laid over the terrain.

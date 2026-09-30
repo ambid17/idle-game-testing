@@ -32,7 +32,7 @@ namespace Economy
         Mining_DigWhileFlyingUnlocked = 101,
         // 102 - was used For camera zoom,
         Mining_LayerSizeReduction = 103,
-        // GameDesignDoc "Prestige > Mining > true sight": reveals all fog of war.
+        // GameDesignDoc "Prestige > Mining > true sight": unlimited vision radius.
         Mining_TrueSight = 104,
         // Lets the player mine upward (W) into the block directly above them.
         Mining_DigUpUnlock = 105,

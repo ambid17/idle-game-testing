@@ -90,7 +90,7 @@ The value and weight scales as you go down the tiers. Value scales faster than w
 ## Randomness blocks: the exist to make digging a bit more lively
 	- positive:
 		- treasure chest: contains a treasure trove of materials in the next layer
-		- sight potion: temporarily give full sight through the fog of war
+		- sight potion: temporarily give full sight beyond the vision radius
 		
 	- hazardous:
 		- explosive: destroys blocks in a radius, but damages the player if they are close. You get to collect the minerals destroyed by the explosion
@@ -120,7 +120,7 @@ Upgrades will be a skill tree that fans out and requires the player to unlock th
 	- Insta-mine chance
 	- Lantern:
 		- you start out only being able to see the blocks adjacent to your mine shaft
-		- the lantern reveals the "fog of war" and enables you to see deeper into the dirt to find minerals and plan a route
+		- the lantern extends your vision radius and enables you to see deeper into the dirt to find minerals and plan a route
 		- capstone: 
 			- zoom, enhance: zooms the camera out to reveal more of the map
 	- Enable digging while flying
@@ -173,7 +173,7 @@ The map will regenerate, all of your dug tunnels will be gone. All of your money
 - Mining:
 	- view: zooms out the camera a certain percentage to view more of the mineable area
 	- Increase grid size: this will add width to the horizontal grid generation
-		- true sight: reveals all fog of war
+		- true sight: unlimited vision radius (reveals the whole mine)
 	- keep "digging while flying" upgrade between prestige runs
 	- adjust layer sizes: smaller layers let you get deeper faster
 		- need to balance with processing recipes
