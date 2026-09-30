@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Atmosphere;
 using Critters;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -79,11 +80,8 @@ namespace MapGeneration
         [Tooltip("Colour grading (Atmosphere.BiomeGrading) that fades in over the base post-processing while the player is in this layer. Layers of one biome share a profile. Null = base grading only.")]
         public VolumeProfile GradingProfile;
 
-        [Header("Background (the back wall seen through dug-out cells - ChunkTilemapView)")]
-        [Tooltip("Seamless, tileable back-wall texture for this layer's biome. Layers of one biome share one, so the wall runs unbroken across their seams - it's anchored to world depth, not to the layer, so layer heights changing never matters. Null = flat tinted background.")]
-        public Texture2D BackgroundTexture;
-        [Tooltip("How many cells one repeat of BackgroundTexture spans (it's square, so this sets its pixels-per-cell too).")]
-        [Min(1)] public int BackgroundRepeatCells = 8;
+        [Tooltip("Parallax depth planes (Atmosphere.ParallaxBackdrop) seen through dug-out cells. Layers of one biome share one - consecutive layers with the same backdrop form one biome span. Null = ChunkTilemapView's flat tinted background instead.")]
+        public BiomeBackdrop Backdrop;
 
 
         [Header("Vein (applies only when BlockType.Category is Ore - every ore entry veins by default; set VeinSizeMin/Max to 1 to opt a specific ore out)")]

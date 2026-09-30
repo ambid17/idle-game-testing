@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3f313334e4c25d499ea892bab50db58, type: 3}
+  m_Name: Backdrop_Void
+  m_EditorClassIdentifier: Assembly-CSharp::Atmosphere.BiomeBackdrop
+  Planes:
+  - Sprite: {fileID: 21300000, guid: 3a652a44e034a2d47b9d36cf3592f706, type: 3}
+    Depth: 35
+    Tint: {r: 0.45, g: 0.45, b: 0.45, a: 1}
+  - Sprite: {fileID: 21300000, guid: bbcabb370c0d49a4c87fe800f9be7468, type: 3}
+    Depth: 14
+    Tint: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+  - Sprite: {fileID: 21300000, guid: 9fb0a313c5c23d94db233ba60546cd11, type: 3}
+    Depth: 5
+    Tint: {r: 0.7, g: 0.7, b: 0.7, a: 1}
