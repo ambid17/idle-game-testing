@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a5eee0b893699d45a1055e3c16825c4, type: 3}
   m_Name: AutomationConfig
   m_EditorClassIdentifier: Assembly-CSharp::Automation.AutomationConfig
-  AutomatonBaseMiningSpeed: 1
+  AutomatonBaseMiningSpeed: 0.5
   AutomatonBaseMoveSpeed: 3
   AutomatonBaseMiningRadius: 1
   AutomatonBaseInventoryWeight: 10

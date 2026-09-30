@@ -311,7 +311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.MiningCrackIndicator
   spriteRenderer: {fileID: 1652826324796549633}
   crackStages:
-  - {fileID: 21300000, guid: 5b8225d22cf23664f87914aa1cf19283, type: 3}
-  - {fileID: 21300000, guid: 2c3a8c5db3da02d45bb19ca4aa93725d, type: 3}
-  - {fileID: 21300000, guid: d68f27308055c884099b07cdf1acb646, type: 3}
-  - {fileID: 21300000, guid: e584758a2468f2e499d1e49e00f18282, type: 3}
+  - {fileID: 21300000, guid: 9c7ffab91ee0433f967a0e0c5e1026f0, type: 3}
+  - {fileID: 21300000, guid: 78bbc9b0d0a941a58509da67d76e9f35, type: 3}
+  - {fileID: 21300000, guid: 42e05189289747d2a22b5c91c3308ff1, type: 3}
+  - {fileID: 21300000, guid: 83b299f9369245dca1f1709972496e48, type: 3}
