@@ -34,7 +34,7 @@ namespace MapGeneration
         [SerializeField] private float contactRadius = 0.75f;
 
         [Tooltip("Wider one-off radius applied once, when the rock lands.")]
-        [SerializeField] private float impactRadius = 2.5f;
+        [SerializeField] private float impactRadius = 1f;
 
         [SerializeField] private Color telegraphColor = new(1f, 0.7f, 0.1f);
 
@@ -45,14 +45,17 @@ namespace MapGeneration
 
         private IEnumerator Run(int layerIndex, int x, int y)
         {
-            yield return Jiggle();
-
             var mapGen = GameManager.MapGenerationService;
             if (mapGen == null)
             {
                 Destroy(gameObject);
                 yield break;
             }
+
+            // This effect's visual takes over drawing the rock, so the tile's own rock would double
+            // it during the jiggle - leave only the dirt, which then vanishes as the rock drops.
+            mapGen.HideCellForeground(layerIndex, x, y);
+            yield return Jiggle();
 
             // The rock leaves its own cell the instant it starts falling - frees the cell in the
             // map data (so it can't be re-triggered off the same spot) and repaints the tile as

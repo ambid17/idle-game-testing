@@ -166,6 +166,12 @@ namespace MapGeneration
             SyncBoundary(layerIndex, layerIndex + 1);
         }
 
+        public void HideCellForeground(int layerIndex, int x, int y)
+        {
+            if (!tilemapsByLayer.TryGetValue(layerIndex, out var view)) return;
+            view.HideForeground(new Vector2Int(x, y));
+        }
+
         // For fog reveals that spilled into a neighboring layer's chunk (no mined cell of its own here).
         public void NotifyFogRevealed(int layerIndex, IReadOnlyList<Vector2Int> revealedCells)
         {

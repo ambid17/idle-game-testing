@@ -231,6 +231,11 @@ namespace MapGeneration
             oreGlow.RefreshCells(localCoords);
         }
 
+        // Drops just the foreground (e.g. a FallingRock lifting off its dirt while it jiggles); the
+        // next repaint of the cell restores it from the chunk data.
+        public void HideForeground(Vector2Int localCoord) =>
+            foregroundTilemap.SetTile(new Vector3Int(localCoord.x, -localCoord.y, 0), null);
+
         // Dirt, the dirt behind DrawDirtBehind blocks, and the edge-bleed debris in mined cells
         // take the layer's dirt tint so the ground matches its biome; every other block (hazards,
         // structure blocks) paints its own opaque tile at full white.

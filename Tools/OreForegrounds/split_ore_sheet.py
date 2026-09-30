@@ -10,6 +10,8 @@ Usage: python Tools/OreForegrounds/split_ore_sheet.py sheet.png "4 coal" "7 emer
   Names are row-major (top-left, top-right, bottom-left, bottom-right); "-" skips a quadrant.
   --out DIR     output folder (default Assets/Textures/Ores/Foreground)
   --preview P   also save a check sheet: result on magenta | on dirt | on tinted dirt
+  --fit F       crop each quadrant to its keyed object (square, centred) so it spans fraction F of
+                the tile, for sheets where the model drew the objects small
 """
 import os
 import sys
@@ -52,6 +54,20 @@ def quadrant(sheet, index):
     return sheet[y0 + iy:y0 + qh - iy, x0 + ix:x0 + qw - ix]
 
 
+def fit_to_object(rgb, alpha, fill):
+    ys, xs = np.nonzero(alpha > 0.5)
+    cy, cx = (ys.min() + ys.max()) / 2, (xs.min() + xs.max()) / 2
+    half = max(ys.max() - ys.min(), xs.max() - xs.min()) / 2 / fill
+    h, w = alpha.shape
+    # Pad with fully transparent pixels in case the crop window runs past the quadrant.
+    pad = int(np.ceil(half))
+    rgb = np.pad(rgb, ((pad, pad), (pad, pad), (0, 0)))
+    alpha = np.pad(alpha, pad)
+    y0, x0 = int(round(cy - half)) + pad, int(round(cx - half)) + pad
+    size = int(round(2 * half))
+    return rgb[y0:y0 + size, x0:x0 + size], alpha[y0:y0 + size, x0:x0 + size]
+
+
 def to_tile(rgb, alpha):
     # Premultiply so transparent magenta can't bleed into edge colours while resampling.
     premul = np.dstack([rgb * alpha[..., None], alpha * 255]).astype(np.uint8)
@@ -71,13 +87,16 @@ def main():
     args = sys.argv[1:]
     out_dir = 'Assets/Textures/Ores/Foreground'
     preview = None
-    for flag in ('--out', '--preview'):
+    fit = None
+    for flag in ('--out', '--preview', '--fit'):
         if flag in args:
             i = args.index(flag)
             if flag == '--out':
                 out_dir = args[i + 1]
-            else:
+            elif flag == '--preview':
                 preview = args[i + 1]
+            else:
+                fit = float(args[i + 1])
             del args[i:i + 2]
     if len(args) != 5:
         sys.exit(__doc__)
@@ -88,6 +107,8 @@ def main():
         if name == '-':
             continue
         rgb, alpha = key_out(quadrant(sheet, index))
+        if fit:
+            rgb, alpha = fit_to_object(rgb, alpha, fit)
         tile = to_tile(rgb, alpha)
         os.makedirs(out_dir, exist_ok=True)
         Image.fromarray(tile).save(os.path.join(out_dir, f'{name}.png'))

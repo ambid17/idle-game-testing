@@ -380,6 +380,11 @@ namespace MapGeneration
         public void RefreshCellVisual(int layerIndex, int x, int y) =>
             streamingManager.NotifyCellMined(layerIndex, x, y, System.Array.Empty<Vector2Int>());
 
+        // Hides a DrawDirtBehind block's foreground tile while leaving its dirt, for effects that
+        // take over drawing the block (FallingRockHazardEffect's jiggle).
+        public void HideCellForeground(int layerIndex, int x, int y) =>
+            streamingManager.HideCellForeground(layerIndex, x, y);
+
         // Clears a FallingRock's own cell out of the map the instant it starts falling (see
         // FallingRockHazardEffect.Run) - bypasses MineCell/TryMineCell's normal mineable checks
         // (FallingRock is never player/automaton-mineable) since this is the engine removing the

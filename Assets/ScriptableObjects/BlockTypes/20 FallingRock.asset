@@ -17,7 +17,8 @@ MonoBehaviour:
   Category: 2
   CustomBehavior: 2
   Tile: {fileID: 11400000, guid: 20cdf9d7110cd654796413bb677677fe, type: 2}
-  Icon: {fileID: 21300000, guid: 9c01699f25c33e5478d61df96980102a, type: 3}
+  DrawDirtBehind: 1
+  Icon: {fileID: 21300000, guid: 000f8429984e83549a1d0155c553e9ce, type: 3}
   Value: 0
   Weight: 0
   Health: 1
