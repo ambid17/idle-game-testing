@@ -110,6 +110,10 @@ namespace Economy
         // connected Ore cells the free chain can reach.
         public int Mining_AreaLevel => LevelOf(UpgradeEffect.Mining_AreaSize);
 
+        // Excavator (follow-on to "Increase mining size"): how many extra Dirt blocks beyond the
+        // mined one PlayerMining also breaks in the dig direction.
+        public int Mining_ExcavatorDepth => Mathf.RoundToInt(LevelOf(UpgradeEffect.Mining_Excavator) * EffectValuePerLevelOf(UpgradeEffect.Mining_Excavator));
+
         // GameDesignDoc "Lantern capstones > zoom, enhance": additive camera zoom-out, read by
         // CameraZoomController.
         public float Mining_CameraZoomBonus => LevelOf(UpgradeEffect.Mining_CameraZoom) * EffectValuePerLevelOf(UpgradeEffect.Mining_CameraZoom);

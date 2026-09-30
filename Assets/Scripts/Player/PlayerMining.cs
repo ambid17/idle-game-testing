@@ -207,6 +207,37 @@ namespace Player
             digFeedback.Break(mapGenerationService.CellToWorldCenter(layerIndex, x, y), direction, blockType, effectiveHealth, primary: true);
             CollectMinedBlock(blockType, layerIndex, x, y);
             MineAreaBonusCells(layerIndex, x, y, blockType, direction);
+            MineExcavatorCells(layerIndex, x, y, direction);
+        }
+
+        // Excavator upgrade: after any successful dig, keeps breaking Dirt blocks further along
+        // the dig direction, one per level, for free. Stops at the first cell that isn't mineable
+        // Dirt (air, ore, rock, etc.) so it never tunnels through gaps or grabs anything valuable.
+        // Steps in world space so a dig down can cross a layer boundary.
+        private void MineExcavatorCells(int layerIndex, int x, int y, Vector2Int direction)
+        {
+            int depth = upgradeManager.Mining_ExcavatorDepth;
+            if (depth <= 0) return;
+
+            Vector3 step = new Vector3(direction.x, direction.y, 0f) * mapGenerationService.CellSize;
+            Vector3 worldPos = mapGenerationService.CellToWorldCenter(layerIndex, x, y);
+            for (int i = 0; i < depth; i++)
+            {
+                worldPos += step;
+                if (!mapGenerationService.TryWorldToCellInBounds(worldPos, out int cellLayer, out int cellX, out int cellY)) return;
+
+                var block = mapGenerationService.GetBlockTypeAt(cellLayer, cellX, cellY);
+                if (block == null
+                    || block.Category != BlockCategory.Dirt
+                    || block.Id == BlockTypeId.GrassyDirt
+                    || block.Unmineable) return;
+
+                if (!mapGenerationService.MineCell(cellLayer, cellX, cellY, minedByPlayer: true)) return;
+
+                float health = block.Health * mapGenerationService.GetBlockHealthMultiplier(cellLayer);
+                digFeedback.Break(mapGenerationService.CellToWorldCenter(cellLayer, cellX, cellY), direction, block, health, primary: false);
+                CollectMinedBlock(block, cellLayer, cellX, cellY);
+            }
         }
 
         private void CollectMinedBlock(BlockType blockType, int layerIndex, int x, int y)

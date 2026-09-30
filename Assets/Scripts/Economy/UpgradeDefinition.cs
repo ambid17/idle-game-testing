@@ -49,6 +49,9 @@ namespace Economy
         Mining_CameraZoom = 302,
         // Drives UpgradeManager.Mining_InstantMineDirt.
         Mining_DirtInstaMine = 303,
+        // Follow-on to Mining_AreaSize: each level also breaks 1 more Dirt block further along
+        // the dig direction (PlayerMining.MineExcavatorCells).
+        Mining_Excavator = 309,
         Mining_LanternRadius = 304,
         // HUD minimap (UI.MinimapUI): first level unlocks it, further levels widen its view.
         Mining_Minimap = 308,
