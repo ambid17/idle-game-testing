@@ -51,6 +51,9 @@ namespace MapGeneration
         Hardpan = 28,
         // PowerUp - see the PowerUp block comment above.
         Portal = 29,
+        // Structure block (Category.Dirt, mineable but tough) - the masonry of the set-piece
+        // rooms stamped by StructureStampFeature.
+        AncientBrick = 30,
     }
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)

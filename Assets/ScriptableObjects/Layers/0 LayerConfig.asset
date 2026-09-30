@@ -42,7 +42,13 @@ MonoBehaviour:
   EmptyPocketSpreadChance: 0.5
   EmptyPocketSizeMin: 2
   EmptyPocketSizeMax: 5
-  Features: []
+  Features:
+  - {fileID: 11400000, guid: 085bec42858418545b6facb3e47deed7, type: 2}
+  - {fileID: 11400000, guid: ece5d7d2a677396469d3445a56b5e39a, type: 2}
+  - {fileID: 11400000, guid: 38806e5678a34ea438bba323dcc4716a, type: 2}
+  - {fileID: 11400000, guid: 6bc77287cd5a97543a435f1a43533357, type: 2}
+  - {fileID: 11400000, guid: e3d29d11d4018a84682d886aa6a6b514, type: 2}
+  - {fileID: 11400000, guid: 83f1cebf86fa81e4d819b7a9356b78b5, type: 2}
   CritterTable:
   - Critter: {fileID: 11400000, guid: 67252e9f19fff6c43a67c05195a4813a, type: 2}
     Weight: 1

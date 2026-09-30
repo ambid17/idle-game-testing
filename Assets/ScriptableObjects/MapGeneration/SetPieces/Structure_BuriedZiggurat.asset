@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e86b0eea03b60447a0476bec0bc899e, type: 3}
+  m_Name: Structure_BuriedZiggurat
+  m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.StructureDefinition
+  layout: '..._______________...
+
+    .________###________.
+
+    _______#######_______
+
+    _____####_A_####_____
+
+    ___#####O_P_O#####___
+
+    _#######HHHHH#######_'
+  palette:
+  - Symbol: 35
+    Action: 2
+    Block: {fileID: 11400000, guid: c62f9759f99e5c94598565d35bd29f83, type: 2}
+  - Symbol: 72
+    Action: 2
+    Block: {fileID: 11400000, guid: ba94cad00a380864db47ba0cb845734f, type: 2}
+  allowMirror: 1
+  allowRotation: 0
+  clearHazardMargin: 1
+  claimFootprint: 1

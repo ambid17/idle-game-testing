@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3650ab23d7460c04a90866326e601bef, type: 3}
+  m_Name: Feature_LavaForge
+  m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.StructureStampFeature
+  id: setpiece_lava_forge
+  phase: 0
+  placement:
+    MinLayer: 6
+    MaxLayer: -1
+    ChancePerLayer: 0.12
+    CountMin: 1
+    CountMax: 1
+  structure: {fileID: 11400000, guid: 172e5e8b4a0cce949a2d228d527a6040, type: 2}
+  edgeMargin: 2
