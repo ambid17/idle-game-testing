@@ -117,6 +117,7 @@ namespace Player
             if (blockType == null
                 || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
                 || blockType.Id == BlockTypeId.FallingRock
+                || blockType.Unmineable
                 || blockedByFullInventory
                 )
             {
@@ -225,7 +226,8 @@ namespace Player
             if (blockType.Category != BlockCategory.Ore) return;
 
             // Lucky Strike power-up (see PlayerPowerUps): 2 while charges remain, else 1.
-            int amount = playerPowerUps.ConsumeLuckyStrikeMultiplier();
+            // Run modifier (Dark Layer) multiplies on top.
+            int amount = playerPowerUps.ConsumeLuckyStrikeMultiplier() * GameManager.RunModifierService.OreYieldMultiplier(layerIndex);
             GameManager.EventService.Dispatch(new NotificationEvent($"+{amount} {blockType.DisplayName}", NotificationUrgency.Queued, blockType.Icon));
             digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, amount);
 
@@ -234,7 +236,7 @@ namespace Player
             if (playerInventory.IsFull && CanOverflow)
             {
                 var upgrades = UpgradeManager.Instance;
-                double value = blockType.Value * amount * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier;
+                double value = blockType.Value * amount * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier * GameManager.RunModifierService.SellValueMultiplier(blockType.Id);
                 if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
             }
             else

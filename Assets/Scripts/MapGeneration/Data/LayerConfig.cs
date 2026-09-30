@@ -64,6 +64,10 @@ namespace MapGeneration
         [Min(1)] public int EmptyPocketSizeMin = 2;
         [Min(1)] public int EmptyPocketSizeMax = 5;
 
+        [Header("Map features (hand-authored structures/layouts stamped onto this layer - see MapFeatureDefinition)")]
+        [Tooltip("Run on every generation of this layer, each at its own phase and with its own placement rules. Run modifiers can add more on top.")]
+        public List<MapFeatureDefinition> Features = new();
+
         [Header("Critters (spawned by Critters.CritterSpawner inside this layer's empty pockets)")]
         [Tooltip("This layer's critter set - one entry is rolled (by weight) per pocket that passes CritterChancePerPocket.")]
         public List<WeightedCritterEntry> CritterTable = new();

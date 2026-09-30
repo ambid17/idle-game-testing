@@ -364,7 +364,7 @@ namespace Automation
         {
             if (mapGenerationService.MineCell(layer, primaryCell.x, primaryCell.y))
             {
-                CollectMinedBlock(primaryBlockType);
+                CollectMinedBlock(primaryBlockType, layer);
             }
 
             int radiusLevel = upgrades.Automation_AutomatonMiningRadiusBonus;
@@ -378,11 +378,11 @@ namespace Automation
                 if (bonusBlock.Category == BlockCategory.Ore && oreInventory.IsFull) continue;
 
                 if (!mapGenerationService.MineCell(layer, cell.x, cell.y)) continue;
-                CollectMinedBlock(bonusBlock);
+                CollectMinedBlock(bonusBlock, layer);
             }
         }
 
-        private void CollectMinedBlock(BlockType blockType)
+        private void CollectMinedBlock(BlockType blockType, int layer)
         {
             if (blockType == null) return;
             if (blockType.Category == BlockCategory.Artifact)
@@ -391,7 +391,7 @@ namespace Automation
                 return;
             }
             if (blockType.Category != BlockCategory.Ore) return;
-            oreInventory.AddOre(blockType);
+            oreInventory.AddOre(blockType, GameManager.RunModifierService.OreYieldMultiplier(layer));
         }
 
         private void RefreshCurrentCell()

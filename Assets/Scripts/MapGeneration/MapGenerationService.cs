@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Economy;
 using Events;
+using RunModifiers;
 using UnityEngine;
 
 namespace MapGeneration
@@ -93,6 +94,7 @@ namespace MapGeneration
             UpdateBoundaryWalls();
             RebuildSurfaceFloorSegments();
             GameManager.EventService.Dispatch(new GridWidthChangedEvent(World.GridWidth));
+            GameManager.EventService.Dispatch<RunModifierChangedEvent>();
         }
 
         private void CreateBoundaryWalls()
@@ -262,7 +264,7 @@ namespace MapGeneration
 
         private void HandleFogUpdate(int layerIndex, int x, int y, int fogRadiusOverride = -1)
         {
-            int radius = fogRadiusOverride >= 0 ? fogRadiusOverride : GetFogRevealRadius();
+            int radius = fogRadiusOverride >= 0 ? fogRadiusOverride : GetFogRevealRadius(layerIndex);
             var revealedByLayer = World.RevealFog(layerIndex, x, y, radius);
 
             revealedByLayer.TryGetValue(layerIndex, out var revealedInOriginLayer);
@@ -276,12 +278,14 @@ namespace MapGeneration
         }
 
         // GameDesignDoc "Market Upgrades > Mining > Lantern": base radius plus purchased levels,
-        // or the whole chunk width once the "true sight" prestige perk is unlocked.
-        private int GetFogRevealRadius()
+        // or the whole chunk width once the "true sight" prestige perk is unlocked. The run
+        // modifier's Dark Layer shrinks it (never below 1) on its target layer; True Sight still wins.
+        private int GetFogRevealRadius(int layerIndex)
         {
             if (PrestigeUpgradeManager.Instance.Mining_TrueSightUnlocked) return mapGenerationConfig.GridWidth;
             var upgrades = UpgradeManager.Instance;
-            return baseFogRevealRadius + (upgrades != null ? upgrades.Mining_LanternFogRadiusBonus : 0);
+            int radius = baseFogRevealRadius + (upgrades != null ? upgrades.Mining_LanternFogRadiusBonus : 0);
+            return Mathf.Max(1, Mathf.RoundToInt(radius * GameManager.RunModifierService.FogRadiusMultiplier(layerIndex)));
         }
 
         // Inverts ChunkTilemapView's cell->world placement (pos = (x, -y) within a chunk root
@@ -368,7 +372,7 @@ namespace MapGeneration
             return CellLookup.Cell;
         }
 
-        public float GetBlockHealthMultiplier(int layerIndex) => layerConfigProvider.GetConfig(layerIndex).BlockHealth;
+        public float GetBlockHealthMultiplier(int layerIndex) => layerConfigProvider.GetConfig(layerIndex).BlockHealth * GameManager.RunModifierService.BlockHealthMultiplier;
 
         public void RefreshCellVisual(int layerIndex, int x, int y) =>
             streamingManager.NotifyCellMined(layerIndex, x, y, System.Array.Empty<Vector2Int>());
@@ -387,12 +391,14 @@ namespace MapGeneration
             TryTriggerFallingRockAbove(layerIndex, x, y);
         }
 
-        // New seed, all tunnels wiped; grid width upgrade level is left untouched so it carries over.
-        public void PrestigeReset(int newSeed)
+        // New seed and run modifier, all tunnels wiped; grid width upgrade level is left untouched
+        // so it carries over.
+        public void PrestigeReset(int newSeed, RunModifierState runModifier)
         {
-            World.ResetForPrestige(newSeed);
+            World.ResetForPrestige(newSeed, runModifier);
             streamingManager.ClearAll();
             RebuildSurfaceFloorSegments();
+            GameManager.EventService.Dispatch<RunModifierChangedEvent>();
         }
 
         public void ApplyGridWidthUpgrade(int newGridWidth)

@@ -20,6 +20,9 @@ namespace MapGeneration
     {
         public int Seed;
         public int GridWidth;
+        // Must be restored before any chunk regenerates (see MapPersistenceService.Restore). Older
+        // saves deserialize this as an empty (inactive) state.
+        public RunModifiers.RunModifierState RunModifier = new();
         public List<ChunkSaveData> Chunks = new();
     }
 }

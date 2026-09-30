@@ -5,7 +5,8 @@ using UnityEngine;
 namespace MapGeneration
 {
     // Pure C# - no MonoBehaviour/rendering dependency, so it can run headless for offline/idle
-    // miner simulation as well as for the live scene.
+    // miner simulation as well as for the live scene. Every edit after the per-cell roll goes
+    // through MapEditContext (the shared map-editing toolkit also used by MapFeatureDefinitions).
     public static class ChunkGenerator
     {
         // The first layer is a special case: the buildings sit on tiles and we dont want to remove them.
@@ -43,14 +44,13 @@ namespace MapGeneration
         // LayerConfig.OreTable weights - Dirt is never authored in the table itself.
         public const float DirtFillerWeight = 100f;
 
-        private static readonly (int dx, int dy)[] OrthogonalNeighbors = { (1, 0), (-1, 0), (0, 1), (0, -1) };
-
         // layerHeight is the caller-resolved effective height (authored LayerConfig.LayerHeight
         // minus PrestigeUpgradeManager.Mining_LayerSizeReduction) - ChunkGenerator stays pure/headless
         // (see class doc) so it can't read the singleton itself. artifactSpawnRateMultiplier,
         // oreTierOddsBonus, and powerUpSpawnRateBonus are likewise resolved by the caller, as is
-        // nextLayerConfig (the source table for oreTierOddsBonus's deeper-layer ore swaps).
-        public static ChunkData Generate(int worldSeed, int layerIndex, int gridWidth, LayerConfig config, int layerHeight, float artifactSpawnRateMultiplier = 1f, float oreTierOddsBonus = 0f, float powerUpSpawnRateBonus = 0f, LayerConfig nextLayerConfig = null)
+        // nextLayerConfig (the source table for oreTierOddsBonus's deeper-layer ore swaps) and
+        // tweaks (the run modifier's adjustments for this layer - null/None = none).
+        public static ChunkData Generate(int worldSeed, int layerIndex, int gridWidth, LayerConfig config, int layerHeight, float artifactSpawnRateMultiplier = 1f, float oreTierOddsBonus = 0f, float powerUpSpawnRateBonus = 0f, LayerConfig nextLayerConfig = null, LayerGenerationTweaks tweaks = null)
         {
             var chunk = new ChunkData
             {
@@ -67,25 +67,93 @@ namespace MapGeneration
                 return chunk;
             }
 
+            tweaks ??= LayerGenerationTweaks.None;
+            var roll = new CellRollSettings(config, nextLayerConfig, tweaks, oreTierOddsBonus + tweaks.OreTierOddsBonus, powerUpSpawnRateBonus + tweaks.PowerUpSpawnRateBonus);
+
             for (int y = 0; y < layerHeight; y++)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    chunk.Cells[chunk.Index(x, y)] = RollCell(worldSeed, layerIndex, x, y, config, nextLayerConfig, oreTierOddsBonus, powerUpSpawnRateBonus);
+                    chunk.Cells[chunk.Index(x, y)] = RollCell(worldSeed, layerIndex, x, y, roll);
                 }
             }
 
-            GrowVeins(worldSeed, layerIndex, gridWidth, layerHeight, config, nextLayerConfig, chunk);
-            if (layerIndex == GetShopLayerIndex(worldSeed)) CarveShopCave(worldSeed, layerIndex, gridWidth, layerHeight, chunk);
-            PlaceArtifacts(worldSeed, layerIndex, gridWidth, layerHeight, artifactSpawnRateMultiplier, config, chunk);
-            CarveEmptyPockets(worldSeed, layerIndex, gridWidth, layerHeight, config, chunk);
+            var ctx = new MapEditContext(worldSeed, layerIndex, chunk, config, nextLayerConfig);
+            if (!tweaks.DisableVeins) GrowVeins(ctx, tweaks);
+            if (layerIndex == GetShopLayerIndex(worldSeed)) CarveShopCave(ctx);
+            RunFeatures(ctx, MapFeaturePhase.Structures, tweaks);
+            PlaceArtifacts(ctx, artifactSpawnRateMultiplier, tweaks);
+            CarveEmptyPockets(ctx, tweaks);
+            RunFeatures(ctx, MapFeaturePhase.Overlay, tweaks);
             chunk.IsFullyGenerated = true;
             return chunk;
         }
 
-        private static CellData RollCell(int worldSeed, int layerIndex, int x, int y, LayerConfig config, LayerConfig nextLayerConfig, float oreTierOddsBonus, float powerUpSpawnRateBonus)
+        // Authored per-layer features first, then the run modifier's.
+        private static void RunFeatures(MapEditContext ctx, MapFeaturePhase phase, LayerGenerationTweaks tweaks)
+        {
+            foreach (var feature in ctx.Config.Features)
+            {
+                if (feature != null && feature.Phase == phase) feature.Run(ctx);
+            }
+            foreach (var feature in tweaks.Features)
+            {
+                if (feature != null && feature.Phase == phase) feature.Run(ctx);
+            }
+        }
+
+        // Everything RollCell needs, resolved once per chunk rather than per cell.
+        private readonly struct CellRollSettings
+        {
+            public readonly LayerConfig Config;
+            public readonly LayerConfig NextConfig;
+            public readonly List<WeightedBlockEntry> OreTable;
+            public readonly Func<WeightedBlockEntry, float> OreWeightOf;
+            public readonly Func<WeightedBlockEntry, float> HazardWeightOf;
+            public readonly float HazardChance;
+            public readonly float OreTierOddsBonus;
+            public readonly float PowerUpSpawnRateBonus;
+
+            public CellRollSettings(LayerConfig config, LayerConfig nextConfig, LayerGenerationTweaks tweaks, float oreTierOddsBonus, float powerUpSpawnRateBonus)
+            {
+                Config = config;
+                NextConfig = nextConfig;
+                OreTable = tweaks.UseNextLayerOreTable && nextConfig != null ? nextConfig.OreTable : config.OreTable;
+                OreTierOddsBonus = oreTierOddsBonus;
+                PowerUpSpawnRateBonus = powerUpSpawnRateBonus;
+                HazardChance = config.HazardChancePerCell * tweaks.HazardChanceMultiplier;
+
+                // Null weight funcs keep WeightedTables on the exact un-modified path.
+                OreWeightOf = null;
+                if (tweaks.AllOreWeightMultiplier != 1f || tweaks.OreWeightMultipliers != null)
+                {
+                    float all = tweaks.AllOreWeightMultiplier;
+                    var perOre = tweaks.OreWeightMultipliers;
+                    OreWeightOf = entry =>
+                    {
+                        if (!WeightedTables.IsOreEntry(entry)) return entry.Weight;
+                        float weight = entry.Weight * all;
+                        if (perOre != null && perOre.TryGetValue(entry.BlockType.Id, out float multiplier)) weight *= multiplier;
+                        return weight;
+                    };
+                }
+
+                HazardWeightOf = null;
+                if (tweaks.HazardWeightMultipliers != null)
+                {
+                    var perHazard = tweaks.HazardWeightMultipliers;
+                    HazardWeightOf = entry =>
+                        entry.BlockType != null && perHazard.TryGetValue(entry.BlockType.CustomBehavior, out float multiplier)
+                            ? entry.Weight * multiplier
+                            : entry.Weight;
+                }
+            }
+        }
+
+        private static CellData RollCell(int worldSeed, int layerIndex, int x, int y, in CellRollSettings roll)
         {
             var cell = new CellData();
+            var config = roll.Config;
 
             // grassy dirt for first layer blocks that aren't mineable
             if(layerIndex == 0 && y == 0 && firstLayerBlocksToIgnore.Contains(x))
@@ -95,26 +163,26 @@ namespace MapGeneration
             }
 
             // Null means the roll landed on the implicit Dirt filler (see DirtFillerWeight).
-            var picked = PickWeighted(config.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OrePick), DirtFillerWeight);
+            var picked = WeightedTables.PickWeighted(roll.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OrePick), DirtFillerWeight, roll.OreWeightOf);
 
             // GameDesignDoc "Prestige > Progression > increase spawn odds of next tier of blocks":
             // each rolled ore has an oreTierOddsBonus chance to be swapped for an ore from the next
             // layer's table instead (dirt/hazard/power-up rolls are never swapped).
-            if (picked != null && picked.Category == BlockCategory.Ore && nextLayerConfig != null && oreTierOddsBonus > 0f
-                && MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OreTierGate) < oreTierOddsBonus)
+            if (picked != null && picked.Category == BlockCategory.Ore && roll.NextConfig != null && roll.OreTierOddsBonus > 0f
+                && MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OreTierGate) < roll.OreTierOddsBonus)
             {
-                var deeperOre = PickWeightedOre(nextLayerConfig.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OreTierPick));
+                var deeperOre = WeightedTables.PickWeightedOre(roll.NextConfig.OreTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.OreTierPick), roll.OreWeightOf);
                 if (deeperOre != null) picked = deeperOre;
             }
             bool hazardAssigned = false;
 
             // hazards are optional, so we only roll for them if the config has a chance and a table
-            if (config.HazardChancePerCell > 0f && config.HazardTable.Count > 0)
+            if (roll.HazardChance > 0f && config.HazardTable.Count > 0)
             {
                 float gate = MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.HazardGate);
-                if (gate < config.HazardChancePerCell)
+                if (gate < roll.HazardChance)
                 {
-                    var hazard = PickWeighted(config.HazardTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.HazardPick));
+                    var hazard = WeightedTables.PickWeighted(config.HazardTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.HazardPick), 0f, roll.HazardWeightOf);
                     if (hazard != null) { picked = hazard; hazardAssigned = true; }
                 }
             }
@@ -125,10 +193,10 @@ namespace MapGeneration
             if (!hazardAssigned && config.PowerUpChancePerCell > 0f && config.PowerUpTable.Count > 0)
             {
                 float gate = MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.PowerUpGate);
-                float effectiveChance = Mathf.Clamp01(config.PowerUpChancePerCell * (1f + powerUpSpawnRateBonus));
+                float effectiveChance = Mathf.Clamp01(config.PowerUpChancePerCell * (1f + roll.PowerUpSpawnRateBonus));
                 if (gate < effectiveChance)
                 {
-                    var powerUp = PickWeighted(config.PowerUpTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.PowerUpPick));
+                    var powerUp = WeightedTables.PickWeighted(config.PowerUpTable, MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.PowerUpPick));
                     if (powerUp != null) picked = powerUp;
                 }
             }
@@ -144,20 +212,23 @@ namespace MapGeneration
         // (so a guaranteed artifact can still land on/overwrite a vein cell, matching how it already
         // overwrites plain ore). Iterates in a fixed row-major order so results stay deterministic
         // for a given worldSeed regardless of how/when this is called.
-        private static void GrowVeins(int worldSeed, int layerIndex, int gridWidth, int layerHeight, LayerConfig config, LayerConfig nextLayerConfig, ChunkData chunk)
+        private static void GrowVeins(MapEditContext ctx, LayerGenerationTweaks tweaks)
         {
-            for (int y = 0; y < layerHeight; y++)
+            var config = ctx.Config;
+            var nextLayerConfig = ctx.NextConfig;
+            for (int y = 0; y < ctx.Height; y++)
             {
-                for (int x = 0; x < gridWidth; x++)
+                for (int x = 0; x < ctx.Width; x++)
                 {
                     // Falls back to the next layer's table so ores swapped in by oreTierOddsBonus
-                    // still vein using their own authored vein settings.
-                    byte blockTypeId = chunk.Cells[chunk.Index(x, y)].BlockTypeId;
+                    // (or a whole layer rolled from the next table) still vein using their own
+                    // authored vein settings.
+                    byte blockTypeId = ctx.GetBlock(x, y);
                     var entry = FindOreEntry(config.OreTable, blockTypeId)
                         ?? (nextLayerConfig != null ? FindOreEntry(nextLayerConfig.OreTable, blockTypeId) : null);
                     if (entry == null || entry.BlockType.Category != BlockCategory.Ore) continue;
 
-                    GrowVein(worldSeed, layerIndex, gridWidth, layerHeight, x, y, entry, chunk);
+                    GrowVein(ctx, x, y, entry, tweaks);
                 }
             }
         }
@@ -171,128 +242,74 @@ namespace MapGeneration
             return null;
         }
 
-        // Random-walk flood fill from the seed cell: repeatedly pulls a random still-Dirt neighbor
-        // of the growing vein and converts it, until it hits the target size or runs out of Dirt to
-        // spread into (e.g. boxed in by hazards/other ores/the grid edge).
-        private static void GrowVein(int worldSeed, int layerIndex, int gridWidth, int layerHeight, int seedX, int seedY, WeightedBlockEntry entry, ChunkData chunk)
+        // Random-walk flood fill (MapEditContext.GrowBlob) from the seed cell into still-Dirt
+        // neighbors, until it hits the target size or runs out of Dirt to spread into (e.g. boxed
+        // in by hazards/other ores/the grid edge).
+        private static void GrowVein(MapEditContext ctx, int seedX, int seedY, WeightedBlockEntry entry, LayerGenerationTweaks tweaks)
         {
-            int sizeRange = Mathf.Max(0, entry.VeinSizeMax - entry.VeinSizeMin);
-            float sizeRoll = MapRng.Value01(worldSeed, layerIndex, seedX, seedY, (int)Salt.VeinSize);
-            int targetSize = entry.VeinSizeMin + Mathf.Min(sizeRange, Mathf.FloorToInt(sizeRoll * (sizeRange + 1)));
+            float sizeRoll = ctx.Value01(seedX, seedY, (int)Salt.VeinSize);
+            int targetSize = MapEditContext.RollRange(sizeRoll, entry.VeinSizeMin, entry.VeinSizeMax);
+
+            float sizeMultiplier = tweaks.VeinSizeMultiplier;
+            if (tweaks.OreVeinSizeMultipliers != null && tweaks.OreVeinSizeMultipliers.TryGetValue(entry.BlockType.Id, out float oreMultiplier)) sizeMultiplier *= oreMultiplier;
+            if (sizeMultiplier != 1f) targetSize = Mathf.Max(1, Mathf.RoundToInt(targetSize * sizeMultiplier));
             if (targetSize <= 1) return;
 
-            byte dirtId = (byte)BlockTypeId.Dirt;
             byte targetId = (byte)entry.BlockType.Id;
-
-            var frontier = new List<(int x, int y)>();
-            AddDirtNeighbors(gridWidth, layerHeight, seedX, seedY, chunk, dirtId, frontier);
-
-            int currentSize = 1;
-            int attempt = 0;
-            while (currentSize < targetSize && frontier.Count > 0)
-            {
-                float pickRoll = MapRng.Value01(worldSeed, layerIndex, seedX, seedY, (int)Salt.VeinSpread + attempt);
-                int pickIndex = Mathf.Min(frontier.Count - 1, Mathf.FloorToInt(pickRoll * frontier.Count));
-                var (fx, fy) = frontier[pickIndex];
-                frontier.RemoveAt(pickIndex);
-                attempt++;
-
-                int cellIndex = chunk.Index(fx, fy);
-                if (!IsUnclaimedDirt(chunk.Cells[cellIndex], dirtId)) continue; // claimed by an overlapping vein already
-
-                float spreadRoll = MapRng.Value01(worldSeed, layerIndex, fx, fy, (int)Salt.VeinSpread);
-                if (spreadRoll > entry.VeinSpreadChance) continue;
-
-                chunk.Cells[cellIndex].BlockTypeId = targetId;
-                currentSize++;
-                AddDirtNeighbors(gridWidth, layerHeight, fx, fy, chunk, dirtId, frontier);
-            }
+            ctx.GrowBlob(seedX, seedY, targetSize, entry.VeinSpreadChance, (int)Salt.VeinSpread, CellFilters.UnclaimedDirt,
+                (x, y) => ctx.SetBlock(x, y, targetId));
         }
 
-        // A cell is fair game for a vein/pocket to spread into only while it's still plain,
-        // unmined Dirt - the Mined check matters for CarveEmptyPockets (which runs after ore
-        // veins/artifacts, so BlockTypeId alone can't tell an untouched Dirt cell apart from one
-        // an earlier, overlapping pocket already carved out) and is a no-op for GrowVein, since
-        // nothing is ever Mined this early in generation.
-        private static bool IsUnclaimedDirt(CellData cell, byte dirtId) => cell.BlockTypeId == dirtId && !cell.Mined;
-
-        private static void AddDirtNeighbors(int gridWidth, int layerHeight, int x, int y, ChunkData chunk, byte dirtId, List<(int x, int y)> frontier)
+        // Some of whatever Dirt is left over after ore veins, structures and artifacts have claimed
+        // theirs seeds a pre-carved empty pocket, grown with the same GrowBlob random walk as veins
+        // but flipping Mined instead of swapping BlockTypeId - breaks up long stretches of uniform
+        // dirt without handing out free ore. Pockets stay behind fog until the player reveals them
+        // normally (see MineWorld.RevealFog), so they read as a hidden cavern opening up rather than
+        // an obvious freebie. Runs after artifacts so it only ever eats into leftover Dirt, never an
+        // ore vein/hazard/power-up/artifact cell or a claimed structure - those all fail
+        // CellFilters.UnclaimedDirt.
+        private static void CarveEmptyPockets(MapEditContext ctx, LayerGenerationTweaks tweaks)
         {
-            foreach (var (dx, dy) in OrthogonalNeighbors)
+            var config = ctx.Config;
+            float chance = config.EmptyPocketChancePerCell * tweaks.EmptyPocketChanceMultiplier;
+            if (chance <= 0f) return;
+
+            int sizeMin = config.EmptyPocketSizeMin;
+            int sizeMax = config.EmptyPocketSizeMax;
+            if (tweaks.EmptyPocketSizeMultiplier != 1f)
             {
-                int nx = x + dx, ny = y + dy;
-                if (nx < 0 || nx >= gridWidth || ny < 0 || ny >= layerHeight) continue;
-                if (IsUnclaimedDirt(chunk.Cells[chunk.Index(nx, ny)], dirtId)) frontier.Add((nx, ny));
+                sizeMin = Mathf.Max(1, Mathf.RoundToInt(sizeMin * tweaks.EmptyPocketSizeMultiplier));
+                sizeMax = Mathf.Max(sizeMin, Mathf.RoundToInt(sizeMax * tweaks.EmptyPocketSizeMultiplier));
             }
-        }
 
-        // Fourth pass: some of whatever Dirt is left over after ore veins and artifacts have
-        // claimed theirs seeds a pre-carved empty pocket, grown with the exact same random-walk
-        // flood-fill as GrowVein but flipping Mined instead of swapping BlockTypeId - breaks up
-        // long stretches of uniform dirt without handing out free ore. Pockets stay behind fog
-        // until the player reveals them normally (see MineWorld.RevealFog), so they read as a
-        // hidden cavern opening up rather than an obvious freebie. Runs last so it only ever eats
-        // into leftover Dirt, never an ore vein/hazard/power-up/artifact cell - those all fail the
-        // BlockTypeId == dirtId check both here and in AddDirtNeighbors.
-        private static void CarveEmptyPockets(int worldSeed, int layerIndex, int gridWidth, int layerHeight, LayerConfig config, ChunkData chunk)
-        {
-            if (config.EmptyPocketChancePerCell <= 0f) return;
-
-            byte dirtId = (byte)BlockTypeId.Dirt;
-
-            for (int y = 0; y < layerHeight; y++)
+            for (int y = 0; y < ctx.Height; y++)
             {
-                for (int x = 0; x < gridWidth; x++)
+                for (int x = 0; x < ctx.Width; x++)
                 {
-                    int index = chunk.Index(x, y);
-                    if (!IsUnclaimedDirt(chunk.Cells[index], dirtId)) continue;
+                    if (!CellFilters.UnclaimedDirt(ctx, x, y)) continue;
 
-                    float gate = MapRng.Value01(worldSeed, layerIndex, x, y, (int)Salt.EmptyPocketGate);
-                    if (gate >= config.EmptyPocketChancePerCell) continue;
+                    float gate = ctx.Value01(x, y, (int)Salt.EmptyPocketGate);
+                    if (gate >= chance) continue;
 
-                    CarveEmptyPocket(worldSeed, layerIndex, gridWidth, layerHeight, x, y, config, chunk, dirtId);
+                    CarveEmptyPocket(ctx, x, y, sizeMin, sizeMax, config.EmptyPocketSpreadChance);
                 }
             }
         }
 
-        private static void CarveEmptyPocket(int worldSeed, int layerIndex, int gridWidth, int layerHeight, int seedX, int seedY, LayerConfig config, ChunkData chunk, byte dirtId)
+        private static void CarveEmptyPocket(MapEditContext ctx, int seedX, int seedY, int sizeMin, int sizeMax, float spreadChance)
         {
-            int seedIndex = chunk.Index(seedX, seedY);
-            if (!IsUnclaimedDirt(chunk.Cells[seedIndex], dirtId)) return; // claimed by an earlier, overlapping pocket already
+            float sizeRoll = ctx.Value01(seedX, seedY, (int)Salt.EmptyPocketSize);
+            int targetSize = MapEditContext.RollRange(sizeRoll, sizeMin, sizeMax);
 
-            int sizeRange = Mathf.Max(0, config.EmptyPocketSizeMax - config.EmptyPocketSizeMin);
-            float sizeRoll = MapRng.Value01(worldSeed, layerIndex, seedX, seedY, (int)Salt.EmptyPocketSize);
-            int targetSize = config.EmptyPocketSizeMin + Mathf.Min(sizeRange, Mathf.FloorToInt(sizeRoll * (sizeRange + 1)));
-
-            chunk.Cells[seedIndex].Mined = true;
+            ctx.Carve(seedX, seedY);
             var pocketCells = new List<Vector2Int> { new(seedX, seedY) };
-            chunk.EmptyPockets.Add(pocketCells);
-            if (targetSize <= 1) return;
+            ctx.Chunk.EmptyPockets.Add(pocketCells);
 
-            var frontier = new List<(int x, int y)>();
-            AddDirtNeighbors(gridWidth, layerHeight, seedX, seedY, chunk, dirtId, frontier);
-
-            int currentSize = 1;
-            int attempt = 0;
-            while (currentSize < targetSize && frontier.Count > 0)
+            ctx.GrowBlob(seedX, seedY, targetSize, spreadChance, (int)Salt.EmptyPocketSpread, CellFilters.UnclaimedDirt, (x, y) =>
             {
-                float pickRoll = MapRng.Value01(worldSeed, layerIndex, seedX, seedY, (int)Salt.EmptyPocketSpread + attempt);
-                int pickIndex = Mathf.Min(frontier.Count - 1, Mathf.FloorToInt(pickRoll * frontier.Count));
-                var (fx, fy) = frontier[pickIndex];
-                frontier.RemoveAt(pickIndex);
-                attempt++;
-
-                int cellIndex = chunk.Index(fx, fy);
-                if (!IsUnclaimedDirt(chunk.Cells[cellIndex], dirtId)) continue; // claimed by an overlapping pocket already
-
-                float spreadRoll = MapRng.Value01(worldSeed, layerIndex, fx, fy, (int)Salt.EmptyPocketSpread);
-                if (spreadRoll > config.EmptyPocketSpreadChance) continue;
-
-                chunk.Cells[cellIndex].Mined = true;
-                pocketCells.Add(new Vector2Int(fx, fy));
-                currentSize++;
-                AddDirtNeighbors(gridWidth, layerHeight, fx, fy, chunk, dirtId, frontier);
-            }
+                ctx.Carve(x, y);
+                pocketCells.Add(new Vector2Int(x, y));
+            });
         }
 
         // Which layer hosts the Critter Shop for this seed - a pure function of the seed so
@@ -307,10 +324,13 @@ namespace MapGeneration
         // ShopCaveHeight room (top corners rounded off) floored with unmineable GrassyDirt so the
         // building can never be undermined, with any hazard in the surrounding ring swapped for
         // Dirt so the shopkeeper's doorstep can't blow up or cave in. Runs after veins (so it cuts
-        // cleanly through them) and before artifacts/pockets (PlaceArtifact rerolls off mined
-        // cells; pockets only ever eat unmined Dirt). Stays behind fog like any pocket until found.
-        private static void CarveShopCave(int worldSeed, int layerIndex, int gridWidth, int layerHeight, ChunkData chunk)
+        // cleanly through them) and before structures/artifacts/pockets, claiming the room and its
+        // floor so none of those land inside it. Stays behind fog like any pocket until found.
+        private static void CarveShopCave(MapEditContext ctx)
         {
+            int layerIndex = ctx.LayerIndex;
+            int gridWidth = ctx.Width;
+            int layerHeight = ctx.Height;
             int caveHeight = Mathf.Min(ShopCaveHeight, layerHeight - ShopCaveMargin * 2 - 1);
             int caveWidth = Mathf.Min(ShopCaveWidth, gridWidth - ShopCaveMargin * 2);
             if (caveHeight < 2 || caveWidth < 3)
@@ -319,132 +339,66 @@ namespace MapGeneration
                 return;
             }
 
-            var rng = MapRng.CreateLayerRandom(worldSeed, layerIndex, (int)Salt.ShopCavePosition);
+            var rng = ctx.CreateRandom((int)Salt.ShopCavePosition);
             int x0 = rng.Next(ShopCaveMargin, gridWidth - ShopCaveMargin - caveWidth + 1);
             // The floor row (y0 + caveHeight) must also fit inside the layer.
             int y0 = rng.Next(ShopCaveMargin, layerHeight - ShopCaveMargin - caveHeight);
             var cave = new RectInt(x0, y0, caveWidth, caveHeight);
 
-            byte dirtId = (byte)BlockTypeId.Dirt;
-            for (int y = cave.yMin - 1; y <= cave.yMax; y++)
+            ctx.ClearHazards(cave, 1);
+
+            var floor = new RectInt(cave.xMin, cave.yMax, cave.width, 1);
+            ctx.FillRect(floor, null, (x, y) =>
             {
-                for (int x = cave.xMin - 1; x <= cave.xMax; x++)
-                {
-                    if (x < 0 || x >= gridWidth || y < 0 || y >= layerHeight) continue;
-                    int index = chunk.Index(x, y);
+                ctx.SetBlock(x, y, BlockTypeId.GrassyDirt);
+                ctx.Claim(x, y);
+            });
+            ctx.FillRect(cave, null, (x, y) =>
+            {
+                bool isRoundedCorner = y == cave.yMin && (x == cave.xMin || x == cave.xMax - 1);
+                if (isRoundedCorner) return;
+                ctx.Carve(x, y);
+                ctx.Claim(x, y);
+            });
 
-                    bool isFloor = y == cave.yMax && x >= cave.xMin && x < cave.xMax;
-                    bool isRoundedCorner = y == cave.yMin && (x == cave.xMin || x == cave.xMax - 1);
-                    bool isInterior = cave.Contains(new Vector2Int(x, y)) && !isRoundedCorner;
-
-                    if (isFloor)
-                    {
-                        chunk.Cells[index].BlockTypeId = (byte)BlockTypeId.GrassyDirt;
-                    }
-                    else if (isInterior)
-                    {
-                        chunk.Cells[index].BlockTypeId = dirtId;
-                        chunk.Cells[index].Mined = true;
-                    }
-                    else if (IsHazardId(chunk.Cells[index].BlockTypeId))
-                    {
-                        chunk.Cells[index].BlockTypeId = dirtId;
-                    }
-                }
-            }
-
-            chunk.ShopCave = cave;
+            ctx.Chunk.ShopCave = cave;
         }
 
-        private static bool IsHazardId(byte blockTypeId) =>
-            blockTypeId == (byte)BlockTypeId.Explosive || blockTypeId == (byte)BlockTypeId.FallingRock
-            || blockTypeId == (byte)BlockTypeId.GasPocket || blockTypeId == (byte)BlockTypeId.Lava;
-
-        // 1 artifact is guaranteed per layer; each placement then has a repeating
-        // ArtifactBonusChance to place one more, so bonus count follows a geometric distribution
-        // (roll again after every success, stop on the first failure). GameDesignDoc
+        // 1 artifact is guaranteed per layer (plus any the run modifier adds); each placement then
+        // has a repeating ArtifactBonusChance to place one more, so bonus count follows a geometric
+        // distribution (roll again after every success, stop on the first failure). GameDesignDoc
         // "Prestige > Prestige > increase artifact spawn rate" scales the bonus-chance roll.
-        private static void PlaceArtifacts(int worldSeed, int layerIndex, int gridWidth, int layerHeight, float spawnRateMultiplier, LayerConfig config, ChunkData chunk)
+        private static void PlaceArtifacts(MapEditContext ctx, float spawnRateMultiplier, LayerGenerationTweaks tweaks)
         {
-            var rng = MapRng.CreateLayerRandom(worldSeed, layerIndex, (int)Salt.ArtifactPlacement);
+            var rng = ctx.CreateRandom((int)Salt.ArtifactPlacement);
 
-            PlaceArtifact(rng, gridWidth, layerHeight, chunk);
-            float bonusChance = Mathf.Clamp01(config.ArtifactBonusChance * spawnRateMultiplier);
+            PlaceArtifact(ctx, rng);
+            for (int i = 0; i < tweaks.ExtraGuaranteedArtifacts; i++) PlaceArtifact(ctx, rng);
+
+            float bonusChance = Mathf.Clamp01(ctx.Config.ArtifactBonusChance * spawnRateMultiplier * tweaks.ArtifactBonusChanceMultiplier);
             while (rng.NextDouble() < bonusChance)
             {
-                PlaceArtifact(rng, gridWidth, layerHeight, chunk);
+                PlaceArtifact(ctx, rng);
             }
         }
 
-        // Rerolls off already-mined cells (only the Critter Shop cave exists this early) so an
-        // artifact is never placed where it would be invisible and unminable. Layers without a
-        // cave never reroll, so their rng stream - and existing saves' artifact spots - are unchanged.
+        // Rerolls off already-mined and claimed cells (the Critter Shop cave, carved structures) so
+        // an artifact is never placed where it would be invisible, unminable, or inside a
+        // structure. Layers without either never reroll, so their rng stream - and existing saves'
+        // artifact spots - are unchanged.
         private const int ArtifactPlacementAttempts = 20;
 
-        private static void PlaceArtifact(System.Random rng, int gridWidth, int layerHeight, ChunkData chunk)
+        private static void PlaceArtifact(MapEditContext ctx, System.Random rng)
         {
             for (int attempt = 0; attempt < ArtifactPlacementAttempts; attempt++)
             {
-                int x = rng.Next(0, gridWidth);
-                int y = rng.Next(0, layerHeight);
-                int index = chunk.Index(x, y);
-                if (chunk.Cells[index].Mined || chunk.Cells[index].BlockTypeId == (byte)BlockTypeId.GrassyDirt) continue;
+                int x = rng.Next(0, ctx.Width);
+                int y = rng.Next(0, ctx.Height);
+                if (ctx.IsMined(x, y) || ctx.IsClaimed(x, y) || ctx.GetBlock(x, y) == (byte)BlockTypeId.GrassyDirt) continue;
 
-                chunk.Cells[index].BlockTypeId = (byte)BlockTypeId.Artifact;
+                ctx.SetBlock(x, y, BlockTypeId.Artifact);
                 return;
             }
         }
-
-        // fillerWeight is an implicit extra entry rolled ahead of the table's own entries; landing
-        // on it returns null (the ore roll uses it for Dirt, see DirtFillerWeight). Rolled first so
-        // layers that used to author Dirt as their first entry keep the same roll -> block mapping.
-        private static BlockType PickWeighted(IReadOnlyList<WeightedBlockEntry> table, float roll01, float fillerWeight = 0f)
-        {
-            float total = fillerWeight;
-            for (int i = 0; i < table.Count; i++) total += table[i].Weight;
-            if (total <= 0f)
-            {
-                Debug.LogWarning("Weighted table has no weight, returning null");
-                return null;
-            }
-
-            float target = roll01 * total;
-            float cumulative = fillerWeight;
-            if (fillerWeight > 0f && target <= cumulative) return null;
-            for (int i = 0; i < table.Count; i++)
-            {
-                cumulative += table[i].Weight;
-                if (target <= cumulative) return table[i].BlockType;
-            }
-
-            return table.Count > 0 ? table[^1].BlockType : null;
-        }
-
-        // Same weighted roll as PickWeighted, restricted to Ore-category entries - used for the
-        // ore-tier upgrade's deeper-layer swap. Null if the table has no ore.
-        private static BlockType PickWeightedOre(IReadOnlyList<WeightedBlockEntry> table, float roll01)
-        {
-            float total = 0f;
-            for (int i = 0; i < table.Count; i++)
-            {
-                if (IsOreEntry(table[i])) total += table[i].Weight;
-            }
-            if (total <= 0f) return null;
-
-            float target = roll01 * total;
-            float cumulative = 0f;
-            BlockType last = null;
-            for (int i = 0; i < table.Count; i++)
-            {
-                if (!IsOreEntry(table[i])) continue;
-                cumulative += table[i].Weight;
-                last = table[i].BlockType;
-                if (target <= cumulative) return last;
-            }
-
-            return last;
-        }
-
-        private static bool IsOreEntry(WeightedBlockEntry entry) => entry.BlockType != null && entry.BlockType.Category == BlockCategory.Ore;
     }
 }

@@ -9,6 +9,7 @@ using MapGeneration;
 using Persistence;
 using Platform;
 using Processing;
+using RunModifiers;
 using Settings;
 using Tutorial;
 using UnityEngine;
@@ -33,6 +34,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private CritterDatabase _critterDatabase;
     [SerializeField] private AtmosphereConfig _atmosphereConfig;
     [SerializeField] private CameraShake _cameraShake;
+    [SerializeField] private RunModifierService _runModifierService;
+    [SerializeField] private RunModifierDatabase _runModifierDatabase;
     // GameControls.inputactions - also the scene EventSystem's InputSystemUIInputModule asset,
     // so KeybindService's binding overrides and the UI share one set of actions.
     [SerializeField] private InputActionAsset _inputActions;
@@ -54,6 +57,8 @@ public class GameManager : Singleton<GameManager>
     public static CritterDatabase CritterDatabase => Instance._critterDatabase;
     public static AtmosphereConfig AtmosphereConfig => Instance._atmosphereConfig;
     public static CameraShake CameraShake => Instance._cameraShake;
+    public static RunModifierService RunModifierService => Instance._runModifierService;
+    public static RunModifierDatabase RunModifierDatabase => Instance._runModifierDatabase;
 
     // Deliberately static rather than routed through Instance: many listeners remove themselves
     // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
@@ -149,6 +154,14 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.LogError("CameraShake is not assigned in GameManager.");
         }
+        if (_runModifierService == null)
+        {
+            Debug.LogError("RunModifierService is not assigned in GameManager.");
+        }
+        if (_runModifierDatabase == null)
+        {
+            Debug.LogError("RunModifierDatabase is not assigned in GameManager.");
+        }
         if (_inputActions == null)
         {
             Debug.LogError("InputActions is not assigned in GameManager.");
@@ -164,6 +177,7 @@ public class GameManager : Singleton<GameManager>
         KeyIconDatabase.Validate();
         CritterDatabase.Validate();
         AtmosphereConfig.Validate();
+        RunModifierDatabase.Validate();
     }
 
     // Runs after every scene object's Awake(), so Wallet/UpgradeManager/AutomationSettings/

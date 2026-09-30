@@ -31,6 +31,7 @@ namespace UI
         [Header("Prestige trigger")]
         [SerializeField] private Button prestigeNowButton;
         [SerializeField] private MuseumPrestigeConfirmUI prestigeConfirm;
+        [SerializeField] private RunModifierPickUI runModifierPick;
 
         private void Start()
         {
@@ -95,6 +96,7 @@ namespace UI
             rendererRoot.SetActive(false);
             if (skillTreePanel != null) skillTreePanel.Close();
             if (prestigeConfirm != null) prestigeConfirm.Close();
+            if (runModifierPick != null) runModifierPick.Close();
         }
 
         private void OnPrestigePurchaseRequested(PrestigePurchaseRequestedEvent evt) => PrestigeUpgradeManager.Instance.TryPurchase(evt.Definition);
@@ -108,9 +110,12 @@ namespace UI
             if (prestigeConfirm != null) prestigeConfirm.Show();
         }
 
-        // PrestigeManager.ExecutePrestige commits any queued perk purchases before touching anything
-        // else - see its comment for why that ordering matters for map-gen perks.
-        private void ConfirmPrestige() => PrestigeManager.Instance.ExecutePrestige();
+        // Confirmed - next the player picks the new run's modifier; RunModifierPickUI then calls
+        // PrestigeManager.ExecutePrestige with it.
+        private void ConfirmPrestige()
+        {
+            if (runModifierPick != null) runModifierPick.Show();
+        }
 
         private void OnPrestigeCompleted(PrestigeCompletedEvent evt) => Close();
 

@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 085c4ab2983edc04e9ad9247e1566b43, type: 3}
+  m_Name: Blessing_AncientTunnels
+  m_EditorClassIdentifier: Assembly-CSharp::RunModifiers.RunModifierDefinition
+  Id: ancient_tunnels
+  DisplayName: Ancient Tunnels
+  Description: 2-3 ancient shafts wind down through several layers - a fast way deep.
+  Kind: 0
+  Family: 0
+  OfferWeight: 1
+  UsesOreA: 0
+  UsesOreB: 0
+  UsesTargetLayer: 0
+  OrePoolMinLayer: 1
+  OrePoolMaxLayer: 6
+  TargetLayerMin: 2
+  TargetLayerMax: 6
+  AllOreWeightMultiplier: 1
+  OreAWeightMultiplier: 1
+  OreBWeightMultiplier: 1
+  VeinSizeMultiplier: 1
+  OreAVeinSizeMultiplier: 1
+  DisableVeins: 0
+  OreTierOddsBonus: 0
+  HazardChanceMultiplier: 1
+  HazardWeightMultipliers: []
+  PowerUpSpawnRateBonus: 0
+  ExtraGuaranteedArtifacts: 0
+  ArtifactBonusChanceMultiplier: 1
+  EmptyPocketChanceMultiplier: 1
+  EmptyPocketSizeMultiplier: 1
+  Features:
+  - {fileID: 11400000, guid: 1345fbc1416980d46874bf7afe9dcdb7, type: 2}
+  TargetLayerUsesNextOreTable: 0
+  TargetLayerOreWeightMultiplier: 1
+  TargetLayerFeatures: []
+  BlockHealthMultiplier: 1
+  TargetLayerFogRadiusMultiplier: 1
+  TargetLayerOreYieldMultiplier: 1
+  SellValueMultiplier: 1
+  OreASellMultiplier: 1
+  OreBSellMultiplier: 1
+  IsContract: 0
+  ContractAmountMin: 100
+  ContractAmountMax: 200
+  ContractRewardArtifacts: 5

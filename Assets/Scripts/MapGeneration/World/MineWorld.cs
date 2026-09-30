@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Economy;
+using RunModifiers;
 using UnityEngine;
 
 namespace MapGeneration
@@ -10,15 +11,19 @@ namespace MapGeneration
     {
         public int Seed { get; private set; }
         public int GridWidth { get; private set; }
+        // The run's pick-1-of-3 modifier (see RunModifiers) - part of the world's identity like the
+        // seed, since it changes what every chunk generates. Never null; inactive when empty.
+        public RunModifierState RunModifier { get; private set; }
 
         private LayerConfigProvider configProvider => GameManager.LayerConfigProvider;
         private BlockTypeDatabase blockTypes => GameManager.BlockTypeDatabase;
         private readonly Dictionary<int, ChunkData> chunksByLayer = new();
 
-        public MineWorld(int seed, int gridWidth)
+        public MineWorld(int seed, int gridWidth, RunModifierState runModifier = null)
         {
             Seed = seed;
             GridWidth = gridWidth;
+            RunModifier = runModifier ?? new RunModifierState();
         }
 
         public ChunkData GetOrGenerateChunk(int layerIndex)
@@ -33,7 +38,9 @@ namespace MapGeneration
             float oreTierOddsBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Economy_OreTierOddsBonus : 0f;
             float powerUpSpawnRateBonus = PrestigeUpgradeManager.Instance != null ? PrestigeUpgradeManager.Instance.Economy_PowerUpSpawnRateBonus : 0f;
             var nextLayerConfig = configProvider != null ? configProvider.GetConfig(layerIndex + 1) : null;
-            chunk = ChunkGenerator.Generate(Seed, layerIndex, GridWidth, config, layerHeight, artifactSpawnRateMultiplier, oreTierOddsBonus, powerUpSpawnRateBonus, nextLayerConfig);
+            var runModifier = GameManager.RunModifierDatabase != null ? GameManager.RunModifierDatabase.Get(RunModifier.ModifierId) : null;
+            var tweaks = RunModifierResolver.BuildTweaks(runModifier, RunModifier, layerIndex);
+            chunk = ChunkGenerator.Generate(Seed, layerIndex, GridWidth, config, layerHeight, artifactSpawnRateMultiplier, oreTierOddsBonus, powerUpSpawnRateBonus, nextLayerConfig, tweaks);
             chunksByLayer[layerIndex] = chunk;
             return chunk;
         }
@@ -67,6 +74,11 @@ namespace MapGeneration
                 // Never directly mineable - it only comes loose once the block beneath it is
                 // mined out (see MapGenerationService.MineCell's "check above" hook and
                 // MapGeneration.FallingRockHazardEffect).
+                return false;
+            }
+            if (blockTypes != null && blockTypes.Get(cell.BlockTypeId) is { Unmineable: true })
+            {
+                // Structure blocks (e.g. Hardpan) - see BlockType.Unmineable.
                 return false;
             }
             if (!minedByPlayer && IsPowerUp(cell.BlockTypeId))
@@ -192,9 +204,10 @@ namespace MapGeneration
         // Grid-width prestige upgrade: set independently of ResetForPrestige so it survives resets.
         public void SetGridWidth(int newWidth) => GridWidth = newWidth;
 
-        public void ResetForPrestige(int newSeed)
+        public void ResetForPrestige(int newSeed, RunModifierState runModifier)
         {
             Seed = newSeed;
+            RunModifier = runModifier ?? new RunModifierState();
             chunksByLayer.Clear();
         }
     }

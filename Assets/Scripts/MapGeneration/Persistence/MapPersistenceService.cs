@@ -13,6 +13,7 @@ namespace MapGeneration
             {
                 Seed = world.Seed,
                 GridWidth = world.GridWidth,
+                RunModifier = world.RunModifier,
             };
 
             foreach (var chunk in world.GetLoadedChunks())
@@ -25,7 +26,7 @@ namespace MapGeneration
 
         public static MineWorld Restore(MapSaveData save)
         {
-            var world = new MineWorld(save.Seed, save.GridWidth);
+            var world = new MineWorld(save.Seed, save.GridWidth, save.RunModifier);
 
             foreach (var chunkSave in save.Chunks)
             {

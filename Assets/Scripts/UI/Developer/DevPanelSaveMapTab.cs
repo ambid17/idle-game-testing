@@ -42,7 +42,7 @@ namespace UI
             int seed = seedInput != null && int.TryParse(seedInput.text, out var parsed)
                 ? parsed
                 : Random.Range(int.MinValue, int.MaxValue);
-            GameManager.MapGenerationService.PrestigeReset(seed);
+            GameManager.MapGenerationService.PrestigeReset(seed, GameManager.MapGenerationService.World.RunModifier);
             // ensure player doesn't get stuck under the map
             GameManager.EventService.Dispatch<PlayerRevivedEvent>();
         }

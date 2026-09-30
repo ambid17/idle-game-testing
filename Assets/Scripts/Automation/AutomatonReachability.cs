@@ -279,7 +279,7 @@ namespace Automation
             if (blockTypeId == (byte)BlockTypeId.FallingRock) return true;
 
             var blockType = GameManager.BlockTypeDatabase.Get(blockTypeId);
-            return blockType != null && blockType.Category == BlockCategory.PowerUp;
+            return blockType != null && (blockType.Category == BlockCategory.PowerUp || blockType.Unmineable);
         }
     }
 }

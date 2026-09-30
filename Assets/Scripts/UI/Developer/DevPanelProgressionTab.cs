@@ -43,7 +43,7 @@ namespace UI
             if (removeAllUpgradesButton != null) removeAllUpgradesButton.onClick.AddListener(OnRemoveAllUpgradesClicked);
             if (maxAllPrestigeUpgradesButton != null) maxAllPrestigeUpgradesButton.onClick.AddListener(OnMaxAllPrestigeUpgradesClicked);
             if (removeAllPrestigeUpgradesButton != null) removeAllPrestigeUpgradesButton.onClick.AddListener(OnRemoveAllPrestigeUpgradesClicked);
-            if (forcePrestigeButton != null) forcePrestigeButton.onClick.AddListener(() => PrestigeManager.Instance.ExecutePrestige());
+            if (forcePrestigeButton != null) forcePrestigeButton.onClick.AddListener(ForcePrestige);
         }
 
         private void BuildUpgradeRows()
@@ -102,6 +102,13 @@ namespace UI
         {
             int newLevel = Mathf.Max(0, PrestigeUpgradeManager.Instance.GetPurchasedLevel(def) - 1);
             PrestigeUpgradeManager.Instance.SetLevel(def.DisplayName, newLevel);
+        }
+
+        // Skips the pick-1-of-3 screen - takes the first offer.
+        private void ForcePrestige()
+        {
+            var offers = PrestigeManager.Instance.PendingOffers();
+            PrestigeManager.Instance.ExecutePrestige(offers.Count > 0 ? offers[0] : null);
         }
 
         private void OnMaxAllUpgradesClicked()

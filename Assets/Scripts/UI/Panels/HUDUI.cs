@@ -25,6 +25,8 @@ namespace UI
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private TMP_Text artifactCountLabel;
         [SerializeField] private TMP_Text depthLabel;
+        [Tooltip("The active run modifier (RunModifiers.RunModifierService.ActiveSummary) - blank when there is none.")]
+        [SerializeField] private TMP_Text runModifierLabel;
 
         private void Start()
         {
@@ -37,6 +39,7 @@ namespace UI
             RefreshDollars();
             RefreshArtifactCount();
             RefreshWeight();
+            RefreshRunModifier();
         }
 
         private void CheckNullRefs()
@@ -55,6 +58,7 @@ namespace UI
             if (weightLabel == null) Debug.LogError("HUDUI: no weightLabel found in scene.");
             if (dollarsLabel == null) Debug.LogError("HUDUI: no dollarsLabel found in scene.");
             if (artifactCountLabel == null) Debug.LogError("HUDUI: no artifactCountLabel found in scene.");
+            if (runModifierLabel == null) Debug.LogError("HUDUI: no runModifierLabel found in scene.");
         }
 
         private void OnEnable()
@@ -63,7 +67,7 @@ namespace UI
             GameManager.EventService.Add<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Add<InventoryChangedEvent>(RefreshWeight);
             GameManager.EventService.Add<UpgradePurchasedEvent>(HandleUpdatePurchased);
-
+            GameManager.EventService.Add<RunModifierChangedEvent>(RefreshRunModifier);
         }
 
         private void OnDisable()
@@ -72,6 +76,7 @@ namespace UI
             GameManager.EventService.Remove<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Remove<InventoryChangedEvent>(RefreshWeight);
             GameManager.EventService.Remove<UpgradePurchasedEvent>(HandleUpdatePurchased);
+            GameManager.EventService.Remove<RunModifierChangedEvent>(RefreshRunModifier);
         }
 
         private void Update()
@@ -111,6 +116,11 @@ namespace UI
         private void RefreshArtifactCount()
         {
             artifactCountLabel.text = $"{Wallet.Instance.ArtifactCount}";
+        }
+
+        private void RefreshRunModifier()
+        {
+            runModifierLabel.text = GameManager.RunModifierService.ActiveSummary();
         }
 
         private void RefreshDepth()

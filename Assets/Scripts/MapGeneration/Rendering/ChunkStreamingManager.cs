@@ -4,6 +4,7 @@ using Economy;
 using Events;
 using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace MapGeneration
 {
@@ -19,6 +20,21 @@ namespace MapGeneration
         private MineWorld world;
         private readonly Dictionary<int, ChunkTilemapView> tilemapsByLayer = new();
         private Dictionary<string, int> focusLayerByEntity = new();
+
+        // Editor-only: F toggles fog on every chunk view, resident or pooled.
+        private bool fogHidden;
+
+        private void Update()
+        {
+            if (!Application.isEditor) return;
+            if (!Keyboard.current.fKey.wasPressedThisFrame) return;
+
+            fogHidden = !fogHidden;
+            foreach (var view in tilemapsByLayer.Values)
+            {
+                view.SetFogHidden(fogHidden);
+            }
+        }
 
         public void Initialize(MineWorld mineWorld)
         {
@@ -59,6 +75,16 @@ namespace MapGeneration
                 }
             }
 
+            // In the editor, keep every authored layer resident (deeper layers still stream normally).
+            if (Application.isEditor)
+            {
+                int deepestAuthoredLayer = layerConfigProvider.LayerConfigs.Max(config => config.LayerIndex);
+                for (int i = 0; i <= deepestAuthoredLayer; i++)
+                {
+                    wantedLayers.Add(i);
+                }
+            }
+
             //Debug.Log($"ChunkStreamingManager.UpdateWindow: focus={string.Join(", ", focusLayerByEntity.Values.ToList())}, windowRadius={windowRadius}, wantedLayers=[{string.Join(", ", wantedLayers)}]");
             var activeLayers = tilemapsByLayer.Where(kvp => kvp.Value.gameObject.activeSelf).Select(kvp => kvp.Key).ToList();
             foreach (var layerIndex in activeLayers)
@@ -92,6 +118,7 @@ namespace MapGeneration
             newView.gameObject.SetActive(true);
             newView.transform.position = new Vector3(0f, -layerConfigProvider.GetLayerOffset(layerIndex) * mapGenerationConfig.CellSize, 0f);
             newView.Bind(chunk, layerIndex);
+            newView.SetFogHidden(fogHidden);
 
             tilemapsByLayer[layerIndex] = newView;
 

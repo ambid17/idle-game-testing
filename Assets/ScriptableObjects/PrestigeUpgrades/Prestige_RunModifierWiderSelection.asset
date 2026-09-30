@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
+  m_Name: Prestige_RunModifierWiderSelection
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
+  DisplayName: Wider Selection
+  Description: Offers 4 run modifiers at prestige instead of 3.
+  Icon: {fileID: 21300000, guid: 834ea64732ef91643b80d4f9bad7af60, type: 3}
+  EffectValuePerLevel: 1
+  MaxLevel: 1
+  BaseCost: 30
+  CostGrowth: 1
+  RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 2401e3a057eef244e9acfac17d46bdd9, type: 2}
+  Branch: 3
+  Effect: 408

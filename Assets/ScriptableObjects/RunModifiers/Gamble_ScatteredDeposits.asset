@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 085c4ab2983edc04e9ad9247e1566b43, type: 3}
+  m_Name: Gamble_ScatteredDeposits
+  m_EditorClassIdentifier: Assembly-CSharp::RunModifiers.RunModifierDefinition
+  Id: scattered_deposits
+  DisplayName: Scattered Deposits
+  Description: 'More ore overall, spread evenly through every layer.
+
+    No veins
+    - every ore is a lone block.'
+  Kind: 1
+  Family: 0
+  OfferWeight: 1
+  UsesOreA: 0
+  UsesOreB: 0
+  UsesTargetLayer: 0
+  OrePoolMinLayer: 1
+  OrePoolMaxLayer: 6
+  TargetLayerMin: 2
+  TargetLayerMax: 6
+  AllOreWeightMultiplier: 5
+  OreAWeightMultiplier: 1
+  OreBWeightMultiplier: 1
+  VeinSizeMultiplier: 1
+  OreAVeinSizeMultiplier: 1
+  DisableVeins: 1
+  OreTierOddsBonus: 0
+  HazardChanceMultiplier: 1
+  HazardWeightMultipliers: []
+  PowerUpSpawnRateBonus: 0
+  ExtraGuaranteedArtifacts: 0
+  ArtifactBonusChanceMultiplier: 1
+  EmptyPocketChanceMultiplier: 1
+  EmptyPocketSizeMultiplier: 1
+  Features: []
+  TargetLayerUsesNextOreTable: 0
+  TargetLayerOreWeightMultiplier: 1
+  TargetLayerFeatures: []
+  BlockHealthMultiplier: 1
+  TargetLayerFogRadiusMultiplier: 1
+  TargetLayerOreYieldMultiplier: 1
+  SellValueMultiplier: 1
+  OreASellMultiplier: 1
+  OreBSellMultiplier: 1
+  IsContract: 0
+  ContractAmountMin: 100
+  ContractAmountMax: 200
+  ContractRewardArtifacts: 5

@@ -490,6 +490,23 @@ namespace Events
         }
     }
 
+    // The active run modifier (RunModifiers.RunModifierService) changed - a new one was picked at
+    // prestige, a save was restored, or its contract progressed.
+    public class RunModifierChangedEvent { }
+
+    // Dispatched by Depot for every ore type deposited (player, drones, offline earnings).
+    public class DepotOreDepositedEvent : IEvent
+    {
+        public BlockTypeId Ore;
+        public int Amount;
+
+        public DepotOreDepositedEvent(BlockTypeId ore, int amount)
+        {
+            Ore = ore;
+            Amount = amount;
+        }
+    }
+
     // Dispatched by PlayerController on Escape, but only when nothing else was already blocking
     // input - see PlayerController.Update. PauseMenuUI is the sole listener.
     public class PauseMenuOpenRequestedEvent { }

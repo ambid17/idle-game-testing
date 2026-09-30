@@ -46,6 +46,9 @@ namespace MapGeneration
         FuelCanister = 25,
         RepairKit = 26,
         LuckyStrike = 27,
+        // Structure blocks (Category.Dirt, Unmineable) - placed by MapFeatureDefinitions such as
+        // BandFeature. Append-only, same rule as every id above.
+        Hardpan = 28,
     }
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)
@@ -83,6 +86,8 @@ namespace MapGeneration
         [Tooltip("Inventory weight per unit.")]
         public float Weight;
         public float Health = 1f;
+        [Tooltip("Can never be mined by anyone (player, automatons, explosions) - e.g. Hardpan bands. GrassyDirt/FallingRock predate this flag and are special-cased where they're refused.")]
+        public bool Unmineable;
         public Color Tint = Color.white;
         [Tooltip("Pixel color on the HUD minimap (UI.MinimapUI).")]
         public Color MinimapColor = new(0.45f, 0.32f, 0.22f, 1f);

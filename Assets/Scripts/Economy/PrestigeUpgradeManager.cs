@@ -177,6 +177,13 @@ namespace Economy
         public float Prestige_MuseumDividendsMultiplier => 1f + Wallet.Instance.ArtifactCount * LevelOf(PrestigeUpgradeEffect.Prestige_MuseumDividends) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_MuseumDividends);
 
         // Artifacts per minute, passively - see PassivePrestigeIncomeTicker.
+        // Run modifier perks act on the prestige screen itself, which is shown BEFORE
+        // CommitQueuedUpgrades - so, unlike every other perk, a level queued this run already counts
+        // (PurchaseLevel = applied + queued).
+        public int Prestige_RunModifierRerolls => PurchaseLevel(Find(PrestigeUpgradeEffect.Prestige_RunModifierReroll));
+        public int Prestige_RunModifierOfferCount => 3 + PurchaseLevel(Find(PrestigeUpgradeEffect.Prestige_RunModifierWiderSelection));
+        public bool Prestige_RunModifierHeirloomUnlocked => PurchaseLevel(Find(PrestigeUpgradeEffect.Prestige_RunModifierHeirloom)) > 0;
+
         public float Prestige_PassiveArtifactRate => LevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Prestige_PassiveArtifactRate);
 
         // GameDesignDoc "Prestige > Progression" (now part of the Economy branch). OreTierOddsBonus is

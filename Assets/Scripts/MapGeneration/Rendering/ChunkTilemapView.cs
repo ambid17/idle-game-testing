@@ -67,6 +67,12 @@ namespace MapGeneration
             }
         }
 
+        // Editor fog toggle (ChunkStreamingManager) - purely visual, cell Revealed state is untouched.
+        public void SetFogHidden(bool hidden)
+        {
+            fogTilemap.gameObject.SetActive(!hidden && !fogDisabled);
+        }
+
         // Background is a flat, per-layer tint rather than per-cell data, so it's filled once
         // on bind rather than touched by RepaintCells - every cell gets the same tile, and the
         // whole tilemap's color is set once instead of per-tile.

@@ -71,6 +71,13 @@ namespace Economy
         Prestige_GrantFunding = 405,
         // Each prestige ever completed adds a permanent, stacking % bonus to all sale value.
         Prestige_Legacy = 406,
+        // Run modifiers (pick 1 of 3 at prestige, see RunModifiers): each level allows one reroll
+        // of the offered modifiers per prestige.
+        Prestige_RunModifierReroll = 407,
+        // Run modifiers: one extra modifier offered at prestige (4 instead of 3).
+        Prestige_RunModifierWiderSelection = 408,
+        // Run modifiers: the current run's modifier is always among the next prestige's offers.
+        Prestige_RunModifierHeirloom = 409,
 
         // 500-599 - retired Progression range (its members now live in Economy above) - do not reuse.
 
