@@ -28,6 +28,8 @@ namespace Player
         [SerializeField] private MiningCrackIndicator crackIndicator;
         [Tooltip("Seconds between pickaxe-hit sounds while working on a block.")]
         [SerializeField] private float miningHitInterval = 0.25f;
+        [Tooltip("Minimum seconds between inventory-full/too-heavy notifications, so repeatedly bumping an ore (e.g. jetpacking into the ceiling with DigUp) doesn't spam the toast.")]
+        [SerializeField] private float inventoryBlockNotifyCooldown = 3f;
         [SerializeField] private bool debug;
 
         private PlayerController playerController;
@@ -41,6 +43,7 @@ namespace Player
         private float miningHitTimer;
         private enum InventoryBlockReason { None, Full, TooHeavy }
         private InventoryBlockReason lastInventoryBlock;
+        private float nextInventoryBlockNotifyTime;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
         // True only while actually working on a mineable block - PlayerAnimation plays the drill
@@ -118,9 +121,12 @@ namespace Player
 
             // Edge-triggered like PlayerController's low-fuel check: fires once when mining first
             // becomes blocked, not every frame it stays blocked, so it can't drown out other HUD
-            // notifications sharing the same toast.
-            if (blockedByFullInventory && inventoryBlock != lastInventoryBlock)
+            // notifications sharing the same toast. The edge resets whenever the player stops
+            // pushing into the block, so a cooldown also gates it - otherwise bobbing against the
+            // ceiling while flying up re-triggers it every bump.
+            if (blockedByFullInventory && inventoryBlock != lastInventoryBlock && Time.time >= nextInventoryBlockNotifyTime)
             {
+                nextInventoryBlockNotifyTime = Time.time + inventoryBlockNotifyCooldown;
                 string message = inventoryBlock == InventoryBlockReason.Full
                     ? "Inventory is full!"
                     : $"Not enough space for {blockType.DisplayName}! (needs {blockType.Weight:0.#} weight, {playerInventory.RemainingWeight:0.#} free)";
