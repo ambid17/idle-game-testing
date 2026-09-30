@@ -344,7 +344,8 @@ namespace Persistence
                 chestSpawner.RestoreFromSaveData(chestSpawnData);
             }
 
-            LoadOfflineEarnings(data);
+            // Disabled for now, I'm not sure if we want this in the game. It can be re-enabled later if we decide to keep it.
+            //LoadOfflineEarnings(data);
 
             hasLoadedData = true;
             GameManager.EventService.Dispatch<LoadCompletedEvent>();
