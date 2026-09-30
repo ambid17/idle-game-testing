@@ -126,7 +126,8 @@ namespace UI
         private void RefreshDepth()
         {
             float depth = playerController.transform.position.y;
-            depthLabel.text = $"Depth: {depth:0}m";
+            int layerIndex = GameManager.LayerConfigProvider.GetLayerIndexAtWorldY(depth, GameManager.MapGenerationService.CellSize);
+            depthLabel.text = $"Depth: {depth:0}m\nLayer: {layerIndex + 1}";
         }
 
         private void HandleUpdatePurchased(UpgradePurchasedEvent evt)
