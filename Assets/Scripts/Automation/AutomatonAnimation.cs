@@ -5,7 +5,9 @@ namespace Automation
     // Code-driven sprite flipbook for the Mining Automaton, same approach as PlayerAnimation:
     // priority list mine > fly > move > idle read straight off MiningAutomaton each frame. Unlike
     // the player there's no input to read, so "moving" and facing come from the frame-to-frame
-    // position delta. Runs in LateUpdate so it sees this frame's movement and IsMining.
+    // position delta. Runs in LateUpdate so it sees this frame's movement and IsMining, and ahead
+    // of MiningAutomaton's LateUpdate so the hat lines up with this frame's sprite.
+    [DefaultExecutionOrder(-10)]
     [RequireComponent(typeof(MiningAutomaton))]
     public class AutomatonAnimation : MonoBehaviour
     {

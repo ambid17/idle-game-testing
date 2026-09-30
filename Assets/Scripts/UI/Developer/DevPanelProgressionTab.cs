@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Critters;
 using Economy;
 using Events;
 using RunModifiers;
@@ -24,6 +25,7 @@ namespace UI
         [SerializeField] private Button maxAllPrestigeUpgradesButton;
         [SerializeField] private Button removeAllPrestigeUpgradesButton;
         [SerializeField] private Button forcePrestigeButton;
+        [SerializeField] private Button turnInAllCrittersButton;
         // One button per run modifier: prestiges straight into a run with that modifier.
         [SerializeField] private Transform runModifierButtonContainer;
         [SerializeField] private Button runModifierButtonTemplate;
@@ -45,6 +47,7 @@ namespace UI
             if (maxAllPrestigeUpgradesButton == null) Debug.LogError("DevPanelProgressionTab.maxAllPrestigeUpgradesButton is not assigned.");
             if (removeAllPrestigeUpgradesButton == null) Debug.LogError("DevPanelProgressionTab.removeAllPrestigeUpgradesButton is not assigned.");
             if (forcePrestigeButton == null) Debug.LogError("DevPanelProgressionTab.forcePrestigeButton is not assigned.");
+            if (turnInAllCrittersButton == null) Debug.LogError("DevPanelProgressionTab.turnInAllCrittersButton is not assigned.");
             if (runModifierButtonContainer == null) Debug.LogError("DevPanelProgressionTab.runModifierButtonContainer is not assigned.");
             if (runModifierButtonTemplate == null) Debug.LogError("DevPanelProgressionTab.runModifierButtonTemplate is not assigned.");
             if (runModifierTooltip == null) Debug.LogError("DevPanelProgressionTab.runModifierTooltip is not assigned.");
@@ -59,6 +62,7 @@ namespace UI
             if (maxAllPrestigeUpgradesButton != null) maxAllPrestigeUpgradesButton.onClick.AddListener(OnMaxAllPrestigeUpgradesClicked);
             if (removeAllPrestigeUpgradesButton != null) removeAllPrestigeUpgradesButton.onClick.AddListener(OnRemoveAllPrestigeUpgradesClicked);
             if (forcePrestigeButton != null) forcePrestigeButton.onClick.AddListener(ForcePrestige);
+            if (turnInAllCrittersButton != null) turnInAllCrittersButton.onClick.AddListener(TurnInAllCritters);
         }
 
         private void BuildUpgradeRows()
@@ -171,6 +175,15 @@ namespace UI
         {
             var offers = PrestigeManager.Instance.PendingOffers();
             PrestigeManager.Instance.ExecutePrestige(offers.Count > 0 ? offers[0] : null);
+        }
+
+        // Turns in one of every species (plus whatever's already in the jar) - discovers them all
+        // and so unlocks every automaton hat.
+        private void TurnInAllCritters()
+        {
+            CritterCollection.Instance.DevAddAllSpeciesToJar();
+            var evt = CritterCollection.Instance.TurnInJar();
+            GameManager.EventService.Dispatch(new NotificationEvent($"Dev turn-in: {evt.Count} critters, {evt.NewHats.Count} hats unlocked", NotificationUrgency.Queued));
         }
 
         private void OnMaxAllUpgradesClicked()

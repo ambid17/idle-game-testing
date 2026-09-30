@@ -141,6 +141,17 @@ namespace Critters
 
         public void MarkShopkeeperMet() => HasMetShopkeeper = true;
 
+        // Dev Panel: one of every species straight into the jar, so the next TurnInJar discovers
+        // them all (and unlocks every hat) through the normal payout/event path.
+        public void DevAddAllSpeciesToJar()
+        {
+            foreach (var critter in database.Critters)
+            {
+                if (critter != null) jar.Add(critter.Id);
+            }
+            GameManager.EventService.Dispatch<CritterCollectionChangedEvent>();
+        }
+
         // Automatons are identified by their 1-based DisplayIndex (see AutomationSpawner), which is
         // stable across reloads since the spawner always rebuilds them in order.
         public HatId GetAutomatonHat(int automatonIndex)

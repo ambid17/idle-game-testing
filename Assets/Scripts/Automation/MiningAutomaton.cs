@@ -37,9 +37,12 @@ namespace Automation
         private FuelSystem fuelSystem;
         private SpriteRenderer bodyRenderer;
         private SpriteRenderer hatRenderer;
+        private HatDefinition currentHat;
         private readonly GridPathMover mover = new();
         [SerializeField] private State state = State.PickingTarget;
         [SerializeField] private MiningCrackIndicator crackIndicator;
+        [Tooltip("X of the top of the drone's dome relative to the sprite pivot, for the art facing right (world units). Mirrored when flipped.")]
+        [SerializeField] private float headCenterX = -0.105f;
 
         // Direction of the last chosen dig target relative to where it was picked from - biases
         // the next pick toward continuing the same "vein" instead of reversing course. Zero until
@@ -141,6 +144,7 @@ namespace Automation
 
             var hat = GameManager.CritterDatabase.GetHat(CritterCollection.Instance.GetAutomatonHat(DisplayIndex));
             hatRenderer.enabled = hat != null && hat.Sprite != null;
+            currentHat = hatRenderer.enabled ? hat : null;
             if (!hatRenderer.enabled) return;
 
             hatRenderer.sprite = hat.Sprite;
@@ -148,15 +152,42 @@ namespace Automation
             float lossyX = Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.x));
             float scale = hat.Width / Mathf.Max(0.0001f, hat.Sprite.bounds.size.x) / lossyX;
             hatRenderer.transform.localScale = new Vector3(scale, scale, 1f);
-
-            // Top-center of the body sprite, in local space.
-            var bodyBounds = bodyRenderer.sprite != null ? bodyRenderer.sprite.bounds : new Bounds(Vector3.zero, Vector3.one);
-            hatRenderer.transform.localPosition = new Vector3(bodyBounds.center.x, bodyBounds.max.y, 0f) + (Vector3)(hat.Offset / lossyX);
+            UpdateHatPose();
         }
 
+        // Every frame rather than once in RefreshHat: the body's animation frames bob and shake
+        // inside a fixed 128px rect, so the hat re-reads the current frame's top each frame to ride
+        // along. AutomatonAnimation runs its LateUpdate first (DefaultExecutionOrder) so this sees
+        // the sprite for this frame, not last frame's.
         private void LateUpdate()
         {
-            if (hatRenderer != null && hatRenderer.enabled) hatRenderer.flipX = bodyRenderer.flipX;
+            if (currentHat != null) UpdateHatPose();
+        }
+
+        private void UpdateHatPose()
+        {
+            bool flipped = bodyRenderer.flipX;
+            hatRenderer.flipX = flipped;
+
+            float lossyX = Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.x));
+            float facing = flipped ? -1f : 1f;
+            float x = (headCenterX + currentHat.Offset.x / lossyX) * facing;
+            float y = SpriteTop(bodyRenderer.sprite) + currentHat.Offset.y / lossyX;
+            hatRenderer.transform.localPosition = new Vector3(x, y, 0f);
+        }
+
+        // Top of the sprite's tight mesh (its opaque pixels), unlike Sprite.bounds which is the
+        // whole rect. Cached per sprite - shared by every automaton, and the frames never change.
+        private static readonly Dictionary<Sprite, float> spriteTops = new();
+        private static float SpriteTop(Sprite sprite)
+        {
+            if (sprite == null) return 0f;
+            if (spriteTops.TryGetValue(sprite, out float top)) return top;
+
+            top = float.MinValue;
+            foreach (var vertex in sprite.vertices) top = Mathf.Max(top, vertex.y);
+            spriteTops[sprite] = top;
+            return top;
         }
 
         private void Update()

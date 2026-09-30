@@ -17,4 +17,4 @@ MonoBehaviour:
   Sprite: {fileID: 21300000, guid: 6b539dea5f3943842945d0a7a7da03e4, type: 3}
   UnlockAtSpeciesCount: 16
   Width: 0.55
-  Offset: {x: 0, y: -0.24}
+  Offset: {x: 0, y: -0.06}
