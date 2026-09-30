@@ -24,12 +24,16 @@ namespace Economy
 
     // Drops the player's lost inventory into a lootable Chest at the center of the map cell they
     // died in, instead of discarding it - see PlayerInventory.HandleDeath, which withdraws the ore
-    // and dispatches the event this reacts to. Also used by SaveService to respawn chests that were
-    // still active when the game was last saved (RestoreFromSaveData).
+    // and dispatches the event this reacts to. The chest is held as pending until PlayerRevivedEvent
+    // so the still-present body can't loot it straight back during the death animation/screen.
+    // Also used by SaveService to respawn chests that were still active when the game was last
+    // saved (RestoreFromSaveData), including a pending one (TryGetPendingChest).
     public class ChestSpawner : MonoBehaviour
     {
         [SerializeField] private Chest chestPrefab;
         [SerializeField] private PlayerController player;
+
+        private ChestSpawnData? pendingDeathChest;
 
         private void Awake()
         {
@@ -42,12 +46,14 @@ namespace Economy
         {
             GameManager.EventService.Add<PlayerInventoryDroppedEvent>(OnPlayerInventoryDropped);
             GameManager.EventService.Add<ChestSpawnRequestedEvent>(OnChestSpawnRequested);
+            GameManager.EventService.Add<PlayerRevivedEvent>(OnPlayerRevived);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<PlayerInventoryDroppedEvent>(OnPlayerInventoryDropped);
             GameManager.EventService.Remove<ChestSpawnRequestedEvent>(OnChestSpawnRequested);
+            GameManager.EventService.Remove<PlayerRevivedEvent>(OnPlayerRevived);
         }
 
         private void OnPlayerInventoryDropped(PlayerInventoryDroppedEvent evt)
@@ -62,7 +68,28 @@ namespace Economy
                 spawnPosition = mapGenerationService.CellToWorldCenter(layerIndex, x, y);
             }
 
-            SpawnChest(spawnPosition, evt.OreCounts);
+            // Shouldn't happen (no second death before a revive), but never drop ore on the floor.
+            if (pendingDeathChest.HasValue) SpawnPendingDeathChest();
+            pendingDeathChest = new ChestSpawnData(spawnPosition, evt.OreCounts);
+        }
+
+        private void OnPlayerRevived() => SpawnPendingDeathChest();
+
+        private void SpawnPendingDeathChest()
+        {
+            if (!pendingDeathChest.HasValue) return;
+
+            var pending = pendingDeathChest.Value;
+            pendingDeathChest = null;
+            SpawnChest(pending.Position, pending.OreCounts);
+        }
+
+        // For SaveService - a death chest that hasn't spawned yet (player is still on the death
+        // screen) is saved like any active chest, so quitting before respawning doesn't lose it.
+        public bool TryGetPendingChest(out ChestSpawnData chest)
+        {
+            chest = pendingDeathChest.GetValueOrDefault();
+            return pendingDeathChest.HasValue;
         }
 
         // Treasure Chest power-up overflow (see Player.PlayerPowerUps) - position is already a cell
@@ -79,6 +106,9 @@ namespace Economy
         public void RestoreFromSaveData(IEnumerable<ChestSpawnData> chests)
         {
             if (chestPrefab == null || chests == null) return;
+
+            // A load replaces the world, so a death chest from before it no longer belongs anywhere.
+            pendingDeathChest = null;
 
             foreach (var entry in chests)
             {

@@ -168,6 +168,17 @@ namespace Persistence
                 data.Chests.Add(entry);
             }
 
+            if (chestSpawner != null && chestSpawner.TryGetPendingChest(out var pendingChest))
+            {
+                var entry = new ChestSaveEntry { Position = pendingChest.Position };
+                foreach (var kvp in pendingChest.OreCounts)
+                {
+                    if (kvp.Value <= 0) continue;
+                    entry.OreCounts.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
+                }
+                data.Chests.Add(entry);
+            }
+
             foreach (var id in TutorialManager.Instance.ShownTutorials)
             {
                 data.ShownTutorials.Add(id);
