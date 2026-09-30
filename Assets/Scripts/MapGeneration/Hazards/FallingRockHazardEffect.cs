@@ -56,8 +56,12 @@ namespace MapGeneration
 
             // The rock leaves its own cell the instant it starts falling - frees the cell in the
             // map data (so it can't be re-triggered off the same spot) and repaints the tile as
-            // empty.
-            mapGen.ClearFallingRockOrigin(layerIndex, x, y);
+            // empty. Already gone means the player mined it out during the jiggle - nothing to drop.
+            if (!mapGen.ClearFallingRockOrigin(layerIndex, x, y))
+            {
+                Destroy(gameObject);
+                yield break;
+            }
             if (visual != null) visual.color = Color.white;
 
             yield return Fall(mapGen, layerIndex, x, y);

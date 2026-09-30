@@ -118,7 +118,7 @@ namespace Player
 
             if (blockType == null
                 || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
-                || blockType.Id == BlockTypeId.FallingRock
+                || (blockType.Id == BlockTypeId.FallingRock && !PrestigeUpgradeManager.Instance.Mining_CanMineRocks)
                 || blockType.Unmineable
                 || blockedByFullInventory
                 )
@@ -202,7 +202,7 @@ namespace Player
 
         private void MineTarget(int layerIndex, int x, int y, BlockType blockType, Vector2Int direction, float effectiveHealth)
         {
-            if (!mapGenerationService.MineCell(layerIndex, x, y, minedByPlayer: true)) return;
+            if (!mapGenerationService.MineCell(layerIndex, x, y, minedByPlayer: true, canMineFallingRock: PrestigeUpgradeManager.Instance.Mining_CanMineRocks)) return;
 
             digFeedback.Break(mapGenerationService.CellToWorldCenter(layerIndex, x, y), direction, blockType, effectiveHealth, primary: true);
             CollectMinedBlock(blockType, layerIndex, x, y);

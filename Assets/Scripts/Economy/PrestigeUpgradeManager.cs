@@ -133,6 +133,10 @@ namespace Economy
         // Lets the player mine the block directly above them (W) - read by PlayerMining.
         public bool Mining_DigUpUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_DigUpUnlock);
 
+        // Rock Breaker: the player can mine FallingRock blocks directly - read by PlayerMining,
+        // passed through to MapGenerationService.MineCell's canMineFallingRock.
+        public bool Mining_CanMineRocks => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_RockBreaker);
+
         // GameDesignDoc "Prestige > Mining > Increase grid size": added to the base grid width in
         // MapGenerationService before every prestige's map regeneration.
         public int Mining_GridWidthBonus => Mathf.RoundToInt(LevelOf(PrestigeUpgradeEffect.Mining_GridWidthBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Mining_GridWidthBonus));

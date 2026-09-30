@@ -222,11 +222,12 @@ namespace MapGeneration
         /// <param name="y"></param>
         /// <param name="fogRadiusOverride"></param>
         /// <param name="minedByPlayer">PowerUp blocks are player-only - every other caller (automatons, explosions) is refused them.</param>
+        /// <param name="canMineFallingRock">Player with the Rock Breaker upgrade - FallingRock is otherwise refused.</param>
         /// <returns>True if the cell was able to be mined.</returns>
-        public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1, bool minedByPlayer = false)
+        public bool MineCell(int layerIndex, int x, int y, int fogRadiusOverride = -1, bool minedByPlayer = false, bool canMineFallingRock = false)
         {
             // Can't mine if: already mined, target is a building support, or a PowerUp not mined by the player
-            if (!World.TryMineCell(layerIndex, x, y, minedByPlayer, out var block)) return false;
+            if (!World.TryMineCell(layerIndex, x, y, minedByPlayer, out var block, canMineFallingRock)) return false;
 
             // Digging out row 1 (the tile beneath the surface) is what actually opens a fall-
             // through gap at that column - see the SurfaceFloor* fields' comment above.
@@ -235,7 +236,9 @@ namespace MapGeneration
             HandleFogUpdate(layerIndex, x, y, fogRadiusOverride);
             // PowerUps aren't dispatched here - Player.PlayerMining applies them directly, since
             // only the player can ever mine one.
-            if (block != null && block.Category == BlockCategory.Hazard)
+            // A FallingRock mined directly (Rock Breaker upgrade) is just gone - triggering its
+            // own fall would drop a ghost rock out of the now-empty cell.
+            if (block != null && block.Category == BlockCategory.Hazard && block.Id != BlockTypeId.FallingRock)
             {
                 GameManager.EventService.Dispatch(new CustomBlockTriggeredEvent(layerIndex, x, y, block.CustomBehavior));
             }
@@ -384,11 +387,14 @@ namespace MapGeneration
         // hook MineCell uses, so a stack of FallingRocks cascades: the moment this one starts
         // falling and vacates its cell, whatever FallingRock was resting directly on top of it (if
         // any) loses its own support and starts falling too.
-        public void ClearFallingRockOrigin(int layerIndex, int x, int y)
+        // Returns false if the cell was already gone (e.g. the player mined the rock out mid-jiggle
+        // with the Rock Breaker upgrade), so the caller can abort the fall.
+        public bool ClearFallingRockOrigin(int layerIndex, int x, int y)
         {
-            if (!World.ForceClearCell(layerIndex, x, y)) return;
+            if (!World.ForceClearCell(layerIndex, x, y)) return false;
             RefreshCellVisual(layerIndex, x, y);
             TryTriggerFallingRockAbove(layerIndex, x, y);
+            return true;
         }
 
         // New seed and run modifier, all tunnels wiped; grid width upgrade level is left untouched

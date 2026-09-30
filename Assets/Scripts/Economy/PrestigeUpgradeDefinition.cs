@@ -36,6 +36,9 @@ namespace Economy
         Mining_TrueSight = 104,
         // Lets the player mine upward (W) into the block directly above them.
         Mining_DigUpUnlock = 105,
+        // Lets the player mine FallingRock blocks directly instead of only knocking them loose by
+        // mining their support (PrestigeUpgradeManager.Mining_CanMineRocks).
+        Mining_RockBreaker = 106,
 
         // Economy 200-299
         Economy_MineralValueMultiplier = 200,

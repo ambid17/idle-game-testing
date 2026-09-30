@@ -51,7 +51,7 @@ namespace MapGeneration
         // force chunks into existence just by looking at them.
         public bool TryGetLoadedChunk(int layerIndex, out ChunkData chunk) => chunksByLayer.TryGetValue(layerIndex, out chunk);
 
-        public bool TryMineCell(int layerIndex, int x, int y, bool minedByPlayer, out BlockType minedBlock)
+        public bool TryMineCell(int layerIndex, int x, int y, bool minedByPlayer, out BlockType minedBlock, bool canMineFallingRock = false)
         {
             minedBlock = null;
 
@@ -69,9 +69,10 @@ namespace MapGeneration
                 //Debug.LogWarning($"TryMineCell: can't mine grassy dirt tiles, they support buildings");
                 return false;
             }
-            if (cell.BlockTypeId == (byte)BlockTypeId.FallingRock)
+            if (cell.BlockTypeId == (byte)BlockTypeId.FallingRock && !canMineFallingRock)
             {
-                // Never directly mineable - it only comes loose once the block beneath it is
+                // Not directly mineable (except by the player with the Rock Breaker upgrade) - it
+                // otherwise only comes loose once the block beneath it is
                 // mined out (see MapGenerationService.MineCell's "check above" hook and
                 // MapGeneration.FallingRockHazardEffect).
                 return false;
