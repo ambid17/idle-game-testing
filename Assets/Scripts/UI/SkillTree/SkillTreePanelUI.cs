@@ -114,7 +114,7 @@ namespace UI.SkillTree
                     continue;
                 }
 
-                nodeUI.Bind(match, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit, OnNodeSelected);
+                nodeUI.Bind(match, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit, OnNodeSelected, panZoom.OnDrag);
             }
         }
 
@@ -123,7 +123,7 @@ namespace UI.SkillTree
             foreach (var vm in viewModels)
             {
                 var nodeUI = Instantiate(nodePrefab, content);
-                nodeUI.Bind(vm, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit, OnNodeSelected);
+                nodeUI.Bind(vm, OnNodePurchaseClicked, OnNodeHoverEnter, OnNodeHoverExit, OnNodeSelected, panZoom.OnDrag);
                 if (positions.TryGetValue(vm, out var position))
                 {
                     nodeUI.GetComponent<RectTransform>().anchoredPosition = position;

@@ -14,8 +14,10 @@ namespace UI.SkillTree
     // ISkillTreeSource, so unlock/purchase logic is never reimplemented here. Hovering shows
     // SkillTreeTooltipUI (via SkillTreePanelUI); clicking the node's own button purchases
     // directly - there's no separate detail modal to open first. Controller selection shows the
-    // tooltip like hovering and pans the tree to the node.
-    public class SkillTreeNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
+    // tooltip like hovering and pans the tree to the node. Click-dragging starting on a node pans
+    // the tree just like dragging the empty background (and cancels the click, so it won't buy).
+    public class SkillTreeNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler,
+        IBeginDragHandler, IDragHandler
     {
         [SerializeField] private Image border;
         [SerializeField] private Image icon;
@@ -47,6 +49,7 @@ namespace UI.SkillTree
         private Action<SkillTreeNodeUI> onHoverEnter;
         private Action<SkillTreeNodeUI> onHoverExit;
         private Action<SkillTreeNodeUI> onSelected;
+        private Action<PointerEventData> onDragged;
 
         private void Start()
         {
@@ -69,7 +72,8 @@ namespace UI.SkillTree
             Action<SkillTreeNodeViewModel> onPurchaseClicked,
             Action<SkillTreeNodeUI> onHoverEnter,
             Action<SkillTreeNodeUI> onHoverExit,
-            Action<SkillTreeNodeUI> onSelected)
+            Action<SkillTreeNodeUI> onSelected,
+            Action<PointerEventData> onDragged)
         {
             upgradeDefinition = viewModel.UpgradeDefinition;
             gameObject.name = $"SkillTreeNode_{viewModel.DisplayName}";
@@ -77,6 +81,7 @@ namespace UI.SkillTree
             this.onHoverEnter = onHoverEnter;
             this.onHoverExit = onHoverExit;
             this.onSelected = onSelected;
+            this.onDragged = onDragged;
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => onPurchaseClicked?.Invoke(ViewModel));
@@ -89,8 +94,19 @@ namespace UI.SkillTree
 
         public void OnPointerEnter(PointerEventData eventData) => onHoverEnter?.Invoke(this);
         public void OnPointerExit(PointerEventData eventData) => onHoverExit?.Invoke(this);
-        public void OnSelect(BaseEventData eventData) => onSelected?.Invoke(this);
+        public void OnSelect(BaseEventData eventData)
+        {
+            // Clicking selects the Button too - only controller navigation should pan to the
+            // node; a mouse click already has the tooltip up from hovering.
+            if (eventData is PointerEventData) return;
+            onSelected?.Invoke(this);
+        }
         public void OnDeselect(BaseEventData eventData) => onHoverExit?.Invoke(this);
+
+        // The Button is the drag target too (pointerPress == pointerDrag), so the input module
+        // wouldn't cancel the click on its own - releasing after a pan would purchase.
+        public void OnBeginDrag(PointerEventData eventData) => eventData.eligibleForClick = false;
+        public void OnDrag(PointerEventData eventData) => onDragged?.Invoke(eventData);
 
         private void OnEnable()
         {
