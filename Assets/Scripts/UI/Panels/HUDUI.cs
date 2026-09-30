@@ -2,6 +2,7 @@ using Economy;
 using Events;
 using Player;
 using TMPro;
+using UI.Reuseable;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,9 @@ namespace UI
         [SerializeField] private TMP_Text depthLabel;
         [Tooltip("The active run modifier (RunModifiers.RunModifierService.ActiveSummary) - blank when there is none.")]
         [SerializeField] private TMP_Text runModifierLabel;
+        [Tooltip("Hover tooltip on runModifierLabel showing the active modifier's full description.")]
+        [SerializeField] private HoverTooltipTrigger runModifierTooltipTrigger;
+        [SerializeField] private TMP_Text runModifierTooltipLabel;
 
         [Header("Critical fuel warning")]
         [SerializeField] private Color criticalFuelColor = new Color(1f, 0.25f, 0.2f, 1f);
@@ -76,6 +80,8 @@ namespace UI
             if (dollarsLabel == null) Debug.LogError("HUDUI: no dollarsLabel found in scene.");
             if (artifactCountLabel == null) Debug.LogError("HUDUI: no artifactCountLabel found in scene.");
             if (runModifierLabel == null) Debug.LogError("HUDUI: no runModifierLabel found in scene.");
+            if (runModifierTooltipTrigger == null) Debug.LogError("HUDUI: no runModifierTooltipTrigger found in scene.");
+            if (runModifierTooltipLabel == null) Debug.LogError("HUDUI: no runModifierTooltipLabel found in scene.");
         }
 
         private void OnEnable()
@@ -164,7 +170,14 @@ namespace UI
 
         private void RefreshRunModifier()
         {
-            runModifierLabel.text = GameManager.RunModifierService.ActiveSummary();
+            var service = GameManager.RunModifierService;
+            runModifierLabel.text = service.ActiveSummary();
+
+            var def = service.ActiveDefinition;
+            runModifierTooltipTrigger.Active = def != null;
+            runModifierTooltipLabel.text = def != null
+                ? $"<b>{def.DisplayName}</b>\n{service.Describe(def, service.ActiveState)}"
+                : "";
         }
 
         private void RefreshDepth()
