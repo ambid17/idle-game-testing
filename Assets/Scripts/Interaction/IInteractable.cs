@@ -14,6 +14,7 @@ namespace Interaction
         // Appended (scene prompt rows serialize this enum as an int).
         Critter,
         Building_CritterShop,
+        SkyArtifact,
     }
 
     public enum InteractionType

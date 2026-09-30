@@ -34,6 +34,7 @@ namespace Persistence
 
         [SerializeField] private PlayerController playerController;
         [SerializeField] private ChestSpawner chestSpawner;
+        [SerializeField] private SkyArtifact skyArtifact;
         private PlayerInventory playerInventory;
         private PlayerHealth playerHealth;
 
@@ -55,6 +56,8 @@ namespace Persistence
             {
                 Debug.LogError("SaveService.chestSpawner is not assigned. Active chests will not be saved/restored.");
             }
+
+            if (skyArtifact == null) Debug.LogError("SaveService.skyArtifact is not assigned. The sky relic's collected state will not be saved/restored.");
 
             // OS force-kill (especially on mobile) doesn't reliably call OnApplicationQuit, so a
             // periodic safety-net autosave backs up OnApplicationQuit/OnApplicationPause below.
@@ -173,6 +176,7 @@ namespace Persistence
 
             data.LifetimeStats = GameManager.AchievementManager.Stats;
             data.Critters = CritterCollection.Instance.ToSaveData();
+            data.SkyArtifactCollected = skyArtifact.IsCollected;
 
             try
             {
@@ -271,6 +275,7 @@ namespace Persistence
             TutorialManager.Instance.RestoreFromSaveData(data.ShownTutorials);
             GameManager.AchievementManager.RestoreFromSaveData(data.LifetimeStats);
             CritterCollection.Instance.RestoreFromSaveData(data.Critters);
+            skyArtifact.RestoreCollected(data.SkyArtifactCollected);
 
             foreach (var entry in data.UpgradeLevels)
             {
