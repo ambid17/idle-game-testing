@@ -9,7 +9,8 @@ namespace Buildings
     // Shared "materialize through a portal" reveal cinematic: player frozen, camera pans to the
     // building, a portal effect plays while the building's sprite fades in, then bottom-screen
     // text explains the building before the player clicks to continue and the camera pans back.
-    // Used by both Economy.MuseumRevealController and Processing.ProcessingCenterRevealController -
+    // Used by Economy.MuseumRevealController, Processing.ProcessingCenterRevealController and
+    // Automation.ControlCenterRevealController -
     // each of those only owns its own unlock trigger, its building reference, and its description
     // text; this is the one place the animation/timings/text-panel/InputBlocker plumbing lives.
     // Scene-placed singleton (mirrors Tutorial.TutorialManager) since it needs Inspector-wired
@@ -64,8 +65,10 @@ namespace Buildings
         {
             // Waits out whatever panel/modal is open (e.g. the Market panel a recipe was just bought
             // in, or the FirstArtifact world tutorial popup) since every panel/modal already sets
-            // InputBlocker while open - see Player.InputBlocker's own comment.
-            yield return new WaitUntil(() => !InputBlocker.IsBlocked);
+            // InputBlocker while open - see Player.InputBlocker's own comment. Tutorial modals don't
+            // block input, so also wait out any open modal (e.g. the Automatons tutorial that fires
+            // alongside the Control Center reveal) rather than playing the cinematic underneath it.
+            yield return new WaitUntil(() => !InputBlocker.IsBlocked && !UI.ModalTracker.IsAnyModalOpen);
 
             InputBlocker.SetBlocked(true);
 

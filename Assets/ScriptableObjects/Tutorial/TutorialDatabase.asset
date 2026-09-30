@@ -44,7 +44,7 @@ MonoBehaviour:
   - Id: 5
     DisplayType: 0
     Title: Control Center
-    Body: 'Once unlocked: monitor your automatons and drones and adjust their settings
+    Body: 'Monitor your automatons and drones and adjust their settings
       here. Refueling and repairs happen for free at the Depot.'
   - Id: 6
     DisplayType: 2
@@ -113,3 +113,8 @@ MonoBehaviour:
     Title: Critter Caught!
     Body: You caught a critter! Find the Critter Shop in a cave somewhere in the
       upper layers and turn your critters in there for rewards!
+  - Id: 18
+    DisplayType: 2
+    Title: Control Center
+    Body: The Control Center is where you monitor your automatons and drones. Check
+      their earnings and adjust their settings here.

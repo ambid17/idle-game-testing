@@ -24,12 +24,13 @@ namespace Tutorial
         RunModifierPick,
         NewRun,
         Critters,
+        ControlCenterReveal,
     }
 
     // Which UI component should render this tutorial when TutorialManager dispatches it - each of
     // UI.TutorialModalUI / UI.WorldTutorialPopupUI / Economy.MuseumRevealController /
-    // Processing.ProcessingCenterRevealController filters ShowTutorialEvent by this field to decide
-    // "is this mine?".
+    // Processing.ProcessingCenterRevealController / Automation.ControlCenterRevealController filters
+    // ShowTutorialEvent by this field to decide "is this mine?".
     public enum TutorialDisplayType
     {
         Modal,
