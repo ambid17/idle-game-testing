@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Atmosphere.BiomeBackdrop
   Planes:
   - Sprite: {fileID: 21300000, guid: a6af776de3a093f4e80ee6d906a8bb90, type: 3}
-    Depth: 35
-    Tint: {r: 0.45, g: 0.45, b: 0.45, a: 1}
+    Depth: 20
+    Tint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   - Sprite: {fileID: 21300000, guid: eccaf029455dd674c8b56e88f0bb1184, type: 3}
-    Depth: 14
-    Tint: {r: 0.6, g: 0.6, b: 0.6, a: 1}
+    Depth: 8
+    Tint: {r: 0.75, g: 0.75, b: 0.75, a: 1}
   - Sprite: {fileID: 21300000, guid: e68cbf7893370e940bf647f527441d74, type: 3}
-    Depth: 5
-    Tint: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+    Depth: 3
+    Tint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
