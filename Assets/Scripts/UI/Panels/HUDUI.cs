@@ -28,12 +28,29 @@ namespace UI
         [Tooltip("The active run modifier (RunModifiers.RunModifierService.ActiveSummary) - blank when there is none.")]
         [SerializeField] private TMP_Text runModifierLabel;
 
+        [Header("Critical fuel warning")]
+        [SerializeField] private Color criticalFuelColor = new Color(1f, 0.25f, 0.2f, 1f);
+        [Tooltip("Wobble frequency (radians/sec) of the fuel number while fuel is critical.")]
+        [SerializeField] private float fuelJiggleSpeed = 30f;
+        [Tooltip("Max wobble angle (degrees) at empty; it ramps up from half this at the critical threshold.")]
+        [SerializeField] private float fuelJiggleAngle = 8f;
+        [Tooltip("Max extra scale of the pulse at empty.")]
+        [SerializeField] private float fuelJigglePulse = 0.15f;
+
+        private Color fuelLabelBaseColor;
+        private Quaternion fuelLabelBaseRotation;
+        private Vector3 fuelLabelBaseScale;
+
         private void Start()
         {
             if (playerController == null) playerController = FindAnyObjectByType<PlayerController>();
             if (playerHealth == null) playerHealth = FindAnyObjectByType<PlayerHealth>();
             if (playerInventory == null) playerInventory = FindAnyObjectByType<PlayerInventory>();
             CheckNullRefs();
+
+            fuelLabelBaseColor = fuelLabel.color;
+            fuelLabelBaseRotation = fuelLabel.rectTransform.localRotation;
+            fuelLabelBaseScale = fuelLabel.rectTransform.localScale;
 
             renderer.SetActive(true);
             RefreshDollars();
@@ -89,7 +106,34 @@ namespace UI
         private void RefreshFuel()
         {
             fuelFillBar.fillAmount = Mathf.Clamp01(playerController.FuelFraction);
-            fuelLabel.text = $"{playerController.Fuel:0}";
+            // Ceil so the number only reads 0 when the tank is truly empty - with the grace-period
+            // slow drain the player can spend a while below 0.5, and "0" while still flying reads
+            // like a bug.
+            fuelLabel.text = $"{Mathf.CeilToInt(playerController.Fuel)}";
+            RefreshFuelWarning();
+        }
+
+        // Persistent counterpart to the one-shot low/critical fuel notifications: the fuel number
+        // stays red and wobbles for as long as fuel is critical, getting more frantic toward empty.
+        private void RefreshFuelWarning()
+        {
+            var labelTransform = fuelLabel.rectTransform;
+            if (!playerController.IsFuelCritical)
+            {
+                fuelLabel.color = fuelLabelBaseColor;
+                labelTransform.localRotation = fuelLabelBaseRotation;
+                labelTransform.localScale = fuelLabelBaseScale;
+                return;
+            }
+
+            float urgency = Mathf.Lerp(0.5f, 1f, 1f - Mathf.Clamp01(playerController.FuelFraction / PlayerController.CriticalFuelWarningFraction));
+            float t = Time.unscaledTime;
+            float angle = Mathf.Sin(t * fuelJiggleSpeed) * fuelJiggleAngle * urgency;
+            float pulse = 1f + Mathf.Abs(Mathf.Sin(t * fuelJiggleSpeed * 0.25f)) * fuelJigglePulse * urgency;
+
+            fuelLabel.color = criticalFuelColor;
+            labelTransform.localRotation = fuelLabelBaseRotation * Quaternion.Euler(0f, 0f, angle);
+            labelTransform.localScale = fuelLabelBaseScale * pulse;
         }
 
         private void RefreshHealth()

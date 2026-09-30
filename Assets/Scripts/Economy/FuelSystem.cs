@@ -19,6 +19,13 @@ namespace Economy
         [SerializeField] private float idleDrainPerSecond = 1f;
         [SerializeField] private float flyingDrainPerSecond = 5f;
         [SerializeField] private float miningDrainPerSecond = 3f;
+        // Grace period: once the tank is down to its last few units, all drain is scaled down so
+        // those final units last noticeably longer - gives the player a moment to react to the
+        // critical-fuel warning and limp back instead of the tank emptying the instant they notice.
+        [Tooltip("Fuel units at/below which drain is slowed (the grace period).")]
+        [SerializeField] private float graceFuelThreshold = 5f;
+        [Tooltip("Drain multiplier while in the grace period - 0.3 makes the last units last ~3x longer.")]
+        [SerializeField, Range(0.05f, 1f)] private float graceDrainMultiplier = 0.3f;
 
         // Owner-injected formulas for things that genuinely vary per entity/live state rather than
         // being static config - e.g. Player's Movement_FuelInventory/Movement_FuelEfficiency
@@ -51,7 +58,8 @@ namespace Economy
         {
             if (amount <= 0f || Fuel <= 0f) return;
             float efficiency = drainEfficiencyMultiplierProvider != null ? drainEfficiencyMultiplierProvider() : 1f;
-            Fuel = Mathf.Max(0f, Fuel - amount * efficiency);
+            float grace = Fuel <= graceFuelThreshold ? graceDrainMultiplier : 1f;
+            Fuel = Mathf.Max(0f, Fuel - amount * efficiency * grace);
         }
 
         public void AddFuel(float amount)

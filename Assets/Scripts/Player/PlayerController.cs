@@ -47,7 +47,7 @@ namespace Player
         [SerializeField] private LayerMask groundLayer;
 
         private const float LowFuelWarningFraction = 0.5f;
-        private const float CriticalFuelWarningFraction = 0.2f;
+        public const float CriticalFuelWarningFraction = 0.2f;
 
         private Rigidbody2D rb;
         private CapsuleCollider2D capsuleCollider;
@@ -81,6 +81,9 @@ namespace Player
         public float FuelFraction => fuelSystem.FuelFraction;
         public float FuelMax => fuelSystem.MaxFuel;
         public float FuelMissing => fuelSystem.FuelMissing;
+        // Same threshold as the one-shot "Critical fuel level!" notification - HUDUI keys its
+        // persistent red/jiggling fuel number off this so the two warnings always agree.
+        public bool IsFuelCritical => FuelFraction <= CriticalFuelWarningFraction;
 
         // With Fuel Drones unlocked, an empty tank strands the player instead of killing them, so a
         // drone can come refuel them. PlayerInteractionDetector shows a respawn prompt meanwhile,
