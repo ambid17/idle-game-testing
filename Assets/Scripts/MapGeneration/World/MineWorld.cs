@@ -171,6 +171,8 @@ namespace MapGeneration
         {
             var chunk = GetOrGenerateChunk(layerIndex);
             List<Vector2Int> revealed = null;
+            List<Vector2Int> openSeeds = null;
+            HashSet<Vector2Int> hiddenOpenSeeds = null;
 
             for (int dy = -radius; dy <= radius; dy++)
             {
@@ -184,7 +186,13 @@ namespace MapGeneration
 
                     int idx = chunk.Index(x, y);
                     var cell = chunk.Cells[idx];
+                    // Every open cell in reach seeds the pocket flood below, revealed or not, so a
+                    // pocket only partly uncovered by an earlier reveal still opens up fully.
+                    if (cell.Mined) (openSeeds ??= new List<Vector2Int>()).Add(new Vector2Int(x, y));
                     if (cell.Revealed) continue;
+
+                    // Freshly uncovered open ground is pocket interior, so it gets the pocket's wall ring too.
+                    if (cell.Mined) (hiddenOpenSeeds ??= new HashSet<Vector2Int>()).Add(new Vector2Int(x, y));
 
                     cell.Revealed = true;
                     chunk.Cells[idx] = cell;
@@ -192,10 +200,67 @@ namespace MapGeneration
                 }
             }
 
+            if (openSeeds != null) RevealConnectedOpenGround(chunk, openSeeds, hiddenOpenSeeds, ref revealed);
+
             if (revealed == null) return;
 
             if (revealedByLayer.TryGetValue(layerIndex, out var existing)) existing.AddRange(revealed);
             else revealedByLayer[layerIndex] = revealed;
+        }
+
+        // Pre-carved open ground (empty pockets, the Critter Shop cave, feature tunnels) is generated
+        // Mined but still fogged. Mining only reveals a small radius, and walking through open
+        // ground never reveals anything, so once a reveal touches any of it, flood-fill the whole
+        // connected still-fogged open region plus a one-cell ring of the solid walls around it -
+        // the cavern opens up at once instead of staying fogged past the reveal radius.
+        // Only expands into unrevealed cells, so the player's own (already revealed) tunnels
+        // are never re-walked. Seeds that were already revealed (the player's tunnel, or pocket
+        // cells from an earlier reveal) only spread; they don't ring their walls, which would
+        // push the reveal a cell past the lantern radius.
+        private static void RevealConnectedOpenGround(ChunkData chunk, List<Vector2Int> seeds, HashSet<Vector2Int> hiddenSeeds, ref List<Vector2Int> revealed)
+        {
+            var frontier = new Queue<Vector2Int>(seeds);
+            var visited = new HashSet<Vector2Int>(seeds);
+            var ringable = hiddenSeeds ?? new HashSet<Vector2Int>();
+
+            while (frontier.Count > 0)
+            {
+                var current = frontier.Dequeue();
+                bool ringWalls = ringable.Contains(current);
+
+                for (int dy = -1; dy <= 1; dy++)
+                {
+                    for (int dx = -1; dx <= 1; dx++)
+                    {
+                        if (dx == 0 && dy == 0) continue;
+
+                        int x = current.x + dx;
+                        int y = current.y + dy;
+                        if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) continue;
+
+                        int idx = chunk.Index(x, y);
+                        var cell = chunk.Cells[idx];
+                        if (cell.Revealed) continue;
+
+                        // Open ground floods orthogonally only (a diagonal-only touch is a separate
+                        // pocket, left to be found on its own); solid neighbors are the wall ring.
+                        bool orthogonal = dx == 0 || dy == 0;
+                        bool spreads = cell.Mined && orthogonal;
+                        if (!spreads && (cell.Mined || !ringWalls)) continue;
+
+                        cell.Revealed = true;
+                        chunk.Cells[idx] = cell;
+                        var pos = new Vector2Int(x, y);
+                        (revealed ??= new List<Vector2Int>()).Add(pos);
+
+                        if (spreads && visited.Add(pos))
+                        {
+                            ringable.Add(pos);
+                            frontier.Enqueue(pos);
+                        }
+                    }
+                }
+            }
         }
 
 
