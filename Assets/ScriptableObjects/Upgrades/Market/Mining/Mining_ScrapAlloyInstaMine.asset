@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Mining_ScrapAlloyInstaMine
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Scrap Insta-Mine
-  Description: Scrap blocks are always mined instantly, no matter your mining
-    speed.
+  Description: Scrap blocks are always mined instantly, regardless of your mining speed.
   Icon: {fileID: 21300000, guid: a052e763a74c2f04b9b346c538c2cb5e, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1

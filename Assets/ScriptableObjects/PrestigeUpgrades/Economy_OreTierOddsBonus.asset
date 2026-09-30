@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Economy_OreTierOddsBonus
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Prospector's Instinct
-  Description: Increases the odds of finding higher-tier ore. 10% chance per-level
-    for an ore of one layer deeper to generate.
+  Description: +10% chance per level for each generated ore to be upgraded to an ore from the next layer down (up to 100% at max level).
   Icon: {fileID: 21300000, guid: 7d5239f94093a4c43be1fc9330796a2c, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 10

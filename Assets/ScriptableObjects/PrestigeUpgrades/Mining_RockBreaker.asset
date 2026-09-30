@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Mining_RockBreaker
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Rock Breaker
-  Description: Lets you mine straight through falling rocks instead of waiting for
-    them to fall.
+  Description: Lets you mine Falling Rock blocks directly, instead of only knocking them loose by mining the block underneath.
   Icon: {fileID: 21300000, guid: 9c01699f25c33e5478d61df96980102a, type: 3}
   EffectValuePerLevel: 0
   MaxLevel: 1

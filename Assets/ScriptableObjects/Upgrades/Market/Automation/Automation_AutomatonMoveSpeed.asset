@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Automation_AutomatonMoveSpeed
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Automaton Move Speed
-  Description: +10% Automaton movement speed per level.
+  Description: +10% Automaton movement speed per level (up to +100% at max level).
   Icon: {fileID: 21300000, guid: 4d26663b990c31d4cbfe87150997e3d5, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 10

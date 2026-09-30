@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Survival_DepotRecall
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Depot Recall
-  Description: 'Unlocks an active ability: press Q to teleport to the Depot. Base
-    cooldown of 5 minutes, each additional level halves the cooldown.'
+  Description: 'Unlocks the Depot Recall ability (Q to use, Tab to switch abilities): instantly teleport to the Depot. 5 min cooldown at level 1, halved each additional level (2.5 min, 75s, down to 37.5s at max level).'
   Icon: {fileID: 21300000, guid: b8c39d302186f0b40998fdf83c73cb89, type: 3}
   EffectValuePerLevel: 0.5
   MaxLevel: 4

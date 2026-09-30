@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Hazard_LavaResistance
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Heat Shielding
-  Description: Increases resistance to lava damage. Reduce damage by 10%.
+  Description: Take 10% less lava damage per level (up to 80% less at max level).
   Icon: {fileID: 21300000, guid: 7c7b5dcc12ad1b549a67347f8956d28f, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8

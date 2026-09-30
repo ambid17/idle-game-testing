@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Economy_MarketingSellMultiplier
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Marketing
-  Description: Increase the sale value of everything you sell.
+  Description: +5% sale value of all ore per level (up to +50% at max level).
   Icon: {fileID: 21300000, guid: f961c3a372268be4caa2ae5524eb5fe7, type: 3}
   EffectValuePerLevel: 0.05
   MaxLevel: 10

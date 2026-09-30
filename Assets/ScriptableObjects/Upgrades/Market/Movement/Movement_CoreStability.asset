@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Movement_CoreStability
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Core Stability
-  Description: Reinforces your core, reducing all damage you take by 15% per level.
+  Description: Take 15% less damage from all sources per level (up to 75% less at max level).
   Icon: {fileID: 21300000, guid: 2ebdf269071e1444b95ff2424198138a, type: 3}
   EffectValuePerLevel: 0.15
   MaxLevel: 5

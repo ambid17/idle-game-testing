@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Automation_FuelDroneInventoryCapacity
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Fuel Drone Capacity
-  Description: +50% Fuel Drone fuel capacity per level.
+  Description: +50% fuel delivered per Fuel Drone trip per level (up to +150% at max level).
   Icon: {fileID: 21300000, guid: 3154ab032aad1044caed62873adba91b, type: 3}
   EffectValuePerLevel: 0.5
   MaxLevel: 3

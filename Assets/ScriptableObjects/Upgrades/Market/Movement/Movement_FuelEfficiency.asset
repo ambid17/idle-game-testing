@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Movement_FuelEfficiency
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Fuel Efficiency
-  Description: Reduces how much fuel you burn by 15%.
+  Description: Burn 15% less fuel per level (up to 75% less at max level).
   Icon: {fileID: 21300000, guid: 3b5ee75c9bb00f149a2c8f311b243c10, type: 3}
   EffectValuePerLevel: 0.15
   MaxLevel: 5

@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Idle_KeepAutomatonMiningRadius
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Wide Excavators
-  Description: Keep 1 tier of automaton mining radius from the start of every future
-    run.
+  Description: Start every run with 1 free level of Automaton Mining Radius per level (capped at that upgrade's max of 2).
   Icon: {fileID: 21300000, guid: 4324a4a5602b20644a30e327719c3ac6, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3

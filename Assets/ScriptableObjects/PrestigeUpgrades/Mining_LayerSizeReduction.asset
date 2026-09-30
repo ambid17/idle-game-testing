@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Mining_LayerSizeReduction
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Compact Strata
-  Description: Reduces the vertical size of each layer by 1 block, letting you reach
-    deeper layers faster.
+  Description: Every layer is 1 block shorter per level, so you reach deeper layers faster (up to 5 blocks shorter at max level).
   Icon: {fileID: 21300000, guid: 9ca4727e10b73094f96355ca860a228b, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 5

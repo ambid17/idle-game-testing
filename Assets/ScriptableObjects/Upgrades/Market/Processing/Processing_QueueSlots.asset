@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Processing_QueueSlots
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Processing Queue Slots
-  Description: Adds another concurrent processing queue slot.
+  Description: +1 Processing Center slot per level, so more recipes can craft at the same time (base 1, up to 4 at max level).
   Icon: {fileID: 21300000, guid: d97afbb071e79384386db58eb99534bd, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3

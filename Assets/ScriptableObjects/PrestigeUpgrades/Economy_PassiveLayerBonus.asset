@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Economy_PassiveLayerBonus
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Deep Pockets
-  Description: Enables the passive layer bonus. Clearing 50%, 75% and 95% of a layer
-    each multiply the value of its ores by 1.5x.
+  Description: Clearing 50%, 75% and 95% of a layer each multiply the value of ore you mine there by 1.5x, stacking (1.5x, then 2.25x, then 3.38x). Paid as bonus Dollars when mined.
   Icon: {fileID: 21300000, guid: ff4a40230da0fe640be28018e617bea3, type: 3}
   EffectValuePerLevel: 0.5
   MaxLevel: 1

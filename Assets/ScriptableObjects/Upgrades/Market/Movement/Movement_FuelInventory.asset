@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Movement_FuelInventory
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Fuel Inventory
-  Description: Increases the amount of fuel you can carry for flight.
+  Description: +20 max fuel per level (base 100, up to 220 at max level).
   Icon: {fileID: 21300000, guid: 2a7a0e2e190859441af93794bbbe9c08, type: 3}
   EffectValuePerLevel: 20
   MaxLevel: 6

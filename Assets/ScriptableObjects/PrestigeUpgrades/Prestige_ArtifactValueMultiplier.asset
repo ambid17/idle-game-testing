@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Prestige_ArtifactValueMultiplier
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Curator's Eye
-  Description: Increases how many artifacts you receive by 1 each time you mine an
-    artifact ore.
+  Description: +1 artifact from every artifact block you mine per level (up to 11 per block at max level).
   Icon: {fileID: 21300000, guid: 16e74fa692ba16c42bc519cfa7e16396, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 10

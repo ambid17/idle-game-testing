@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Automation_StorageDroneCount
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Additional Storage Drone
-  Description: Add another Storage Drone to ferry minerals to the Depot.
+  Description: Adds 1 Storage Drone that collects ore from your Automatons (or you) and ferries it to the Depot. +1 drone per level (up to 3 at max level).
   Icon: {fileID: 21300000, guid: 64d2ab32fb6e7da42b9bad63385ea5fd, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3

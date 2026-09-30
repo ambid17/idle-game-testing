@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Automation_AutomatonCount
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Additional Automaton
-  Description: Add another Mining Automaton to dig tunnels for you.
+  Description: Adds 1 Mining Automaton that digs tunnels and collects ore for you. +1 automaton per level (up to 3 at max level).
   Icon: {fileID: 21300000, guid: 6fa5e3a796d1d064195926f1986f9015, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3

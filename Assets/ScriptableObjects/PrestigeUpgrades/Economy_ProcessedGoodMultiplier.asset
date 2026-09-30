@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Economy_ProcessedGoodMultiplier
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Refined Output
-  Description: Permanently increases the value of processed goods sold at the depot
-    by 20%.
+  Description: +20% sale value of processed goods per level (up to +200% at max level).
   Icon: {fileID: 21300000, guid: 01a1dcc593d986e49a1de61810603278, type: 3}
   EffectValuePerLevel: 0.2
   MaxLevel: 10

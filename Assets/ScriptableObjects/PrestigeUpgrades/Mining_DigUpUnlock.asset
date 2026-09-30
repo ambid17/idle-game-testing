@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Mining_DigUpUnlock
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Upward Drill
-  Description: Enables digging upwards! Hold W against a block above you to mine
-    it.
+  Description: 'Unlocks digging upward: hold W against the block above you to mine it.'
   Icon: {fileID: 21300000, guid: bbb43e8fce664794fafa974595cadafd, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1

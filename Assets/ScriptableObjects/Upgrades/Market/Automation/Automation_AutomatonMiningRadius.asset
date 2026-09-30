@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Automation_AutomatonMiningRadius
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Automaton Mining Radius
-  Description: Automatons mine an extra block alongside every dig.
+  Description: Automatons mine 1 extra adjacent block with every dig per level. Level 1 adds the block to the left; level 2 also adds the block to the right.
   Icon: {fileID: 21300000, guid: 836dc556add3a2e428ddbc5bd16570dd, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 2

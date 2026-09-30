@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Idle_KeepAutomatonMiningSpeed
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Seasoned Drills
-  Description: Keep 1 tier of automaton mining speed from the start of every future
-    run.
+  Description: Start every run with 1 free level of Automaton Mining Speed per level (+30% automaton mining speed each, up to +90% at max level).
   Icon: {fileID: 21300000, guid: 4a517d7e27cc61a4888933c96943df95, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3

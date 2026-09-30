@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Economy_Overflow
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Overflow
-  Description: Once your inventory is full, mined ore auto-sells at reduced value
-    instead of blocking you from mining.
+  Description: Once your inventory is full, extra ore you mine is auto-sold for 50% of its value instead of spilling into a chest.
   Icon: {fileID: 21300000, guid: 39283bae13d7462479bf1245f3459522, type: 3}
   EffectValuePerLevel: 0.5
   MaxLevel: 1

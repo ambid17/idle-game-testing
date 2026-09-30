@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Economy_PowerUpEffectivenessBonus
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Amplified Boosts
-  Description: Increases the effectiveness of power-up blocks by 10%
+  Description: '+10% power-up strength per level: longer Drill Overdrive, more fuel and HP from Fuel Canisters and Repair Kits, more Treasure Chest ore and Lucky Strike charges (up to +100% at max level).'
   Icon: {fileID: 21300000, guid: 3e026c8694ff8194ea85d864c0760828, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 10

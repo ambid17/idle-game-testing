@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Prestige_RunModifierWiderSelection
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Wider Selection
-  Description: Offers 4 run modifiers at prestige instead of 3.
+  Description: Choose from 4 run modifiers at prestige instead of 3.
   Icon: {fileID: 21300000, guid: 834ea64732ef91643b80d4f9bad7af60, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1

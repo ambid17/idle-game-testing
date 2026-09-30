@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mining_DigWhileFlyingUnlocked
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Aerial Prospecting
-  Description: Enables digging-while-flying!
+  Description: Unlocks mining while flying - dig blocks while your jetpack is active instead of only while standing.
   Icon: {fileID: 21300000, guid: bd1afe94ab3dfc04fafa977f2d0d6c99, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1

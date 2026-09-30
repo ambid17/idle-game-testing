@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Automation_StorageDroneMoveSpeed
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Storage Drone Speed
-  Description: +10% Storage Drone movement speed per level.
+  Description: +10% Storage Drone movement speed per level (up to +100% at max level).
   Icon: {fileID: 21300000, guid: 9c3772711052dce44afb360e4f5e12b2, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 10

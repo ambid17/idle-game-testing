@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Survival_FallDamageReduction
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Shock Absorbers
-  Description: Reduces fall damage taken by 10%.
+  Description: Take 10% less fall damage per level (up to 80% less at max level).
   Icon: {fileID: 21300000, guid: 665e0c33baa4a574385ccbc3f13ccf68, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8

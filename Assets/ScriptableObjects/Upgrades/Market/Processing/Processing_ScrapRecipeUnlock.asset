@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Processing_ScrapRecipeUnlock
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: 'Processing: Unlock Scrap Recipe'
-  Description: Unlocks the Scrap Plating recipe at the Processing Center.
+  Description: 'Unlocks the Scrap Plating recipe at the Processing Center: 3 Scrap make Scrap Plating worth $30 (5s each).'
   Icon: {fileID: 21300000, guid: accb163e9dedf344c89da869f4215210, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1

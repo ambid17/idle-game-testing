@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Mining_AreaSize
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Vein miner
-  Description: Mining an ore chains into adjacent ore for free. Each level extends
-    the chain by 1 more connected ore block.
+  Description: Mining an ore also mines connected ore blocks for free. +1 connected ore block per dig per level (up to 12 at max level).
   Icon: {fileID: 21300000, guid: 701d1cd338a2cc0459e885559bda2a95, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 12
