@@ -7,8 +7,9 @@ namespace Player
     // GameDesignDoc "Market Upgrades > Mining > Increase mining size" (vein mining): when the
     // primary mined block is Ore, each level of the upgrade lets the free chain reach one more
     // Ore block connected (directly or through other Ore) to the block that was just mined,
-    // instead of the old fixed directional offset pattern.
-    // Grid convention (per AutomatonReachability/MiningAreaPattern): +y is DOWN in cell-local
+    // instead of the old fixed directional offset pattern. Also drives the automatons' Control
+    // Center mining radius upgrade (MiningAutomaton.MineTargetAndBonusCells).
+    // Grid convention (per AutomatonReachability): +y is DOWN in cell-local
     // space, opposite of Unity's usual world-space up-positive Y.
     public static class VeinMiningPattern
     {

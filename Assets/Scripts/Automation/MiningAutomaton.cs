@@ -385,10 +385,11 @@ namespace Automation
             state = State.PickingTarget;
         }
 
-        // GameDesignDoc Control Center "increase mining radius by 1 (max 2)": still uses the fixed
-        // directional offset pattern (Player.MiningAreaPattern) - the player's own Mining_AreaSize
-        // upgrade moved to vein-chain mining (Player.VeinMiningPattern), but this is a separate
-        // upgrade and the design doc gives no distinct shape for the automaton version.
+        // GameDesignDoc Control Center "increase mining radius by 1 (max 2)": vein mining, same as
+        // the player's Mining_AreaSize upgrade (PlayerMining.MineAreaBonusCells) - only triggers
+        // off mining an Ore block, then chains into connected Ore blocks for free, one more per
+        // level. Only ore of the same type as the mined block chains, unless the Chain Vein Mining
+        // prestige perk is owned.
         private void MineTargetAndBonusCells(int layer, Vector2Int primaryCell, BlockType primaryBlockType)
         {
             if (mapGenerationService.MineCell(layer, primaryCell.x, primaryCell.y))
@@ -396,15 +397,17 @@ namespace Automation
                 CollectMinedBlock(primaryBlockType, layer, primaryCell);
             }
 
-            int radiusLevel = upgrades.Automation_AutomatonMiningRadiusBonus;
-            if (radiusLevel <= 0) return;
+            if (primaryBlockType.Category != BlockCategory.Ore) return;
 
-            foreach (var offset in MiningAreaPattern.GetOffsets(radiusLevel))
+            int chainLevel = upgrades.Automation_AutomatonMiningRadiusBonus;
+            if (chainLevel <= 0) return;
+
+            bool anyOre = PrestigeUpgradeManager.Instance.Mining_ChainVeinMiningUnlocked;
+            foreach (var cell in VeinMiningPattern.GetChainCells(mapGenerationService, layer, primaryCell.x, primaryCell.y, chainLevel, primaryBlockType, anyOre))
             {
-                var cell = primaryCell + offset;
                 var bonusBlock = mapGenerationService.GetBlockTypeAt(layer, cell.x, cell.y);
                 if (bonusBlock == null) continue;
-                if (bonusBlock.Category == BlockCategory.Ore && oreInventory.IsFull) continue;
+                if (oreInventory.IsFull) continue;
 
                 if (!mapGenerationService.MineCell(layer, cell.x, cell.y)) continue;
                 CollectMinedBlock(bonusBlock, layer, cell);

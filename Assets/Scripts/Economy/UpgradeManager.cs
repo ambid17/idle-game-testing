@@ -68,6 +68,8 @@ namespace Economy
         // every other UpgradeManager effect - the first purchased level buys the first unit.
         public int Automation_AutomatonCount => LevelOf(UpgradeEffect.Automation_AutomatonCount);
         public float Automation_AutomatonInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.Automation_AutomatonInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonInventoryCapacity);
+        // Vein mining for automatons: how many connected Ore cells MiningAutomaton's free chain
+        // can reach (Player.VeinMiningPattern.GetChainCells), like Mining_AreaLevel for the player.
         public int Automation_AutomatonMiningRadiusBonus => Mathf.RoundToInt(LevelOf(UpgradeEffect.Automation_AutomatonMiningRadius) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonMiningRadius));
         public float Automation_AutomatonMiningSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Automation_AutomatonMiningSpeed) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonMiningSpeed);
         public float Automation_AutomatonMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Automation_AutomatonMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonMoveSpeed);

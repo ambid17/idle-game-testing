@@ -4,12 +4,10 @@ using UnityEngine;
 
 namespace Automation
 {
-    // Pure grid-math helper for Mining Automaton wandering, playing the same role for automatons
-    // that Player.MiningAreaPattern plays for the player's mining-radius upgrade - except
-    // reachability here depends on what's actually been dug, so it's a graph search (BFS through
-    // already-mined cells) rather than a fixed offset table.
+    // Pure grid-math helper for Mining Automaton wandering: reachability depends on what's
+    // actually been dug, so it's a graph search (BFS through already-mined cells).
     //
-    // Grid convention (per MiningAreaPattern/ChunkTilemapView): +y is DOWN in chunk-local cell
+    // Grid convention (per VeinMiningPattern/ChunkTilemapView): +y is DOWN in chunk-local cell
     // space, opposite of Unity's usual world-space up-positive Y - so "down" here is (0, +1), not
     // Vector2Int.down.
     //
