@@ -128,6 +128,10 @@ namespace Economy
         // mined one PlayerMining also breaks in the dig direction.
         public int Mining_ExcavatorDepth => Mathf.RoundToInt(LevelOf(UpgradeEffect.Mining_Excavator) * EffectValuePerLevelOf(UpgradeEffect.Mining_Excavator));
 
+        // Maxed Excavator digs down fast enough that every landing would hurt, so its last level
+        // also raises the fall speed needed to take damage (PlayerController.TrackFallDamage).
+        public float Mining_ExcavatorFallSpeedThresholdBonus => IsMaxedEffect(UpgradeEffect.Mining_Excavator) ? 2f : 0f;
+
         // GameDesignDoc "Lantern capstones > zoom, enhance": additive camera zoom-out, read by
         // CameraZoomController.
         public float Mining_CameraZoomBonus => LevelOf(UpgradeEffect.Mining_CameraZoom) * EffectValuePerLevelOf(UpgradeEffect.Mining_CameraZoom);

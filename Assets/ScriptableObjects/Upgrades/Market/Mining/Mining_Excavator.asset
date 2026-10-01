@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mining_Excavator
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Excavator
-  Description: Each dig also breaks 1 extra Dirt block further in the direction you're digging per level (up to 3 extra at max level). Stops at anything that isn't Dirt.
+  Description: Each dig also breaks 1 extra Dirt block further in the direction you're digging per level (up to 3 extra at max level). Stops at anything that isn't Dirt. Max level also lets you fall faster before taking fall damage.
   Icon: {fileID: 21300000, guid: d9ee10b397a44889858e796cf2596b77, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3

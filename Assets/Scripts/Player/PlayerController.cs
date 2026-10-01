@@ -389,13 +389,14 @@ namespace Player
                 return;
             }
 
-            if (!wasGrounded && lastFallSpeed > fallDamageVelocityThreshold)
+            float threshold = fallDamageVelocityThreshold + (upgrades != null ? upgrades.Mining_ExcavatorFallSpeedThresholdBonus : 0f);
+            if (!wasGrounded && lastFallSpeed > threshold)
             {
                 // GameDesignDoc "Survival > Decrease fall damage": the prestige perk reduces the
                 // per-unit damage; the market's Core Stability applies later, in PlayerHealth.TakeDamage.
                 float prestigeReduction = prestigeUpgrades != null ? Mathf.Max(0f, 1f - prestigeUpgrades.Survival_FallDamageReduction) : 1f;
                 float effectiveDamagePerUnit = fallDamagePerExcessUnit * prestigeReduction;
-                health.TakeDamage((lastFallSpeed - fallDamageVelocityThreshold) * effectiveDamagePerUnit, DeathReason.FallDamage);
+                health.TakeDamage((lastFallSpeed - threshold) * effectiveDamagePerUnit, DeathReason.FallDamage);
             }
 
             lastFallSpeed = 0f;
