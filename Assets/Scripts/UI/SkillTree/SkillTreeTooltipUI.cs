@@ -18,7 +18,6 @@ namespace UI.SkillTree
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text descriptionLabel;
         [SerializeField] private TMP_Text levelLabel;
-        [SerializeField] private TMP_Text costLabel;
         [SerializeField] private TMP_Text purchaseBlockReasonLabel;
         // Just the definition identity - never a cached snapshot of its level/cost/affordability.
         // Refresh() re-queries source.GetDetails(current) live every time, so this can't go stale.
@@ -44,7 +43,6 @@ namespace UI.SkillTree
             if (nameLabel == null) Debug.LogError($"{nameof(SkillTreeTooltipUI)}.{nameof(nameLabel)} is not assigned in the inspector.");
             if (descriptionLabel == null) Debug.LogError($"{nameof(SkillTreeTooltipUI)}.{nameof(descriptionLabel)} is not assigned in the inspector.");
             if (levelLabel == null) Debug.LogError($"{nameof(SkillTreeTooltipUI)}.{nameof(levelLabel)} is not assigned in the inspector.");
-            if (costLabel == null) Debug.LogError($"{nameof(SkillTreeTooltipUI)}.{nameof(costLabel)} is not assigned in the inspector.");
             if (purchaseBlockReasonLabel == null) Debug.LogError($"{nameof(SkillTreeTooltipUI)}.{nameof(purchaseBlockReasonLabel)} is not assigned in the inspector.");
             if (canvas == null) Debug.LogError($"{nameof(SkillTreeTooltipUI)}: no parent Canvas found, tooltip positioning will be inaccurate.");
         }
@@ -74,7 +72,6 @@ namespace UI.SkillTree
             levelLabel.text = details.QueuedLevel > 0
                 ? $"{details.Level}+{details.QueuedLevel}/{details.MaxLevel}"
                 : $"{details.Level}/{details.MaxLevel}";
-            costLabel.text = details.CostLabel;
             purchaseBlockReasonLabel.text = details.CanPurchase ? "" : details.PurchaseBlockedReason;
         }
     }
