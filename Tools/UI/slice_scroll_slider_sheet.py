@@ -18,13 +18,13 @@ NAMES = [["ScrollbarTrack", "ScrollbarHandle"], ["SliderFill", "SliderKnob"]]
 BORDERS = {"ScrollbarTrack": 7, "ScrollbarHandle": 6, "SliderFill": 4}
 
 
-def slice_piece(quad):
+def slice_piece(quad, art_pixel=ART_PIXEL):
     rgb = quad[..., :3].astype(int)
     solid = ~((rgb[..., 0] > 150) & (rgb[..., 1] < 90))  # magenta bg + its darker drop shadow
     ys, xs = np.where(solid)
     y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
-    rows = round((y1 - y0) / ART_PIXEL)
-    cols = round((x1 - x0) / ART_PIXEL)
+    rows = round((y1 - y0) / art_pixel)
+    cols = round((x1 - x0) / art_pixel)
     ch, cw = (y1 - y0) / rows, (x1 - x0) / cols
     out = np.zeros((rows, cols, 4), np.uint8)
     for r in range(rows):

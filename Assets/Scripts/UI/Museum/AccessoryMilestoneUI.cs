@@ -14,12 +14,12 @@ namespace UI
         [SerializeField] private TMP_Text requirementLabel;
         [Tooltip("Shown over the icon while the accessory is still locked (e.g. a padlock).")]
         [SerializeField] private GameObject lockedOverlay;
-        [Tooltip("Wears/removes the accessory. Not interactable while locked.")]
+        [Tooltip("Wears the accessory. Not interactable while locked. Hidden while worn.")]
         [SerializeField] private Button wearButton;
         [SerializeField] private TMP_Text wearButtonLabel;
+        [Tooltip("Takes the accessory off. Shown in place of the wear button while worn.")]
+        [SerializeField] private Button removeButton;
         [SerializeField] private Color lockedTint = new(0.25f, 0.25f, 0.25f, 1f);
-        [SerializeField] private Color wornButtonColor = new(0.55f, 0.3f, 0.75f, 1f);
-        [SerializeField] private Color unwornButtonColor = Color.white;
 
         private AccessoryDefinition accessory;
 
@@ -31,8 +31,10 @@ namespace UI
             if (lockedOverlay == null) Debug.LogError("AccessoryMilestoneUI.lockedOverlay is not assigned.");
             if (wearButton == null) Debug.LogError("AccessoryMilestoneUI.wearButton is not assigned.");
             if (wearButtonLabel == null) Debug.LogError("AccessoryMilestoneUI.wearButtonLabel is not assigned.");
+            if (removeButton == null) Debug.LogError("AccessoryMilestoneUI.removeButton is not assigned.");
 
             wearButton.onClick.AddListener(() => RuneCollection.Instance.ToggleEquipped(accessory));
+            removeButton.onClick.AddListener(() => RuneCollection.Instance.ToggleEquipped(accessory));
         }
 
         public void Bind(AccessoryDefinition definition)
@@ -55,8 +57,9 @@ namespace UI
             requirementLabel.text = $"{accessory.UnlockAtRuneCount} runes - {accessory.Slot}";
 
             wearButton.interactable = unlocked;
-            wearButtonLabel.text = !unlocked ? "-" : worn ? "Remove" : "Wear";
-            wearButton.targetGraphic.color = worn ? wornButtonColor : unwornButtonColor;
+            wearButtonLabel.text = unlocked ? "Wear" : "-";
+            wearButton.gameObject.SetActive(!worn);
+            removeButton.gameObject.SetActive(worn);
         }
     }
 }
