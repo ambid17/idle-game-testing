@@ -36,6 +36,10 @@ namespace Economy
         Automation_StorageDroneCount = 109,
         Automation_StorageDroneInventoryCapacity = 110,
         Automation_StorageDroneMoveSpeed = 111,
+        // Offline earnings: +% of the automaton ore/min rate kept while away (base 50%, 100% at max).
+        Automation_OfflineEarningsValue = 112,
+        // Offline earnings: extends the full-rate window before earnings start falling off.
+        Automation_OfflineEarningsDuration = 113,
 
         // Economy 200-299
         Economy_InventoryCapacity = 200,

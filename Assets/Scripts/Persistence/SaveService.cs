@@ -369,8 +369,8 @@ namespace Persistence
                 chestSpawner.RestoreFromSaveData(chestSpawnData);
             }
 
-            // Disabled for now, I'm not sure if we want this in the game. It can be re-enabled later if we decide to keep it.
-            //LoadOfflineEarnings(data);
+            // After upgrade levels are restored - the offline fall-off curve reads them.
+            LoadOfflineEarnings(data);
 
             hasLoadedData = true;
             GameManager.EventService.Dispatch<LoadCompletedEvent>();
@@ -406,12 +406,7 @@ namespace Persistence
             float minutesAway = ComputeMinutesAway(data.LastActiveUtcTimestamp);
             if (minutesAway <= 0f) return;
 
-            var oreGained = new Dictionary<BlockTypeId, int>();
-            foreach (var kvp in averages)
-            {
-                int amount = Mathf.RoundToInt(kvp.Value * minutesAway);
-                if (amount > 0) oreGained[kvp.Key] = amount;
-            }
+            var oreGained = IdleEarningsTracker.ComputeOfflineOre(averages, minutesAway);
 
             if (oreGained.Count == 0) return;
             GameManager.EventService.Dispatch(new OfflineEarningsReadyEvent(oreGained, minutesAway));

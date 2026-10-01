@@ -127,6 +127,10 @@ namespace Economy
         public int Idle_KeptAutomatonMiningSpeedBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMiningSpeed);
         public int Idle_KeptAutomatonMoveSpeedBaseline => LevelOf(PrestigeUpgradeEffect.Idle_KeepAutomatonMoveSpeed);
 
+        // Offline earnings (IdleEarningsTracker.ComputeOfflineOre): multiplies how long the fall-off
+        // from full rate down to 0 takes - EffectValuePerLevel (2 = doubled) compounded per level.
+        public float Idle_OfflineFalloffDurationMultiplier => Mathf.Pow(EffectValuePerLevelOf(PrestigeUpgradeEffect.Idle_OfflineFalloffDuration), LevelOf(PrestigeUpgradeEffect.Idle_OfflineFalloffDuration));
+
         // GameDesignDoc "Prestige > Mining": keep "digging while flying" between prestige runs.
         public bool Mining_DigWhileFlyingUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_DigWhileFlyingUnlocked);
 

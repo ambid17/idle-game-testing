@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Economy;
 using MapGeneration;
 using UnityEngine;
 
@@ -63,6 +64,47 @@ namespace Automation
 
                 return result;
             }
+        }
+
+        // Offline earnings curve: the ore/min average is kept at OfflineBaseRetention (plus the
+        // Market value upgrade) for OfflineFullRateMinutes (plus the Market duration upgrade), then
+        // falls linearly to 0 over OfflineFalloffMinutes (times the Museum fall-off perk).
+        private const float OfflineBaseRetention = 0.5f;
+        private const float OfflineFullRateMinutes = 10f;
+        private const float OfflineFalloffMinutes = 30f;
+
+        // Integrates the offline curve over minutesAway: returns the equivalent number of
+        // full-rate (100%) minutes, so ore gained = average/min * this.
+        public static float ComputeOfflineEffectiveMinutes(float minutesAway)
+        {
+            if (minutesAway <= 0f) return 0f;
+
+            float retention = Mathf.Min(1f, OfflineBaseRetention + UpgradeManager.Instance.Automation_OfflineEarningsValueBonus);
+            float fullRateMinutes = OfflineFullRateMinutes + UpgradeManager.Instance.Automation_OfflineEarningsDurationBonusMinutes;
+            float falloffMinutes = OfflineFalloffMinutes * PrestigeUpgradeManager.Instance.Idle_OfflineFalloffDurationMultiplier;
+
+            float fullRatePortion = Mathf.Min(minutesAway, fullRateMinutes);
+            float falloffElapsed = Mathf.Clamp(minutesAway - fullRateMinutes, 0f, falloffMinutes);
+            // Area under the linear 1 -> 0 ramp from 0 to falloffElapsed.
+            float falloffPortion = falloffElapsed - falloffElapsed * falloffElapsed / (2f * falloffMinutes);
+
+            return retention * (fullRatePortion + falloffPortion);
+        }
+
+        // Ore gained per type for minutesAway offline, given per-minute averages (the saved ones on
+        // load, or the live AveragePerMinute for the Dev Panel's simulate button).
+        public static Dictionary<BlockTypeId, int> ComputeOfflineOre(IReadOnlyDictionary<BlockTypeId, float> averages, float minutesAway)
+        {
+            var oreGained = new Dictionary<BlockTypeId, int>();
+            float effectiveMinutes = ComputeOfflineEffectiveMinutes(minutesAway);
+            if (effectiveMinutes <= 0f) return oreGained;
+
+            foreach (var kvp in averages)
+            {
+                int amount = Mathf.RoundToInt(kvp.Value * effectiveMinutes);
+                if (amount > 0) oreGained[kvp.Key] = amount;
+            }
+            return oreGained;
         }
 
         private void Prune(Queue<(float time, int amount)> queue)

@@ -63,6 +63,8 @@ namespace Economy
         Idle_KeepAutomatonMiningSpeed = 301,
         Idle_KeepAutomatonMiningRadius = 302,
         Idle_KeepAutomatonMoveSpeed = 303,
+        // Offline earnings: multiplies how long the fall-off from full rate down to 0 takes (x2).
+        Idle_OfflineFalloffDuration = 304,
 
         // Prestige 400-499
         Prestige_ArtifactSpawnRateMultiplier = 400,

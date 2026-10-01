@@ -72,6 +72,12 @@ namespace Economy
         public float Automation_AutomatonMiningSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Automation_AutomatonMiningSpeed) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonMiningSpeed);
         public float Automation_AutomatonMoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Automation_AutomatonMoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.Automation_AutomatonMoveSpeed);
 
+        // Offline earnings (IdleEarningsTracker.ComputeOfflineOre): extra fraction of the ore/min
+        // rate kept while away, on top of the base retention, and extra full-rate minutes before the
+        // fall-off starts.
+        public float Automation_OfflineEarningsValueBonus => LevelOf(UpgradeEffect.Automation_OfflineEarningsValue) * EffectValuePerLevelOf(UpgradeEffect.Automation_OfflineEarningsValue);
+        public float Automation_OfflineEarningsDurationBonusMinutes => LevelOf(UpgradeEffect.Automation_OfflineEarningsDuration) * EffectValuePerLevelOf(UpgradeEffect.Automation_OfflineEarningsDuration);
+
         // GameDesignDoc "Automation > Fuel Drone".
         public int Automation_FuelDroneCount => LevelOf(UpgradeEffect.Automation_FuelDroneCount);
         public float Automation_FuelDroneInventoryCapacityMultiplier => 1f + LevelOf(UpgradeEffect.Automation_FuelDroneInventoryCapacity) * EffectValuePerLevelOf(UpgradeEffect.Automation_FuelDroneInventoryCapacity);

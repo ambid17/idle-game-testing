@@ -39,12 +39,7 @@ namespace UI
             if (offlineMinutesInput == null) return;
             if (!float.TryParse(offlineMinutesInput.text, NumberStyles.Float, CultureInfo.InvariantCulture, out var minutesAway) || minutesAway <= 0f) return;
 
-            var oreGained = new Dictionary<BlockTypeId, int>();
-            foreach (var kvp in IdleEarningsTracker.Instance.AveragePerMinute)
-            {
-                int amount = Mathf.RoundToInt(kvp.Value * minutesAway);
-                if (amount > 0) oreGained[kvp.Key] = amount;
-            }
+            var oreGained = IdleEarningsTracker.ComputeOfflineOre(IdleEarningsTracker.Instance.AveragePerMinute, minutesAway);
             if (oreGained.Count == 0) return;
 
             GameManager.EventService.Dispatch(new OfflineEarningsReadyEvent(oreGained, minutesAway));
