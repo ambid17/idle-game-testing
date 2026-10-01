@@ -204,6 +204,17 @@ namespace Events
         }
     }
 
+    // Dispatched by a Depot row's padlock button - DepotUI flips Depot's sell lock for that ore.
+    public class SellLockToggleRequestedEvent : IEvent
+    {
+        public BlockTypeId Id;
+
+        public SellLockToggleRequestedEvent(BlockTypeId id)
+        {
+            Id = id;
+        }
+    }
+
     // Processing Center (Assets/Docs/processingImplementation.md) events below.
 
     public class ProcessingStartRequestedEvent : IEvent

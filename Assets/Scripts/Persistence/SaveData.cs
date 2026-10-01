@@ -113,6 +113,8 @@ namespace Persistence
         public List<OreAverageEntry> IdleAverages = new();
         public AutomationSettingsSaveData AutomationSettings = new();
         public List<OreCountEntry> DepotOres = new();
+        // Depot.SellLockedOres - ores padlocked against selling. Empty on older saves (nothing locked).
+        public List<BlockTypeId> DepotSellLockedOres = new();
         // Processing Center (processingImplementation.md): Depot's crafted-goods bank and any
         // in-progress jobs, siblings of DepotOres/UpgradeLevels for the same reason - no
         // independent lifecycle.

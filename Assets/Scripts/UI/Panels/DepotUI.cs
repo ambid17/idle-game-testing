@@ -79,6 +79,7 @@ namespace UI
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
             GameManager.EventService.Add<SellGoodsRequestedEvent>(OnSellGoodsRequested);
+            GameManager.EventService.Add<SellLockToggleRequestedEvent>(OnSellLockToggleRequested);
             GameManager.EventService.Add<UICloseEvent>(Close);
         }
 
@@ -89,6 +90,7 @@ namespace UI
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
             GameManager.EventService.Remove<SellGoodsRequestedEvent>(OnSellGoodsRequested);
+            GameManager.EventService.Remove<SellLockToggleRequestedEvent>(OnSellLockToggleRequested);
             GameManager.EventService.Remove<UICloseEvent>(Close);
         }
 
@@ -130,6 +132,7 @@ namespace UI
                 var row = Instantiate(rowPrefab, rowContainer);
                 string displayName = string.IsNullOrEmpty(blockType.DisplayName) ? blockType.name : blockType.DisplayName;
                 row.Bind(blockType);
+                row.EnableSellLock();
                 row.gameObject.name = $"OreRow_{blockType.name}";
                 rows[blockType.Id] = row;
             }
@@ -163,6 +166,7 @@ namespace UI
 
         private void OnSellRequested(SellRequestedEvent evt) => Depot.Instance.Sell(evt.Id, evt.Fraction);
         private void OnSellGoodsRequested(SellGoodsRequestedEvent evt) => Depot.Instance.SellGood(evt.Id, evt.Fraction);
+        private void OnSellLockToggleRequested(SellLockToggleRequestedEvent evt) => Depot.Instance.SetSellLocked(evt.Id, !Depot.Instance.IsSellLocked(evt.Id));
 
         // Explicit action (as opposed to an implicit side effect of opening the panel) so banking
         // carried ore reads as an intentional player choice, distinct from selling it.
@@ -179,7 +183,12 @@ namespace UI
             foreach (var kvp in rows)
             {
                 Depot.Instance.StoredOres.TryGetValue(kvp.Key, out var count);
-                totalValue += kvp.Value.SetCount(count);
+                var rowValue = kvp.Value.SetCount(count);
+
+                // Sell-locked ores stay out of the Sell All total, matching what Depot.SellAll pays.
+                bool locked = Depot.Instance.IsSellLocked(kvp.Key);
+                kvp.Value.SetSellLocked(locked);
+                if (!locked) totalValue += rowValue;
             }
 
             sellAllButtonLabel.text = $"Sell All (${totalValue:0})";

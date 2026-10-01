@@ -20,6 +20,14 @@ namespace UI
         [SerializeField] private TMP_Text valueLabel;
         // Optional - only HudInventoryRow has one, for HudInventoryUI's "+N" pickup tally.
         [SerializeField] private TMP_Text gainLabel;
+        // Optional - only DepotRow has these, for the padlock that keeps an ore out of every sale.
+        [SerializeField] private Button lockButton;
+        [SerializeField] private Image lockIcon;
+        [SerializeField] private Sprite lockedSprite;
+        [SerializeField] private Sprite unlockedSprite;
+
+        private static readonly Color UnlockedIconColor = new(1f, 1f, 1f, 0.45f);
+        private const float LockedValueAlpha = 0.4f;
 
         private BlockType blockType;
         // Optional - only present on prefab variants that want the count/value to tick towards
@@ -57,6 +65,29 @@ namespace UI
             else valueLabel.text = $"${totalValue:0}";
 
             return totalValue;
+        }
+
+        // The padlock ships inactive on the prefab since MinerDashboardUI/OfflineEarningsUI share
+        // DepotRow and have nothing to sell - only DepotUI opts in.
+        public void EnableSellLock()
+        {
+            if (lockButton == null || lockIcon == null || lockedSprite == null || unlockedSprite == null)
+            {
+                Debug.LogError($"OreRowUI: sell lock references are not assigned on {gameObject.name}.");
+                return;
+            }
+
+            lockButton.gameObject.SetActive(true);
+            lockButton.onClick.AddListener(() => GameManager.EventService.Dispatch(new SellLockToggleRequestedEvent(blockType.Id)));
+        }
+
+        // Locked rows show the closed padlock and a dimmed value, since that value is no longer
+        // part of any sale.
+        public void SetSellLocked(bool locked)
+        {
+            lockIcon.sprite = locked ? lockedSprite : unlockedSprite;
+            lockIcon.color = locked ? Color.white : UnlockedIconColor;
+            valueLabel.alpha = locked ? LockedValueAlpha : 1f;
         }
 
         // Shows "+amount" beside the count at the given opacity; amount 0 hides it so the row's

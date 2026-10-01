@@ -125,6 +125,8 @@ namespace Persistence
                 data.DepotOres.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
             }
 
+            data.DepotSellLockedOres.AddRange(Depot.Instance.SellLockedOres);
+
             foreach (var kvp in Depot.Instance.StoredGoods)
             {
                 data.DepotGoods.Add(new GoodsCountEntry { Id = kvp.Key, Count = kvp.Value });
@@ -327,6 +329,7 @@ namespace Persistence
                 depotOres[entry.Id] = entry.Count;
             }
             Depot.Instance.RestoreFromSaveData(depotOres);
+            Depot.Instance.RestoreSellLocksFromSaveData(data.DepotSellLockedOres);
 
             var depotGoods = new Dictionary<ProcessingRecipeId, int>();
             foreach (var entry in data.DepotGoods)

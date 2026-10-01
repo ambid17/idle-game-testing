@@ -27,6 +27,21 @@ namespace Economy
         public IReadOnlyDictionary<BlockTypeId, int> StoredOres => storedOres;
         public IReadOnlyDictionary<ProcessingRecipeId, int> StoredGoods => storedGoods;
 
+        // Ores the player has padlocked in the Depot panel to keep them for Processing Center
+        // recipes. Checked inside Sell itself, so every seller (Sell All, the deposit-and-sell
+        // interaction, storage-drone auto-sell) respects it. A player setting rather than run
+        // state, so ClearAll (prestige) leaves it alone.
+        private readonly HashSet<BlockTypeId> sellLockedOres = new();
+        public IReadOnlyCollection<BlockTypeId> SellLockedOres => sellLockedOres;
+
+        public bool IsSellLocked(BlockTypeId id) => sellLockedOres.Contains(id);
+
+        public void SetSellLocked(BlockTypeId id, bool locked)
+        {
+            bool changed = locked ? sellLockedOres.Add(id) : sellLockedOres.Remove(id);
+            if (changed) GameManager.EventService.Dispatch<DepotChangedEvent>();
+        }
+
         public void Deposit(IReadOnlyDictionary<BlockTypeId, int> ores)
         {
             if (ores == null || ores.Count == 0) return;
@@ -82,6 +97,7 @@ namespace Economy
         {
             fraction = Mathf.Clamp01(fraction);
             if (fraction <= 0f) return 0;
+            if (sellLockedOres.Contains(id)) return 0;
             if (!storedOres.TryGetValue(id, out var current) || current <= 0) return 0;
 
             int amountToSell = fraction >= 1f ? current : Mathf.Clamp(Mathf.RoundToInt(current * fraction), 1, current);
@@ -182,6 +198,18 @@ namespace Economy
             foreach (var kvp in ores)
             {
                 storedOres[kvp.Key] = kvp.Value;
+            }
+        }
+
+        // Bulk restore for SaveService - silent, mirrors RestoreFromSaveData above.
+        public void RestoreSellLocksFromSaveData(IReadOnlyCollection<BlockTypeId> lockedOres)
+        {
+            sellLockedOres.Clear();
+            if (lockedOres == null) return;
+
+            foreach (var id in lockedOres)
+            {
+                sellLockedOres.Add(id);
             }
         }
 
