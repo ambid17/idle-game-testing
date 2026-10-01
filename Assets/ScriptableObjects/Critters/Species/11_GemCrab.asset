@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 2
   Size: 0.67499995
   GlowColor: {r: 0.3, g: 1, b: 0.5, a: 0.25}
-  TurnInValue: 35000
+  TurnInValue: 17500
   ShopkeeperQuip: A Gem Crab! Worth a fortune, but it pinches, so nobody's ever managed
     to sell one.

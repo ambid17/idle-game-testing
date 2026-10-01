@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 2.5
   Size: 0.82500005
   GlowColor: {r: 1, g: 0.5, b: 0.8, a: 0.55}
-  TurnInValue: 9000
+  TurnInValue: 4500
   ShopkeeperQuip: A Lantern Jelly! Don't tell it we're not underwater. It's having
     such a nice time.

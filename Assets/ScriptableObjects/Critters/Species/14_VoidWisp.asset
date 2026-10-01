@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 3
   Size: 0.6
   GlowColor: {r: 0.7, g: 0.3, b: 1, a: 0.6}
-  TurnInValue: 120000
+  TurnInValue: 60000
   ShopkeeperQuip: A Void Wisp... it's staring into my soul. My soul's mostly mushroom
     soup, so joke's on it.

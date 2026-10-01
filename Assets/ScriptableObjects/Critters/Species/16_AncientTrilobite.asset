@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 2
   Size: 0.75
   GlowColor: {r: 0, g: 0, b: 0, a: 0}
-  TurnInValue: 300000
+  TurnInValue: 150000
   ShopkeeperQuip: An Ancient Trilobite! Five hundred million years old and STILL
     younger-looking than me.

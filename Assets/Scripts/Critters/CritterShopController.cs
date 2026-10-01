@@ -11,7 +11,8 @@ namespace Critters
     // Runs the Critter Shop: keeps the shop building standing on the floor of this seed's shop
     // cave (ChunkGenerator.CarveShopCave - one per run, somewhere in layers 1-3), plays the
     // shopkeeper's intro the first time the player walks in, opens CritterShopUI, and turns the
-    // player's jar in with the shopkeeper reacting to each new species and hat. Also sends the
+    // player's jar in with the shopkeeper reacting to each new hat (new species are talked about one
+    // at a time from their badged collection card - see TalkAbout). Also sends the
     // per-catch notifications, including a one-time hint about where the shop is. Scene-placed
     // singleton (child of GameManager) since it needs Inspector references to the building and panel.
     public class CritterShopController : Singleton<CritterShopController>
@@ -19,6 +20,7 @@ namespace Critters
         private const string IntroConversation = "CritterShop.Intro";
         private const string ChatConversation = "CritterShop.Chat";
         private const string TurnInConversation = "CritterShop.TurnIn";
+        private const string SpeciesConversation = "CritterShop.Species";
 
         [Tooltip("Scene object with the shop's sprite, a trigger on the Interactable layer and a BuildingInteractable (Building_CritterShop). Its pivot should be bottom-center - it's placed on the cave floor.")]
         [SerializeField] private GameObject shopBuilding;
@@ -131,11 +133,6 @@ namespace Critters
             var result = collection.TurnInJar();
             var lines = BuildLines(string.Format(ShopkeeperDialog.PickRandom(dialog.TurnInLines), result.Count, result.Dollars.ToString("0")));
 
-            foreach (var species in result.NewSpecies)
-            {
-                if (!string.IsNullOrEmpty(species.ShopkeeperQuip)) lines.AddRange(BuildLines(species.ShopkeeperQuip));
-            }
-
             bool completedCollection = collection.SpeciesCollected >= GameManager.CritterDatabase.SpeciesCount;
             foreach (var hat in result.NewHats)
             {
@@ -147,6 +144,16 @@ namespace Critters
             if (completedCollection && result.NewSpecies.Count > 0) lines.AddRange(BuildLines(dialog.AllFoundLines));
 
             StartConversation(TurnInConversation, lines, openShopAfter: false);
+        }
+
+        // A discovered species' collection card in CritterShopUI: replays the shopkeeper's quip
+        // about it and clears its new-species badge.
+        public void TalkAbout(CritterDefinition critter)
+        {
+            if (activeConversation != null || string.IsNullOrEmpty(critter.ShopkeeperQuip)) return;
+
+            CritterCollection.Instance.MarkQuipHeard(critter.Id);
+            StartConversation(SpeciesConversation, BuildLines(critter.ShopkeeperQuip), openShopAfter: false);
         }
 
         private void StartConversation(string conversationId, List<DialogLine> lines, bool openShopAfter)

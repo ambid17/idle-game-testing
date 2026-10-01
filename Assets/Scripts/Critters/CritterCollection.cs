@@ -29,6 +29,8 @@ namespace Critters
         // (x, y, layerIndex) of each caught critter's pocket seed cell - see CritterSpawner.
         public List<Vector3Int> CaughtSpawns = new();
         public List<AutomatonHatEntry> AutomatonHats = new();
+        // Species turned in whose shopkeeper quip the player hasn't clicked to hear yet.
+        public List<CritterId> UnheardQuips = new();
         public bool MetShopkeeper;
     }
 
@@ -46,6 +48,7 @@ namespace Critters
         private readonly Dictionary<CritterId, int> turnedIn = new();
         private readonly HashSet<Vector3Int> caughtSpawns = new();
         private readonly Dictionary<int, HatId> automatonHats = new();
+        private readonly HashSet<CritterId> unheardQuips = new();
 
         public IReadOnlyList<CritterId> Jar => jar;
         public bool HasMetShopkeeper { get; private set; }
@@ -84,6 +87,13 @@ namespace Critters
         public bool IsDiscovered(CritterId id) => GetTurnedInCount(id) > 0;
         public bool IsSpawnCaught(Vector3Int spawnKey) => caughtSpawns.Contains(spawnKey);
         public bool IsHatUnlocked(HatDefinition hat) => hat != null && SpeciesCollected >= hat.UnlockAtSpeciesCount;
+        public bool HasUnheardQuip(CritterId id) => unheardQuips.Contains(id);
+
+        public void MarkQuipHeard(CritterId id)
+        {
+            if (!unheardQuips.Remove(id)) return;
+            GameManager.EventService.Dispatch<CritterCollectionChangedEvent>();
+        }
 
         public void Catch(CritterDefinition critter, Vector3Int spawnKey, Vector3 position)
         {
@@ -117,7 +127,12 @@ namespace Critters
                     continue;
                 }
 
-                if (!IsDiscovered(id)) newSpecies.Add(definition);
+                if (!IsDiscovered(id))
+                {
+                    newSpecies.Add(definition);
+                    // The shop's collection card badges it until the player clicks to hear about it.
+                    if (!string.IsNullOrEmpty(definition.ShopkeeperQuip)) unheardQuips.Add(id);
+                }
                 turnedIn[id] = GetTurnedInCount(id) + 1;
                 payout += definition.TurnInValue;
             }
@@ -181,6 +196,7 @@ namespace Critters
             foreach (var kvp in turnedIn) data.TurnedIn.Add(new CritterCountEntry { Id = kvp.Key, Count = kvp.Value });
             data.CaughtSpawns.AddRange(caughtSpawns);
             foreach (var kvp in automatonHats) data.AutomatonHats.Add(new AutomatonHatEntry { AutomatonIndex = kvp.Key, Hat = kvp.Value });
+            data.UnheardQuips.AddRange(unheardQuips);
             return data;
         }
 
@@ -190,6 +206,7 @@ namespace Critters
             turnedIn.Clear();
             caughtSpawns.Clear();
             automatonHats.Clear();
+            unheardQuips.Clear();
             HasMetShopkeeper = false;
 
             if (data != null)
@@ -199,6 +216,7 @@ namespace Critters
                 foreach (var entry in data.TurnedIn) turnedIn[entry.Id] = entry.Count;
                 foreach (var key in data.CaughtSpawns) caughtSpawns.Add(key);
                 foreach (var entry in data.AutomatonHats) automatonHats[entry.AutomatonIndex] = entry.Hat;
+                if (data.UnheardQuips != null) foreach (var id in data.UnheardQuips) unheardQuips.Add(id);
             }
 
             GameManager.EventService.Dispatch<CritterCollectionChangedEvent>();

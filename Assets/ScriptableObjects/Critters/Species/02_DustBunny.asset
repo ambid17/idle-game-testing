@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 2.5
   Size: 0.67499995
   GlowColor: {r: 0, g: 0, b: 0, a: 0}
-  TurnInValue: 300
+  TurnInValue: 150
   ShopkeeperQuip: Oh! A Dust Bunny! Don't sneeze. Last time I sneezed near one, it
     became three Dust Bunnies.

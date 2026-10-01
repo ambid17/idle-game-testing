@@ -21,5 +21,5 @@ MonoBehaviour:
   WanderRadius: 3
   Size: 0.67499995
   GlowColor: {r: 1, g: 0.7, b: 0.2, a: 0.35}
-  TurnInValue: 22000
+  TurnInValue: 11000
   ShopkeeperQuip: Spark Salamander! Zzzt! Ow. Yep. Still bitey. Lovely little fella.

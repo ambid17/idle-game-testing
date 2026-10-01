@@ -39,7 +39,7 @@ namespace Critters
 
         [Header("Critter Shop")]
         [Tooltip("Dollars paid per critter of this species turned in at the Critter Shop.")]
-        [Min(0f)] public double TurnInValue = 250;
+        [Min(0f)] public double TurnInValue = 125;
         [Tooltip("What the shopkeeper says the first time this species is turned in.")]
         [TextArea(2, 4)] public string ShopkeeperQuip;
 

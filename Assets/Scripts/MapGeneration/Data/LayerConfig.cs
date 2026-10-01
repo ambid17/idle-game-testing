@@ -73,7 +73,7 @@ namespace MapGeneration
         [Tooltip("This layer's critter set - one entry is rolled (by weight) per pocket that passes CritterChancePerPocket.")]
         public List<WeightedCritterEntry> CritterTable = new();
         [Tooltip("Chance, per empty pocket, that a critter lives in it.")]
-        [Range(0f, 1f)] public float CritterChancePerPocket = 0.15f;
+        [Range(0f, 1f)] public float CritterChancePerPocket = 0.075f;
 
         [Header("Atmosphere (Atmosphere.MineAtmosphere - ambient particles and sound while the player is in this layer)")]
         [Tooltip("Tint for this layer's floating spores and falling dust.")]

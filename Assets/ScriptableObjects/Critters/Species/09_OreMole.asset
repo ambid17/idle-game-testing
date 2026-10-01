@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 1
   Size: 0.75
   GlowColor: {r: 0, g: 0, b: 0, a: 0}
-  TurnInValue: 14000
+  TurnInValue: 7000
   ShopkeeperQuip: An Ore Mole! Solid gold schnozz. I won't sell it. I'll just...
     look at it. A lot.

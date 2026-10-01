@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 2
   Size: 0.6
   GlowColor: {r: 0, g: 0, b: 0, a: 0}
-  TurnInValue: 400
+  TurnInValue: 200
   ShopkeeperQuip: A Pebble Beetle! Gerald's going to be so jealous. He's been trying
     to become a beetle for years.

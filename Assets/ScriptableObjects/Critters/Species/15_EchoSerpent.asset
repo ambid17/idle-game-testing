@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 3
   Size: 0.67499995
   GlowColor: {r: 0.2, g: 1, b: 0.9, a: 0.3}
-  TurnInValue: 180000
+  TurnInValue: 90000
   ShopkeeperQuip: An Echo Serpent! Hello! ...Hello! See? Finally, someone who agrees
     with me.

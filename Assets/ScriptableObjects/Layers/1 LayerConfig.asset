@@ -70,7 +70,7 @@ MonoBehaviour:
     Weight: 0.7
   - Critter: {fileID: 11400000, guid: c5edcc8d15ead8542a3d71b9fbf99a69, type: 2}
     Weight: 1
-  CritterChancePerPocket: 0.15
+  CritterChancePerPocket: 0.075
   AmbientParticleColor: {r: 1, g: 0.85, b: 0.55, a: 1}
   SporesPerSecond: 0
   DripsPerSecond: 0.8

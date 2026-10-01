@@ -21,5 +21,5 @@ MonoBehaviour:
   WanderRadius: 2.5
   Size: 0.67499995
   GlowColor: {r: 0.9, g: 0.85, b: 1, a: 0.25}
-  TurnInValue: 900
+  TurnInValue: 450
   ShopkeeperQuip: A Cave Moth! Quick, hide the lantern, it gets clingy.

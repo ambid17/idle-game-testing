@@ -21,6 +21,6 @@ MonoBehaviour:
   WanderRadius: 3
   Size: 0.75
   GlowColor: {r: 0.3, g: 0.9, b: 1, a: 0.45}
-  TurnInValue: 5000
+  TurnInValue: 2500
   ShopkeeperQuip: A Crystal Bat! Those wings chime when it flaps. I call that one
     Wind Chime. Very creative, I know.
