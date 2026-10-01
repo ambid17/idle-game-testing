@@ -27,6 +27,12 @@ namespace Persistence
     public class SaveService : Singleton<SaveService>
     {
         private const float AutosaveIntervalSeconds = 60f;
+
+        // Market upgrade save keys (DisplayName) whose definitions were removed on purpose, skipped
+        // silently on load instead of hitting UpgradeManagerBase.SetLevel's stale-key error.
+        // "Fuel Efficiency" moved to the Prestige tree (Survival_FuelEfficiency) - Market levels
+        // reset every prestige anyway, so nothing meaningful is lost.
+        private static readonly HashSet<string> RetiredMarketUpgradeKeys = new() { "Fuel Efficiency" };
         private string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
         private string MapSavePath => Path.Combine(Application.persistentDataPath, "map.json");
         public bool HasLoadedData => hasLoadedData;
@@ -289,6 +295,7 @@ namespace Persistence
 
             foreach (var entry in data.UpgradeLevels)
             {
+                if (RetiredMarketUpgradeKeys.Contains(entry.UpgradeId)) continue;
                 UpgradeManager.Instance.SetLevelFromSave(entry.UpgradeId, entry.Level);
             }
 

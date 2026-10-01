@@ -28,7 +28,7 @@ namespace Economy
         [SerializeField, Range(0.05f, 1f)] private float graceDrainMultiplier = 0.3f;
 
         // Owner-injected formulas for things that genuinely vary per entity/live state rather than
-        // being static config - e.g. Player's Movement_FuelInventory/Movement_FuelEfficiency
+        // being static config - e.g. Player's Movement_FuelInventory/Survival_FuelEfficiency
         // upgrades. Null for entities with no such bonuses (MiningAutomaton).
         private Func<float> maxFuelBonusProvider;
         private Func<float> drainEfficiencyMultiplierProvider;

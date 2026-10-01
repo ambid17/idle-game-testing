@@ -122,9 +122,10 @@ namespace Player
             // how this field used to seed Fuel directly in Awake.
             // GameDesignDoc "Survival > fuel efficiency": FuelEfficiencyMultiplier is a drain
             // *reduction* (1 - upgrade), so a maxed upgrade approaches zero drain, not zero fuel.
+            // It's a Prestige perk (Survival_FuelEfficiency), so it survives prestige resets.
             fuelSystem.Initialize(
                 () => upgrades != null ? upgrades.Movement_FuelCapacityBonus : 0f,
-                () => upgrades != null ? upgrades.Movement_FuelEfficiencyMultiplier : 1f);
+                () => prestigeUpgrades != null ? prestigeUpgrades.Survival_FuelEfficiencyMultiplier : 1f);
 
             spawnPosition = transform.position;
 

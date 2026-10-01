@@ -66,7 +66,7 @@ namespace Economy
         // Formerly Movement_FallDamageReduction - now reduces all damage taken (PlayerHealth.TakeDamage).
         Movement_CoreStability = 400,
         Movement_FlightSpeed = 401,
-        Movement_FuelEfficiency = 402,
+        // 402 retired (was Movement_FuelEfficiency, moved to PrestigeUpgradeEffect.Survival_FuelEfficiency) - never reuse.
         Movement_FuelInventory = 403,
         Movement_GravityIncrease = 404,
         // 405 retired (was Movement_HazardSense) - never reuse.

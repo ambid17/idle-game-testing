@@ -215,6 +215,8 @@ namespace Economy
         public float Survival_FallDamageReduction => LevelOf(PrestigeUpgradeEffect.Survival_FallDamageReduction) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FallDamageReduction);
         // Multiplier on horizontal move/fly speed (+X% per level).
         public float Survival_MoveSpeedMultiplier => 1f + LevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_MoveSpeedBonus);
+        // Fuel drain multiplier (-X% per level, floored at 0) - read by the player's FuelSystem.
+        public float Survival_FuelEfficiencyMultiplier => Mathf.Max(0f, 1f - LevelOf(PrestigeUpgradeEffect.Survival_FuelEfficiency) * EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_FuelEfficiency));
 
         // Emergency Shielding: owning any level grants a single regenerating shield charge. The
         // first level recharges at PlayerHealth's base cooldown; each level past the first shaves

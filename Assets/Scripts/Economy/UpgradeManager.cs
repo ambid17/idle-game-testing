@@ -151,7 +151,6 @@ namespace Economy
         // serialized base values.
         public float Movement_FlightSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Movement_FlightSpeed) * EffectValuePerLevelOf(UpgradeEffect.Movement_FlightSpeed);
         public float Movement_FuelCapacityBonus => LevelOf(UpgradeEffect.Movement_FuelInventory) * EffectValuePerLevelOf(UpgradeEffect.Movement_FuelInventory);
-        public float Movement_FuelEfficiencyMultiplier => Mathf.Max(0f, 1f - LevelOf(UpgradeEffect.Movement_FuelEfficiency) * EffectValuePerLevelOf(UpgradeEffect.Movement_FuelEfficiency));
         public float Movement_GravityMultiplier => 1f + LevelOf(UpgradeEffect.Movement_GravityIncrease) * EffectValuePerLevelOf(UpgradeEffect.Movement_GravityIncrease);
 
         public float Movement_MoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Movement_MoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.Movement_MoveSpeed);

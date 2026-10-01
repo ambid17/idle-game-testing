@@ -96,6 +96,9 @@ namespace Economy
         // Active ability: teleports the player to the Depot (PlayerDepotRecall, Q by default).
         // First level unlocks it; each further level halves the cooldown.
         Survival_DepotRecall = 607,
+        // GameDesignDoc "Survival > fuel efficiency" (moved from the Market's Movement_FuelEfficiency,
+        // retired 402): reduces all player fuel drain - see PlayerController's FuelSystem.Initialize.
+        Survival_FuelEfficiency = 608,
 
         // Hazard 700-799
         // Active ability: scans the block in front of the player (Player.PlayerAnalyzer) and
