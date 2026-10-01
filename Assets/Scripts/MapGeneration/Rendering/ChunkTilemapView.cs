@@ -178,17 +178,19 @@ namespace MapGeneration
         // shallower layer's deepest row) or one cell beyond its last row (aboveChunk=false -
         // mirrors the deeper layer's shallowest row). These ghost cells are never part of this
         // chunk's visible Width x Height area; they exist purely so this Tilemap's own RuleTiles
-        // see a real neighbor instead of null at the seam. They keep the source layer's tint so
-        // they match the real cells they overlap.
+        // see a real neighbor instead of null at the seam. They're painted fully transparent: they
+        // overlap the neighbor chunk's real cells, and both chunks' terrain SortingGroups share an
+        // order, so a visible ghost could draw over that chunk's own foreground (ores) or bleed art.
         public void PaintGhostRow(bool aboveChunk, TileChangeData[] tiles)
         {
             int w = chunk.Width;
             int ghostY = aboveChunk ? 1 : -chunk.Height;
+            var hidden = new Color(1f, 1f, 1f, 0f);
 
             var changes = new TileChangeData[w];
             for (int x = 0; x < w; x++)
             {
-                changes[x] = new TileChangeData(new Vector3Int(x, ghostY, 0), tiles[x].tile, tiles[x].color, Matrix4x4.identity);
+                changes[x] = new TileChangeData(new Vector3Int(x, ghostY, 0), tiles[x].tile, hidden, Matrix4x4.identity);
             }
             terrainTilemap.SetTiles(changes, true);
         }
