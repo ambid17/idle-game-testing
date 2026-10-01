@@ -6,6 +6,19 @@ description: Generate pixel-art game assets (UI/upgrade/currency icons, ore tile
 # Art asset generation
 - A vibrant pixel-art style of glowing ores, crystalline minerals, and ancient tech in a neon-lit fantasy mine, each block detailed with sci-fi textures and magical luminescence, rendered in clean anime-inspired lines with soft depth and dynamic lighting.
 
+## Building-style prompt (use for world tiles and props)
+The buildings in `Assets/Textures/Buildings` are the style target. Generate image-to-image with a building (e.g. `market.png`) attached as the style reference, and open the prompt with:
+
+> Use the attached image ONLY as an art-style reference (do not draw the building). Match its pixel-art style exactly: chunky, clean, hand-placed pixel clusters with the same pixel size; dark near-black navy/brown outlines around every shape; large readable forms; 3 to 4 flat cel-shading tones per material with hue-shifted shadows and a lighter top-left rim highlight; limited palette; no anti-aliasing, no blur, no gradients, no dithering, no single-pixel noise or speckle.
+
+Then describe the subject. For tiles add:
+
+> a flat, front-facing, perfectly square texture filled edge-to-edge (no border, no frame, no bevel, no perspective, no drop shadow), designed to tile seamlessly with itself, drawn as bold shapes rather than fine grain.
+
+- Batch as a 2x2 sheet on flat pure magenta (#FF00FF) with a thick magenta gutter, one variation per quadrant.
+- The model still draws a dark frame around each tile and the edges do not tile; trim ~8px per side and fix the seams afterwards.
+- Snap the result to the art-pixel grid with `Tools/Tiles/pixelize.py` (96x96 art pixels, stored x4 = 384px, 384 PPU).
+
 ## Fonts
 - for any text use the Orbitron font
 	- the file is "Orbitron-Regular SD TMP"
