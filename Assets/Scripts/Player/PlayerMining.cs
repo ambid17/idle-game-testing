@@ -33,6 +33,8 @@ namespace Player
         [SerializeField] private float inventoryBlockNotifyCooldown = 3f;
         [Tooltip("Minimum seconds between \"your drill tier is too low here\" notifications.")]
         [SerializeField] private float underTierNotifyCooldown = 30f;
+        [Tooltip("Minimum seconds between \"this block can't be mined\" notifications (Grassy Dirt, Rocks without Rock Breaker).")]
+        [SerializeField] private float unmineableNotifyCooldown = 4f;
         [SerializeField] private bool debug;
 
         private PlayerController playerController;
@@ -48,6 +50,8 @@ namespace Player
         private InventoryBlockReason lastInventoryBlock;
         private float nextInventoryBlockNotifyTime;
         private float nextUnderTierNotifyTime;
+        private bool wasPushingUnmineable;
+        private float nextUnmineableNotifyTime;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
         // True only while actually working on a mineable block - PlayerAnimation plays the drill
@@ -85,6 +89,7 @@ namespace Player
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
                 lastInventoryBlock = InventoryBlockReason.None;
+                wasPushingUnmineable = false;
                 ResetTarget();
                 return;
             }
@@ -93,6 +98,7 @@ namespace Player
             {
                 if (debug) Debug.LogWarning($"PlayerMining: failed to resolve target cell (playerPos: {transform.position.ToFormattedString()}, direction {direction.ToFormattedString()}). Resolved Cell: ({targetCellX}, {targetCellY})");
                 lastInventoryBlock = InventoryBlockReason.None;
+                wasPushingUnmineable = false;
                 ResetTarget();
                 return;
             }
@@ -140,9 +146,26 @@ namespace Player
             }
             lastInventoryBlock = inventoryBlock;
 
+            // Same edge-trigger + cooldown as the inventory notification above: fires when the
+            // player starts drilling into Grassy Dirt or a Rock they can't break, not every frame
+            // they keep pushing, and not again for a few seconds if they let go and retry.
+            bool isGrassyDirt = blockType != null && blockType.Id == BlockTypeId.GrassyDirt;
+            bool isUnbreakableRock = blockType != null && blockType.Id == BlockTypeId.FallingRock && !PrestigeUpgradeManager.Instance.Mining_CanMineRocks;
+            bool isPushingUnmineable = isGrassyDirt || isUnbreakableRock;
+            if (isPushingUnmineable && !wasPushingUnmineable && Time.time >= nextUnmineableNotifyTime)
+            {
+                nextUnmineableNotifyTime = Time.time + unmineableNotifyCooldown;
+                string message = isGrassyDirt
+                    ? $"{blockType.DisplayName} can't be mined!"
+                    : $"Your drill can't break {blockType.DisplayName}! Mine out what's holding it up instead.";
+                GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.TimeSensitive, blockType.Icon));
+                GameManager.AudioService.Play(SoundId.Warning);
+            }
+            wasPushingUnmineable = isPushingUnmineable;
+
             if (blockType == null
-                || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
-                || (blockType.Id == BlockTypeId.FallingRock && !PrestigeUpgradeManager.Instance.Mining_CanMineRocks)
+                || isGrassyDirt
+                || isUnbreakableRock
                 || blockType.DrillProof
                 || blockedByFullInventory
                 )
