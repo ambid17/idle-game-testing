@@ -15,6 +15,10 @@ Then describe the subject. For tiles add:
 
 > a flat, front-facing, perfectly square texture filled edge-to-edge (no border, no frame, no bevel, no perspective, no drop shadow), designed to tile seamlessly with itself, drawn as bold shapes rather than fine grain.
 
+- Describe terrain as organic shapes ("irregular polygonal clods, like dried cracked mud"). Words like "plates", "strata", "layers" come back as bricks or planks, and saying "no brick look" makes it worse.
+- Do not rely on the prompt for colour: hex codes are ignored when a reference image is attached (results stay orange) and asking for "muted, low contrast" softens the pixels. Generate for shape and crispness, then gradient-map onto the game palette in post.
+- Once one sheet has the right look, attach that sheet (not the building) as the reference for further variations; it holds pixel size and style better.
+- Background materials (dirt) must be calm: no large stones, thin cracks, so ores drawn on top stand out.
 - Batch as a 2x2 sheet on flat pure magenta (#FF00FF) with a thick magenta gutter, one variation per quadrant.
 - The model still draws a dark frame around each tile and the edges do not tile; trim ~8px per side and fix the seams afterwards.
 - Snap the result to the art-pixel grid with `Tools/Tiles/pixelize.py` (96x96 art pixels, stored x4 = 384px, 384 PPU).
