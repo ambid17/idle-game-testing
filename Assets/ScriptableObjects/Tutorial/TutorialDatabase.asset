@@ -71,8 +71,9 @@ MonoBehaviour:
   - Id: 10
     DisplayType: 0
     Title: Lost Ore Chest
-    Body: When you die, the ore you were carrying stays behind in a chest where you
-      fell. Dig back down to it and pick it up to get your ore back.
+    Body: When you die, some of the ore you were carrying (at least half) stays
+      behind in a chest where you fell. Dig back down to it and pick it up to get
+      that ore back.
   - Id: 11
     DisplayType: 0
     Title: Deeper Layers

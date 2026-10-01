@@ -24,7 +24,9 @@ namespace Economy
 
     // Drops the player's lost inventory into a lootable Chest at the center of the map cell they
     // died in, instead of discarding it - see PlayerInventory.HandleDeath, which withdraws the ore
-    // and dispatches the event this reacts to. The chest is held as pending until PlayerRevivedEvent
+    // and dispatches the event this reacts to. Only a random share of it survives (one roll per
+    // death between the retained-fraction bounds, applied to every ore type) so dying still costs
+    // something. The chest is held as pending until PlayerRevivedEvent
     // so the still-present body can't loot it straight back during the death animation/screen.
     // Also used by SaveService to respawn chests that were still active when the game was last
     // saved (RestoreFromSaveData), including a pending one (TryGetPendingChest).
@@ -32,6 +34,10 @@ namespace Economy
     {
         [SerializeField] private Chest chestPrefab;
         [SerializeField] private PlayerController player;
+
+        [Tooltip("Fraction of the carried ore a death chest keeps, rolled once per death between these bounds.")]
+        [SerializeField, Range(0f, 1f)] private float minDeathRetainedFraction = 0.5f;
+        [SerializeField, Range(0f, 1f)] private float maxDeathRetainedFraction = 1f;
 
         private ChestSpawnData? pendingDeathChest;
 
@@ -60,7 +66,10 @@ namespace Economy
 
         private void OnPlayerInventoryDropped(PlayerInventoryDroppedEvent evt)
         {
-            if (chestPrefab == null || player == null || evt.OreCounts.All(kvp => kvp.Value <= 0)) return;
+            if (chestPrefab == null || player == null) return;
+
+            var retainedOre = RollRetainedOre(evt.OreCounts);
+            if (retainedOre.All(kvp => kvp.Value <= 0)) return;
 
             var mapGenerationService = GameManager.MapGenerationService;
             Vector3 deathPosition = player.transform.position;
@@ -72,7 +81,22 @@ namespace Economy
 
             // Shouldn't happen (no second death before a revive), but never drop ore on the floor.
             if (pendingDeathChest.HasValue) SpawnPendingDeathChest();
-            pendingDeathChest = new ChestSpawnData(spawnPosition, evt.OreCounts);
+            pendingDeathChest = new ChestSpawnData(spawnPosition, retainedOre);
+        }
+
+        // Stochastic rounding (floor of count * fraction + random) keeps the expected amount exact
+        // even for small stacks - plain rounding would always keep a lone ore at 50%+ and always
+        // lose it below.
+        private Dictionary<BlockTypeId, int> RollRetainedOre(IReadOnlyDictionary<BlockTypeId, int> oreCounts)
+        {
+            float fraction = Random.Range(minDeathRetainedFraction, maxDeathRetainedFraction);
+            var retained = new Dictionary<BlockTypeId, int>();
+            foreach (var kvp in oreCounts)
+            {
+                int kept = Mathf.Min(kvp.Value, Mathf.FloorToInt(kvp.Value * fraction + Random.value));
+                if (kept > 0) retained[kvp.Key] = kept;
+            }
+            return retained;
         }
 
         private void OnPlayerRevived() => SpawnPendingDeathChest();
