@@ -60,6 +60,12 @@ namespace Atmosphere
         [Tooltip("How far (at mine depth) from the seam the crevice darkening fades out.")]
         [SerializeField] private float seamShadeLength = 1.5f;
 
+        [Header("Surface (where the mine meets the sky)")]
+        [Tooltip("Packed-earth back wall just under the surface (Tools/Backdrops/make_surface_backdrops.py), in front of the cave planes - its ragged lower edge is the cave ceiling. Its top row stretches upward so it always reaches the surface.")]
+        [SerializeField] private BackdropPlane surfaceSoil;
+        [Tooltip("Hill silhouettes standing on the horizon, drawn with the sky. Their bottom row stretches downward as solid ground, so no sky shows under them from any camera height.")]
+        [SerializeField] private List<BackdropPlane> horizonHills = new();
+
         [Header("Sky (above the surface)")]
         [Tooltip("Bands stacked upward from the surface; the last one repeats forever.")]
         [SerializeField] private List<SkyBand> skyBands = new();
@@ -88,6 +94,7 @@ namespace Atmosphere
         private static readonly int EdgeShadeId = Shader.PropertyToID("_EdgeShade");
         private static readonly int EdgeShadeLengthId = Shader.PropertyToID("_EdgeShadeLength");
         private static readonly int TileRectId = Shader.PropertyToID("_TileRect");
+        private static readonly int TileClampYId = Shader.PropertyToID("_TileClampY");
 
         private void OnEnable()
         {
@@ -104,6 +111,7 @@ namespace Atmosphere
         private void Start()
         {
             if (planeMaterial == null) Debug.LogError($"{nameof(ParallaxBackdrop)}.planeMaterial is not assigned.");
+            if (surfaceSoil.Sprite == null) Debug.LogError($"{nameof(ParallaxBackdrop)}.surfaceSoil has no Sprite.");
             Build();
         }
 
@@ -151,7 +159,38 @@ namespace Atmosphere
                 spanStart = i;
             }
 
+            // The soil wall sits in front of every cave plane.
+            int soilOrder = backingSortingOrder + 1 + sortingOrders.Count;
+            BuildSurfaceStrip(surfaceSoil, surfaceY, false, gridWorldWidth, mineRect, soilOrder);
+
             BuildSky(surfaceY, gridWorldWidth, mineRect);
+        }
+
+        // A strip anchored on the surface line and repeating only sideways: the soil wall hangs
+        // down from it (sky = false), the horizon hills stand up on it (sky = true). The edge row on
+        // the surface side stretches past the strip, so parallax never opens a gap at the surface.
+        private void BuildSurfaceStrip(BackdropPlane plane, float surfaceY, bool sky, float gridWorldWidth, Vector4 mineRect, int sortingOrder)
+        {
+            float scale = 1f + plane.Depth / referenceCameraDistance;
+            Vector2 tileSize = plane.Sprite.bounds.size * scale;
+            float originY = sky ? surfaceY : surfaceY - tileSize.y;
+            float quadTop = sky ? surfaceY + tileSize.y : surfaceY + surfaceOverhang * scale;
+            float quadBottom = sky ? surfaceY - skyExtent : surfaceY - tileSize.y;
+
+            var renderer = CreateRenderer($"{plane.Sprite.name} (z {plane.Depth})", plane.Sprite, plane.Tint, sortingOrder);
+            renderer.drawMode = SpriteDrawMode.Tiled;
+            renderer.tileMode = SpriteTileMode.Continuous;
+            renderer.transform.localScale = Vector3.one * scale;
+            renderer.transform.position = new Vector3(gridWorldWidth * 0.5f, (quadTop + quadBottom) * 0.5f, MineZ + plane.Depth);
+            renderer.size = new Vector2((gridWorldWidth + horizontalMargin * 2f) * scale, quadTop - quadBottom) / scale;
+
+            var block = ClipBlock(renderer, mineRect, NoFade, -NoFade, 1f, sky);
+            block.SetFloat(EdgeModeId, 1f);
+            block.SetFloat(EdgeJagId, 0f);
+            block.SetFloat(EdgeShadeId, 1f);
+            block.SetVector(TileRectId, new Vector4(gridWorldWidth * 0.5f, originY, tileSize.x, tileSize.y));
+            block.SetFloat(TileClampYId, 1f);
+            renderer.SetPropertyBlock(block);
         }
 
         private void BuildSky(float surfaceY, float gridWorldWidth, Vector4 mineRect)
@@ -159,7 +198,9 @@ namespace Atmosphere
             // Farthest first; at the same depth the higher band draws on top, so it can fade in
             // over the lower band's still-opaque plane. Sky and mine planes never overlap on screen
             // (opposite clips), so their orders don't need to be distinct.
+            // Horizon hills (band -1) sort in among them by depth.
             var skyPlanes = new List<(int band, BackdropPlane plane)>();
+            foreach (var hill in horizonHills) skyPlanes.Add((-1, hill));
             for (int b = 0; b < skyBands.Count; b++)
             {
                 if (skyBands[b].Backdrop == null)
@@ -182,6 +223,11 @@ namespace Atmosphere
             for (int i = 0; i < skyPlanes.Count; i++)
             {
                 var (b, plane) = skyPlanes[i];
+                if (b < 0)
+                {
+                    BuildSurfaceStrip(plane, surfaceY, true, gridWorldWidth, mineRect, backingSortingOrder + 1 + i);
+                    continue;
+                }
                 bool isFirst = b == 0;
                 bool isLast = b == skyBands.Count - 1;
                 float bottom = isFirst ? surfaceY - skyExtent : bandBottoms[b];

@@ -19990,10 +19990,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Atmosphere.ParallaxBackdrop
   planeMaterial: {fileID: 2100000, guid: 01dd84ed86a1dcc4e9fa2a60f4c27a9e, type: 2}
   referenceCameraDistance: 10
-  fadeLength: 12
   horizontalMargin: 40
   surfaceOverhang: 40
   deepestBiomeExtent: 4000
+  seamJag: 1.5
+  seamPixel: 0.16
+  seamShade: 0.3
+  seamShadeLength: 1.5
+  surfaceSoil:
+    Sprite: {fileID: 21300000, guid: e39bf511a64236045bdb41cce1af2946, type: 3}
+    Depth: 1
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+    Bands: 0
+  horizonHills:
+  - Sprite: {fileID: 21300000, guid: 3cde8d79f6a5dfa4e94202cd18eda172, type: 3}
+    Depth: 14
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+    Bands: 0
+  - Sprite: {fileID: 21300000, guid: e81d38b03c0b7d545b64ad494fd9d0d2, type: 3}
+    Depth: 6
+    Tint: {r: 1, g: 1, b: 1, a: 1}
+    Bands: 0
   skyBands:
   - Backdrop: {fileID: 11400000, guid: 5cb6a0e94d5c76d4cb267e9b8dcd9042, type: 2}
     Height: 100
