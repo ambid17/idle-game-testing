@@ -69,6 +69,7 @@ namespace Settings
         private readonly InputAction zoomViewAction;
         private readonly InputAction tabNextAction;
         private readonly InputAction tabPreviousAction;
+        private readonly InputAction tutorialAdvanceAction;
 
         private InputActionRebindingExtensions.RebindingOperation rebinding;
         private int captureEndedFrame = -1;
@@ -96,6 +97,7 @@ namespace Settings
             zoomViewAction = asset.FindAction("Menu/ZoomView", throwIfNotFound: true);
             tabNextAction = asset.FindAction("Menu/TabNext", throwIfNotFound: true);
             tabPreviousAction = asset.FindAction("Menu/TabPrevious", throwIfNotFound: true);
+            tutorialAdvanceAction = asset.FindAction("Menu/TutorialAdvance", throwIfNotFound: true);
 
             Load();
             asset.FindActionMap("Gameplay", throwIfNotFound: true).Enable();
@@ -117,6 +119,10 @@ namespace Settings
         public float ZoomViewInput => zoomViewAction.ReadValue<float>();
         public bool WasTabNextPressedThisFrame() => tabNextAction.WasPressedThisFrame();
         public bool WasTabPreviousPressedThisFrame() => tabPreviousAction.WasPressedThisFrame();
+
+        // Keyboard-only (Space, fixed): dismisses the tutorial popup on screen, showing the next
+        // queued one if any. A controller does the same through UI Submit on the focused button.
+        public bool WasTutorialAdvancePressedThisFrame() => tutorialAdvanceAction.WasPressedThisFrame();
 
         public static string GroupFor(InputScheme scheme) => scheme == InputScheme.Gamepad ? GamepadGroup : KeyboardGroup;
 

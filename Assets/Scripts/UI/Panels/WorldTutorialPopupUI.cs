@@ -23,6 +23,22 @@ namespace UI
         [SerializeField] private TMP_Text bodyLabel;
         [SerializeField] private Button closeButton;
 
+        // closeButton's label and its authored text ("Got it"), which gets the Space hint appended
+        // - see TutorialAdvancePrompt.
+        private TMP_Text closeLabel;
+        private string closeLabelText;
+
+        private void Awake()
+        {
+            if (closeButton != null) closeLabel = closeButton.GetComponentInChildren<TMP_Text>(true);
+            if (closeLabel == null)
+            {
+                Debug.LogError("WorldTutorialPopupUI.closeButton has no TMP_Text label.");
+                return;
+            }
+            closeLabelText = closeLabel.text;
+        }
+
         private void Start()
         {
             if (rendererRoot == null) Debug.LogError("WorldTutorialPopupUI.rendererRoot is not assigned.");
@@ -38,12 +54,27 @@ namespace UI
         {
             base.OnEnable();
             GameManager.EventService.Add<ShowTutorialEvent>(OnShowTutorial);
+            GameManager.EventService.Add<InputSchemeChangedEvent>(OnInputSchemeChanged);
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
             GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
+            GameManager.EventService.Remove<InputSchemeChangedEvent>(OnInputSchemeChanged);
+        }
+
+        private void OnInputSchemeChanged(InputSchemeChangedEvent evt) => RefreshCloseLabel();
+
+        private void RefreshCloseLabel()
+        {
+            if (closeLabel == null) return;
+            closeLabel.text = TutorialAdvancePrompt.Label(closeLabelText);
+        }
+
+        private void Update()
+        {
+            if (IsOpen && TutorialAdvancePrompt.WasPressedThisFrame()) Close();
         }
 
         private void OnShowTutorial(ShowTutorialEvent evt)
@@ -54,6 +85,7 @@ namespace UI
             transform.position = evt.WorldPosition.Value;
             titleLabel.text = evt.Entry.Title;
             bodyLabel.text = evt.Entry.Body;
+            RefreshCloseLabel();
 
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);

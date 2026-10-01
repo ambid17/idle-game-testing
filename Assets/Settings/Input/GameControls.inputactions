@@ -470,9 +470,30 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "TutorialAdvance",
+                    "type": "Button",
+                    "id": "4d1f8a26-6c3e-4b57-9a02-7e5b1c9d3f48",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
+                {
+                    "name": "",
+                    "id": "b83e5c17-2f4a-4d69-8e31-0a6c7d2f9b54",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "TutorialAdvance",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
                 {
                     "name": "",
                     "id": "619c75e0-4bac-490c-9845-b6ab935ccd65",
