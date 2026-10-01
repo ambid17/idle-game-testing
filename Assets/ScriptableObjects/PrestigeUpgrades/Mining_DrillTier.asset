@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: 'Hardens your drill for the next biome down: Crystal, then Overgrown,
     then the Void. Without the tier a biome needs, its rock takes 8x longer to mine
     and Dirt Insta-Mine doesn''t work there.'
-  Icon: {fileID: 21300000, guid: b315d551152574741a4ef5a75f6b1c8a, type: 3}
+  Icon: {fileID: 21300000, guid: 23f33f68c20f9c149be61574dde349d7, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 5
