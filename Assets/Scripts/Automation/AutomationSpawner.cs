@@ -19,6 +19,11 @@ namespace Automation
         [SerializeField] private Transform automatonSpawn;
         [SerializeField] private Transform depotDepositLocation;
 
+        // Where idle drones hover (and sleep - see DroneSleepVisual). Storage drones also deposit
+        // here; set just above the surface so a sleeping drone doesn't sink into the dirt.
+        [SerializeField] private Transform storageDroneParking;
+        [SerializeField] private Transform fuelDroneParking;
+
         private readonly List<MiningAutomaton> automatons = new();
         private readonly List<StorageDrone> storageDrones = new();
         private readonly List<FuelDrone> fuelDrones = new();
@@ -29,6 +34,8 @@ namespace Automation
             if (automatonPrefab == null) Debug.LogError($"AutomationSpawner is missing automatonPrefab.");
             if (storageDronePrefab == null) Debug.LogError($"AutomationSpawner is missing storageDronePrefab.");
             if (fuelDronePrefab == null) Debug.LogError($"AutomationSpawner is missing fuelDronePrefab.");
+            if (storageDroneParking == null) Debug.LogError($"AutomationSpawner is missing storageDroneParking.");
+            if (fuelDroneParking == null) Debug.LogError($"AutomationSpawner is missing fuelDroneParking.");
         }
 
         private void Start()
@@ -78,8 +85,8 @@ namespace Automation
         {
             var upgrades = Economy.UpgradeManager.Instance;
             Reconcile(automatons, automatonPrefab, upgrades.Automation_AutomatonCount, (instance, index) => instance.Configure(index, depotDepositLocation.position));
-            Reconcile(storageDrones, storageDronePrefab, upgrades.Automation_StorageDroneCount, (instance, index) => instance.Configure(depotDepositLocation.position, index));
-            Reconcile(fuelDrones, fuelDronePrefab, upgrades.Automation_FuelDroneCount, (instance, _) => instance.Configure(transform.position));
+            Reconcile(storageDrones, storageDronePrefab, upgrades.Automation_StorageDroneCount, (instance, index) => instance.Configure(storageDroneParking.position, index));
+            Reconcile(fuelDrones, fuelDronePrefab, upgrades.Automation_FuelDroneCount, (instance, _) => instance.Configure(fuelDroneParking.position));
         }
 
         private void Reconcile<T>(List<T> instances, T prefab, int targetCount, Action<T, int> configure) where T : Component

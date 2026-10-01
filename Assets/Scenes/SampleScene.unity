@@ -45427,7 +45427,7 @@ Transform:
   m_GameObject: {fileID: 1150534566}
   serializedVersion: 2
   m_LocalRotation: {x: -4.6565474e-10, y: 0.000000029816878, z: 1.388437e-17, w: 1}
-  m_LocalPosition: {x: 20.501177, y: 2.1699998, z: -10}
+  m_LocalPosition: {x: 18.759977, y: 2.1699998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -56015,6 +56015,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1476267427}
   m_CullTransparentMesh: 1
+--- !u!1 &1477156969
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1477156970}
+  m_Layer: 0
+  m_Name: FuelDroneParking
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1477156970
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1477156969}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.16366668, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5514890621698381499}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1480474450
 GameObject:
   m_ObjectHideFlags: 0
@@ -77370,6 +77401,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerMining
   crackIndicator: {fileID: 2066554865}
   miningHitInterval: 0.25
+  inventoryBlockNotifyCooldown: 3
+  underTierNotifyCooldown: 30
   debug: 0
 --- !u!114 &2055974193
 MonoBehaviour:
@@ -80804,6 +80837,37 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 9159710766070955709, guid: 3e4cfde69f92fe346956a9a2d15da983, type: 3}
   m_PrefabInstance: {fileID: 2109352801}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2117075286
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2117075287}
+  m_Layer: 0
+  m_Name: StorageDroneParking
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2117075287
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117075286}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.00000003973643, y: -0.141, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4461566399682110523}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2121161327
 GameObject:
   m_ObjectHideFlags: 0
@@ -81976,6 +82040,8 @@ MonoBehaviour:
   fuelDronePrefab: {fileID: 6528800220871837331, guid: af1474b0de443ba43ab03804582ddb39, type: 3}
   automatonSpawn: {fileID: 5514890621698381499}
   depotDepositLocation: {fileID: 3034906858440814901}
+  storageDroneParking: {fileID: 2117075287}
+  fuelDroneParking: {fileID: 1477156970}
 --- !u!1 &1866668968074114240
 GameObject:
   m_ObjectHideFlags: 0
@@ -82411,6 +82477,7 @@ Transform:
   m_Children:
   - {fileID: 3034906858440814901}
   - {fileID: 613501362}
+  - {fileID: 2117075287}
   m_Father: {fileID: 745675127908985216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4778222198062958009
@@ -82473,7 +82540,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -0.375, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1477156970}
   m_Father: {fileID: 6381627064579581191}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6004676578050142245

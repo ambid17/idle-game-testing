@@ -17,7 +17,7 @@ namespace Automation
     // the most fuel, falling back to nearest-with-need if the neediest one is already claimed by
     // another drone. FuelConsumerRegistry's claim system stops two drones converging on the same
     // target.
-    public class FuelDrone : MonoBehaviour
+    public class FuelDrone : MonoBehaviour, ISleepableDrone
     {
         private enum State { IdleAtControlCenter, FlyingToTarget, Depositing, FlyingToControlCenter }
 
@@ -34,8 +34,12 @@ namespace Automation
         private IFuelConsumer currentTarget;
         private float payload;
         private float idleRepollTimer;
+        private bool isParked;
+
+        public bool IsIdle => state == State.IdleAtControlCenter && isParked;
 
         public float Capacity => config.FuelDroneBaseFuelCapacity * upgrades.Automation_FuelDroneInventoryCapacityMultiplier;
+        private float Speed => config.FuelDroneBaseMoveSpeed * upgrades.Automation_FuelDroneMoveSpeedMultiplier;
 
         // Assigned by AutomationSpawner.
         public void Configure(Vector3 controlCenterPos)
@@ -116,8 +120,12 @@ namespace Automation
         // mirrors StorageDrone.IsValidTarget.
         private bool IsValidTarget(IFuelConsumer consumer) => consumer != null && FuelConsumerRegistry.Instance.Consumers.Contains(consumer);
 
+        // Keeps drifting home while idle - ReleaseAndReturnToIdle can drop a drone into this state
+        // mid-flight, and the spawn point isn't the Control Center anchor either.
         private void UpdateIdle()
         {
+            isParked = mover.StepDirect(transform, controlCenterPosition, Speed);
+
             idleRepollTimer += Time.deltaTime;
             if (idleRepollTimer < IdleRepollInterval) return;
             idleRepollTimer = 0f;
@@ -137,8 +145,7 @@ namespace Automation
                 return;
             }
 
-            float speed = config.FuelDroneBaseMoveSpeed * upgrades.Automation_FuelDroneMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, currentTarget.FuelTransform.position, speed);
+            bool arrived = mover.StepDirect(transform, currentTarget.FuelTransform.position, Speed);
             if (arrived) state = State.Depositing;
         }
 
@@ -176,8 +183,7 @@ namespace Automation
 
         private void UpdateFlyingToControlCenter()
         {
-            float speed = config.FuelDroneBaseMoveSpeed * upgrades.Automation_FuelDroneMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, controlCenterPosition, speed);
+            bool arrived = mover.StepDirect(transform, controlCenterPosition, Speed);
             if (!arrived) return;
 
             state = State.IdleAtControlCenter;

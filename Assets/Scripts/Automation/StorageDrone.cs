@@ -11,7 +11,7 @@ namespace Automation
     // OreInventory, and repeats until full before flying to the Depot. OreCarrierRegistry's claim
     // system stops two drones converging on the same target.
     [RequireComponent(typeof(OreInventory))]
-    public class StorageDrone : MonoBehaviour
+    public class StorageDrone : MonoBehaviour, ISleepableDrone
     {
         private enum State { SelectingTarget, FlyingToTarget, Draining, FlyingToDepot, IdleAtControlCenter }
 
@@ -28,6 +28,11 @@ namespace Automation
         private IOreCarrier currentTarget;
         private Vector3 _depositLocation;
         private float idleRepollTimer;
+        private bool isParked;
+
+        // SelectingTarget counts too: an idle drone passes through it for one frame on every
+        // repoll, and it always resolves within that frame (to flying, or straight back to idle).
+        public bool IsIdle => (state == State.IdleAtControlCenter || state == State.SelectingTarget) && isParked;
 
         public int DisplayIndex { get; private set; } = 1;
 
@@ -80,6 +85,7 @@ namespace Automation
                 return;
             }
 
+            isParked = false;
             state = State.FlyingToTarget;
         }
 
@@ -226,7 +232,7 @@ namespace Automation
         private void UpdateIdle()
         {
             float speed = config.StorageDroneBaseMoveSpeed * upgrades.Automation_StorageDroneMoveSpeedMultiplier;
-            mover.StepDirect(transform, _depositLocation, speed);
+            isParked = mover.StepDirect(transform, _depositLocation, speed);
 
             idleRepollTimer += Time.deltaTime;
             if (idleRepollTimer >= IdleRepollInterval)

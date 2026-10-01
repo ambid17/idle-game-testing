@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2501916893968588652}
-  - component: {fileID: 6682654093325586784}
   - component: {fileID: 4279804202521211776}
   - component: {fileID: 2305454244209700005}
   - component: {fileID: 1288501390462944155}
@@ -32,17 +31,91 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2322579995876081913}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &6682654093325586784
+--- !u!114 &4279804202521211776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4316041259486501657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f837e95e5b566f54e93a884421d04d8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.OreInventory
+--- !u!114 &2305454244209700005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4316041259486501657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95111b1ab5e7f9c44afb2a56ae30f878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Automation.StorageDrone
+--- !u!114 &1288501390462944155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4316041259486501657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db1bd2de0c9ffb498d6e17cc426e52b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.MinimapMarker
+  color: {r: 0.45, g: 1, b: 0.45, a: 1}
+  size: 4
+  clampToEdge: 0
+  drawOnTop: 0
+--- !u!1 &5193924400036558380
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2322579995876081913}
+  - component: {fileID: 923839482759818365}
+  - component: {fileID: 2058220125174257583}
+  m_Layer: 9
+  m_Name: Visual
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2322579995876081913
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5193924400036558380}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2501916893968588652}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &923839482759818365
 SpriteRenderer:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4316041259486501657}
+  m_GameObject: {fileID: 5193924400036558380}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -95,43 +168,33 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!114 &4279804202521211776
+--- !u!114 &2058220125174257583
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4316041259486501657}
+  m_GameObject: {fileID: 5193924400036558380}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f837e95e5b566f54e93a884421d04d8f, type: 3}
+  m_Script: {fileID: 11500000, guid: e8de97445b7ddf34a8c385753bd224b3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Economy.OreInventory
---- !u!114 &2305454244209700005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4316041259486501657}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95111b1ab5e7f9c44afb2a56ae30f878, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Automation.StorageDrone
---- !u!114 &1288501390462944155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4316041259486501657}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7db1bd2de0c9ffb498d6e17cc426e52b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UI.MinimapMarker
-  color: {r: 0.45, g: 1, b: 0.45, a: 1}
-  size: 4
-  clampToEdge: 0
-  drawOnTop: 0
+  m_EditorClassIdentifier: Assembly-CSharp::Automation.DroneSleepVisual
+  awakeSprite: {fileID: 21300000, guid: a92bd7b18604fba468c988ceab68ba1e, type: 3}
+  sleepSprite: {fileID: 21300000, guid: 4c87080517576fd4d810e2d620e6d932, type: 3}
+  zSprite: {fileID: 21300000, guid: c1ec7eb60bf98e548aa4975b105e82fa, type: 3}
+  fallAsleepDelay: 2.5
+  settleDuration: 0.8
+  sinkDepth: 0.08
+  breatheAmplitude: 0.025
+  breatheFrequency: 0.45
+  sleepTint: {r: 0.8, g: 0.8, b: 0.9, a: 1}
+  wakeJoltHeight: 0.12
+  wakeJoltDuration: 0.25
+  zEmitInterval: 1.1
+  zLifetime: 2.2
+  zRiseDistance: 0.55
+  zDriftAmplitude: 0.07
+  zSpawnOffset: {x: 0.22, y: 0.42}
+  zScaleRange: {x: 0.5, y: 1}
+  zColor: {r: 0.85, g: 0.92, b: 1, a: 1}
