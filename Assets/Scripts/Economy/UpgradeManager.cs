@@ -135,12 +135,6 @@ namespace Economy
         // GameDesignDoc "Mining > Insta-mine chance".
         public float Mining_InstaMineChance => LevelOf(UpgradeEffect.Mining_BaseInstaMineChance) * EffectValuePerLevelOf(UpgradeEffect.Mining_BaseInstaMineChance);
 
-        // GameDesignDoc "Mining > Increase mining speed": "the final upgrade makes dirt/stone an
-        // instant mine" - interpreted as the Dirt category (the valueless filler blocks), since
-        // the Ore-category "Stone" block is a sellable mineral, not filler. Its own capstone
-        // (Mining_DirtInstaMine), not a side effect of maxing Mining Speed.
-        public bool Mining_InstantMineDirt => IsMaxedEffect(UpgradeEffect.Mining_DirtInstaMine);
-
         // GameDesignDoc "Mining > Increase mining speed" capstone for the ore side: targets
         // ScrapAlloy, the lowest-tier Ore block.
         public bool Mining_InstantMineScrapAlloy => IsMaxedEffect(UpgradeEffect.Mining_ScrapAlloyInstaMine);
@@ -153,8 +147,11 @@ namespace Economy
         public bool Mining_MinimapUnlocked => LevelOf(UpgradeEffect.Mining_Minimap) > 0;
         public int Mining_MinimapRangeBonus => Mathf.RoundToInt(Mathf.Max(0, LevelOf(UpgradeEffect.Mining_Minimap) - 1) * EffectValuePerLevelOf(UpgradeEffect.Mining_Minimap));
 
-        // GameDesignDoc "Mining > Increase mining speed": "each tier adds 10% mining speed".
-        public float Mining_SpeedMultiplier => 1f + LevelOf(UpgradeEffect.Mining_Speed) * EffectValuePerLevelOf(UpgradeEffect.Mining_Speed);
+        // GameDesignDoc "Mining > Increase mining speed", split into a Dirt-category upgrade and one
+        // for every other block. PlayerMining picks one via Mining_SpeedMultiplierFor.
+        public float Mining_DirtSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Mining_DirtSpeed) * EffectValuePerLevelOf(UpgradeEffect.Mining_DirtSpeed);
+        public float Mining_OreSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Mining_OreSpeed) * EffectValuePerLevelOf(UpgradeEffect.Mining_OreSpeed);
+        public float Mining_SpeedMultiplierFor(BlockCategory category) => category == BlockCategory.Dirt ? Mining_DirtSpeedMultiplier : Mining_OreSpeedMultiplier;
 
         // GameDesignDoc "Survival" branch (Movement in the Market): PlayerHealth reads these for its
         // max HP and incoming-damage scaling.
@@ -179,7 +176,7 @@ namespace Economy
 
         // GameDesignDoc processingImplementation.md "Upgrades > processing time": "multiplicatively
         // reduces the duration of all recipe crafting" - divides ProcessingManager's computed
-        // duration, mirrors Mining_SpeedMultiplier's shape.
+        // duration, mirrors Mining_OreSpeedMultiplier's shape.
         public float Processing_SpeedMultiplier => 1f + LevelOf(UpgradeEffect.Processing_SpeedMultiplier) * EffectValuePerLevelOf(UpgradeEffect.Processing_SpeedMultiplier);
         #endregion
     }

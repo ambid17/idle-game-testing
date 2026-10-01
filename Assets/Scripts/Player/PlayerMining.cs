@@ -163,19 +163,16 @@ namespace Player
                     NotificationUrgency.TimeSensitive));
             }
 
-            miningProgress += Time.deltaTime * upgradeManager.Mining_SpeedMultiplier * playerPowerUps.MiningSpeedMultiplier;
+            miningProgress += Time.deltaTime * upgradeManager.Mining_SpeedMultiplierFor(blockType.Category) * playerPowerUps.MiningSpeedMultiplier;
             playerController.ConsumeMiningFuel(Time.deltaTime);
             float targetBlockHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
 
             // GameDesignDoc "Insta-mine chance": rolled once per newly-acquired target.
             var canInstaMine = isNewTarget && upgradeManager != null && upgradeManager.Mining_InstaMineChance > 0f && Random.value < upgradeManager.Mining_InstaMineChance;
-            // GameDesignDoc "the final upgrade makes dirt/stone an instant mine".
-            // Only in biomes the drill tier covers - otherwise it would skip the tier wall for most blocks.
-            var canInstaMineDirt = blockType.Category == BlockCategory.Dirt && hasDrillTier && upgradeManager != null && upgradeManager.Mining_InstantMineDirt;
             // Mining_ScrapAlloyInstaMine's capstone.
             var canInstaMineScrapAlloy = blockType.Id == BlockTypeId.ScrapAlloy && upgradeManager != null && upgradeManager.Mining_InstantMineScrapAlloy;
             var finishedMining =  miningProgress >= targetBlockHealth;
-            if (canInstaMine || canInstaMineDirt || canInstaMineScrapAlloy || finishedMining)
+            if (canInstaMine || canInstaMineScrapAlloy || finishedMining)
             {
                 if (debug) Debug.Log($"PlayerMining: finishing mine at (x,y,layer): ({targetCellX},{targetCellY},{layerIndex})");
                 MineTarget(layerIndex, targetCellX, targetCellY, blockType, direction.Value, targetBlockHealth);

@@ -55,8 +55,11 @@ namespace Economy
         Mining_BaseInstaMineChance = 301,
         // "Lantern capstones > zoom, enhance" - drives CameraControl.CameraZoomController.
         Mining_CameraZoom = 302,
-        // Drives UpgradeManager.Mining_InstantMineDirt.
-        Mining_DirtInstaMine = 303,
+        // 303 retired (was Mining_DirtInstaMine, Dirt always mined instantly) - superseded by
+        // Mining_DirtSpeed. Never reuse.
+        // GameDesignDoc "Mining > Increase mining speed", split per block category: Dirt only.
+        // First node of the Mining tree.
+        Mining_DirtSpeed = 310,
         // Follow-on to Mining_AreaSize: each level also breaks 1 more Dirt block further along
         // the dig direction (PlayerMining.MineExcavatorCells).
         Mining_Excavator = 309,
@@ -65,7 +68,9 @@ namespace Economy
         Mining_Minimap = 308,
         // Drives UpgradeManager.Mining_InstantMineScrapAlloy.
         Mining_ScrapAlloyInstaMine = 307,
-        Mining_Speed = 305,
+        // GameDesignDoc "Mining > Increase mining speed", split per block category: everything
+        // except Dirt (ores, hazards, power-ups, artifacts). Formerly Mining_Speed (all blocks).
+        Mining_OreSpeed = 305,
         // 306 retired (was Mining_TrueSight, moved to PrestigeUpgradeEffect) - never reuse.
 
         // Movement 400-499
