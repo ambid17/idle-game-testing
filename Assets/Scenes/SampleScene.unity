@@ -77607,7 +77607,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d573f40dd27febc40aca40452e29b4ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerPowerUps
-  treasureChestOreCount: 12
+  treasureChestBaseWeight: 20
+  treasureChestWeightGrowthPerLayer: 0.2
   overdriveSpeedMultiplier: 3
   overdriveDurationSeconds: 15
   fuelCanisterFraction: 1

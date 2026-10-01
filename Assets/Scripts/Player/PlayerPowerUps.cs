@@ -21,8 +21,10 @@ namespace Player
     public class PlayerPowerUps : MonoBehaviour
     {
         [Header("Treasure Chest")]
-        [Tooltip("Ores rolled from the next layer's OreTable. Whatever doesn't fit in inventory spills into a lootable Chest.")]
-        [SerializeField] private int treasureChestOreCount = 12;
+        [Tooltip("Total ore weight in a chest mined on layer 1 (index 0). Ores roll from the 1-2 layers below; whatever doesn't fit in inventory spills into a lootable Chest.")]
+        [SerializeField] private float treasureChestBaseWeight = 20f;
+        [Tooltip("Compounding increase to the chest's ore weight per layer deeper it's found (0.2 = +20% per layer).")]
+        [SerializeField] private float treasureChestWeightGrowthPerLayer = 0.2f;
 
         [Header("Drill Overdrive")]
         [SerializeField] private float overdriveSpeedMultiplier = 3f;
@@ -115,31 +117,57 @@ namespace Player
             return 2;
         }
 
-        // "contains a treasure trove of materials in the next layer". LayerConfigProvider.GetConfig
-        // falls back to the deepest authored layer, so the last layer's chest still rolls from
-        // its own table rather than coming up empty.
+        // "contains a treasure trove of materials in the next layer": a weight budget (compounding
+        // per layer the chest was found on) filled with ores rolled from the 1-2 layers below.
+        // Ores the current layer already has are excluded, so the loot is always a step up.
+        // LayerConfigProvider.GetConfig falls back to the deepest authored layer, so near the
+        // bottom there may be nothing new left - then the excluded ores are allowed back in rather
+        // than the chest coming up empty.
         private void ApplyTreasureChest(BlockType chestBlock, int layerIndex, int x, int y)
         {
-            var nextLayerConfig = GameManager.LayerConfigProvider.GetConfig(layerIndex + 1);
-            if (nextLayerConfig == null || !nextLayerConfig.OreTable.Exists(IsTreasureOre))
+            var currentLayerConfig = GameManager.LayerConfigProvider.GetConfig(layerIndex);
+            var lootLayers = new List<LayerConfig>
             {
-                Debug.LogError($"{nameof(PlayerPowerUps)}: no OreTable to roll Treasure Chest loot from for layer {layerIndex + 1}.");
+                GameManager.LayerConfigProvider.GetConfig(layerIndex + 1),
+                GameManager.LayerConfigProvider.GetConfig(layerIndex + 2),
+            };
+
+            var excluded = new HashSet<BlockTypeId>();
+            if (currentLayerConfig != null)
+            {
+                foreach (var entry in currentLayerConfig.OreTable)
+                {
+                    if (IsTreasureOre(entry)) excluded.Add(entry.BlockType.Id);
+                }
+            }
+            if (!lootLayers.Exists(config => HasTreasureOre(config, excluded))) excluded.Clear();
+            lootLayers.RemoveAll(config => !HasTreasureOre(config, excluded));
+            if (lootLayers.Count == 0)
+            {
+                Debug.LogError($"{nameof(PlayerPowerUps)}: no OreTable to roll Treasure Chest loot from for layers {layerIndex + 2}-{layerIndex + 3}.");
                 return;
             }
 
-            int count = Mathf.Max(1, Mathf.RoundToInt(treasureChestOreCount * Effectiveness));
+            float weightBudget = treasureChestBaseWeight * Mathf.Pow(1f + treasureChestWeightGrowthPerLayer, layerIndex) * Effectiveness;
             var overflow = new Dictionary<BlockTypeId, int>();
-            int addedToInventory = 0;
+            float rolledWeight = 0f;
+            float addedWeight = 0f;
 
-            for (int i = 0; i < count; i++)
+            // Overshoots the budget by at most one ore rather than leaving it short.
+            while (rolledWeight < weightBudget)
             {
-                var ore = PickRandomOre(nextLayerConfig);
-                if (ore == null) continue;
+                var ore = PickRandomOre(lootLayers[Random.Range(0, lootLayers.Count)], excluded);
+                if (ore.Weight <= 0f)
+                {
+                    Debug.LogError($"{nameof(PlayerPowerUps)}: ore '{ore.name}' has no Weight, so it can't fill a Treasure Chest's weight budget.");
+                    break;
+                }
+                rolledWeight += ore.Weight;
 
                 if (playerInventory.CurrentWeight + ore.Weight <= playerInventory.MaxWeight)
                 {
                     playerInventory.AddOre(ore);
-                    addedToInventory++;
+                    addedWeight += ore.Weight;
                     continue;
                 }
 
@@ -147,11 +175,11 @@ namespace Player
                 overflow[ore.Id] = current + 1;
             }
 
-            string message = $"Treasure Chest: +{addedToInventory} ores from the next layer down";
+            string message = $"Treasure Chest: +{addedWeight:0} weight of ore from the layers below";
             if (overflow.Count > 0)
             {
                 GameManager.EventService.Dispatch(new ChestSpawnRequestedEvent(mapGenerationService.CellToWorldCenter(layerIndex, x, y), overflow));
-                message += $" ({count - addedToInventory} more spilled into a chest)";
+                message += $" ({rolledWeight - addedWeight:0} more spilled into a chest)";
                 // Filled the bag without going through PlayerMining's full-inventory block, which
                 // is otherwise the only place this tutorial fires.
                 TutorialManager.Instance.TryShow(TutorialId.InventoryFull);
@@ -159,24 +187,28 @@ namespace Player
             Notify(message, chestBlock);
         }
 
-        // Only real Ore-category entries count as treasure.
-        private static BlockType PickRandomOre(LayerConfig config)
+        private static bool HasTreasureOre(LayerConfig config, HashSet<BlockTypeId> excluded) =>
+            config != null && config.OreTable.Exists(entry => IsTreasureOre(entry) && !excluded.Contains(entry.BlockType.Id));
+
+        // Only real Ore-category entries not in excluded count as treasure. Callers guarantee at
+        // least one candidate (HasTreasureOre).
+        private static BlockType PickRandomOre(LayerConfig config, HashSet<BlockTypeId> excluded)
         {
             float total = 0f;
-            foreach (var entry in config.OreTable)
-            {
-                if (IsTreasureOre(entry)) total += entry.Weight;
-            }
-            if (total <= 0f) return null;
-
-            float target = Random.value * total;
-            float cumulative = 0f;
             BlockType last = null;
             foreach (var entry in config.OreTable)
             {
-                if (!IsTreasureOre(entry)) continue;
-                cumulative += entry.Weight;
+                if (!IsTreasureOre(entry) || excluded.Contains(entry.BlockType.Id)) continue;
+                total += entry.Weight;
                 last = entry.BlockType;
+            }
+
+            float target = Random.value * total;
+            float cumulative = 0f;
+            foreach (var entry in config.OreTable)
+            {
+                if (!IsTreasureOre(entry) || excluded.Contains(entry.BlockType.Id)) continue;
+                cumulative += entry.Weight;
                 if (target <= cumulative) return entry.BlockType;
             }
             return last;
