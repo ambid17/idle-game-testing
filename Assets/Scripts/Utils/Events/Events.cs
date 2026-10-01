@@ -384,6 +384,56 @@ namespace Events
         }
     }
 
+    // Dispatched by Player.HazardDamageHandler the moment the player moves into the cell directly
+    // above a Pressure Plate (X/Y are the plate's own cell). MapGeneration.StructureTrapResolver
+    // fires every Dart Trap in range.
+    public class PressurePlateTriggeredEvent : IEvent
+    {
+        public int LayerIndex;
+        public int X;
+        public int Y;
+
+        public PressurePlateTriggeredEvent(int layerIndex, int x, int y)
+        {
+            LayerIndex = layerIndex;
+            X = x;
+            Y = y;
+        }
+    }
+
+    // Dispatched by MapGeneration.DartProjectile once per cell it flies through.
+    public class DartImpactEvent : IEvent
+    {
+        public int LayerIndex;
+        public int X;
+        public int Y;
+
+        public DartImpactEvent(int layerIndex, int x, int y)
+        {
+            LayerIndex = layerIndex;
+            X = x;
+            Y = y;
+        }
+    }
+
+    // Dispatched by MapGeneration.CrusherPiston the moment its head hits the bottom of its stroke.
+    // X/Y are the Crusher block's own cell; the piston covers the Reach cells directly below it.
+    public class CrusherSlamEvent : IEvent
+    {
+        public int LayerIndex;
+        public int X;
+        public int Y;
+        public int Reach;
+
+        public CrusherSlamEvent(int layerIndex, int x, int y, int reach)
+        {
+            LayerIndex = layerIndex;
+            X = x;
+            Y = y;
+            Reach = reach;
+        }
+    }
+
     // Automation (automationImplementation.md) events below.
 
     public class SetStorageDroneTargetModeRequestedEvent : IEvent

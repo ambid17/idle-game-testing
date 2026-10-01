@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cbd43d3886532d438c39d0b0c20ee1c, type: 3}
+  m_Name: 33 DartTrap
+  m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
+  Id: 33
+  DisplayName: Dart Trap
+  Category: 0
+  CustomBehavior: 0
+  Tile: {fileID: 11400000, guid: 05c23bc3bc0c4ec59773368a9ed5290f, type: 2}
+  DrawDirtBehind: 0
+  Icon: {fileID: 21300000, guid: 01a44967fc8d4487b52271cfc25c3e12, type: 3}
+  Value: 0
+  SaleCategory: 0
+  Weight: 0
+  Health: 1
+  Unmineable: 1
+  BlastOnly: 0
+  Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.72, g: 0.35, b: 0.2, a: 1}
+  AnalyzerLines:
+  - "A dart trap. Fires down the corridor when a pressure plate is stepped on. A quick hop clears the dart."

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cbd43d3886532d438c39d0b0c20ee1c, type: 3}
+  m_Name: 34 Crusher
+  m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
+  Id: 34
+  DisplayName: Crusher
+  Category: 0
+  CustomBehavior: 0
+  Tile: {fileID: 11400000, guid: a4d6ddd3c1574f05bfe8876b2263417c, type: 2}
+  DrawDirtBehind: 0
+  Icon: {fileID: 21300000, guid: 977c8ffa2d864e4a967d57a164f0a27a, type: 3}
+  Value: 0
+  SaleCategory: 0
+  Weight: 0
+  Health: 1
+  Unmineable: 1
+  BlastOnly: 0
+  Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.5, g: 0.52, b: 0.56, a: 1}
+  AnalyzerLines:
+  - "An ancient crusher, still cycling. It shudders just before it drops - slip under while it resets."

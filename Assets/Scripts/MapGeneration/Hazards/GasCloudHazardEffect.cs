@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Events;
 using UnityEngine;
 
@@ -10,8 +11,8 @@ namespace MapGeneration
     // event on an interval while it has any radius; the "is the player actually in range"
     // distance check lives in Player.HazardDamageHandler (same place every other hazard's radius
     // check already lives), not here - this effect only owns its own telegraph/expand/linger/
-    // dissipate timeline. Chain-ignition into Lava/Explosive (GameDesignDoc) is deferred to a
-    // follow-up pass.
+    // dissipate timeline. The gas is flammable (GameDesignDoc): the moment the cloud reaches a
+    // still-standing Lava or Explosive block it ignites - see TryIgnite.
     public class GasCloudHazardEffect : MonoBehaviour
     {
         [SerializeField] private float telegraphSeconds = 1f;
@@ -162,10 +163,49 @@ namespace MapGeneration
             {
                 if (currentRadius > 0f)
                 {
+                    if (TryIgnite()) yield break;
                     GameManager.EventService.Dispatch(new GasCloudDamageTickEvent(layerIndex, cellX, cellY, currentRadius));
                 }
                 yield return wait;
             }
+        }
+
+        // The cloud burns off in one blast if it is touching an igniter - a still-standing Lava or
+        // Explosive block (same layer only). The blast is a regular explosion centered on the
+        // pocket (ExplosiveDetonatedEvent - HazardEffectResolver destroys the blast radius,
+        // Player.HazardDamageHandler deals the damage), and every Explosive the gas had reached
+        // is set off too, each running its own fuse.
+        private bool TryIgnite()
+        {
+            var mapGen = GameManager.MapGenerationService;
+            int reach = Mathf.CeilToInt(currentRadius / mapGen.CellSize);
+            float reachSqr = (currentRadius / mapGen.CellSize) * (currentRadius / mapGen.CellSize);
+
+            bool ignited = false;
+            var explosives = new List<Vector2Int>();
+            for (int dy = -reach; dy <= reach; dy++)
+            {
+                for (int dx = -reach; dx <= reach; dx++)
+                {
+                    if (dx * dx + dy * dy > reachSqr) continue;
+
+                    var block = mapGen.GetBlockTypeAt(layerIndex, cellX + dx, cellY + dy);
+                    if (block == null) continue;
+
+                    if (block.CustomBehavior == CustomBehavior.Lava) ignited = true;
+                    if (block.CustomBehavior != CustomBehavior.Explosive) continue;
+                    ignited = true;
+                    explosives.Add(new Vector2Int(cellX + dx, cellY + dy));
+                }
+            }
+            if (!ignited) return false;
+
+            foreach (var cell in explosives) mapGen.MineCell(layerIndex, cell.x, cell.y, byExplosion: true);
+            GameManager.EventService.Dispatch(new ExplosiveDetonatedEvent(layerIndex, cellX, cellY));
+
+            if (gasParticles != null) gasParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            Destroy(gameObject);
+            return true;
         }
     }
 }

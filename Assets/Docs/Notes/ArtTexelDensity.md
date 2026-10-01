@@ -66,3 +66,6 @@ The market building shows the gap:
 
 - File: it is 1024 px wide and displayed 3 units wide, so 1024 ÷ 3 ≈ 341 texels per unit.
 - Art: each chunky pixel you can see in it is a block about 4 file pixels wide, so it only has about 341 ÷ 4 ≈ 85 art pixels per unit.
+
+
+could you do a sheet of multiple dirt tiles alone so i can pick the one that i like?

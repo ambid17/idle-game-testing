@@ -81,6 +81,8 @@ namespace Audio
             GameManager.EventService.Add<CustomBlockTriggeredEvent>(OnCustomBlockTriggered);
             GameManager.EventService.Add<ExplosiveDetonatedEvent>(OnExplosiveDetonated);
             GameManager.EventService.Add<FallingRockImpactEvent>(OnFallingRockImpact);
+            GameManager.EventService.Add<PressurePlateTriggeredEvent>(OnPressurePlateTriggered);
+            GameManager.EventService.Add<CrusherSlamEvent>(OnCrusherSlam);
             GameManager.EventService.Add<PlayerDamagedEvent>(OnPlayerDamaged);
             GameManager.EventService.Add<ShieldChargeChangedEvent>(OnShieldChargeChanged);
             GameManager.EventService.Add<PlayerDiedEvent>(OnPlayerDied);
@@ -103,6 +105,8 @@ namespace Audio
             GameManager.EventService.Remove<CustomBlockTriggeredEvent>(OnCustomBlockTriggered);
             GameManager.EventService.Remove<ExplosiveDetonatedEvent>(OnExplosiveDetonated);
             GameManager.EventService.Remove<FallingRockImpactEvent>(OnFallingRockImpact);
+            GameManager.EventService.Remove<PressurePlateTriggeredEvent>(OnPressurePlateTriggered);
+            GameManager.EventService.Remove<CrusherSlamEvent>(OnCrusherSlam);
             GameManager.EventService.Remove<PlayerDamagedEvent>(OnPlayerDamaged);
             GameManager.EventService.Remove<ShieldChargeChangedEvent>(OnShieldChargeChanged);
             GameManager.EventService.Remove<PlayerDiedEvent>(OnPlayerDied);
@@ -328,6 +332,11 @@ namespace Audio
         {
             if (e.IsLanding) PlayEventAtCell(SoundId.RockLand, e.LayerIndex, e.X, e.Y);
         }
+
+        // Placeholders until the trap rooms get their own clips.
+        private void OnPressurePlateTriggered(PressurePlateTriggeredEvent e) => PlayEventAtCell(SoundId.UIClick, e.LayerIndex, e.X, e.Y);
+
+        private void OnCrusherSlam(CrusherSlamEvent e) => PlayEventAtCell(SoundId.RockLand, e.LayerIndex, e.X, e.Y);
 
         private void OnPlayerDamaged(PlayerDamagedEvent e) => PlayEvent(SoundId.PlayerHurt);
 

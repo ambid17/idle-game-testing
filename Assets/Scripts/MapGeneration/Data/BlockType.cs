@@ -67,6 +67,13 @@ namespace MapGeneration
         // Structure block (Category.Dirt, mineable but tough) - the masonry of the set-piece
         // rooms stamped by StructureStampFeature.
         AncientBrick = 30,
+        // Trap-room blocks (Category.Dirt) - stamped by the hazard set-pieces. CrackedBrick is
+        // BlastOnly (the Sealed Vault's door); the rest are Unmineable fixtures driven by
+        // MapGeneration.StructureTrapResolver. Append-only, same rule as every id above.
+        CrackedBrick = 31,
+        PressurePlate = 32,
+        DartTrap = 33,
+        Crusher = 34,
     }
 
     // Behavior tag for Hazard/PowerUp blocks; systems outside map-gen (player, miners, VFX)
@@ -118,6 +125,10 @@ namespace MapGeneration
         public float Health = 1f;
         [Tooltip("Can never be mined by anyone (player, automatons, explosions) - e.g. Hardpan bands. GrassyDirt/FallingRock predate this flag and are special-cased where they're refused.")]
         public bool Unmineable;
+        [Tooltip("No drill can mine it (player or automaton), but an explosion's blast breaks it - e.g. the Sealed Vault's Cracked Brick door.")]
+        public bool BlastOnly;
+        // Nothing with a drill may dig this - what mining/pathing code should check.
+        public bool DrillProof => Unmineable || BlastOnly;
         public Color Tint = Color.white;
         [Tooltip("Pixel color on the HUD minimap (UI.MinimapUI).")]
         public Color MinimapColor = new(0.45f, 0.32f, 0.22f, 1f);

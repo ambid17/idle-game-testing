@@ -76,7 +76,7 @@ namespace MapGeneration
                     var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
                     if (blockType == null) continue;
 
-                    if (!mapGenerationService.MineCell(layerIndex, x, y)) continue;
+                    if (!mapGenerationService.MineCell(layerIndex, x, y, byExplosion: true)) continue;
                     if (blockType.Category == BlockCategory.Ore) CreditOreValue(blockType);
                 }
             }
@@ -115,9 +115,9 @@ namespace MapGeneration
             effect.Begin(evt.LayerIndex, evt.X, evt.Y);
         }
 
-        // GameDesignDoc "gas pockets: mining releases a damaging/flammable gas cloud" - chain-
-        // ignition into Lava/Explosive is deferred to a follow-up pass (real cross-hazard scope);
-        // this ships as a standalone expanding/lingering/dissipating damage-over-time cloud.
+        // GameDesignDoc "gas pockets: mining releases a damaging/flammable gas cloud" - an
+        // expanding/lingering/dissipating damage-over-time cloud that ignites if it reaches Lava
+        // or an Explosive (see GasCloudHazardEffect.TryIgnite).
         private void SpawnGasCloud(CustomBlockTriggeredEvent evt)
         {
             if (mapGenerationService == null) return;

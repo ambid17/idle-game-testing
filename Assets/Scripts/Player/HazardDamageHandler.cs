@@ -14,7 +14,9 @@ namespace Player
     // listen for the delayed/lingering events HazardEffectResolver's spawned effects dispatch once
     // their own telegraph/lifetime elapses. Lava additionally gets a per-frame check for the player
     // standing on top of a still-unmined Lava block - once mined it behaves like any other block
-    // (see MapGenerationService.MineCell), no lingering hazard.
+    // (see MapGenerationService.MineCell), no lingering hazard. The trap-room fixtures work the
+    // same way: this watches for the player stepping over a Pressure Plate (the trigger) and
+    // applies the Dart/Crusher hits MapGeneration.StructureTrapResolver's effects report.
     public class HazardDamageHandler : MonoBehaviour
     {
         [SerializeField] private float hazardDamageRadius = 3f;
@@ -24,11 +26,20 @@ namespace Player
         [SerializeField] private float lavaMineDamage = 15f;
         [SerializeField] private float lavaDamage = 10f;
         [SerializeField] private float lavaDamageTickSeconds = 1f;
+        [SerializeField] private float dartDamage = 12f;
+        [Tooltip("World units from the dart's current cell center - under a cell, so hopping over a dart clears it.")]
+        [SerializeField] private float dartHitRadius = 0.6f;
+        [Tooltip("A dart reports once per cell it crosses; this keeps one dart from hitting twice.")]
+        [SerializeField] private float dartHitCooldownSeconds = 0.4f;
+        [SerializeField] private float crusherDamage = 30f;
 
         private PlayerHealth playerHealth;
         private PlayerController playerController;
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private float lavaDamageTimer;
+        private float nextDartHitTime;
+        // The plate the player is currently over (layer, x, y), so it fires once per step-on.
+        private Vector3Int? activePlate;
 
         private void Awake()
         {
@@ -45,6 +56,8 @@ namespace Player
             GameManager.EventService.Add<ExplosiveDetonatedEvent>(OnExplosiveDetonated);
             GameManager.EventService.Add<FallingRockImpactEvent>(OnFallingRockImpact);
             GameManager.EventService.Add<GasCloudDamageTickEvent>(OnGasCloudDamageTick);
+            GameManager.EventService.Add<DartImpactEvent>(OnDartImpact);
+            GameManager.EventService.Add<CrusherSlamEvent>(OnCrusherSlam);
         }
 
         private void OnDisable()
@@ -53,12 +66,15 @@ namespace Player
             GameManager.EventService.Remove<ExplosiveDetonatedEvent>(OnExplosiveDetonated);
             GameManager.EventService.Remove<FallingRockImpactEvent>(OnFallingRockImpact);
             GameManager.EventService.Remove<GasCloudDamageTickEvent>(OnGasCloudDamageTick);
+            GameManager.EventService.Remove<DartImpactEvent>(OnDartImpact);
+            GameManager.EventService.Remove<CrusherSlamEvent>(OnCrusherSlam);
         }
 
         private void Update()
         {
             if (playerHealth == null || playerHealth.IsDead || mapGenerationService == null) return;
             HandleLavaUnderfoot();
+            HandlePressurePlate();
         }
 
         private void OnHazardTriggered(CustomBlockTriggeredEvent evt)
@@ -82,6 +98,51 @@ namespace Player
 
         private void OnGasCloudDamageTick(GasCloudDamageTickEvent evt) =>
             TryApplyRadiusDamage(evt.LayerIndex, evt.X, evt.Y, evt.Radius, gasCloudTickDamage, DeathReason.GasPocket, GasResistanceOf);
+
+        private void OnDartImpact(DartImpactEvent evt)
+        {
+            if (Time.time < nextDartHitTime || playerHealth.IsDead) return;
+
+            Vector3 dartWorldPos = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
+            if (Vector3.Distance(transform.position, dartWorldPos) > dartHitRadius) return;
+
+            nextDartHitTime = Time.time + dartHitCooldownSeconds;
+            playerHealth.TakeDamage(dartDamage, DeathReason.DartTrap);
+        }
+
+        // The piston fills the Reach cells directly below the Crusher block - a hit if the player
+        // is inside that column when it lands.
+        private void OnCrusherSlam(CrusherSlamEvent evt)
+        {
+            if (playerHealth.IsDead) return;
+
+            float cellSize = mapGenerationService.CellSize;
+            Vector3 crusherWorldPos = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
+            Vector3 offset = transform.position - crusherWorldPos;
+            if (Mathf.Abs(offset.x) > cellSize * 0.75f) return;
+            if (offset.y > -cellSize * 0.25f || offset.y < -(evt.Reach + 0.5f) * cellSize) return;
+
+            playerHealth.TakeDamage(crusherDamage, DeathReason.Crusher);
+        }
+
+        // Per-frame like HandleLavaUnderfoot, but not gated on being grounded: the plate fires as
+        // soon as the player is in the cell directly above it, so flying low over one sets it off
+        // too. Edge-triggered - leaving the cell re-arms it.
+        private void HandlePressurePlate()
+        {
+            Vector3Int? plate = null;
+            if (mapGenerationService.TryWorldToCellInBounds(transform.position + Vector3.down * mapGenerationService.CellSize, out int layerIndex, out int x, out int y))
+            {
+                var block = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
+                if (block != null && block.Id == BlockTypeId.PressurePlate) plate = new Vector3Int(x, y, layerIndex);
+            }
+
+            if (plate.HasValue && plate != activePlate)
+            {
+                GameManager.EventService.Dispatch(new PressurePlateTriggeredEvent(layerIndex, x, y));
+            }
+            activePlate = plate;
+        }
 
         private void TryApplyRadiusDamage(int layerIndex, int x, int y, float radius, float baseDamage, DeathReason reason, Func<float> resistanceOf)
         {

@@ -69,7 +69,8 @@ namespace Platform
 
         private static readonly DeathReason[] HazardDeathReasons =
         {
-            DeathReason.Explosive, DeathReason.FallingRock, DeathReason.GasPocket, DeathReason.Lava
+            DeathReason.Explosive, DeathReason.FallingRock, DeathReason.GasPocket, DeathReason.Lava,
+            DeathReason.DartTrap, DeathReason.Crusher
         };
 
         public LifetimeStats Stats { get; private set; } = new();

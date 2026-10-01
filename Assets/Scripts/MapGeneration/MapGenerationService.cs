@@ -223,11 +223,12 @@ namespace MapGeneration
         /// <param name="visionRadiusOverride"></param>
         /// <param name="minedByPlayer">PowerUp blocks are player-only - every other caller (automatons, explosions) is refused them.</param>
         /// <param name="canMineFallingRock">Player with the Rock Breaker upgrade - FallingRock is otherwise refused.</param>
+        /// <param name="byExplosion">A blast, not a drill - the only thing that breaks BlastOnly blocks.</param>
         /// <returns>True if the cell was able to be mined.</returns>
-        public bool MineCell(int layerIndex, int x, int y, int visionRadiusOverride = -1, bool minedByPlayer = false, bool canMineFallingRock = false)
+        public bool MineCell(int layerIndex, int x, int y, int visionRadiusOverride = -1, bool minedByPlayer = false, bool canMineFallingRock = false, bool byExplosion = false)
         {
             // Can't mine if: already mined, target is a building support, or a PowerUp not mined by the player
-            if (!World.TryMineCell(layerIndex, x, y, minedByPlayer, out var block, canMineFallingRock)) return false;
+            if (!World.TryMineCell(layerIndex, x, y, minedByPlayer, out var block, canMineFallingRock, byExplosion)) return false;
 
             // Digging out row 1 (the tile beneath the surface) is what actually opens a fall-
             // through gap at that column - see the SurfaceFloor* fields' comment above.
@@ -334,6 +335,15 @@ namespace MapGeneration
             if (cell.Mined) return null;
 
             return blockTypeDatabase != null ? blockTypeDatabase.Get(cell.BlockTypeId) : null;
+        }
+
+        // In bounds and dug out (mined or pre-carved) - what trap effects (darts, crusher pistons)
+        // can travel through.
+        public bool IsOpenCell(int layerIndex, int x, int y)
+        {
+            var chunk = World.GetOrGenerateChunk(layerIndex);
+            if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) return false;
+            return chunk.Cells[chunk.Index(x, y)].Mined;
         }
 
         // Open = nothing solid to bump into: a mined/pre-carved cell, or open sky above the surface.

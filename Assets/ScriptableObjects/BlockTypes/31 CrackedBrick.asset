@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cbd43d3886532d438c39d0b0c20ee1c, type: 3}
+  m_Name: 31 CrackedBrick
+  m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.BlockType
+  Id: 31
+  DisplayName: Cracked Brick
+  Category: 0
+  CustomBehavior: 0
+  Tile: {fileID: 11400000, guid: f7fef280877f4cc3b815b92fdf5a14f8, type: 2}
+  DrawDirtBehind: 0
+  Icon: {fileID: 21300000, guid: fe062dd114914aba8f663608040962ab, type: 3}
+  Value: 0
+  SaleCategory: 0
+  Weight: 0
+  Health: 1
+  Unmineable: 0
+  BlastOnly: 1
+  Tint: {r: 1, g: 1, b: 1, a: 1}
+  MinimapColor: {r: 0.4, g: 0.33, b: 0.3, a: 1}
+  AnalyzerLines:
+  - "Cracked masonry, packed too dense for any drill. A good blast would bring it down, though."

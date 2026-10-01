@@ -58,6 +58,8 @@ namespace UI
             DeathReason.FallingRock => "Crushed by falling rock.",
             DeathReason.GasPocket => "Overcome by a gas pocket.",
             DeathReason.Lava => "Burned by lava.",
+            DeathReason.DartTrap => "Skewered by a dart trap.",
+            DeathReason.Crusher => "Flattened by a crusher.",
             DeathReason.ManualRespawn => "Manual respawn.",
             _ => "Unknown cause."
         };

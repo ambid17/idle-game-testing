@@ -143,7 +143,7 @@ namespace Player
             if (blockType == null
                 || (blockType.Id == (byte)BlockTypeId.GrassyDirt)
                 || (blockType.Id == BlockTypeId.FallingRock && !PrestigeUpgradeManager.Instance.Mining_CanMineRocks)
-                || blockType.Unmineable
+                || blockType.DrillProof
                 || blockedByFullInventory
                 )
             {
@@ -265,7 +265,7 @@ namespace Player
                 if (block == null
                     || block.Category != BlockCategory.Dirt
                     || block.Id == BlockTypeId.GrassyDirt
-                    || block.Unmineable) return;
+                    || block.DrillProof) return;
 
                 if (!mapGenerationService.MineCell(cellLayer, cellX, cellY, minedByPlayer: true)) return;
 

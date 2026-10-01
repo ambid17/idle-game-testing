@@ -51,7 +51,7 @@ namespace MapGeneration
         // force chunks into existence just by looking at them.
         public bool TryGetLoadedChunk(int layerIndex, out ChunkData chunk) => chunksByLayer.TryGetValue(layerIndex, out chunk);
 
-        public bool TryMineCell(int layerIndex, int x, int y, bool minedByPlayer, out BlockType minedBlock, bool canMineFallingRock = false)
+        public bool TryMineCell(int layerIndex, int x, int y, bool minedByPlayer, out BlockType minedBlock, bool canMineFallingRock = false, bool byExplosion = false)
         {
             minedBlock = null;
 
@@ -80,6 +80,11 @@ namespace MapGeneration
             if (blockTypes != null && blockTypes.Get(cell.BlockTypeId) is { Unmineable: true })
             {
                 // Structure blocks (e.g. Hardpan) - see BlockType.Unmineable.
+                return false;
+            }
+            if (!byExplosion && blockTypes != null && blockTypes.Get(cell.BlockTypeId) is { BlastOnly: true })
+            {
+                // Only a blast breaks it (e.g. Cracked Brick) - see BlockType.BlastOnly.
                 return false;
             }
             if (!minedByPlayer && IsPowerUp(cell.BlockTypeId))

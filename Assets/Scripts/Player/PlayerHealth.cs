@@ -14,7 +14,9 @@ namespace Player
         FallingRock,
         GasPocket,
         Lava,
-        ManualRespawn
+        ManualRespawn,
+        DartTrap,
+        Crusher
     }
 
     public class PlayerHealth : MonoBehaviour

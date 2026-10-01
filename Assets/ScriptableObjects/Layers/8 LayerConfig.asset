@@ -73,6 +73,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6bc77287cd5a97543a435f1a43533357, type: 2}
   - {fileID: 11400000, guid: e3d29d11d4018a84682d886aa6a6b514, type: 2}
   - {fileID: 11400000, guid: 83f1cebf86fa81e4d819b7a9356b78b5, type: 2}
+  - {fileID: 11400000, guid: 79db81eb9b584052be31483167b7c074, type: 2}
+  - {fileID: 11400000, guid: b60eb28a63644bcc8f426c2f8ba90351, type: 2}
+  - {fileID: 11400000, guid: 2e9332986777491da2c105e837cd6828, type: 2}
+  - {fileID: 11400000, guid: 6917162682bb4cd2badcf79cd713df38, type: 2}
+  - {fileID: 11400000, guid: 2c0e941946264d1bb72c5494e34a6e1a, type: 2}
   CritterTable:
   - Critter: {fileID: 11400000, guid: 709d984bd0dff1348b14848e17f8a44b, type: 2}
     Weight: 0.7
