@@ -281,7 +281,7 @@ namespace Player
             // Lucky Strike power-up (see PlayerPowerUps): 2 while charges remain, else 1.
             // Run modifier (Dark Layer) multiplies on top.
             int amount = playerPowerUps.ConsumeLuckyStrikeMultiplier() * GameManager.RunModifierService.OreYieldMultiplier(layerIndex);
-            GameManager.EventService.Dispatch(new NotificationEvent($"+{amount} {blockType.DisplayName}", NotificationUrgency.Queued, blockType.Icon, blockType.IconBackground));
+            // No toast - HudInventoryUI shows the pickup as a "+N" tally beside the ore's row.
             digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, amount);
 
             for (int i = 0; i < amount; i++) ApplyLayerBonus(blockType, layerIndex);

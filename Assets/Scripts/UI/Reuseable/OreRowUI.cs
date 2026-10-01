@@ -18,6 +18,8 @@ namespace UI
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text countLabel;
         [SerializeField] private TMP_Text valueLabel;
+        // Optional - only HudInventoryRow has one, for HudInventoryUI's "+N" pickup tally.
+        [SerializeField] private TMP_Text gainLabel;
 
         private BlockType blockType;
         // Optional - only present on prefab variants that want the count/value to tick towards
@@ -44,17 +46,28 @@ namespace UI
             icon.SetIcon(blockType.Icon, blockType.IconBackground);
         }
 
-        public float SetCount(int count)
+        public float SetCount(int count, bool instant = false)
         {
-            if (countAnimator != null) countAnimator.SetValue(count);
+            if (countAnimator != null) countAnimator.SetValue(count, instant);
             else countLabel.text = count.ToString();
 
             var blockValue = blockType.Value;
             var totalValue = blockValue * UpgradeManager.Instance.Economy_SellValueMultiplier * GameManager.RunModifierService.SellValueMultiplier(blockType.Id) * count;
-            if (valueAnimator != null) valueAnimator.SetValue(totalValue);
+            if (valueAnimator != null) valueAnimator.SetValue(totalValue, instant);
             else valueLabel.text = $"${totalValue:0}";
 
             return totalValue;
+        }
+
+        // Shows "+amount" beside the count at the given opacity; amount 0 hides it so the row's
+        // layout collapses back to just icon + count.
+        public void SetGain(int amount, float alpha)
+        {
+            if (gainLabel == null) return;
+
+            gainLabel.gameObject.SetActive(amount > 0);
+            gainLabel.text = $"+{amount}";
+            gainLabel.alpha = alpha;
         }
 
         // Used by MinerDashboardUI's ore/min table - same row prefab as DepotUI/InventoryUI, just
