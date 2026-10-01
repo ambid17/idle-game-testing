@@ -13,7 +13,8 @@ namespace Critters
     // shopkeeper's intro the first time the player walks in, opens CritterShopUI, and turns the
     // player's jar in with the shopkeeper reacting to each new hat (new species are talked about one
     // at a time from their badged collection card - see TalkAbout). Also sends the
-    // per-catch notifications, including a one-time hint about where the shop is. Scene-placed
+    // per-catch notifications, and supplies the first-catch tutorial's hint about where the shop
+    // is (GetShopHint). Scene-placed
     // singleton (child of GameManager) since it needs Inspector references to the building and panel.
     public class CritterShopController : Singleton<CritterShopController>
     {
@@ -193,14 +194,14 @@ namespace Critters
             var collection = CritterCollection.Instance;
             GameManager.EventService.Dispatch(new NotificationEvent(
                 $"Caught a {evt.Critter.DisplayName}! ({collection.Jar.Count} in jar)", NotificationUrgency.Queued, evt.Critter.Sprite));
+        }
 
-            // First catch ever, shop not found yet: point the player at it.
-            bool firstEverCatch = collection.Jar.Count == 1 && collection.SpeciesCollected == 0;
-            if (firstEverCatch && !collection.HasMetShopkeeper && HasShop)
-            {
-                GameManager.EventService.Dispatch(new NotificationEvent(
-                    $"Rumor has it an odd critter collector lives in a cave about {Mathf.Abs(ShopPosition.y):0}m down...", NotificationUrgency.TimeSensitive));
-            }
+        // Where the shop is, for the first-catch tutorial (Tutorial.TutorialManager) - null once the
+        // player has found it, or on a seed with no shop cave.
+        public string GetShopHint()
+        {
+            if (!HasShop || CritterCollection.Instance.HasMetShopkeeper) return null;
+            return $"Rumor has it an odd critter collector lives in a cave about {Mathf.Abs(ShopPosition.y):0}m down...";
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Critters;
 using Economy;
 using Events;
 using Interaction;
@@ -136,8 +137,26 @@ namespace Tutorial
                 return;
             }
 
+            if (id == TutorialId.Critters) entry = WithShopHint(entry);
+
             shownTutorials.Add(id);
             GameManager.EventService.Dispatch(new ShowTutorialEvent(entry, worldPosition));
+        }
+
+        // The shop's depth is per-seed, so it's appended to a copy of the database entry here
+        // rather than written into the asset's copy.
+        private static TutorialEntry WithShopHint(TutorialEntry entry)
+        {
+            string hint = CritterShopController.Instance.GetShopHint();
+            if (hint == null) return entry;
+
+            return new TutorialEntry
+            {
+                Id = entry.Id,
+                DisplayType = entry.DisplayType,
+                Title = entry.Title,
+                Body = $"{entry.Body}\n\n{hint}",
+            };
         }
 
         public bool HasShown(TutorialId id) => shownTutorials.Contains(id);
