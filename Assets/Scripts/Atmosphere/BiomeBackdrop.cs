@@ -13,6 +13,8 @@ namespace Atmosphere
         [Min(0.1f)] public float Depth = 10f;
         [Tooltip("Tint (and dimming) - farther planes should be darker so they read as distant.")]
         public Color Tint = Color.white;
+        [Tooltip("Horizontal bands the art is composed in (Tools/Backdrops/cave_layout.py), each with empty rows at its edges. When set, biome boundaries snap to the nearest band edge so the cut never slices a formation. 0 = opaque art cut on a jagged seam instead.")]
+        [Min(0)] public int Bands;
     }
 
     // One biome's parallax backdrop (Atmosphere.ParallaxBackdrop), assigned on every LayerConfig

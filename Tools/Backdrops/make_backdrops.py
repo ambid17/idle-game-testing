@@ -1,15 +1,21 @@
 """Builds the parallax backdrop textures from the generated sheets.
 
 Far: 2x2 opaque sheet -> per biome, flatten the model's radial focal glow (divide out a heavy
-blur of luminance), then roll-blend the edges so it tiles both ways.
+blur of luminance), then roll-blend the edges so it tiles both ways. That 512 tile is then redrawn
+at 4x (far_detail): same colour regions with smooth, crisp outlines, plus fine stone grain.
 Mid/Near: per-biome object sheet on a flat blue background -> chroma-key, split into objects,
-then scatter them on a torus (wrapping at the edges) into a transparent, seamless tile.
+then compose them into a cave set (cave_layout.py) of rock ledges, with formations standing on
+them and hanging from them, as a transparent seamless tile.
 """
 import os
 import sys
 import numpy as np
 from PIL import Image
 from scipy import ndimage
+from scipy.cluster.vq import kmeans2
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import cave_layout  # noqa: E402
 
 # Run from anywhere: python Tools/Backdrops/make_backdrops.py [preview_dir]
 HERE = os.path.dirname(os.path.abspath(__file__)) + "/"
@@ -46,10 +52,61 @@ def far_tiles():
         flat = np.clip(flat, 0, 255)
         img = Image.fromarray(flat.astype(np.uint8)).resize((512, 512), Image.NEAREST)
         a = seamless_blend(np.asarray(img).astype(np.float32))
-        Image.fromarray(np.clip(a, 0, 255).astype(np.uint8)).save(ROOT + f"Backdrop_{name}_Far.png")
+        Image.fromarray(far_detail(np.clip(a, 0, 255), seed=k)).save(ROOT + f"Backdrop_{name}_Far.png")
+
+
+def periodic_noise(n, scale, rng):
+    """Seamless smooth noise, roughly unit range, features ~scale px."""
+    w = ndimage.gaussian_filter(rng.standard_normal((n, n)), scale / 2.5, mode="wrap")
+    return w / (w.std() * 3 + 1e-6)
+
+
+def far_detail(src, seed, grid=1024, size=2048, colours=12):
+    """Redraws a seamless far tile at 4x: quantise it into its flat colour regions, upsample each
+    region's outline smoothly (crisp edges instead of the source's chunky stair-steps), then
+    speckle the wall shades with fine stone grain and faint strata. Accent colours (spores,
+    glowing cracks) stay as they are. Everything wraps, so the result still tiles."""
+    rng = np.random.default_rng(seed)
+    n = src.shape[0]
+    pal, labels = kmeans2(src.reshape(-1, 3), colours, seed=seed, minit="++", iter=30)
+    order = np.argsort(pal @ [0.3, 0.59, 0.11])
+    pal = pal[order]
+    rank = np.empty_like(order)
+    rank[order] = np.arange(colours)
+    labels = rank[labels].reshape(n, n)
+
+    k = grid // n
+    best = np.full((grid, grid), -1.0)
+    idx = np.zeros((grid, grid), int)
+    for c in range(colours):
+        m = np.pad(ndimage.gaussian_filter((labels == c).astype(np.float32), 0.9, mode="wrap"), 2, mode="wrap")
+        up = ndimage.zoom(m, k, order=3)[2 * k:-2 * k, 2 * k:-2 * k]
+        better = up > best
+        best[better] = up[better]
+        idx[better] = c
+
+    grain = 0.8 * periodic_noise(grid, 2, rng) + 0.5 * periodic_noise(grid, 7, rng)
+    yy = np.arange(grid)[:, None] + 10 * periodic_noise(grid, 120, rng)
+    strata = (np.sin(yy / grid * 2 * np.pi * 22) > 0.93) * (periodic_noise(grid, 30, rng) > 0)
+    shift = np.round(grain * 0.9).astype(int) - strata.astype(int)
+    count = np.bincount(labels.ravel(), minlength=colours)
+    sat = pal.max(1) - pal.min(1)
+    wall = [c for c in range(colours) if count[c] > labels.size * 0.01 and sat[c] < np.median(sat) * 2.5]
+    pos = np.full(colours, -1)
+    pos[wall] = np.arange(len(wall))
+    stepped = np.array(wall)[np.clip(pos[idx] + shift, 0, len(wall) - 1)]
+    idx = np.where(pos[idx] >= 0, stepped, idx)
+    art = Image.fromarray(np.clip(pal[idx], 0, 255).astype(np.uint8))
+    return np.asarray(art.resize((size, size), Image.NEAREST))
 
 
 def extract_objects(name):
+    objs = extract_indexed(name)
+    return [img for i, img in sorted(objs.items()) if (name, i) not in EXCLUDE], None
+
+
+def extract_indexed(name):
+    """{sheet index (row-major 3x2): RGBA image} for every object on the sheet."""
     im = np.asarray(Image.open(SHEETS + f"Backdrop_Objects_{name}.png").convert("RGB")).astype(np.float32)
     border = np.concatenate([im[:8].reshape(-1, 3), im[-8:].reshape(-1, 3), im[:, :8].reshape(-1, 3), im[:, -8:].reshape(-1, 3)])
     bg = np.median(border, axis=0)
@@ -72,8 +129,7 @@ def extract_objects(name):
         found.append((int(cy > im.shape[0] / 2), cx, Image.fromarray(rgba, "RGBA")))
     # Sheet order: row-major 3x2 grid.
     found.sort(key=lambda f: (f[0], f[1]))
-    objs = [f[2] for i, f in enumerate(found) if (name, i) not in EXCLUDE]
-    return objs, bg
+    return {i: f[2] for i, f in enumerate(found)}
 
 
 def scatter_tile(objs, size, count, scale_range, seed, min_gap):
@@ -124,28 +180,21 @@ def scatter_tile(objs, size, count, scale_range, seed, min_gap):
 
 def main():
     far_tiles()
-    report = []
     for k, name in enumerate(BIOMES):
-        objs, bg = extract_objects(name)
-        # Mid: smaller, denser - reads as a crowd of formations deeper in the cave.
-        mid, nm = scatter_tile(objs, 2048, 12, (0.85, 1.15), seed=100 + k, min_gap=1.25)
-        # Near: bigger, sparse - the odd formation close behind the tunnels.
-        near, nn = scatter_tile(objs, 2048, 4, (1.8, 2.3), seed=200 + k, min_gap=1.4)
-        mid.save(ROOT + f"Backdrop_{name}_Mid.png")
-        near.save(ROOT + f"Backdrop_{name}_Near.png")
-        report.append(f"{name}: bg={bg.astype(int)} objects={len(objs)} mid={nm} near={nn}")
+        objs = {i: o for i, o in extract_indexed(name).items() if (name, i) not in EXCLUDE}
+        for plane, seed in (("Mid", 100 + k), ("Near", 200 + k)):
+            cave_layout.compose(name, plane, objs, seed).save(ROOT + f"Backdrop_{name}_{plane}.png")
 
-    # Preview: per biome, far + mid + near composited, tiled 2x2.
-    prev = Image.new("RGB", (1024, 1024))
+    # Preview: per biome, far + mid + near composited flat (no parallax) with the assets' tints.
+    prev = Image.new("RGB", (2048, 2048))
     for k, name in enumerate(BIOMES):
-        far = Image.open(ROOT + f"Backdrop_{name}_Far.png").convert("RGBA").resize((2048, 2048), Image.NEAREST)
-        comp = far.copy()
-        comp.alpha_composite(Image.open(ROOT + f"Backdrop_{name}_Mid.png"))
-        comp.alpha_composite(Image.open(ROOT + f"Backdrop_{name}_Near.png"))
-        tile = comp.convert("RGB").resize((512, 512), Image.NEAREST)
-        prev.paste(tile, ((k % 2) * 512, (k // 2) * 512))
+        comp = Image.open(ROOT + f"Backdrop_{name}_Far.png").convert("RGBA").resize((2048, 2048), Image.NEAREST)
+        comp = Image.fromarray((np.asarray(comp) * [0.8, 0.8, 0.8, 1]).astype(np.uint8), "RGBA")
+        for plane, tint in (("Mid", 0.75), ("Near", 0.8)):
+            layer = np.asarray(Image.open(ROOT + f"Backdrop_{name}_{plane}.png")) * [tint, tint, tint, 1]
+            comp.alpha_composite(Image.fromarray(layer.astype(np.uint8), "RGBA"))
+        prev.paste(comp.convert("RGB").resize((1024, 1024), Image.NEAREST), ((k % 2) * 1024, (k // 2) * 1024))
     prev.save(SCRATCH + "backdrop_preview.png")
-    print("\n".join(report))
 
 
 if __name__ == "__main__":

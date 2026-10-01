@@ -9,9 +9,16 @@ namespace Atmosphere
     // depth (z) behind the mine so the perspective camera gives true parallax for free - no
     // per-frame scrolling code. Each biome's planes span the world-Y range of that biome's layers
     // (read from LayerConfigProvider, so prestige layer-height changes just move the spans on the
-    // next Build) and crossfade into the next biome's planes over fadeLength at the boundary.
-    // Custom/SpriteParallaxBackdrop clips every plane to the mine's own rect (as seen from the
-    // camera), so nothing leaks above the surface or past the grid's sides.
+    // next Build). Custom/SpriteParallaxBackdrop clips every plane to the mine's own rect (as
+    // seen from the camera), so nothing leaks above the surface or past the grid's sides.
+    //
+    // Biome boundaries are hard cuts, never crossfades (two half-faded caves on top of each other
+    // read as a double exposure):
+    // - Banded planes (the mid/near formation layers, BackdropPlane.Bands > 0) cut on the band
+    //   edge nearest the boundary. Their art keeps those rows empty, so whole formations sit on
+    //   one side or the other.
+    // - Opaque planes (the far walls) meet on a jagged, pixel-stepped seam with a dark crevice
+    //   along it - both sides compute the same seam, so they interlock exactly.
     //
     // The sky above the surface works the same way with its own stack of SkyBands (low sky,
     // clouds, space...), clipped the other way round - only above the surface, at any x. Each
@@ -36,14 +43,22 @@ namespace Atmosphere
         [SerializeField] private Material planeMaterial;
         [Tooltip("Camera-to-mine distance the planes are scaled for: at this distance every plane's tiles look the same size on screen as its sprite does at the mine's depth, whatever its own depth.")]
         [SerializeField] private float referenceCameraDistance = 10f;
-        [Tooltip("World units (on each plane) over which one biome's plane fades into the next's.")]
-        [SerializeField] private float fadeLength = 12f;
         [Tooltip("Extra world width (at mine depth) each plane covers beyond each side of the grid, so it still fills the view with the camera at the grid's edge or zoomed out.")]
         [SerializeField] private float horizontalMargin = 40f;
         [Tooltip("How far (at mine depth) the shallowest biome's planes extend above the surface - the view from above looks down through the surface at a steep parallax angle. Clipped at the surface anyway.")]
         [SerializeField] private float surfaceOverhang = 40f;
         [Tooltip("How far below its top the deepest biome's planes extend - it repeats forever past the last authored layer, like LayerConfigProvider does.")]
         [SerializeField] private float deepestBiomeExtent = 4000f;
+
+        [Header("Biome seams (opaque planes)")]
+        [Tooltip("How far (at mine depth) the jagged seam between two biomes' opaque planes wanders above and below the boundary.")]
+        [SerializeField] private float seamJag = 1.5f;
+        [Tooltip("Step size (at mine depth) of the seam's jags, so it reads as pixel art.")]
+        [SerializeField] private float seamPixel = 0.16f;
+        [Tooltip("Brightness right at the seam - the crevice where two biomes' rock meets.")]
+        [Range(0f, 1f)] [SerializeField] private float seamShade = 0.3f;
+        [Tooltip("How far (at mine depth) from the seam the crevice darkening fades out.")]
+        [SerializeField] private float seamShadeLength = 1.5f;
 
         [Header("Sky (above the surface)")]
         [Tooltip("Bands stacked upward from the surface; the last one repeats forever.")]
@@ -67,6 +82,12 @@ namespace Atmosphere
         private static readonly int FadeBottomId = Shader.PropertyToID("_FadeBottom");
         private static readonly int FadeLengthId = Shader.PropertyToID("_FadeLength");
         private static readonly int SkyClipId = Shader.PropertyToID("_SkyClip");
+        private static readonly int EdgeModeId = Shader.PropertyToID("_EdgeMode");
+        private static readonly int EdgeJagId = Shader.PropertyToID("_EdgeJag");
+        private static readonly int EdgePixelId = Shader.PropertyToID("_EdgePixel");
+        private static readonly int EdgeShadeId = Shader.PropertyToID("_EdgeShade");
+        private static readonly int EdgeShadeLengthId = Shader.PropertyToID("_EdgeShadeLength");
+        private static readonly int TileRectId = Shader.PropertyToID("_TileRect");
 
         private void OnEnable()
         {
@@ -122,11 +143,9 @@ namespace Atmosphere
                     bool isLast = i > deepestLayer;
                     foreach (var plane in spanBackdrop.Planes)
                     {
-                        // Parallax magnifies how far past the surface a deep plane is looked at.
-                        float scale = 1f + plane.Depth / referenceCameraDistance;
-                        float top = isFirst ? surfaceY + surfaceOverhang * scale : LayerTopY(spanStart);
-                        float bottom = isLast ? LayerTopY(spanStart) - deepestBiomeExtent : LayerTopY(i);
-                        BuildPlane(plane, top, bottom, !isFirst, !isLast, fadeLength, false, gridWorldWidth, mineRect, sortingOrders[plane.Depth]);
+                        float top = isFirst ? float.PositiveInfinity : LayerTopY(spanStart);
+                        float bottom = isLast ? float.NegativeInfinity : LayerTopY(i);
+                        BuildMinePlane(plane, top, bottom, LayerTopY(spanStart), surfaceY, gridWorldWidth, mineRect, sortingOrders[plane.Depth]);
                     }
                 }
                 spanStart = i;
@@ -228,6 +247,46 @@ namespace Atmosphere
             ApplyClip(renderer, mineRect, fadeTop ? top : NoFade, fadeBottom ? bottom : -NoFade, fade, sky);
         }
 
+        // top / bottom: the biome boundaries, or +-infinity where the plane runs on past the
+        // surface or below the last authored layer.
+        private void BuildMinePlane(BackdropPlane plane, float top, float bottom, float spanTop, float surfaceY,
+            float gridWorldWidth, Vector4 mineRect, int sortingOrder)
+        {
+            float scale = 1f + plane.Depth / referenceCameraDistance;
+            Vector2 tileSize = plane.Sprite.bounds.size * scale;
+            bool banded = plane.Bands > 0;
+            float bandHeight = tileSize.y / Mathf.Max(1, plane.Bands);
+            float jag = banded ? 0f : seamJag * scale;
+
+            // Tiles repeat from world y = 0 (_TileRect), so band edges sit at multiples of bandHeight.
+            float Cut(float y) => banded ? Mathf.Round(y / bandHeight) * bandHeight : y;
+            bool hasTop = !float.IsInfinity(top);
+            bool hasBottom = !float.IsInfinity(bottom);
+            float cutTop = hasTop ? Cut(top) : NoFade;
+            float cutBottom = hasBottom ? Cut(bottom) : -NoFade;
+
+            // Parallax magnifies how far past the surface a deep plane is looked at.
+            float quadTop = hasTop ? cutTop + jag + 1f : surfaceY + surfaceOverhang * scale;
+            float quadBottom = hasBottom ? cutBottom - jag - 1f : spanTop - deepestBiomeExtent;
+
+            var renderer = CreateRenderer($"{plane.Sprite.name} (z {plane.Depth})", plane.Sprite, plane.Tint, sortingOrder);
+            renderer.drawMode = SpriteDrawMode.Tiled;
+            renderer.tileMode = SpriteTileMode.Continuous;
+            float width = (gridWorldWidth + horizontalMargin * 2f) * scale;
+            renderer.transform.localScale = Vector3.one * scale;
+            renderer.transform.position = new Vector3(gridWorldWidth * 0.5f, (quadTop + quadBottom) * 0.5f, MineZ + plane.Depth);
+            renderer.size = new Vector2(width, quadTop - quadBottom) / scale;
+
+            var block = ClipBlock(renderer, mineRect, cutTop, cutBottom, 1f, false);
+            block.SetFloat(EdgeModeId, 1f);
+            block.SetFloat(EdgeJagId, jag);
+            block.SetFloat(EdgePixelId, seamPixel * scale);
+            block.SetFloat(EdgeShadeId, banded ? 1f : seamShade);
+            block.SetFloat(EdgeShadeLengthId, seamShadeLength * scale);
+            block.SetVector(TileRectId, new Vector4(gridWorldWidth * 0.5f, 0f, tileSize.x, tileSize.y));
+            renderer.SetPropertyBlock(block);
+        }
+
         private void BuildBacking(float gridWorldWidth, float surfaceY, Vector4 mineRect)
         {
             if (backingSprite == null)
@@ -243,7 +302,7 @@ namespace Atmosphere
             renderer.transform.position = new Vector3(gridWorldWidth * 0.5f, (top + bottom) * 0.5f, MineZ + backingDepth);
             renderer.transform.localScale = new Vector3((gridWorldWidth + horizontalMargin * 2f) * scale, top - bottom, 1f);
 
-            ApplyClip(renderer, mineRect, NoFade, -NoFade, fadeLength, false);
+            ApplyClip(renderer, mineRect, NoFade, -NoFade, 1f, false);
         }
 
         private SpriteRenderer CreateRenderer(string objectName, Sprite sprite, Color color, int sortingOrder)
@@ -262,6 +321,11 @@ namespace Atmosphere
 
         private void ApplyClip(SpriteRenderer renderer, Vector4 mineRect, float fadeTop, float fadeBottom, float fade, bool sky)
         {
+            renderer.SetPropertyBlock(ClipBlock(renderer, mineRect, fadeTop, fadeBottom, fade, sky));
+        }
+
+        private static MaterialPropertyBlock ClipBlock(SpriteRenderer renderer, Vector4 mineRect, float fadeTop, float fadeBottom, float fade, bool sky)
+        {
             var block = new MaterialPropertyBlock();
             renderer.GetPropertyBlock(block);
             block.SetVector(MineRectId, mineRect);
@@ -269,7 +333,7 @@ namespace Atmosphere
             block.SetFloat(FadeBottomId, fadeBottom);
             block.SetFloat(FadeLengthId, fade);
             block.SetFloat(SkyClipId, sky ? 1f : 0f);
-            renderer.SetPropertyBlock(block);
+            return block;
         }
     }
 }

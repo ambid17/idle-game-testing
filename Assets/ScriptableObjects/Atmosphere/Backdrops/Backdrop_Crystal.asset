@@ -16,9 +16,12 @@ MonoBehaviour:
   - Sprite: {fileID: 21300000, guid: 152011f021a6aca4d8c9336f42e4aa1e, type: 3}
     Depth: 20
     Tint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    Bands: 0
   - Sprite: {fileID: 21300000, guid: 4ab3e646227a32c438e4844116b91138, type: 3}
     Depth: 8
     Tint: {r: 0.75, g: 0.75, b: 0.75, a: 1}
+    Bands: 3
   - Sprite: {fileID: 21300000, guid: 3f55908929cab484f913feb798088a1c, type: 3}
     Depth: 3
     Tint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    Bands: 2
