@@ -26,7 +26,7 @@ GEN = os.path.join(ART, "_generated")
 ACCESSORIES = [
     ("Accessory_PithHelmet", True),
     ("Accessory_Monocle", False),
-    ("Accessory_Cape", True),
+    ("Accessory_Cape", False),
     ("Accessory_RuneGoggles", True),
     ("Accessory_RuneHalo", False),
 ]
