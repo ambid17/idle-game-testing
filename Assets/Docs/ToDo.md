@@ -3,7 +3,6 @@ test hazards and set piece rooms
 tutorial notifications for grassy dirt and rocks that cant be mined
 first time getting to 50% fuel should explain depot refuel
 add icons next to hud bars to indicate what they area
-dirt edge bleed has seams
 redo crack indicator to grow more slowly
 first critter notifications are too fast. just add that text to the tutorial
 matching scroll bars to UI

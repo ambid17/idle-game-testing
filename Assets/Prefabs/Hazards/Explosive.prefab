@@ -4949,7 +4949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 704df83c88d12c647bc510a251f9c54f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.ExplosiveHazardEffect
-  telegraphSeconds: 1
+  telegraphSeconds: 1.5
   jiggleMagnitude: 0.08
   flashIntervalSeconds: 0.1
   flashColor: {r: 1, g: 0.3, b: 0.1, a: 1}
