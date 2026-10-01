@@ -1,16 +1,11 @@
 todo 
 test hazards and set piece rooms
-tutorial notifications for grassy dirt and rocks that cant be mined
-first time getting to 50% fuel should explain depot refuel
-add icons next to hud bars to indicate what they area
-redo crack indicator to grow more slowly
-first critter notifications are too fast. just add that text to the tutorial
-matching scroll bars to UI
+redo crack indicator to grow more slowly. the last state is too busy, we should delete it and add a new state in the middle
+first critter notifications are too fast. the one that tells you what depth to look at. just add that text to the tutorial pane 
+could we generate are to match all of the scroll bars and sliders to the rest of the UI?
 move depth and layer to minimap, add biome/structure name to it
-TAB to cycle through tutorials?
-explosive hazard slightly longer delay
-	- ensure chain explosions work
-automaton spawning broken
+SPACE to cycle through tutorials, denote this in the action button of the tutorial
+automaton first spawn
 	- control center reveal should open the doors and have the mining automaton walk out during the cinematic
 - player 
 	- 
