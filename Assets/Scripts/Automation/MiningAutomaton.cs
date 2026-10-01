@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Critters;
 using Economy;
@@ -51,6 +52,10 @@ namespace Automation
         // fallback (see UpdatePickingTarget), where continuing the old direction is meaningless.
         private Vector2 lastDigDirection;
 
+        private const float InsideDoorwayScale = 0.5f;
+        private static readonly Color InsideDoorwayTint = new(0.25f, 0.3f, 0.35f, 1f);
+        private bool heldForDeployment;
+
         private int currentLayer;
         [SerializeField] private Vector2Int currentCell;
         [SerializeField] private List<Vector3> path;
@@ -83,6 +88,62 @@ namespace Automation
             DisplayIndex = displayIndex;
             _depotLocation = depotPosition;
             RefreshHat();
+        }
+
+        // Control Center reveal cinematic (ControlCenterRevealController): the first automaton is
+        // bought before its building has appeared, so it waits hidden and inert until the doors
+        // open, then WalkOut plays and Release hands control back to the state machine.
+        public void HoldInside()
+        {
+            heldForDeployment = true;
+            SetVisible(false);
+        }
+
+        public void Release()
+        {
+            heldForDeployment = false;
+            SetVisible(true);
+        }
+
+        // Emerges from the doorway toward the camera (grows and brightens out of the dark
+        // interior onto the doorstep), then walks clear of the building.
+        public IEnumerator WalkOut(Vector3 doorway, Vector3 doorstep, Vector3 exit, float emergeSeconds, float walkSpeed)
+        {
+            Vector3 fullScale = transform.localScale;
+            Color fullColor = bodyRenderer.color;
+            transform.position = doorway;
+            SetVisible(true);
+
+            float elapsed = 0f;
+            while (elapsed < emergeSeconds)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / emergeSeconds));
+                transform.position = Vector3.Lerp(doorway, doorstep, t);
+                transform.localScale = fullScale * Mathf.Lerp(InsideDoorwayScale, 1f, t);
+                SetTint(Color.Lerp(InsideDoorwayTint * fullColor, fullColor, t));
+                yield return null;
+            }
+            transform.localScale = fullScale;
+            SetTint(fullColor);
+
+            while (!mover.StepDirect(transform, exit, walkSpeed, arriveThreshold: 0.02f))
+            {
+                yield return null;
+            }
+        }
+
+        private void SetVisible(bool visible)
+        {
+            bodyRenderer.enabled = visible;
+            if (visible) RefreshHat();
+            else hatRenderer.enabled = false;
+        }
+
+        private void SetTint(Color color)
+        {
+            bodyRenderer.color = color;
+            hatRenderer.color = color;
         }
 
         private void Awake()
@@ -144,7 +205,7 @@ namespace Automation
             if (hatRenderer == null || bodyRenderer == null) return;
 
             var hat = GameManager.CritterDatabase.GetHat(CritterCollection.Instance.GetAutomatonHat(DisplayIndex));
-            hatRenderer.enabled = hat != null && hat.Sprite != null;
+            hatRenderer.enabled = bodyRenderer.enabled && hat != null && hat.Sprite != null;
             currentHat = hatRenderer.enabled ? hat : null;
             if (!hatRenderer.enabled) return;
 
@@ -181,6 +242,7 @@ namespace Automation
         {
             streamingManager.SetFocusDepth(gameObject.name, transform.position.y);
             IsMining = false;
+            if (heldForDeployment) return;
 
             // Empty tank: abandon whatever it was doing and head for the Control Center to buy more,
             // rather than stalling in place waiting for a Fuel Drone to happen by. Consume() no-ops at
@@ -252,6 +314,9 @@ namespace Automation
             }
 
             path = AutomatonReachability.BuildWorldPath(mapGenerationService, currentLayer, currentCell, digTargetLayer, digTargetCell);
+            // BuildWorldPath ends on the dig target itself - drop it so the walk stops in the open
+            // cell next to the block instead of carrying on into it while mining.
+            if (path.Count > 1) path.RemoveAt(path.Count - 1);
             pathIndex = 0;
             state = State.MovingAndDigging;
         }
@@ -308,12 +373,9 @@ namespace Automation
             }
 
             float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
-            mover.StepAlongPath(transform, path, ref pathIndex, speed, cornerRadius: config.AutomatonCornerRadius);
-
-            // The final waypoint is the dig target cell itself (unmined) - mine it in place once
-            // that's the active waypoint, mirroring PlayerMining accruing progress while the
-            // player is simply facing the target rather than fully "arrived."
-            if (pathIndex < path.Count - 1)
+            // The final waypoint is the open cell beside the dig target - only start mining once
+            // standing there, so the automaton drills the block from next to it.
+            if (!mover.StepAlongPath(transform, path, ref pathIndex, speed, cornerRadius: config.AutomatonCornerRadius))
             {
                 return;
             }

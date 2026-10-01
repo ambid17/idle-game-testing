@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Player;
 using Unity.Cinemachine;
@@ -49,7 +50,9 @@ namespace Buildings
         // Triggers are responsible for their own hidden-until-unlocked bookkeeping (SetActive(false)
         // by default, flipped true on load if already unlocked) - this just plays the cinematic that
         // reveals an already-hidden building.
-        public void Reveal(GameObject building, string description)
+        // afterMaterialized: optional extra beat played once the building is fully visible and
+        // before the text appears (e.g. the Control Center opening its doors).
+        public void Reveal(GameObject building, string description, Func<IEnumerator> afterMaterialized = null)
         {
             var buildingSprite = building.GetComponent<SpriteRenderer>();
             if (buildingSprite == null)
@@ -58,10 +61,10 @@ namespace Buildings
                 return;
             }
 
-            StartCoroutine(RevealSequence(building, buildingSprite, description));
+            StartCoroutine(RevealSequence(building, buildingSprite, description, afterMaterialized));
         }
 
-        private IEnumerator RevealSequence(GameObject building, SpriteRenderer buildingSprite, string description)
+        private IEnumerator RevealSequence(GameObject building, SpriteRenderer buildingSprite, string description, Func<IEnumerator> afterMaterialized)
         {
             // Waits out whatever panel/modal is open (e.g. the Market panel a recipe was just bought
             // in, or the FirstArtifact world tutorial popup) since every panel/modal already sets
@@ -100,6 +103,8 @@ namespace Buildings
             yield return new WaitForSeconds(portalCooldownSeconds);
 
             portalEffect.Stop();
+
+            if (afterMaterialized != null) yield return afterMaterialized();
 
             bool textDismissed = false;
             cinematicText.Show(description, textPromptDelaySeconds, () => textDismissed = true);

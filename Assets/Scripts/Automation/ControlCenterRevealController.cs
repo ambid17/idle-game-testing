@@ -1,3 +1,4 @@
+using System.Collections;
 using Buildings;
 using Economy;
 using Events;
@@ -18,6 +19,8 @@ namespace Automation
     public class ControlCenterRevealController : Singleton<ControlCenterRevealController>
     {
         [SerializeField] private GameObject controlCenterBuilding;
+        [SerializeField] private AutomationSpawner automationSpawner;
+        [SerializeField] private ControlCenterEntrance entrance;
 
         protected override void Initialize()
         {
@@ -25,6 +28,14 @@ namespace Automation
             if (controlCenterBuilding == null)
             {
                 Debug.LogError("ControlCenterRevealController.controlCenterBuilding is not assigned.");
+            }
+            if (automationSpawner == null)
+            {
+                Debug.LogError("ControlCenterRevealController.automationSpawner is not assigned.");
+            }
+            if (entrance == null)
+            {
+                Debug.LogError("ControlCenterRevealController.entrance is not assigned.");
             }
         }
 
@@ -60,7 +71,27 @@ namespace Automation
         private void OnShowTutorial(ShowTutorialEvent evt)
         {
             if (evt.Entry.Id != TutorialId.ControlCenterReveal) return;
-            BuildingRevealCinematicPlayer.Instance.Reveal(controlCenterBuilding, evt.Entry.Body);
+            // Held from here, not from when the cinematic starts: the reveal waits out the Market
+            // panel and the Automatons tutorial first, and the automaton shouldn't be out mining
+            // from a building that hasn't appeared yet.
+            automationSpawner.HoldAutomatonsInside();
+            BuildingRevealCinematicPlayer.Instance.Reveal(controlCenterBuilding, evt.Entry.Body, DeployFirstAutomaton);
+        }
+
+        // Plays once the building has materialized: doors open, the first automaton walks out.
+        private IEnumerator DeployFirstAutomaton()
+        {
+            var automaton = automationSpawner.FirstAutomaton;
+            if (automaton == null)
+            {
+                Debug.LogError("ControlCenterRevealController: no automaton to walk out of the Control Center.");
+            }
+            else
+            {
+                yield return entrance.DeployThroughDoors(automaton);
+            }
+
+            automationSpawner.ReleaseAutomatons();
         }
     }
 }

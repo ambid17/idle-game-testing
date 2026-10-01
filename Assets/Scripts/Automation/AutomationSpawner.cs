@@ -28,6 +28,26 @@ namespace Automation
         private readonly List<StorageDrone> storageDrones = new();
         private readonly List<FuelDrone> fuelDrones = new();
 
+        // Control Center reveal (ControlCenterRevealController): automatons stay hidden and inert
+        // from the moment the reveal is queued until its cinematic has walked the first one out.
+        // A flag as well as a pass over the live list, since the reveal and the spawn both react
+        // to the same purchase event in no guaranteed order.
+        private bool holdingAutomatonsInside;
+
+        // Null until the first automaton has been bought.
+        public MiningAutomaton FirstAutomaton => automatons.Count > 0 ? automatons[0] : null;
+
+        public void HoldAutomatonsInside()
+        {
+            holdingAutomatonsInside = true;
+            foreach (var automaton in automatons) automaton.HoldInside();
+        }
+
+        public void ReleaseAutomatons()
+        {
+            holdingAutomatonsInside = false;
+            foreach (var automaton in automatons) automaton.Release();
+        }
 
         private void Awake()
         {
@@ -84,7 +104,11 @@ namespace Automation
         private void ReconcileAll()
         {
             var upgrades = Economy.UpgradeManager.Instance;
-            Reconcile(automatons, automatonPrefab, upgrades.Automation_AutomatonCount, (instance, index) => instance.Configure(index, depotDepositLocation.position));
+            Reconcile(automatons, automatonPrefab, upgrades.Automation_AutomatonCount, (instance, index) =>
+            {
+                instance.Configure(index, depotDepositLocation.position);
+                if (holdingAutomatonsInside) instance.HoldInside();
+            });
             Reconcile(storageDrones, storageDronePrefab, upgrades.Automation_StorageDroneCount, (instance, index) => instance.Configure(storageDroneParking.position, index));
             Reconcile(fuelDrones, fuelDronePrefab, upgrades.Automation_FuelDroneCount, (instance, _) => instance.Configure(fuelDroneParking.position));
         }
