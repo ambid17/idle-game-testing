@@ -12,6 +12,19 @@ namespace MapGeneration
         Artifact
     }
 
+    // Groups ores by the depth they're first found at (discovery order through the layers) - each
+    // group has its own Market "Marketing" upgrade (Economy.UpgradeManager.Economy_SellValueMultiplier).
+    // None for non-ore blocks. Explicit values: serialized on every BlockType asset.
+    public enum OreSaleCategory
+    {
+        None = 0,
+        Common = 1,   // Scrap, Stone, Coal (layers 0-1)
+        Metals = 2,   // Iron, Gold (layers 2-3)
+        Gems = 3,     // Emerald, Diamond (layers 4-5)
+        Exotics = 4,  // Titanium Alloy, Voidstone, Plasma Quartz, Nanite Ore (layers 6-7)
+        Cosmic = 5,   // Graviton Shard .. Precursor Alloy (layers 8-10)
+    }
+
     public enum BlockTypeId : byte
     {
         GrassyDirt = 0,
@@ -98,6 +111,8 @@ namespace MapGeneration
 
         [Tooltip("Sell value.")]
         public float Value;
+        [Tooltip("Which Market Marketing upgrade boosts this ore's sell value. None for non-ores.")]
+        public OreSaleCategory SaleCategory;
         [Tooltip("Inventory weight per unit.")]
         public float Weight;
         public float Health = 1f;

@@ -39,8 +39,16 @@ namespace Economy
 
         // Economy 200-299
         Economy_InventoryCapacity = 200,
-        Economy_MarketingSellMultiplier = 201,
+        // 201 retired (was Economy_MarketingSellMultiplier, one +% for all ore) - split into the
+        // per-OreSaleCategory chain below. Never reuse.
         Economy_Overflow = 202,
+        // GameDesignDoc "Economy > Marketing: increase sales value of minerals", one upgrade per
+        // MapGeneration.OreSaleCategory, chained in discovery order (each requires the previous).
+        Economy_CommonOreSaleValue = 203,
+        Economy_MetalOreSaleValue = 204,
+        Economy_GemOreSaleValue = 205,
+        Economy_ExoticOreSaleValue = 206,
+        Economy_CosmicOreSaleValue = 207,
 
         // Mining 300-399
         Mining_AreaSize = 300,

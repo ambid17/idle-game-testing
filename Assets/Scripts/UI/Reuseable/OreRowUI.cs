@@ -52,7 +52,7 @@ namespace UI
             else countLabel.text = count.ToString();
 
             var blockValue = blockType.Value;
-            var totalValue = blockValue * UpgradeManager.Instance.Economy_SellValueMultiplier * GameManager.RunModifierService.SellValueMultiplier(blockType.Id) * count;
+            var totalValue = blockValue * UpgradeManager.Instance.Economy_SellValueMultiplier(blockType) * GameManager.RunModifierService.SellValueMultiplier(blockType.Id) * count;
             if (valueAnimator != null) valueAnimator.SetValue(totalValue, instant);
             else valueLabel.text = $"${totalValue:0}";
 

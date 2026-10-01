@@ -31,8 +31,9 @@ namespace Persistence
         // Market upgrade save keys (DisplayName) whose definitions were removed on purpose, skipped
         // silently on load instead of hitting UpgradeManagerBase.SetLevel's stale-key error.
         // "Fuel Efficiency" moved to the Prestige tree (Survival_FuelEfficiency) - Market levels
-        // reset every prestige anyway, so nothing meaningful is lost.
-        private static readonly HashSet<string> RetiredMarketUpgradeKeys = new() { "Fuel Efficiency" };
+        // reset every prestige anyway, so nothing meaningful is lost. "Marketing" was split into the
+        // per-ore-category Marketing upgrades (Economy_*OreSaleValue).
+        private static readonly HashSet<string> RetiredMarketUpgradeKeys = new() { "Fuel Efficiency", "Marketing" };
         private string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
         private string MapSavePath => Path.Combine(Application.persistentDataPath, "map.json");
         public bool HasLoadedData => hasLoadedData;

@@ -20,6 +20,7 @@ MonoBehaviour:
   DrawDirtBehind: 1
   Icon: {fileID: 21300000, guid: acc0353c1dc18bd4f9cb40a77f03958d, type: 3}
   Value: 9500
+  SaleCategory: 5
   Weight: 10
   Health: 1
   Unmineable: 0

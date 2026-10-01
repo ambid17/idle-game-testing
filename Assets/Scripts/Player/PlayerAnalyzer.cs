@@ -69,7 +69,7 @@ namespace Player
             if (blockType.Category != BlockCategory.Ore) return line;
 
             // Same multiplier stack Depot applies when selling.
-            double value = blockType.Value * UpgradeManager.Instance.Economy_SellValueMultiplier * PrestigeUpgradeManager.Instance.Economy_MineralValueMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier * GameManager.RunModifierService.SellValueMultiplier(blockType.Id);
+            double value = blockType.Value * UpgradeManager.Instance.Economy_SellValueMultiplier(blockType) * PrestigeUpgradeManager.Instance.Economy_MineralValueMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier * GameManager.RunModifierService.SellValueMultiplier(blockType.Id);
             return $"{line}\n<color=#7CFC7C>Value: ${value:0} each</color>";
         }
     }

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
+  m_Name: Economy_ExoticOreSaleValue
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
+  DisplayName: Exotic Ore Marketing
+  Description: +5% sale value of Titanium Alloy, Voidstone, Plasma Quartz and Nanite
+    Ore per level (up to +50% at max level).
+  Icon: {fileID: 21300000, guid: f8b950d677cd74648a4dd9ae107d41e1, type: 3}
+  EffectValuePerLevel: 0.05
+  MaxLevel: 10
+  BaseCost: 7200
+  CostGrowth: 1.25
+  RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: 3dc92a0e14cf7134e92c09792f119f51, type: 2}
+  Branch: 1
+  Effect: 206

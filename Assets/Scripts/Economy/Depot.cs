@@ -92,7 +92,7 @@ namespace Economy
                 Debug.LogError($"Depot.Sell: BlockTypeDatabase missing or BlockTypeId {id} not found. Cannot sell.");
                 return 0;
             }
-            double value = blockType.Value * UpgradeManager.Instance.Economy_SellValueMultiplier * PrestigeUpgradeManager.Instance.Economy_MineralValueMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier * GameManager.RunModifierService.SellValueMultiplier(id) * amountToSell;
+            double value = blockType.Value * UpgradeManager.Instance.Economy_SellValueMultiplier(blockType) * PrestigeUpgradeManager.Instance.Economy_MineralValueMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier * GameManager.RunModifierService.SellValueMultiplier(id) * amountToSell;
 
             int remaining = current - amountToSell;
             storedOres[id] = Mathf.Max(0, remaining);

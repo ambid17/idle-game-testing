@@ -313,7 +313,7 @@ namespace Player
             if (CanOverflow)
             {
                 var upgrades = UpgradeManager.Instance;
-                double value = blockType.Value * excess * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier * GameManager.RunModifierService.SellValueMultiplier(blockType.Id);
+                double value = blockType.Value * excess * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier(blockType) * GameManager.RunModifierService.SellValueMultiplier(blockType.Id);
                 if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
             }
             else

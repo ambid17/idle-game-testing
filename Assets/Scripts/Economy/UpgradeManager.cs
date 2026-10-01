@@ -1,4 +1,5 @@
 using Events;
+using MapGeneration;
 using UnityEngine;
 
 namespace Economy
@@ -102,8 +103,21 @@ namespace Economy
         // ores will auto-sell at a reduced value".
         public bool Economy_OverflowUnlocked => IsMaxedEffect(UpgradeEffect.Economy_Overflow);
 
-        // GameDesignDoc "Economy > Marketing: increase sales value of minerals".
-        public float Economy_SellValueMultiplier => 1f + LevelOf(UpgradeEffect.Economy_MarketingSellMultiplier) * EffectValuePerLevelOf(UpgradeEffect.Economy_MarketingSellMultiplier);
+        // GameDesignDoc "Economy > Marketing: increase sales value of minerals": +X% per level of
+        // the Marketing upgrade matching this ore's BlockType.SaleCategory; 1 for uncategorized blocks.
+        public float Economy_SellValueMultiplier(BlockType blockType)
+        {
+            UpgradeEffect? effect = blockType.SaleCategory switch
+            {
+                OreSaleCategory.Common => UpgradeEffect.Economy_CommonOreSaleValue,
+                OreSaleCategory.Metals => UpgradeEffect.Economy_MetalOreSaleValue,
+                OreSaleCategory.Gems => UpgradeEffect.Economy_GemOreSaleValue,
+                OreSaleCategory.Exotics => UpgradeEffect.Economy_ExoticOreSaleValue,
+                OreSaleCategory.Cosmic => UpgradeEffect.Economy_CosmicOreSaleValue,
+                _ => null
+            };
+            return effect.HasValue ? 1f + LevelOf(effect.Value) * EffectValuePerLevelOf(effect.Value) : 1f;
+        }
 
         // GameDesignDoc "Mining > Increase mining size" (vein mining): current cumulative upgrade
         // level: fed into Player.VeinMiningPattern.GetChainCells by PlayerMining to know how many
@@ -156,7 +170,7 @@ namespace Economy
         public float Movement_MoveSpeedMultiplier => 1f + LevelOf(UpgradeEffect.Movement_MoveSpeed) * EffectValuePerLevelOf(UpgradeEffect.Movement_MoveSpeed);
 
         // "Upgrades > processed good sale value": mirrors Economy_SellValueMultiplier but only applies to
-        // Depot.SellGood, kept independent of the ore MarketingSellMultiplier.
+        // Depot.SellGood, kept independent of the per-category ore Marketing upgrades.
         public float Processing_GoodsSellMultiplier => 1f + LevelOf(UpgradeEffect.Processing_SaleValueMultiplier) * EffectValuePerLevelOf(UpgradeEffect.Processing_SaleValueMultiplier);
 
         // "Upgrades > processing queue": "allows multiple recipes to be running at once" - added on

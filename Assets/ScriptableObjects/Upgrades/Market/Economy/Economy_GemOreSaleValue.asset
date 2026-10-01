@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f01a9dee5b304845841d44711a12ac4, type: 3}
+  m_Name: Economy_GemOreSaleValue
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
+  DisplayName: Gem Marketing
+  Description: +5% sale value of Emerald and Diamond per level (up to +50% at max
+    level).
+  Icon: {fileID: 21300000, guid: 0a713dcfe078c7345a40cc5ba7f511e9, type: 3}
+  EffectValuePerLevel: 0.05
+  MaxLevel: 10
+  BaseCost: 2700
+  CostGrowth: 1.25
+  RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: d10e77809c1da62478b260fa7c877323, type: 2}
+  Branch: 1
+  Effect: 205
