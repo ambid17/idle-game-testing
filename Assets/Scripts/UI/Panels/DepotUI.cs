@@ -182,6 +182,8 @@ namespace UI
             var totalValue = 0f;
             foreach (var kvp in rows)
             {
+                // Rows stay hidden until the ore has been banked at least once.
+                kvp.Value.gameObject.SetActive(Depot.Instance.IsOreDiscovered(kvp.Key));
                 Depot.Instance.StoredOres.TryGetValue(kvp.Key, out var count);
                 var rowValue = kvp.Value.SetCount(count);
 
@@ -196,6 +198,7 @@ namespace UI
             var totalGoodsValue = 0f;
             foreach (var kvp in goodsRows)
             {
+                kvp.Value.gameObject.SetActive(Depot.Instance.IsGoodDiscovered(kvp.Key));
                 Depot.Instance.StoredGoods.TryGetValue(kvp.Key, out var count);
                 totalGoodsValue += kvp.Value.SetCount(count);
             }

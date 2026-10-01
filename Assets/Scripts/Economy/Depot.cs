@@ -42,6 +42,18 @@ namespace Economy
             if (changed) GameManager.EventService.Dispatch<DepotChangedEvent>();
         }
 
+        // Every ore/good that has ever been banked here. The Depot panel and the Control Center
+        // miner dashboard hide rows for anything not in these, so the lists grow as the player
+        // finds things instead of opening on a wall of zeroes. Player knowledge rather than run
+        // state, so ClearAll (prestige) leaves them alone.
+        private readonly HashSet<BlockTypeId> discoveredOres = new();
+        private readonly HashSet<ProcessingRecipeId> discoveredGoods = new();
+        public IReadOnlyCollection<BlockTypeId> DiscoveredOres => discoveredOres;
+        public IReadOnlyCollection<ProcessingRecipeId> DiscoveredGoods => discoveredGoods;
+
+        public bool IsOreDiscovered(BlockTypeId id) => discoveredOres.Contains(id);
+        public bool IsGoodDiscovered(ProcessingRecipeId id) => discoveredGoods.Contains(id);
+
         public void Deposit(IReadOnlyDictionary<BlockTypeId, int> ores)
         {
             if (ores == null || ores.Count == 0) return;
@@ -50,6 +62,7 @@ namespace Economy
             {
                 storedOres.TryGetValue(kvp.Key, out var current);
                 storedOres[kvp.Key] = current + kvp.Value;
+                if (kvp.Value > 0) discoveredOres.Add(kvp.Key);
             }
 
             foreach (var kvp in ores)
@@ -64,6 +77,7 @@ namespace Economy
             if (amount <= 0) return;
             storedOres.TryGetValue(id, out var current);
             storedOres[id] = current + amount;
+            discoveredOres.Add(id);
             GameManager.EventService.Dispatch(new DepotOreDepositedEvent(id, amount));
             GameManager.EventService.Dispatch<DepotChangedEvent>();
         }
@@ -136,6 +150,7 @@ namespace Economy
             if (amount <= 0) return;
             storedGoods.TryGetValue(id, out var current);
             storedGoods[id] = current + amount;
+            discoveredGoods.Add(id);
             GameManager.EventService.Dispatch<DepotChangedEvent>();
         }
 
@@ -222,6 +237,27 @@ namespace Economy
             foreach (var kvp in goods)
             {
                 storedGoods[kvp.Key] = kvp.Value;
+            }
+        }
+
+        // Bulk restore for SaveService - silent, mirrors RestoreFromSaveData above. Call after the
+        // ore/goods restores: anything currently banked counts as discovered too.
+        public void RestoreDiscoveredFromSaveData(IEnumerable<BlockTypeId> ores, IEnumerable<ProcessingRecipeId> goods)
+        {
+            discoveredOres.Clear();
+            discoveredGoods.Clear();
+
+            if (ores != null) discoveredOres.UnionWith(ores);
+            if (goods != null) discoveredGoods.UnionWith(goods);
+
+            foreach (var kvp in storedOres)
+            {
+                if (kvp.Value > 0) discoveredOres.Add(kvp.Key);
+            }
+
+            foreach (var kvp in storedGoods)
+            {
+                if (kvp.Value > 0) discoveredGoods.Add(kvp.Key);
             }
         }
     }

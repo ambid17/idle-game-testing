@@ -119,6 +119,11 @@ namespace Persistence
         // in-progress jobs, siblings of DepotOres/UpgradeLevels for the same reason - no
         // independent lifecycle.
         public List<GoodsCountEntry> DepotGoods = new();
+        // Depot.DiscoveredOres/DiscoveredGoods - everything ever banked, which gates the Depot and
+        // miner dashboard rows. Not reset by prestige. Empty on older saves (SaveService seeds
+        // from LifetimeStats).
+        public List<BlockTypeId> DepotDiscoveredOres = new();
+        public List<ProcessingRecipeId> DepotDiscoveredGoods = new();
         public List<ProcessingJobSaveEntry> ProcessingJobs = new();
         // ProcessingManager.UncollectedCompletions - jobs that finished but the player hasn't
         // opened the Processing panel since, so the completion badge survives a save/reload.

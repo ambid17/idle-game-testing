@@ -132,6 +132,9 @@ namespace Persistence
                 data.DepotGoods.Add(new GoodsCountEntry { Id = kvp.Key, Count = kvp.Value });
             }
 
+            data.DepotDiscoveredOres.AddRange(Depot.Instance.DiscoveredOres);
+            data.DepotDiscoveredGoods.AddRange(Depot.Instance.DiscoveredGoods);
+
             var processingSlots = ProcessingManager.Instance.Slots;
             for (int i = 0; i < processingSlots.Count; i++)
             {
@@ -337,6 +340,17 @@ namespace Persistence
                 depotGoods[entry.Id] = entry.Count;
             }
             Depot.Instance.RestoreGoodsFromSaveData(depotGoods);
+
+            // Saves from before discovery was tracked have empty lists here, so seed from the
+            // lifetime stats too - otherwise everything the player already sold would hide again.
+            var discoveredOres = new List<BlockTypeId>(data.DepotDiscoveredOres);
+            var discoveredGoods = new List<ProcessingRecipeId>(data.DepotDiscoveredGoods);
+            if (data.LifetimeStats != null)
+            {
+                discoveredOres.AddRange(data.LifetimeStats.OreTypesMined);
+                discoveredGoods.AddRange(data.LifetimeStats.RecipesCompleted);
+            }
+            Depot.Instance.RestoreDiscoveredFromSaveData(discoveredOres, discoveredGoods);
 
             // Fast-forwards in-progress Processing jobs by the same elapsed-real-time math as the
             // idle ore average below - any job that would have finished while the game was closed

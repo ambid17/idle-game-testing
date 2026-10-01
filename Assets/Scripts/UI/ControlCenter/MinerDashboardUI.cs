@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Automation;
+using Economy;
 using Events;
 using MapGeneration;
 using UnityEngine;
@@ -20,7 +21,12 @@ namespace UI
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
 
-        private void Start() => BuildRows();
+        // OnEnable's Refresh runs before the rows exist the first time, so refresh again here.
+        private void Start()
+        {
+            BuildRows();
+            Refresh();
+        }
 
         private void OnEnable()
         {
@@ -58,6 +64,8 @@ namespace UI
             var averages = IdleEarningsTracker.Instance.AveragePerMinute;
             foreach (var kvp in rows)
             {
+                // Rows stay hidden until the ore has been banked at least once.
+                kvp.Value.gameObject.SetActive(Depot.Instance.IsOreDiscovered(kvp.Key));
                 averages.TryGetValue(kvp.Key, out var rate);
                 kvp.Value.SetRate(rate);
             }
