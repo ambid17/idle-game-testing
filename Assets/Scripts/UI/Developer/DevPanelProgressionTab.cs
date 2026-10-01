@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Critters;
 using Economy;
 using Events;
+using Museum;
 using RunModifiers;
 using TMPro;
 using UI.Reuseable;
@@ -26,6 +27,7 @@ namespace UI
         [SerializeField] private Button removeAllPrestigeUpgradesButton;
         [SerializeField] private Button forcePrestigeButton;
         [SerializeField] private Button turnInAllCrittersButton;
+        [SerializeField] private Button findAllRunesButton;
         // One button per run modifier: prestiges straight into a run with that modifier.
         [SerializeField] private Transform runModifierButtonContainer;
         [SerializeField] private Button runModifierButtonTemplate;
@@ -48,6 +50,7 @@ namespace UI
             if (removeAllPrestigeUpgradesButton == null) Debug.LogError("DevPanelProgressionTab.removeAllPrestigeUpgradesButton is not assigned.");
             if (forcePrestigeButton == null) Debug.LogError("DevPanelProgressionTab.forcePrestigeButton is not assigned.");
             if (turnInAllCrittersButton == null) Debug.LogError("DevPanelProgressionTab.turnInAllCrittersButton is not assigned.");
+            if (findAllRunesButton == null) Debug.LogError("DevPanelProgressionTab.findAllRunesButton is not assigned.");
             if (runModifierButtonContainer == null) Debug.LogError("DevPanelProgressionTab.runModifierButtonContainer is not assigned.");
             if (runModifierButtonTemplate == null) Debug.LogError("DevPanelProgressionTab.runModifierButtonTemplate is not assigned.");
             if (runModifierTooltip == null) Debug.LogError("DevPanelProgressionTab.runModifierTooltip is not assigned.");
@@ -63,6 +66,7 @@ namespace UI
             if (removeAllPrestigeUpgradesButton != null) removeAllPrestigeUpgradesButton.onClick.AddListener(OnRemoveAllPrestigeUpgradesClicked);
             if (forcePrestigeButton != null) forcePrestigeButton.onClick.AddListener(ForcePrestige);
             if (turnInAllCrittersButton != null) turnInAllCrittersButton.onClick.AddListener(TurnInAllCritters);
+            if (findAllRunesButton != null) findAllRunesButton.onClick.AddListener(FindAllRunes);
         }
 
         private void BuildUpgradeRows()
@@ -184,6 +188,14 @@ namespace UI
             CritterCollection.Instance.DevAddAllSpeciesToJar();
             var evt = CritterCollection.Instance.TurnInJar();
             GameManager.EventService.Dispatch(new NotificationEvent($"Dev turn-in: {evt.Count} critters, {evt.NewHats.Count} hats unlocked", NotificationUrgency.Queued));
+        }
+
+        // Marks every not-yet-donated rune as found, so the next Museum turn-in runs the curator's
+        // full read-out (and unlocks every accessory) through the normal path.
+        private void FindAllRunes()
+        {
+            RuneCollection.Instance.DevFindAllRunes();
+            GameManager.EventService.Dispatch(new NotificationEvent($"Dev: {RuneCollection.Instance.FoundCount} runes found - turn them in at the Museum", NotificationUrgency.Queued));
         }
 
         private void OnMaxAllUpgradesClicked()

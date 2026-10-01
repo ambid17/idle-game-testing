@@ -143,7 +143,7 @@ namespace MapGeneration
                     var pos = new Vector3Int(x, -y, 0);
 
                     terrainChanges[n] = BuildTerrainChange(pos, cell);
-                    foregroundChanges[n] = BuildForegroundChange(pos, cell);
+                    foregroundChanges[n] = BuildForegroundChange(pos, x, y, cell);
                     fogChanges[n] = BuildFogChange(pos, x, y, cell.Revealed);
 
                     n++;
@@ -223,7 +223,7 @@ namespace MapGeneration
                 var pos = new Vector3Int(x, -y, 0);
 
                 terrainChanges[i] = BuildTerrainChange(pos, cell);
-                foregroundChanges[i] = BuildForegroundChange(pos, cell);
+                foregroundChanges[i] = BuildForegroundChange(pos, x, y, cell);
                 fogChanges[i] = BuildFogChange(pos, x, y, cell.Revealed);
             }
 
@@ -252,10 +252,16 @@ namespace MapGeneration
             return new TileChangeData(pos, blockType.Tile, Color.white, Matrix4x4.identity);
         }
 
-        private TileChangeData BuildForegroundChange(Vector3Int pos, CellData cell)
+        // Artifacts paint the tablet of whichever rune their cell carries (Museum.MuseumCollectionDatabase.GetRuneAt)
+        // instead of the BlockType's own Tile.
+        private TileChangeData BuildForegroundChange(Vector3Int pos, int x, int y, CellData cell)
         {
             var blockType = cell.Mined ? null : blockTypes.Get(cell.BlockTypeId);
             var tile = blockType != null && blockType.DrawDirtBehind ? blockType.Tile : null;
+            if (tile != null && blockType.Category == BlockCategory.Artifact)
+            {
+                tile = GameManager.MuseumCollectionDatabase.GetRuneAt(LayerIndex, x, y).Tile;
+            }
             return new TileChangeData(pos, tile, Color.white, Matrix4x4.identity);
         }
 

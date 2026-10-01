@@ -1,5 +1,6 @@
 using Automation;
 using Critters;
+using Museum;
 using Economy;
 using Events;
 using MapGeneration;
@@ -193,6 +194,7 @@ namespace Persistence
 
             data.LifetimeStats = GameManager.AchievementManager.Stats;
             data.Critters = CritterCollection.Instance.ToSaveData();
+            data.Museum = RuneCollection.Instance.ToSaveData();
             data.SkyArtifactCollected = skyArtifact.IsCollected;
 
             try
@@ -292,6 +294,7 @@ namespace Persistence
             TutorialManager.Instance.RestoreFromSaveData(data.ShownTutorials);
             GameManager.AchievementManager.RestoreFromSaveData(data.LifetimeStats);
             CritterCollection.Instance.RestoreFromSaveData(data.Critters);
+            RuneCollection.Instance.RestoreFromSaveData(data.Museum);
             skyArtifact.RestoreCollected(data.SkyArtifactCollected);
 
             foreach (var entry in data.UpgradeLevels)

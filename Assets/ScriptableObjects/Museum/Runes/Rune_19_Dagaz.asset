@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35bd7c0121fc6914fbf29916a8c72106, type: 3}
+  m_Name: Rune_19_Dagaz
+  m_EditorClassIdentifier: Assembly-CSharp::Museum.RuneDefinition
+  Index: 18
+  DisplayName: Dagaz
+  CuratorTranslation: Dawn! Breakthrough! Lunch!
+  Icon: {fileID: 21300000, guid: 765b1e49eea92164595f5b4c20ef32fb, type: 3}
+  Tile: {fileID: 11400000, guid: 62edf9b8a4a07864d95a1f5489ca7d07, type: 2}

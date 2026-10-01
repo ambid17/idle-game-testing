@@ -3,6 +3,7 @@ using Audio;
 using Economy;
 using Events;
 using MapGeneration;
+using Museum;
 using Settings;
 using Tutorial;
 using UnityEngine;
@@ -237,7 +238,8 @@ namespace Player
         {
             if (!mapGenerationService.MineCell(layerIndex, x, y, minedByPlayer: true, canMineFallingRock: PrestigeUpgradeManager.Instance.Mining_CanMineRocks)) return;
 
-            digFeedback.Break(mapGenerationService.CellToWorldCenter(layerIndex, x, y), direction, blockType, effectiveHealth, primary: true);
+            var rune = blockType.Category == BlockCategory.Artifact ? GameManager.MuseumCollectionDatabase.GetRuneAt(layerIndex, x, y) : null;
+            digFeedback.Break(mapGenerationService.CellToWorldCenter(layerIndex, x, y), direction, blockType, effectiveHealth, primary: true, rune);
             CollectMinedBlock(blockType, layerIndex, x, y);
             MineAreaBonusCells(layerIndex, x, y, blockType, direction);
             MineExcavatorCells(layerIndex, x, y, direction);
@@ -284,9 +286,11 @@ namespace Player
             }
             if (blockType.Category == BlockCategory.Artifact)
             {
-                GameManager.EventService.Dispatch(new NotificationEvent($"+1 <color=purple>Artifact</color>", NotificationUrgency.Queued, blockType.Icon, blockType.IconBackground));
+                // The "+1 Artifact" toast comes from Museum.MuseumCuratorController, off the RuneFoundEvent.
+                var rune = GameManager.MuseumCollectionDatabase.GetRuneAt(layerIndex, x, y);
                 Wallet.Instance.AddArtifact();
-                digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, 1);
+                RuneCollection.Instance.RecordFound(rune, byPlayer: true);
+                digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, 1, rune.Icon);
                 return;
             }
             if (blockType.Category != BlockCategory.Ore) return;

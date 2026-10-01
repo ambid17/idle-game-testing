@@ -1,6 +1,7 @@
 using Economy;
 using Events;
 using Interaction;
+using Museum;
 using Player;
 using TMPro;
 using UI.SkillTree;
@@ -16,11 +17,17 @@ namespace UI
     // Per CLAUDE.md's UI panel rule, this controller stays enabled on the Panel GameObject and only
     // toggles the child rendererRoot. Blocks player input while open (like ControlCenterUI) since
     // "Prestige Now" is a destructive, irreversible action that shouldn't be one accidental click away.
+    // Two tabs (TabGroupUI on this panel root): the perk tree, and the curator's rune Collection
+    // (MuseumCollectionUI). The very first visit plays the curator's intro before the panel opens.
     public class MuseumUI : MonoBehaviour
     {
         [Header("Panel")]
         [SerializeField] private GameObject rendererRoot;
         [SerializeField] private Button closeButton;
+
+        [Header("Tabs")]
+        [SerializeField] private TabGroupUI tabGroup;
+        [SerializeField] private MuseumCollectionUI collectionUI;
 
         [Header("Perk tree")]
         [SerializeField] private SkillTreePanelUI skillTreePanel;
@@ -33,8 +40,13 @@ namespace UI
         [SerializeField] private MuseumPrestigeConfirmUI prestigeConfirm;
         [SerializeField] private RunModifierPickUI runModifierPick;
 
+        private const int PerkTreeTab = 0;
+        private const int CollectionTab = 1;
+
         private void Start()
         {
+            if (tabGroup == null) Debug.LogError("MuseumUI.tabGroup is not assigned.");
+            if (collectionUI == null) Debug.LogError("MuseumUI.collectionUI is not assigned.");
             if (closeButton != null) closeButton.onClick.AddListener(Close);
             if (prestigeNowButton != null) prestigeNowButton.onClick.AddListener(() => GameManager.EventService.Dispatch<PrestigeConfirmationRequestedEvent>());
             if (prestigeConfirm != null) prestigeConfirm.Initialize(ConfirmPrestige);
@@ -54,6 +66,7 @@ namespace UI
             GameManager.EventService.Add<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Add<UICloseEvent>(Close);
+            GameManager.EventService.Add<DialogFinishedEvent>(OnDialogFinished);
         }
 
         private void OnDisable()
@@ -66,18 +79,31 @@ namespace UI
             GameManager.EventService.Remove<PrestigeConfirmationRequestedEvent>(OnPrestigeConfirmationRequested);
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Remove<UICloseEvent>(Close);
+            GameManager.EventService.Remove<DialogFinishedEvent>(OnDialogFinished);
         }
 
         private void OnBuildingInteracted(PlayerInteractedEvent evt)
         {
             if (evt.InteractableType == InteractableType.Building_Museum)
             {
+                // Interact also advances dialog - a press mid-conversation isn't a new visit.
+                if (MuseumCuratorController.Instance.IsTalking) return;
+                if (!RuneCollection.Instance.HasMetCurator)
+                {
+                    MuseumCuratorController.Instance.PlayIntro();
+                    return;
+                }
                 Open();
             }
             else
             {
                 Close();
             }
+        }
+
+        private void OnDialogFinished(DialogFinishedEvent evt)
+        {
+            if (evt.ConversationId == MuseumCuratorController.IntroConversation) Open();
         }
 
         private void Open()
@@ -87,6 +113,9 @@ namespace UI
             rendererRoot.SetActive(true);
             RefreshNonTreeUI();
             if (skillTreePanel != null) skillTreePanel.Open();
+            // Straight to the curator when there's a rune to show them.
+            tabGroup.SelectTab(RuneCollection.Instance.FoundCount > 0 ? CollectionTab : PerkTreeTab);
+            collectionUI.Greet();
         }
 
         private void Close()

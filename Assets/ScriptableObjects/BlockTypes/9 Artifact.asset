@@ -16,10 +16,11 @@ MonoBehaviour:
   DisplayName: Artifact
   Category: 4
   CustomBehavior: 0
-  Tile: {fileID: 11400000, guid: e33ec1993cbc7b1478a0ed2160569872, type: 2}
+  Tile: {fileID: 11400000, guid: a763b4e7487b1cb4b8411bbbb025666e, type: 2}
   DrawDirtBehind: 1
-  Icon: {fileID: 21300000, guid: 3c2c34e85aa069e46a2efbf2284e4ee6, type: 3}
+  Icon: {fileID: 21300000, guid: 395a162337f17574e97224cda9c6654d, type: 3}
   Value: 0
+  SaleCategory: 0
   Weight: 0
   Health: 5
   Unmineable: 0

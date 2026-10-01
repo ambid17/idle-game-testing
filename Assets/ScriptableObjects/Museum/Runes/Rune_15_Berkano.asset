@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35bd7c0121fc6914fbf29916a8c72106, type: 3}
+  m_Name: Rune_15_Berkano
+  m_EditorClassIdentifier: Assembly-CSharp::Museum.RuneDefinition
+  Index: 14
+  DisplayName: Berkano
+  CuratorTranslation: Birth, renewal, and birch trees. Mostly birch trees.
+  Icon: {fileID: 21300000, guid: c2d7ea911fbb9f94084367f5963cae65, type: 3}
+  Tile: {fileID: 11400000, guid: 8b3f8fc4362328843b65c807c360fda5, type: 2}

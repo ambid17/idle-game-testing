@@ -3,6 +3,7 @@ using Critters;
 using Economy;
 using Events;
 using MapGeneration;
+using Museum;
 using Player;
 using UnityEngine;
 
@@ -172,22 +173,8 @@ namespace Automation
             float lossyX = Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.x));
             float facing = flipped ? -1f : 1f;
             float x = (headCenterX + currentHat.Offset.x / lossyX) * facing;
-            float y = SpriteTop(bodyRenderer.sprite) + currentHat.Offset.y / lossyX;
+            float y = SpriteOpaqueBounds.Top(bodyRenderer.sprite) + currentHat.Offset.y / lossyX;
             hatRenderer.transform.localPosition = new Vector3(x, y, 0f);
-        }
-
-        // Top of the sprite's tight mesh (its opaque pixels), unlike Sprite.bounds which is the
-        // whole rect. Cached per sprite - shared by every automaton, and the frames never change.
-        private static readonly Dictionary<Sprite, float> spriteTops = new();
-        private static float SpriteTop(Sprite sprite)
-        {
-            if (sprite == null) return 0f;
-            if (spriteTops.TryGetValue(sprite, out float top)) return top;
-
-            top = float.MinValue;
-            foreach (var vertex in sprite.vertices) top = Mathf.Max(top, vertex.y);
-            spriteTops[sprite] = top;
-            return top;
         }
 
         private void Update()
@@ -406,7 +393,7 @@ namespace Automation
         {
             if (mapGenerationService.MineCell(layer, primaryCell.x, primaryCell.y))
             {
-                CollectMinedBlock(primaryBlockType, layer);
+                CollectMinedBlock(primaryBlockType, layer, primaryCell);
             }
 
             int radiusLevel = upgrades.Automation_AutomatonMiningRadiusBonus;
@@ -420,16 +407,17 @@ namespace Automation
                 if (bonusBlock.Category == BlockCategory.Ore && oreInventory.IsFull) continue;
 
                 if (!mapGenerationService.MineCell(layer, cell.x, cell.y)) continue;
-                CollectMinedBlock(bonusBlock, layer);
+                CollectMinedBlock(bonusBlock, layer, cell);
             }
         }
 
-        private void CollectMinedBlock(BlockType blockType, int layer)
+        private void CollectMinedBlock(BlockType blockType, int layer, Vector2Int cell)
         {
             if (blockType == null) return;
             if (blockType.Category == BlockCategory.Artifact)
             {
                 Wallet.Instance.AddArtifact();
+                RuneCollection.Instance.RecordFound(GameManager.MuseumCollectionDatabase.GetRuneAt(layer, cell.x, cell.y), byPlayer: false);
                 return;
             }
             if (blockType.Category != BlockCategory.Ore) return;

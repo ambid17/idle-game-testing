@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de05c223ab5a1f74b9e1d1f3d0c7d466, type: 3}
+  m_Name: CuratorDialog
+  m_EditorClassIdentifier: Assembly-CSharp::Museum.CuratorDialog
+  SpeakerName: Prof. Percival Dustworth
+  Portrait: {fileID: 21300000, guid: 4dcdbe1a755ac4c41ae835974d064d96, type: 3}
+  IntroLines:
+  - STOP! Don't touch anything! ...Oh. Oh my. A VISITOR. Nobody visits! Welcome,
+    welcome to the Museum!
+  - Professor Percival Dustworth. Curator, archivist, and sole member of the Museum
+    Appreciation Society. Membership is very exclusive. Nobody else applied.
+  - You've been digging up those stone tablets, haven't you? RUNE tablets! Messages
+    from the Makers, the ones who dug this mine long before us!
+  - There are twenty different runes, and I have translated every single one. Perfectly.
+    With total accuracy. Please do not check my work.
+  - Bring me each new rune you find and I'll put it on display. You keep your Stellar
+    Credits - I only want the knowledge. And the glory. Mostly the glory.
+  - Donate enough and I'll lend you a few genuine relics from the archives to wear.
+    They're priceless. Please don't drill with them. You're going to drill with them.
+  Greetings:
+  - Welcome back! Please keep your drill at least three meters from the exhibits.
+  - Ah, my favourite visitor! Also my only visitor. Still counts.
+  - Quiet, please. The runes are resting.
+  - Do wipe your treads. That's ancient dust, and it's MY ancient dust.
+  - 'Another day, another breakthrough! Yesterday I learned to read. Today: everything
+    else.'
+  - Back so soon? Found something old? Something dusty? Something INSCRIBED?
+  Chatter:
+  - Did you know the Makers ate soup with forks?|I deduced this from a fork.|I may
+    have dropped that fork myself.
+  - I once spent eleven years translating a single tablet.|It said 'THIS SIDE UP.'|It
+    was upside down.
+  - My mother wanted me to be a dentist.|I said, 'Mother, I want to dig up the past!'|She
+    said teeth are also in the past.|We haven't spoken since.
+  - The gift shop is closed.|There is no gift shop.|But if there WERE, it would be
+    closed.
+  - Every artifact tells a story.|Most of them are about rocks.|The Makers were VERY
+    into rocks.
+  - I put a label on everything.|This chair is labelled 'Chair, Probably.'|Science
+    is about humility.
+  - Have you met that fellow with the critters, down in the caves?|Lovely man. Smells
+    like moss.|He tried to donate a rock named Gerald. I said no. Gerald has not
+    forgiven me.
+  NothingNewLines:
+  - Nothing new? I'll file this visit under 'Disappointments, Ongoing.'
+  - I've already got all of those! Look harder. Look DEEPER. Literally - that's how
+    mines work.
+  - 'Empty-handed! Bold. I shall display your hands as an exhibit: ''Hands, Empty,
+    Modern Era.'''
+  TurnInLines:
+  - Ooh! {0}! Hold still, let me find my good monocle... my GOOD monocle... ah. It
+    was on my face.
+  - '{0}! Into the display case you go! Gently! GENTLY!'
+  - Let's see what you've brought... {0}! Oh, my heart. Somebody fetch my fainting
+    couch.
+  RuneTranslatedLines:
+  - '<b>{0}</b>! Translated, it reads: "{1}"'
+  - 'Ahh, <b>{0}</b>. A classic. Roughly: "{1}"'
+  - '<b>{0}</b>... yes... YES! It says: "{1}" Profound.'
+  AccessoryUnlockedLines:
+  - For such a generous donation, the Museum lends you the {0}! Wear it with dignity.|You
+    can put it on from the Collection tab, right here.
+  - I've been saving this for a worthy visitor... the {0}! You're the only visitor,
+    but you're ALSO worthy.|Try it on in the Collection tab!
+  AllFoundLines:
+  - That's... that's TWENTY. That's all of them. The complete Maker alphabet. In
+    MY museum!
+  - Do you know what this means? At last I can read the Makers' great inscription,
+    the one carved over the vault door!
+  - It says... 'KEEP DIGGING.' Well. They were very consistent.
+  - Here, take the Halo of the Makers. I'd wear it myself, but it clashes with my
+    hat.

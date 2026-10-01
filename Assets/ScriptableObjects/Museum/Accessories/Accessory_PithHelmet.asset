@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3211ed6712ee1fd478042bf9590ad7a8, type: 3}
+  m_Name: Accessory_PithHelmet
+  m_EditorClassIdentifier: Assembly-CSharp::Museum.AccessoryDefinition
+  Id: 1
+  DisplayName: Explorer's Pith Helmet
+  Slot: 0
+  Sprite: {fileID: 21300000, guid: 4eab20092c2c00844bc810d59c3eed47, type: 3}
+  UnlockAtRuneCount: 4
+  Width: 0.594
+  Offset: {x: -0.12, y: -0.22}
+  Rotation: 0
+  BehindBody: 0

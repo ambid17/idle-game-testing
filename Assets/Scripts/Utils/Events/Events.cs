@@ -659,6 +659,43 @@ namespace Events
     // Automation.MiningAutomaton re-reads its own hat.
     public class AutomatonHatsChangedEvent { }
 
+    // Dispatched by Museum.RuneCollection whenever a rune tablet is mined, new rune or not.
+    public class RuneFoundEvent : IEvent
+    {
+        public Museum.RuneDefinition Rune;
+        // First time this rune was ever found (not already waiting for, or donated to, the curator).
+        public bool IsNew;
+        // False when an automaton dug it up.
+        public bool ByPlayer;
+
+        public RuneFoundEvent(Museum.RuneDefinition rune, bool isNew, bool byPlayer)
+        {
+            Rune = rune;
+            IsNew = isNew;
+            ByPlayer = byPlayer;
+        }
+    }
+
+    // Found/donated runes changed (new rune, turn-in, save restore) - accessory unlocks may have too.
+    public class RuneCollectionChangedEvent { }
+
+    // Dispatched by Museum.RuneCollection.TurnIn after moving the found runes into the collection.
+    public class RunesTurnedInEvent : IEvent
+    {
+        public IReadOnlyList<Museum.RuneDefinition> NewRunes;
+        public IReadOnlyList<Museum.AccessoryDefinition> NewAccessories;
+
+        public RunesTurnedInEvent(IReadOnlyList<Museum.RuneDefinition> newRunes, IReadOnlyList<Museum.AccessoryDefinition> newAccessories)
+        {
+            NewRunes = newRunes;
+            NewAccessories = newAccessories;
+        }
+    }
+
+    // The player put on or took off an accessory (Museum curator panel, save restore) -
+    // Player.PlayerAccessories re-dresses the player.
+    public class PlayerAccessoriesChangedEvent { }
+
     // One page of a click-through conversation (UI.DialogUI).
     public class DialogLine
     {

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Atmosphere;
 using MapGeneration;
+using Museum;
 using UnityEngine;
 
 namespace Player
@@ -10,6 +11,7 @@ namespace Player
     //  - Hit: a few chips flick off the block face toward the player on every pickaxe hit.
     //  - Break: a burst of chunks (tinted by the block, plus dirt-coloured ones for ores) and a dust
     //    puff, a screen shake scaled by the block's effective health, and a brief hit-stop on hard blocks.
+    //    Artifact tablets also shed little copies of themselves, carved with the same rune.
     //  - Pickup: collected ore/artifacts pop out of the cell as tinted nuggets that home in on the
     //    player. The inventory is credited immediately by PlayerMining as before - this is visual only.
     // Shake goes through GameManager.CameraShake (which honours the Options "Screen Shake" toggle).
@@ -28,6 +30,8 @@ namespace Player
         [Header("Rendering")]
         [Tooltip("Alpha-blended material (Sprites/Default) carrying the DebrisChips sheet - 4 chip shapes stacked vertically.")]
         [SerializeField] private Material debrisMaterial;
+        [Tooltip("Small rune tablets stacked vertically, row = RuneDefinition.Index (Tools/Artifacts/make_rune_tablets.py).")]
+        [SerializeField] private Texture2D runeDebrisSheet;
         [Tooltip("Grayscale nugget sprite, tinted with the block's MinimapColor.")]
         [SerializeField] private Sprite nuggetSprite;
         [Tooltip("Debris and nuggets draw above terrain, fog and the player.")]
@@ -39,6 +43,8 @@ namespace Player
         [Tooltip("Share of an ore's break chunks tinted with the ore colour - the rest use the dirt colour of the tile background.")]
         [SerializeField, Range(0f, 1f)] private float oreChunkFraction = 0.45f;
         [SerializeField, Min(0)] private int dustPerBreak = 5;
+        [Tooltip("Mini rune tablets an artifact sheds when it breaks, on top of its chunks.")]
+        [SerializeField, Min(0)] private int runeTabletsPerBreak = 5;
 
         [Header("Screen shake (scaled by the broken block's effective health)")]
         [Tooltip("Effective health (BlockType.Health x layer BlockHealth) at which shake starts, and at which it's strongest.")]
@@ -63,6 +69,9 @@ namespace Player
         private ParticleSystem debrisSystem;
         private ParticleSystem dustSystem;
         private ParticleSystem sparkleSystem;
+        // One per rune, made the first time that rune breaks - each shows a single row of runeDebrisSheet.
+        private readonly Dictionary<int, ParticleSystem> runeDebrisSystems = new();
+        private Material runeDebrisMaterial;
         private readonly List<Nugget> nuggets = new();
         private readonly Stack<Transform> nuggetPool = new();
         private Coroutine hitStopRoutine;
@@ -73,6 +82,7 @@ namespace Player
         {
             if (debrisMaterial == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its debrisMaterial reference.");
             if (nuggetSprite == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its nuggetSprite reference.");
+            if (runeDebrisSheet == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its runeDebrisSheet reference.");
         }
 
         private void Start()
@@ -80,24 +90,9 @@ namespace Player
             dirtColor = GameManager.BlockTypeDatabase.Get((byte)BlockTypeId.Dirt).MinimapColor;
 
             debrisSystem = CreateSystem("Dig Debris", debrisMaterial, 300, gravity: 2.2f);
-            var sheet = debrisSystem.textureSheetAnimation;
-            sheet.enabled = true;
-            sheet.mode = ParticleSystemAnimationMode.Grid;
-            sheet.numTilesX = 1;
-            sheet.numTilesY = DebrisSheetRows;
-            sheet.animation = ParticleSystemAnimationType.SingleRow;
-            sheet.rowMode = ParticleSystemAnimationRowMode.Random;
-            sheet.frameOverTime = new ParticleSystem.MinMaxCurve(0f);
-            var collision = debrisSystem.collision;
-            collision.enabled = true;
-            collision.type = ParticleSystemCollisionType.World;
-            collision.mode = ParticleSystemCollisionMode.Collision2D;
-            collision.collidesWith = LayerMask.GetMask("Ground");
-            collision.bounce = 0.35f;
-            collision.dampen = 0.35f;
-            collision.lifetimeLoss = 0f;
-            collision.radiusScale = 0.5f;
-            FadeOutAtEnd(debrisSystem, 0.75f);
+            ConfigureDebris(debrisSystem, DebrisSheetRows, ParticleSystemAnimationRowMode.Random, 0);
+
+            runeDebrisMaterial = new Material(debrisMaterial) { name = "Rune Debris", mainTexture = runeDebrisSheet };
 
             var dustMaterial = new Material(debrisMaterial) { name = "Dig Dust", mainTexture = GlowSprites.SoftDot.texture };
             dustSystem = CreateSystem("Dig Dust", dustMaterial, 100, gravity: -0.02f);
@@ -135,8 +130,11 @@ namespace Player
 
         // The block at cellCenter broke. primary = the block the player was working on (vein-mined
         // bonus cells pass false: they get debris, but no extra shake or hit-stop).
-        public void Break(Vector3 cellCenter, Vector2Int digDirection, BlockType block, float effectiveHealth, bool primary)
+        // rune: the tablet's rune when block is an Artifact, else null.
+        public void Break(Vector3 cellCenter, Vector2Int digDirection, BlockType block, float effectiveHealth, bool primary, RuneDefinition rune = null)
         {
+            if (rune != null) EmitRuneTablets(cellCenter, rune);
+
             for (int i = 0; i < chunksPerBreak; i++)
             {
                 var offset = new Vector3(Random.Range(-0.4f, 0.4f), Random.Range(-0.4f, 0.4f), 0f);
@@ -168,13 +166,16 @@ namespace Player
         }
 
         // Nuggets popping out of cellCenter and flying to the player - one per unit collected.
-        public void Pickup(Vector3 cellCenter, BlockType block, int count)
+        // sprite: drawn untinted in place of the generic nugget (an artifact's rune tablet).
+        public void Pickup(Vector3 cellCenter, BlockType block, int count, Sprite sprite = null)
         {
             for (int i = 0; i < count && nuggets.Count < MaxNuggets; i++)
             {
                 var nuggetTransform = nuggetPool.Count > 0 ? nuggetPool.Pop() : CreateNugget();
                 nuggetTransform.position = cellCenter;
-                nuggetTransform.GetComponent<SpriteRenderer>().color = block.MinimapColor;
+                var body = nuggetTransform.GetComponent<SpriteRenderer>();
+                body.sprite = sprite != null ? sprite : nuggetSprite;
+                body.color = sprite != null ? Color.white : block.MinimapColor;
                 var glowColor = block.MinimapColor;
                 glowColor.a = 0.5f;
                 nuggetTransform.GetChild(0).GetComponent<SpriteRenderer>().color = glowColor;
@@ -283,6 +284,60 @@ namespace Player
         private void EmitDebris(Vector3 position, Vector3 velocity, float size, float lifetime, Color color)
         {
             Emit(debrisSystem, position, velocity, size, lifetime, color, Random.Range(0f, 360f));
+        }
+
+        // Bigger, slower-tumbling and longer-lived than the chunks, so the carved rune stays readable.
+        private void EmitRuneTablets(Vector3 cellCenter, RuneDefinition rune)
+        {
+            if (!runeDebrisSystems.TryGetValue(rune.Index, out var system))
+            {
+                system = CreateSystem($"Rune Debris {rune.Index}", runeDebrisMaterial, 30, gravity: 2.2f);
+                ConfigureDebris(system, GameManager.MuseumCollectionDatabase.RuneCount, ParticleSystemAnimationRowMode.Custom, rune.Index);
+                runeDebrisSystems[rune.Index] = system;
+            }
+
+            for (int i = 0; i < runeTabletsPerBreak; i++)
+            {
+                var offset = new Vector3(Random.Range(-0.3f, 0.3f), Random.Range(-0.2f, 0.3f), 0f);
+                var velocity = new Vector3(Random.Range(-2.2f, 2.2f), Random.Range(3f, 4.5f), 0f);
+                var emitParams = new ParticleSystem.EmitParams
+                {
+                    position = cellCenter + offset,
+                    velocity = velocity,
+                    startSize = Random.Range(0.36f, 0.44f),
+                    startLifetime = Random.Range(1.2f, 1.6f),
+                    startColor = Color.white,
+                    rotation = Random.Range(-25f, 25f),
+                    angularVelocity = Random.Range(-200f, 200f),
+                    applyShapeToPosition = false,
+                };
+                system.Emit(emitParams, 1);
+            }
+        }
+
+        // A vertical strip of debris shapes that bounce off the ground and fade out at the end.
+        // Random rows (chips) pick a shape per particle; a Custom row pins every particle to one.
+        private static void ConfigureDebris(ParticleSystem system, int rows, ParticleSystemAnimationRowMode rowMode, int rowIndex)
+        {
+            var sheet = system.textureSheetAnimation;
+            sheet.enabled = true;
+            sheet.mode = ParticleSystemAnimationMode.Grid;
+            sheet.numTilesX = 1;
+            sheet.numTilesY = rows;
+            sheet.animation = ParticleSystemAnimationType.SingleRow;
+            sheet.rowMode = rowMode;
+            sheet.rowIndex = rowIndex;
+            sheet.frameOverTime = new ParticleSystem.MinMaxCurve(0f);
+            var collision = system.collision;
+            collision.enabled = true;
+            collision.type = ParticleSystemCollisionType.World;
+            collision.mode = ParticleSystemCollisionMode.Collision2D;
+            collision.collidesWith = LayerMask.GetMask("Ground");
+            collision.bounce = 0.35f;
+            collision.dampen = 0.35f;
+            collision.lifetimeLoss = 0f;
+            collision.radiusScale = 0.5f;
+            FadeOutAtEnd(system, 0.75f);
         }
 
         private static void Emit(ParticleSystem system, Vector3 position, Vector3 velocity, float size, float lifetime, Color color, float rotation)

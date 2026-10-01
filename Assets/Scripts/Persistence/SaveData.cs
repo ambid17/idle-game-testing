@@ -131,6 +131,8 @@ namespace Persistence
         public LifetimeStats LifetimeStats = new();
         // Critters.CritterCollection - jar, lifetime collection, caught pockets and automaton hats.
         public Critters.CritterSaveData Critters = new();
+        // Museum.RuneCollection - found/donated artifact runes, worn accessories. Not reset by prestige.
+        public Museum.MuseumSaveData Museum = new();
         // Economy.SkyArtifact - the one-time relic on the cloud 200m up. Not reset by prestige.
         public bool SkyArtifactCollected;
         // ISO-8601 string, since JsonUtility can't serialize DateTime directly.

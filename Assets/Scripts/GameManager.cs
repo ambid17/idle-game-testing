@@ -6,6 +6,7 @@ using Critters;
 using Economy;
 using Events;
 using MapGeneration;
+using Museum;
 using Persistence;
 using Platform;
 using Processing;
@@ -32,6 +33,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private KeyIconDatabase _keyIconDatabase;
     [SerializeField] private AudioService _audioService;
     [SerializeField] private CritterDatabase _critterDatabase;
+    [SerializeField] private MuseumCollectionDatabase _museumCollectionDatabase;
     [SerializeField] private AtmosphereConfig _atmosphereConfig;
     [SerializeField] private CameraShake _cameraShake;
     [SerializeField] private RunModifierService _runModifierService;
@@ -55,6 +57,7 @@ public class GameManager : Singleton<GameManager>
     public static KeyIconDatabase KeyIconDatabase => Instance._keyIconDatabase;
     public static AudioService AudioService => Instance._audioService;
     public static CritterDatabase CritterDatabase => Instance._critterDatabase;
+    public static MuseumCollectionDatabase MuseumCollectionDatabase => Instance._museumCollectionDatabase;
     public static AtmosphereConfig AtmosphereConfig => Instance._atmosphereConfig;
     public static CameraShake CameraShake => Instance._cameraShake;
     public static RunModifierService RunModifierService => Instance._runModifierService;
@@ -146,6 +149,10 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.LogError("CritterDatabase is not assigned in GameManager.");
         }
+        if (_museumCollectionDatabase == null)
+        {
+            Debug.LogError("MuseumCollectionDatabase is not assigned in GameManager.");
+        }
         if (_atmosphereConfig == null)
         {
             Debug.LogError("AtmosphereConfig is not assigned in GameManager.");
@@ -176,6 +183,7 @@ public class GameManager : Singleton<GameManager>
         TutorialDatabase.Validate();
         KeyIconDatabase.Validate();
         CritterDatabase.Validate();
+        MuseumCollectionDatabase.Validate();
         AtmosphereConfig.Validate();
         RunModifierDatabase.Validate();
     }
