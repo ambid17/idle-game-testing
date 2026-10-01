@@ -6,7 +6,8 @@ Processing is the term used for taking the ores, and combining them, to make an 
 # Mechanics
 - the player queues up the processing center to churn out a recipe. The player chooses how many of the item to make, the
 - the processor will pull the items from the Depot upon starting its work.
-	- if the process is cancelled, the items will be refunded back to the depot
+	- a batch is crafted one item at a time; each finished item is banked in the depot straight away
+	- if the process is cancelled, the materials for the items not yet made are refunded back to the depot (finished items are kept)
 - each recipe will have:
 	- a preset sale value
 	- duration to process

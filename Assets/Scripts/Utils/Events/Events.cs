@@ -255,17 +255,30 @@ namespace Events
         }
     }
 
+    // Dispatched when the last unit of a slot's batch is finished and the slot frees up.
     public class ProcessingJobCompletedEvent : IEvent
     {
         public int SlotIndex;
         public ProcessingRecipeDefinition Recipe;
-        public int Quantity;
 
-        public ProcessingJobCompletedEvent(int slotIndex, ProcessingRecipeDefinition recipe, int quantity)
+        public ProcessingJobCompletedEvent(int slotIndex, ProcessingRecipeDefinition recipe)
         {
             SlotIndex = slotIndex;
             Recipe = recipe;
-            Quantity = quantity;
+        }
+    }
+
+    // Dispatched each time a slot finishes one unit of its batch and banks it in the Depot (once
+    // per job, not per unit, for the units finished while the game was closed).
+    public class ProcessingUnitCompletedEvent : IEvent
+    {
+        public int SlotIndex;
+        public ProcessingRecipeDefinition Recipe;
+
+        public ProcessingUnitCompletedEvent(int slotIndex, ProcessingRecipeDefinition recipe)
+        {
+            SlotIndex = slotIndex;
+            Recipe = recipe;
         }
     }
 

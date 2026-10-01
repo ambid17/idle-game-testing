@@ -7,8 +7,9 @@ using UnityEngine.UI;
 
 namespace UI.Processing
 {
-    // "select recipe" modal per processingImplementation.md: lists every recipe unlocked via its
-    // chained UpgradeDefinition. Instantiate-into-container + Bind(model, onClick) pattern copied
+    // "select recipe" modal per processingImplementation.md: one row per recipe unlocked via its
+    // chained UpgradeDefinition, showing cost, craft time and current sale price, with the slot's
+    // current recipe highlighted. Instantiate-into-container + Bind(model, onClick) pattern copied
     // from SkillTreePanelUI, but as a flat list rather than a graph - there's no prerequisite
     // visualization need here, IsRecipeUnlocked already filters to only what's selectable.
     // Inherits ModalBase so Escape can close just this modal before it closes ProcessingUI.
@@ -31,12 +32,12 @@ namespace UI.Processing
 
         public void Initialize(Action<int, ProcessingRecipeDefinition> onRecipeSelected) => this.onRecipeSelected = onRecipeSelected;
 
-        public void Show(int slotIndex)
+        public void Show(int slotIndex, ProcessingRecipeDefinition currentRecipe)
         {
             this.slotIndex = slotIndex;
             renderer.SetActive(true);
             SetOpened();
-            BuildRows();
+            BuildRows(currentRecipe);
         }
 
         public override void Close()
@@ -45,7 +46,7 @@ namespace UI.Processing
             SetClosed();
         }
 
-        private void BuildRows()
+        private void BuildRows(ProcessingRecipeDefinition currentRecipe)
         {
             if (rowPrefab == null || rowContainer == null)
             {
@@ -61,7 +62,7 @@ namespace UI.Processing
                 if (!ProcessingManager.Instance.IsRecipeUnlocked(recipe)) continue;
 
                 var row = Instantiate(rowPrefab, rowContainer);
-                row.Bind(recipe, OnRecipeClicked);
+                row.Bind(recipe, recipe == currentRecipe, OnRecipeClicked);
                 row.gameObject.name = $"Row_{recipe.name}";
                 spawnedRows.Add(row);
             }

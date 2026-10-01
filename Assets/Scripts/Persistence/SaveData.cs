@@ -60,6 +60,7 @@ namespace Persistence
     {
         public int SlotIndex;
         public ProcessingRecipeId RecipeId;
+        // Units still to be made, and the seconds left on the one in progress.
         public int Quantity;
         public float TimeRemainingSeconds;
     }

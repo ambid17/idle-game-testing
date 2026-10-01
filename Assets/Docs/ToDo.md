@@ -1,9 +1,10 @@
 todo 
 test hazards and set piece rooms
-building animations
+
 move depth and layer to minimap, add biome/structure name to it
 SPACE to cycle through tutorials, denote this in the action button of the tutorial
 	- use bound button icon
+the bottom of the hilly background loses fidelity, especially when you fly up a little bit. it looks like the art is smeared
 - player 
 	- 
 - market
@@ -64,7 +65,9 @@ dome keeper
 
 I think the biggest visual issue with the game currently is the drastic difference in pixels per unit across the various assets. I like the level of detail in the buildings and parallax backgrounds. Could you put together a checklist of everything that would need to be regenerated to match?
 
-Ask about more visual fluff 
-- ui animations
-- vfx 
-- expand player animationsk,
+after art style is set in stone:
+	Ask about more visual fluff 
+	- ui animations
+	- vfx 
+	- expand player animations
+	- building animations

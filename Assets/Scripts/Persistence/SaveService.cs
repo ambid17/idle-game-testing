@@ -145,8 +145,8 @@ namespace Persistence
                 {
                     SlotIndex = i,
                     RecipeId = job.Recipe.Id,
-                    Quantity = job.Quantity,
-                    TimeRemainingSeconds = job.TimeRemaining
+                    Quantity = job.Remaining,
+                    TimeRemainingSeconds = job.UnitTimeRemaining
                 });
             }
 

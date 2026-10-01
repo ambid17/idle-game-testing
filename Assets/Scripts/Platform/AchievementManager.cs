@@ -80,7 +80,7 @@ namespace Platform
             GameManager.EventService.Add<BlockMinedEvent>(OnBlockMined);
             GameManager.EventService.Add<DollarsEarnedEvent>(OnDollarsEarned);
             GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
-            GameManager.EventService.Add<ProcessingJobCompletedEvent>(OnProcessingJobCompleted);
+            GameManager.EventService.Add<ProcessingUnitCompletedEvent>(OnProcessingUnitCompleted);
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Add<PlayerDiedEvent>(OnPlayerDied);
             GameManager.EventService.Add<LoadCompletedEvent>(OnLoadCompleted);
@@ -91,7 +91,7 @@ namespace Platform
             GameManager.EventService.Remove<BlockMinedEvent>(OnBlockMined);
             GameManager.EventService.Remove<DollarsEarnedEvent>(OnDollarsEarned);
             GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
-            GameManager.EventService.Remove<ProcessingJobCompletedEvent>(OnProcessingJobCompleted);
+            GameManager.EventService.Remove<ProcessingUnitCompletedEvent>(OnProcessingUnitCompleted);
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Remove<PlayerDiedEvent>(OnPlayerDied);
             GameManager.EventService.Remove<LoadCompletedEvent>(OnLoadCompleted);
@@ -139,7 +139,7 @@ namespace Platform
             EvaluateUpgradeAchievements();
         }
 
-        private void OnProcessingJobCompleted(ProcessingJobCompletedEvent e)
+        private void OnProcessingUnitCompleted(ProcessingUnitCompletedEvent e)
         {
             AddUnique(Stats.RecipesCompleted, e.Recipe.Id);
             EvaluateStatAchievements();

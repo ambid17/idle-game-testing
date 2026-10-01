@@ -127,7 +127,7 @@ namespace UI
 
         private void OnSelectRecipeClicked(int slotIndex)
         {
-            recipeListModal.Show(slotIndex);
+            recipeListModal.Show(slotIndex, spawnedSlots[slotIndex].SelectedRecipe);
         }
 
         private ProcessingRecipeDefinition GetDefaultRecipe(int slotIndex)

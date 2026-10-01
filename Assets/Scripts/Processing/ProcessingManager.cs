@@ -8,17 +8,21 @@ using UnityEngine;
 
 namespace Processing
 {
+    // A batch is crafted one unit at a time: each finished unit is banked in the Depot straight
+    // away and comes off Remaining, so cancelling only gives up the units not yet made.
     public class ProcessingJob
     {
         public ProcessingRecipeDefinition Recipe;
-        public int Quantity;
-        public float TimeRemaining;
-        public float TotalDuration;
+        // Units still to be made, including the one in progress.
+        public int Remaining;
+        // Seconds left on the unit in progress, out of UnitDuration.
+        public float UnitTimeRemaining;
+        public float UnitDuration;
 
-        // Snapshot of what StartJob actually pulled from the Depot, so CancelJob refunds exactly
-        // that instead of recomputing from the recipe (which could drift if recipes are rebalanced
-        // mid-job).
-        public IReadOnlyDictionary<BlockTypeId, int> ConsumedIngredients;
+        // Snapshot of what StartJob pulled from the Depot per unit, so CancelJob refunds exactly
+        // that for the unmade units instead of recomputing from the recipe (which could drift if
+        // recipes are rebalanced mid-job).
+        public IReadOnlyDictionary<BlockTypeId, int> IngredientsPerUnit;
     }
 
     // Processing Center per Assets/Docs/processingImplementation.md. Singleton so it needs no
@@ -121,24 +125,28 @@ namespace Processing
             var required = ScaleIngredients(recipe, quantity);
             if (!Depot.Instance.TryConsume(required)) return false;
 
-            float totalDuration = ComputeDuration(recipe, quantity);
+            float unitDuration = UnitDuration(recipe);
             slots[slotIndex] = new ProcessingJob
             {
                 Recipe = recipe,
-                Quantity = quantity,
-                TimeRemaining = totalDuration,
-                TotalDuration = totalDuration,
-                ConsumedIngredients = required
+                Remaining = quantity,
+                UnitTimeRemaining = unitDuration,
+                UnitDuration = unitDuration,
+                IngredientsPerUnit = ScaleIngredients(recipe, 1)
             };
 
             GameManager.EventService.Dispatch(new ProcessingJobStartedEvent(slotIndex, recipe, quantity));
             return true;
         }
 
+        // Refunds the ore for every unit not finished yet (the one in progress included); units
+        // already made stay banked in the Depot.
         public void CancelJob(int slotIndex)
         {
             var job = slots[slotIndex];
-            Depot.Instance.Deposit(job.ConsumedIngredients);
+            var refund = new Dictionary<BlockTypeId, int>();
+            foreach (var kvp in job.IngredientsPerUnit) refund[kvp.Key] = kvp.Value * job.Remaining;
+            Depot.Instance.Deposit(refund);
             slots[slotIndex] = null;
             GameManager.EventService.Dispatch(new ProcessingJobCancelledEvent(slotIndex));
         }
@@ -150,16 +158,27 @@ namespace Processing
                 var job = slots[i];
                 if (job == null) continue;
 
-                job.TimeRemaining -= Time.deltaTime;
-                if (job.TimeRemaining <= 0f) CompleteJob(i, job);
+                job.UnitTimeRemaining -= Time.deltaTime;
+                if (job.UnitTimeRemaining <= 0f) CompleteUnit(i, job);
             }
         }
 
-        private void CompleteJob(int slotIndex, ProcessingJob job)
+        // One unit per frame at most - the leftover time carries into the next unit, so a very
+        // short recipe still averages out to the right rate.
+        private void CompleteUnit(int slotIndex, ProcessingJob job)
         {
-            Depot.Instance.DepositGood(job.Recipe.Id, job.Quantity);
+            Depot.Instance.DepositGood(job.Recipe.Id, 1);
+            job.Remaining--;
+            GameManager.EventService.Dispatch(new ProcessingUnitCompletedEvent(slotIndex, job.Recipe));
+
+            if (job.Remaining > 0)
+            {
+                job.UnitTimeRemaining += job.UnitDuration;
+                return;
+            }
+
             slots[slotIndex] = null;
-            GameManager.EventService.Dispatch(new ProcessingJobCompletedEvent(slotIndex, job.Recipe, job.Quantity));
+            GameManager.EventService.Dispatch(new ProcessingJobCompletedEvent(slotIndex, job.Recipe));
             MarkCompletionUncollected();
         }
 
@@ -173,14 +192,15 @@ namespace Processing
             return scaled;
         }
 
-        private static float ComputeDuration(ProcessingRecipeDefinition recipe, int quantity) =>
-            recipe.DurationPerUnit * quantity / Mathf.Max(0.01f, UpgradeManager.Instance.Processing_SpeedMultiplier);
+        // Seconds to craft one unit at the current Processing speed upgrade level.
+        public float UnitDuration(ProcessingRecipeDefinition recipe) =>
+            recipe.DurationPerUnit / Mathf.Max(0.01f, UpgradeManager.Instance.Processing_SpeedMultiplier);
 
         // Restore for SaveService. The ore for these jobs was already deducted from the Depot last
         // session (and that deduction is what's reflected in the saved Depot totals), so this
-        // rebuilds ConsumedIngredients for correct Cancel-refund behavior without consuming
-        // anything again. elapsedSeconds (real time since last save) is subtracted from each job's
-        // remaining time; anything that would have finished completes immediately.
+        // rebuilds IngredientsPerUnit for correct Cancel-refund behavior without consuming
+        // anything again. elapsedSeconds (real time since last save) is worked off unit by unit;
+        // every unit that would have finished while away is banked immediately.
         public void RestoreFromSaveData(IReadOnlyList<ProcessingJobSaveEntry> savedJobs, float elapsedSeconds, int savedUncollectedCompletions)
         {
             slots.Clear();
@@ -200,11 +220,29 @@ namespace Processing
                     continue;
                 }
 
-                float timeRemaining = entry.TimeRemainingSeconds - elapsedSeconds;
-                if (timeRemaining <= 0f)
+                // Saves from before units were crafted one at a time stored the whole batch's
+                // remaining time here, hence the clamp.
+                float unitDuration = UnitDuration(recipe);
+                float unitTimeRemaining = Mathf.Min(entry.TimeRemainingSeconds, unitDuration);
+
+                int finished = 0;
+                if (elapsedSeconds >= unitTimeRemaining)
                 {
-                    Depot.Instance.DepositGood(recipe.Id, entry.Quantity);
-                    GameManager.EventService.Dispatch(new ProcessingJobCompletedEvent(entry.SlotIndex, recipe, entry.Quantity));
+                    float overflow = elapsedSeconds - unitTimeRemaining;
+                    finished = Mathf.Min(entry.Quantity, 1 + Mathf.FloorToInt(overflow / unitDuration));
+                    unitTimeRemaining = unitDuration - overflow % unitDuration;
+                }
+                else unitTimeRemaining -= elapsedSeconds;
+
+                if (finished > 0)
+                {
+                    Depot.Instance.DepositGood(recipe.Id, finished);
+                    GameManager.EventService.Dispatch(new ProcessingUnitCompletedEvent(entry.SlotIndex, recipe));
+                }
+
+                if (finished >= entry.Quantity)
+                {
+                    GameManager.EventService.Dispatch(new ProcessingJobCompletedEvent(entry.SlotIndex, recipe));
                     MarkCompletionUncollected();
                     continue;
                 }
@@ -212,10 +250,10 @@ namespace Processing
                 slots[entry.SlotIndex] = new ProcessingJob
                 {
                     Recipe = recipe,
-                    Quantity = entry.Quantity,
-                    TimeRemaining = timeRemaining,
-                    TotalDuration = ComputeDuration(recipe, entry.Quantity),
-                    ConsumedIngredients = ScaleIngredients(recipe, entry.Quantity)
+                    Remaining = entry.Quantity - finished,
+                    UnitTimeRemaining = unitTimeRemaining,
+                    UnitDuration = unitDuration,
+                    IngredientsPerUnit = ScaleIngredients(recipe, 1)
                 };
             }
         }

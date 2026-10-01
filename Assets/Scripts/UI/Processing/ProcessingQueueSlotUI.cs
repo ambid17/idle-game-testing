@@ -36,6 +36,9 @@ namespace UI.Processing
         private int slotIndex;
         private ProcessingRecipeDefinition selectedRecipe;
 
+        // What the recipe-picker modal highlights: the running job's recipe, else the one picked.
+        public ProcessingRecipeDefinition SelectedRecipe => ActiveJob != null ? ActiveJob.Recipe : selectedRecipe;
+
         private void Start()
         {
             actionButton.onClick.RemoveAllListeners();
@@ -149,9 +152,10 @@ namespace UI.Processing
 
         private void UpdateProgress(ProcessingJob job)
         {
-            float fraction = job.TotalDuration > 0f ? 1f - Mathf.Clamp01(job.TimeRemaining / job.TotalDuration) : 1f;
+            // The bar fills once per unit, and the label counts down the units still to be made.
+            float fraction = job.UnitDuration > 0f ? 1f - Mathf.Clamp01(job.UnitTimeRemaining / job.UnitDuration) : 1f;
             progressFillMask.fillAmount = fraction;
-            progressLabel.text = $"{Mathf.Max(0f, job.TimeRemaining):0.#}s";
+            progressLabel.text = $"{job.Remaining} left\n{Mathf.Max(0f, job.UnitTimeRemaining):0.#}s";
         }
 
         private static int MaxCraftableQuantity(ProcessingRecipeDefinition recipe)
