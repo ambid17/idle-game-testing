@@ -151,6 +151,7 @@ namespace Persistence
             }
 
             data.ProcessingUncollectedCompletions = ProcessingManager.Instance.UncollectedCompletions;
+            data.GoodsMarket = GoodsMarket.Instance.ToSaveData();
 
             if (playerController != null)
             {
@@ -357,6 +358,7 @@ namespace Persistence
             // completes immediately (goods deposited, no popup).
             float elapsedSeconds = ComputeMinutesAway(data.LastActiveUtcTimestamp) * 60f;
             ProcessingManager.Instance.RestoreFromSaveData(data.ProcessingJobs, elapsedSeconds, data.ProcessingUncollectedCompletions);
+            GoodsMarket.Instance.RestoreFromSaveData(data.GoodsMarket, elapsedSeconds);
 
             if (data.Player != null)
             {

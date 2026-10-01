@@ -15,7 +15,8 @@ namespace Economy
     // Also banks crafted goods from the Processing Center (processingImplementation.md) in a
     // second, parallel dictionary keyed by ProcessingRecipeId rather than folding them into
     // storedOres/BlockTypeId - goods aren't terrain/ore, and BlockType carries mining-only fields
-    // (Tile/Health/Weight/HazardBehavior) that don't apply to them.
+    // (Tile/Health/Weight/HazardBehavior) that don't apply to them. Goods are listed and sold on
+    // the Processing Center's Exchange tab (UI.Processing.GoodsExchangeUI), not the Depot panel.
     public class Depot : Singleton<Depot>
     {
         private static BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
@@ -42,8 +43,9 @@ namespace Economy
             if (changed) GameManager.EventService.Dispatch<DepotChangedEvent>();
         }
 
-        // Every ore/good that has ever been banked here. The Depot panel and the Control Center
-        // miner dashboard hide rows for anything not in these, so the lists grow as the player
+        // Every ore/good that has ever been banked here. The Depot panel, the Control Center miner
+        // dashboard and the Processing Center's Exchange tab hide rows for anything not in these
+        // (and the Exchange tab itself until there's a good), so the lists grow as the player
         // finds things instead of opening on a wall of zeroes. Player knowledge rather than run
         // state, so ClearAll (prestige) leaves them alone.
         private readonly HashSet<BlockTypeId> discoveredOres = new();
@@ -144,7 +146,7 @@ namespace Economy
         }
 
         // Called by ProcessingManager when a job completes - crafted goods are banked here rather
-        // than auto-sold, so the player sells them manually just like mined ore.
+        // than auto-sold, so the player picks their moment on the Processing Center's Exchange tab.
         public void DepositGood(ProcessingRecipeId id, int amount)
         {
             if (amount <= 0) return;
@@ -154,16 +156,25 @@ namespace Economy
             GameManager.EventService.Dispatch<DepotChangedEvent>();
         }
 
-        // Mirrors Sell, but reads ProcessingRecipeDefinition.SaleValue from the
-        // ProcessingRecipeDatabase and applies UpgradeManager.Processing_GoodsSellMultiplier
-        // instead of the ore SellValueMultiplier, so the two upgrade paths stay independent.
-        public double SellGood(ProcessingRecipeId id, float fraction)
+        // What one unit of this good sells for right now: the recipe's SaleValue at the current
+        // GoodsMarket price, times UpgradeManager.Processing_GoodsSellMultiplier (instead of the
+        // ore SellValueMultiplier, so the two upgrade paths stay independent) and the prestige
+        // multipliers.
+        public double GoodUnitValue(ProcessingRecipeDefinition recipe) =>
+            recipe.SaleValue * GoodsMarket.Instance.Multiplier(recipe.Id) * GoodValueMultiplier;
+
+        // Everything GoodUnitValue applies on top of the market price - the Exchange tab scales
+        // its price history by this so the graph reads in real dollars.
+        public double GoodValueMultiplier =>
+            UpgradeManager.Instance.Processing_GoodsSellMultiplier * PrestigeUpgradeManager.Instance.Economy_ProcessedGoodMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier;
+
+        // Sells up to `amount` units of this good at its current market price, crediting the Wallet.
+        public double SellGood(ProcessingRecipeId id, int amount)
         {
-            fraction = Mathf.Clamp01(fraction);
-            if (fraction <= 0f) return 0;
+            if (amount <= 0) return 0;
             if (!storedGoods.TryGetValue(id, out var current) || current <= 0) return 0;
 
-            int amountToSell = fraction >= 1f ? current : Mathf.Clamp(Mathf.RoundToInt(current * fraction), 1, current);
+            int amountToSell = Mathf.Min(amount, current);
 
             var recipe = recipeDatabase != null ? recipeDatabase.Get(id) : null;
             if (recipe == null)
@@ -171,24 +182,13 @@ namespace Economy
                 Debug.LogError($"Depot.SellGood: ProcessingRecipeDatabase missing or ProcessingRecipeId {id} not found. Cannot sell.");
                 return 0;
             }
-            double value = recipe.SaleValue * UpgradeManager.Instance.Processing_GoodsSellMultiplier * PrestigeUpgradeManager.Instance.Economy_ProcessedGoodMultiplier * PrestigeUpgradeManager.Instance.Prestige_IncomeMultiplier * amountToSell;
+            double value = GoodUnitValue(recipe) * amountToSell;
 
-            int remaining = current - amountToSell;
-            storedGoods[id] = Mathf.Max(0, remaining);
+            storedGoods[id] = current - amountToSell;
 
             if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
             GameManager.EventService.Dispatch<DepotChangedEvent>();
             return value;
-        }
-
-        public double SellAllGoods()
-        {
-            double total = 0;
-            foreach (var id in new List<ProcessingRecipeId>(storedGoods.Keys))
-            {
-                total += SellGood(id, 1f);
-            }
-            return total;
         }
 
         // GameDesignDoc "# Prestige": wipes all stored minerals/processed goods for

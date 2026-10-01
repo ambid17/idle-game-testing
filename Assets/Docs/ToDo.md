@@ -1,18 +1,15 @@
 todo 
 test hazards and set piece rooms
-redo crack indicator to grow more slowly. the last state is too busy, we should delete it and add a new state in the middle
-first critter notifications are too fast. the one that tells you what depth to look at. just add that text to the tutorial pane 
-could we generate are to match all of the scroll bars and sliders to the rest of the UI?
+building animations
 move depth and layer to minimap, add biome/structure name to it
 SPACE to cycle through tutorials, denote this in the action button of the tutorial
-automaton first spawn
-	- control center reveal should open the doors and have the mining automaton walk out during the cinematic
+	- use bound button icon
 - player 
 	- 
 - market
 	- 
 - depot
-	- hide ores until you've collected at least 1
+	- 
 - Dev Experience
 	- 
 - skill tree
@@ -66,10 +63,6 @@ dome keeper
 
 
 I think the biggest visual issue with the game currently is the drastic difference in pixels per unit across the various assets. I like the level of detail in the buildings and parallax backgrounds. Could you put together a checklist of everything that would need to be regenerated to match?
-
-
-
-
 
 Ask about more visual fluff 
 - ui animations

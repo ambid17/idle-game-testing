@@ -30,6 +30,18 @@ Processing is the term used for taking the ores, and combining them, to make an 
 		- a simple modal that has the name and ingredients of each unlocked recipe . 
 
 
+# Exchange
+- crafted goods are sold from the Processing Center's "Exchange" tab, not the Depot panel (they are still banked in `Depot.StoredGoods`)
+	- the tab is hidden until the first good has been crafted
+- each good has a market price: the recipe's preset sale value times a multiplier between 25% and 300% (`Processing.GoodsMarket`)
+	- the multiplier drifts randomly every few seconds and pulls back towards 100%
+	- occasionally a good booms or crashes for a minute or two, dragging it towards an extreme
+	- selling does not move the price
+	- the market keeps running through prestige and while the game is closed
+- UI
+	- left: list of crafted goods with count, current price and % above/below the preset value
+	- right: the selected good's price graph (last ~6 minutes), high/low, owned count, and Sell 1 / Sell half / Sell All
+
 # Upgrades
 - there will be a purchaseable upgrade per recipe, each requiring the last to be purchased
 	- wood: Chairs

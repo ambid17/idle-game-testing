@@ -31,9 +31,22 @@ namespace UI
                 foreach (var v in series) maxValue = Mathf.Max(maxValue, v);
             }
 
+            SetSeries(seriesList, 0f, maxValue);
+        }
+
+        // Same, but against an explicit vertical range instead of 0-to-largest - the Processing
+        // Center's price graph zooms in on the band its prices actually moved through.
+        public void SetSeries(IReadOnlyList<IReadOnlyList<float>> seriesList, float minValue, float maxValue)
+        {
+            if (plotArea == null || segmentPrefab == null)
+            {
+                Debug.LogError($"{nameof(LineGraphUI)} on {name} is missing plotArea or segmentPrefab.");
+                return;
+            }
+
             for (int s = 0; s < seriesList.Count; s++)
             {
-                DrawSeries(s, seriesList[s], maxValue);
+                DrawSeries(s, seriesList[s], minValue, maxValue);
             }
 
             for (int s = seriesList.Count; s < segmentPoolBySeries.Count; s++)
@@ -42,7 +55,7 @@ namespace UI
             }
         }
 
-        private void DrawSeries(int seriesIndex, IReadOnlyList<float> values, float maxValue)
+        private void DrawSeries(int seriesIndex, IReadOnlyList<float> values, float minValue, float maxValue)
         {
             var pool = GetOrCreatePool(seriesIndex);
 
@@ -59,8 +72,8 @@ namespace UI
             for (int i = 0; i < segmentCount; i++)
             {
                 var segment = GetOrCreateSegment(pool, i);
-                Vector2 from = PointFor(i, values[i], values.Count, width, height, maxValue);
-                Vector2 to = PointFor(i + 1, values[i + 1], values.Count, width, height, maxValue);
+                Vector2 from = PointFor(i, values[i], values.Count, width, height, minValue, maxValue);
+                Vector2 to = PointFor(i + 1, values[i + 1], values.Count, width, height, minValue, maxValue);
                 Vector2 diff = to - from;
 
                 segment.rectTransform.anchoredPosition = from;
@@ -73,10 +86,10 @@ namespace UI
             for (int i = segmentCount; i < pool.Count; i++) pool[i].gameObject.SetActive(false);
         }
 
-        private static Vector2 PointFor(int index, float value, int pointCount, float width, float height, float maxValue)
+        private static Vector2 PointFor(int index, float value, int pointCount, float width, float height, float minValue, float maxValue)
         {
             float x = pointCount <= 1 ? 0f : width * index / (pointCount - 1);
-            float y = height * Mathf.Clamp01(value / maxValue);
+            float y = height * Mathf.Clamp01(Mathf.InverseLerp(minValue, maxValue, value));
             return new Vector2(x, y);
         }
 

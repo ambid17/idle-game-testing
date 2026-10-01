@@ -5,7 +5,6 @@ using Events;
 using Interaction;
 using MapGeneration;
 using Player;
-using Processing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,28 +16,21 @@ namespace UI
     // per-type sell (any percentage, or all) plus a sell-everything button. A separate, explicit
     // "Deposit All" button banks whatever the player is currently carrying into the depot without
     // selling any of it - kept as its own action (rather than an implicit side effect of opening
-    // the panel) so depositing reads as an intentional player choice. Also shows Processing Center
-    // goods in a second, parallel row list (goodsRowContainer/goodsRowPrefab/sellAllGoodsButton)
-    // since Depot banks them separately from ore - see Depot.cs's StoredGoods.
+    // the panel) so depositing reads as an intentional player choice. Processing Center goods are
+    // banked in the Depot too, but are listed and sold on that building's Exchange tab instead.
     public class DepotUI : MonoBehaviour
     {
         [SerializeField] private GameObject panelRoot;
         [SerializeField] private Transform rowContainer;
         [SerializeField] private OreRowUI rowPrefab;
-        [SerializeField] private Transform goodsRowContainer;
-        [SerializeField] private GoodsRowUI goodsRowPrefab;
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private Button sellAllButton;
         [SerializeField] private TMP_Text sellAllButtonLabel;
-        [SerializeField] private Button sellAllGoodsButton;
-        [SerializeField] private TMP_Text sellAllGoodsButtonLabel;
         [SerializeField] private Button closeButton;
 
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
-        private readonly Dictionary<ProcessingRecipeId, GoodsRowUI> goodsRows = new();
         private PlayerInventory playerInventory;
         private BlockTypeDatabase blockTypeDatabase => GameManager.BlockTypeDatabase;
-        private ProcessingRecipeDatabase recipeDatabase => GameManager.ProcessingRecipeDatabase;
 
         private void Start()
         {
@@ -47,10 +39,8 @@ namespace UI
             playerInventory = FindAnyObjectByType<PlayerInventory>();
 
             BuildOreRows();
-            BuildGoodsRows();
 
             sellAllButton.onClick.AddListener(() => Depot.Instance.SellAll());
-            sellAllGoodsButton.onClick.AddListener(() => Depot.Instance.SellAllGoods());
             closeButton.onClick.AddListener(Close);
 
             panelRoot.SetActive(false);
@@ -61,15 +51,10 @@ namespace UI
             if (panelRoot == null) Debug.LogError("DepotUI.panelRoot is not assigned.");
             if (rowContainer == null) Debug.LogError("DepotUI.rowContainer is not assigned.");
             if (rowPrefab == null) Debug.LogError("DepotUI.rowPrefab is not assigned.");
-            if (goodsRowContainer == null) Debug.LogError("DepotUI.goodsRowContainer is not assigned.");
-            if (goodsRowPrefab == null) Debug.LogError("DepotUI.goodsRowPrefab is not assigned.");
             if (dollarsLabel == null) Debug.LogError("DepotUI.dollarsLabel is not assigned.");
             if (sellAllButton == null) Debug.LogError("DepotUI.sellAllButton is not assigned.");
             if (sellAllButtonLabel == null) Debug.LogError("DepotUI.sellAllButtonLabel is not assigned.");
-            if (sellAllGoodsButton == null) Debug.LogError("DepotUI.sellAllGoodsButton is not assigned.");
-            if (sellAllGoodsButtonLabel == null) Debug.LogError("DepotUI.sellAllGoodsButtonLabel is not assigned.");
             if (closeButton == null) Debug.LogError("DepotUI.closeButton is not assigned.");
-            if (recipeDatabase == null) Debug.LogError("DepotUI.recipeDatabase is not assigned.");
         }
 
         private void OnEnable()
@@ -78,7 +63,6 @@ namespace UI
             GameManager.EventService.Add<DepotChangedEvent>(Refresh);
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
-            GameManager.EventService.Add<SellGoodsRequestedEvent>(OnSellGoodsRequested);
             GameManager.EventService.Add<SellLockToggleRequestedEvent>(OnSellLockToggleRequested);
             GameManager.EventService.Add<UICloseEvent>(Close);
         }
@@ -89,7 +73,6 @@ namespace UI
             GameManager.EventService.Remove<DepotChangedEvent>(Refresh);
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
-            GameManager.EventService.Remove<SellGoodsRequestedEvent>(OnSellGoodsRequested);
             GameManager.EventService.Remove<SellLockToggleRequestedEvent>(OnSellLockToggleRequested);
             GameManager.EventService.Remove<UICloseEvent>(Close);
         }
@@ -138,17 +121,6 @@ namespace UI
             }
         }
 
-        private void BuildGoodsRows()
-        {
-            foreach (var recipe in recipeDatabase.Recipes)
-            {
-                var row = Instantiate(goodsRowPrefab, goodsRowContainer);
-                row.Bind(recipe);
-                row.gameObject.name = $"GoodsRow_{recipe.name}";
-                goodsRows[recipe.Id] = row;
-            }
-        }
-
         private void Open()
         {
             if (panelRoot.activeSelf) return;
@@ -165,7 +137,6 @@ namespace UI
         }
 
         private void OnSellRequested(SellRequestedEvent evt) => Depot.Instance.Sell(evt.Id, evt.Fraction);
-        private void OnSellGoodsRequested(SellGoodsRequestedEvent evt) => Depot.Instance.SellGood(evt.Id, evt.Fraction);
         private void OnSellLockToggleRequested(SellLockToggleRequestedEvent evt) => Depot.Instance.SetSellLocked(evt.Id, !Depot.Instance.IsSellLocked(evt.Id));
 
         // Explicit action (as opposed to an implicit side effect of opening the panel) so banking
@@ -194,16 +165,6 @@ namespace UI
             }
 
             sellAllButtonLabel.text = $"Sell All (${totalValue:0})";
-
-            var totalGoodsValue = 0f;
-            foreach (var kvp in goodsRows)
-            {
-                kvp.Value.gameObject.SetActive(Depot.Instance.IsGoodDiscovered(kvp.Key));
-                Depot.Instance.StoredGoods.TryGetValue(kvp.Key, out var count);
-                totalGoodsValue += kvp.Value.SetCount(count);
-            }
-
-            sellAllGoodsButtonLabel.text = $"Sell All Goods (${totalGoodsValue:0})";
 
             OnDollarsChanged();
         }

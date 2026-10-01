@@ -44,6 +44,17 @@ namespace Persistence
         public int Count;
     }
 
+    // One good's Processing.GoodsMarket state: its recent price multipliers (the last one is the
+    // current price) and any boom/crash in progress.
+    [Serializable]
+    public class GoodsMarketSaveEntry
+    {
+        public ProcessingRecipeId Id;
+        public List<float> History = new();
+        public float EventMultiplierTarget = 1f;
+        public float EventSecondsRemaining;
+    }
+
     [Serializable]
     public class ProcessingJobSaveEntry
     {
@@ -128,6 +139,9 @@ namespace Persistence
         // ProcessingManager.UncollectedCompletions - jobs that finished but the player hasn't
         // opened the Processing panel since, so the completion badge survives a save/reload.
         public int ProcessingUncollectedCompletions;
+        // Processing.GoodsMarket - per-good price history. Not reset by prestige. Empty on older
+        // saves, where the market just starts fresh.
+        public List<GoodsMarketSaveEntry> GoodsMarket = new();
         public PlayerSaveData Player = new();
         // Chests still active (unlooted) at save time - see Economy.ChestRegistry.
         public List<ChestSaveEntry> Chests = new();

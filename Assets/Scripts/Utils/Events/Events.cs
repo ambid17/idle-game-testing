@@ -295,14 +295,18 @@ namespace Events
     public class SellGoodsRequestedEvent : IEvent
     {
         public ProcessingRecipeId Id;
-        public float Fraction;
+        public int Amount;
 
-        public SellGoodsRequestedEvent(ProcessingRecipeId id, float fraction)
+        public SellGoodsRequestedEvent(ProcessingRecipeId id, int amount)
         {
             Id = id;
-            Fraction = fraction;
+            Amount = amount;
         }
     }
+
+    // Dispatched by Processing.GoodsMarket after every price update, so the Processing Center's
+    // Exchange tab can redraw its prices and graph.
+    public class GoodsMarketTickedEvent { }
 
     public class CustomBlockTriggeredEvent : IEvent
     {
