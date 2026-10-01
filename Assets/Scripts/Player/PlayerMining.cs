@@ -341,7 +341,9 @@ namespace Player
 
         // GameDesignDoc "Market Upgrades > Mining > Increase mining size" (vein mining): only
         // triggers off mining an Ore block, then chains into adjacent Ore blocks for free (no
-        // extra time cost - the upgrade IS the free hit), up to MiningAreaLevel of them.
+        // extra time cost - the upgrade IS the free hit), up to MiningAreaLevel of them. Only ore
+        // of the same type as the mined block chains, unless the Chain Vein Mining prestige perk
+        // is owned.
         private void MineAreaBonusCells(int layerIndex, int centerX, int centerY, BlockType primaryBlockType, Vector2Int direction)
         {
             if (primaryBlockType.Category != BlockCategory.Ore) return;
@@ -349,7 +351,8 @@ namespace Player
             var upgrades = UpgradeManager.Instance;
             if (upgrades == null || upgrades.Mining_AreaLevel <= 0) return;
 
-            foreach (var cell in VeinMiningPattern.GetChainCells(mapGenerationService, layerIndex, centerX, centerY, upgrades.Mining_AreaLevel))
+            bool anyOre = PrestigeUpgradeManager.Instance.Mining_ChainVeinMiningUnlocked;
+            foreach (var cell in VeinMiningPattern.GetChainCells(mapGenerationService, layerIndex, centerX, centerY, upgrades.Mining_AreaLevel, primaryBlockType, anyOre))
             {
                 var bonusBlock = mapGenerationService.GetBlockTypeAt(layerIndex, cell.x, cell.y);
                 if (bonusBlock == null) continue;

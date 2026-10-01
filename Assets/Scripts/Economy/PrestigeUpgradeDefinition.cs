@@ -43,6 +43,9 @@ namespace Economy
         // RequiredDrillTier) - below it, that biome's blocks are UnderTierBlockHealthMultiplier
         // times harder and Dirt Insta-Mine doesn't apply there. Prestige gates deeper biomes.
         Mining_DrillTier = 107,
+        // Chain Vein Mining: the Market's Vein miner (UpgradeEffect.Mining_AreaSize) normally only
+        // chains through ore of the type that was mined - this lets it branch into any ore.
+        Mining_ChainVeinMining = 108,
 
         // Economy 200-299
         Economy_MineralValueMultiplier = 200,

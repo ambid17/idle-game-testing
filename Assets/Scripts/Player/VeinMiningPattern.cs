@@ -22,11 +22,13 @@ namespace Player
 
         // BFS outward from (originX, originY) through Ore-category cells only, nearest-first,
         // capped at maxCount results. The origin cell itself is never included in the result -
-        // callers already mine it separately as the primary target.
-        public static List<Vector2Int> GetChainCells(MapGenerationService mapGen, int layerIndex, int originX, int originY, int maxCount)
+        // callers already mine it separately as the primary target. The chain only follows ore of
+        // originType (the block that was just mined) unless anyOre is set (the Chain Vein Mining
+        // prestige perk), which lets it branch through every kind of ore.
+        public static List<Vector2Int> GetChainCells(MapGenerationService mapGen, int layerIndex, int originX, int originY, int maxCount, BlockType originType, bool anyOre)
         {
             var result = new List<Vector2Int>();
-            if (mapGen == null || maxCount <= 0) return result;
+            if (mapGen == null || originType == null || maxCount <= 0) return result;
 
             var origin = new Vector2Int(originX, originY);
             var visited = new HashSet<Vector2Int> { origin };
@@ -44,6 +46,7 @@ namespace Player
 
                     var blockType = mapGen.GetBlockTypeAt(layerIndex, next.x, next.y);
                     if (blockType == null || blockType.Category != BlockCategory.Ore) continue;
+                    if (!anyOre && blockType.Id != originType.Id) continue;
 
                     result.Add(next);
                     queue.Enqueue(next);

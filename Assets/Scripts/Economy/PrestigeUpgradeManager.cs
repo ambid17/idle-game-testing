@@ -141,6 +141,10 @@ namespace Economy
         // passed through to MapGenerationService.MineCell's canMineFallingRock.
         public bool Mining_CanMineRocks => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_RockBreaker);
 
+        // Chain Vein Mining: vein mining branches through any ore instead of only the mined ore's
+        // own type - read by PlayerMining, passed to VeinMiningPattern.GetChainCells.
+        public bool Mining_ChainVeinMiningUnlocked => IsEffectMaxedAndApplied(PrestigeUpgradeEffect.Mining_ChainVeinMining);
+
         // Drill tier owned (applied levels only, so a tier bought in the Museum takes effect on
         // prestige) - compared against LayerConfig.RequiredDrillTier by MapGenerationService.
         public int Mining_DrillTier => LevelOf(PrestigeUpgradeEffect.Mining_DrillTier);

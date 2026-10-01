@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Mining_CameraZoom
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Zoom Out Camera
-  Description: Zooms the camera out 11% per level so you can see more of the mine around you (up to 33% farther at max level).
+  Description: Zooms the camera out 5.5% per level so you can see more of the mine around you (up to 16.5% farther at max level). Use the mouse wheel to zoom back in and out.
   Icon: {fileID: 21300000, guid: 1668eb36c3b9d414b8854c6d432baf52, type: 3}
-  EffectValuePerLevel: 1.1
+  EffectValuePerLevel: 0.55
   MaxLevel: 3
   BaseCost: 800
   CostGrowth: 1.3
