@@ -28,6 +28,9 @@ namespace Player
         [SerializeField] private float groundSpeed = 5f;
         [SerializeField] private float flySpeed = 8f;
         [SerializeField] private float jetpackForce = 15f;
+        // Jetpack stops thrusting once the player is already rising this fast (m/s) - gravity then
+        // bleeds the excess off, so upward speed settles around this instead of climbing forever.
+        [SerializeField] private float maxJetpackRiseSpeed = 20f;
         // Horizontal accel used to close the gap to target speed via AddForce. High enough to feel
         // near-instant on open ground, but - unlike a hard rb.linearVelocity assignment - a wall's
         // contact response can actually oppose this force instead of being overwritten every
@@ -326,7 +329,7 @@ namespace Player
 
             // Jetpack pushes rather than snapping vertical velocity, so gravity still pulls
             // against it - lets the player feather W for a soft landing instead of a hard cutoff.
-            if (IsFlying)
+            if (IsFlying && rb.linearVelocityY < maxJetpackRiseSpeed)
             {
                 var downwardForceCounteract = jetpackForce * 2;
                 var force = rb.linearVelocityY > 0f ? jetpackForce : downwardForceCounteract;

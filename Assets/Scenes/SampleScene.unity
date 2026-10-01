@@ -5048,6 +5048,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraControl.CameraZoomController
   cinemachineCamera: {fileID: 0}
+  scrollStep: 0.275
+  zoomSmoothing: 12
 --- !u!114 &128491277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80010,6 +80012,7 @@ MonoBehaviour:
   groundSpeed: 5
   flySpeed: 8
   jetpackForce: 15
+  maxJetpackRiseSpeed: 20
   moveAcceleration: 80
   verticalBrakeDeceleration: 30
   fallDamageVelocityThreshold: 12
