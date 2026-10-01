@@ -33,7 +33,14 @@ namespace MapGeneration
 
         [Tooltip("Tint applied to all dirt blocks in this layer, based on depth")]
         public Color LayerDirtTint = Color.white;
-        [Range(0f, 3f)] public float BlockHealth = 1f;
+        [Tooltip("Multiplies every block's mining time in this layer. Ramps up per biome.")]
+        [Range(0f, 10f)] public float BlockHealth = 1f;
+
+        [Header("Drill tier (Museum perk Mining_DrillTier - prestige gates deeper biomes)")]
+        [Tooltip("Drill tier needed to mine this layer at its normal BlockHealth. 0 = always.")]
+        [Min(0)] public int RequiredDrillTier;
+        [Tooltip("Extra BlockHealth multiplier while the player's drill tier is below RequiredDrillTier - a near-wall, not a hard block. Dirt Insta-Mine also doesn't apply here until then.")]
+        [Min(1f)] public float UnderTierBlockHealthMultiplier = 8f;
 
         public List<WeightedBlockEntry> OreTable = new();
         public List<WeightedBlockEntry> HazardTable = new();

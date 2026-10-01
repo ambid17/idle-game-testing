@@ -15,7 +15,9 @@ MonoBehaviour:
   LayerIndex: 10
   LayerHeight: 30
   LayerDirtTint: {r: 0.6, g: 0.55, b: 1, a: 1}
-  BlockHealth: 2.7
+  BlockHealth: 6
+  RequiredDrillTier: 3
+  UnderTierBlockHealthMultiplier: 8
   OreTable:
   - BlockType: {fileID: 11400000, guid: 4a6696e1aebea36419409154ec9952d1, type: 2}
     Weight: 6

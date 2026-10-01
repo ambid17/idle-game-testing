@@ -375,7 +375,16 @@ namespace MapGeneration
             return CellLookup.Cell;
         }
 
-        public float GetBlockHealthMultiplier(int layerIndex) => layerConfigProvider.GetConfig(layerIndex).BlockHealth * GameManager.RunModifierService.BlockHealthMultiplier;
+        public float GetBlockHealthMultiplier(int layerIndex)
+        {
+            var config = layerConfigProvider.GetConfig(layerIndex);
+            float underTier = HasDrillTierFor(layerIndex) ? 1f : config.UnderTierBlockHealthMultiplier;
+            return config.BlockHealth * underTier * GameManager.RunModifierService.BlockHealthMultiplier;
+        }
+
+        // Whether the player's drill tier (Museum perk) covers this layer's biome.
+        public bool HasDrillTierFor(int layerIndex) =>
+            PrestigeUpgradeManager.Instance.Mining_DrillTier >= layerConfigProvider.GetConfig(layerIndex).RequiredDrillTier;
 
         public void RefreshCellVisual(int layerIndex, int x, int y) =>
             streamingManager.NotifyCellMined(layerIndex, x, y, System.Array.Empty<Vector2Int>());

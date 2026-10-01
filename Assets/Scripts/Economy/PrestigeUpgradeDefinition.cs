@@ -39,6 +39,10 @@ namespace Economy
         // Lets the player mine FallingRock blocks directly instead of only knocking them loose by
         // mining their support (PrestigeUpgradeManager.Mining_CanMineRocks).
         Mining_RockBreaker = 106,
+        // Drill tiers: each level lets the drill handle the next biome down (LayerConfig.
+        // RequiredDrillTier) - below it, that biome's blocks are UnderTierBlockHealthMultiplier
+        // times harder and Dirt Insta-Mine doesn't apply there. Prestige gates deeper biomes.
+        Mining_DrillTier = 107,
 
         // Economy 200-299
         Economy_MineralValueMultiplier = 200,

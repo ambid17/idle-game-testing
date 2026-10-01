@@ -30,6 +30,8 @@ namespace Player
         [SerializeField] private float miningHitInterval = 0.25f;
         [Tooltip("Minimum seconds between inventory-full/too-heavy notifications, so repeatedly bumping an ore (e.g. jetpacking into the ceiling with DigUp) doesn't spam the toast.")]
         [SerializeField] private float inventoryBlockNotifyCooldown = 3f;
+        [Tooltip("Minimum seconds between \"your drill tier is too low here\" notifications.")]
+        [SerializeField] private float underTierNotifyCooldown = 30f;
         [SerializeField] private bool debug;
 
         private PlayerController playerController;
@@ -44,6 +46,7 @@ namespace Player
         private enum InventoryBlockReason { None, Full, TooHeavy }
         private InventoryBlockReason lastInventoryBlock;
         private float nextInventoryBlockNotifyTime;
+        private float nextUnderTierNotifyTime;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
         // True only while actually working on a mineable block - PlayerAnimation plays the drill
@@ -148,6 +151,18 @@ namespace Player
                 return;
             }
 
+            // Biomes past the player's drill tier are a near-wall (MapGenerationService.
+            // GetBlockHealthMultiplier) - say why, and what fixes it, when they start digging there.
+            bool hasDrillTier = mapGenerationService.HasDrillTierFor(layerIndex);
+            if (!hasDrillTier && isNewTarget && Time.time >= nextUnderTierNotifyTime)
+            {
+                nextUnderTierNotifyTime = Time.time + underTierNotifyCooldown;
+                int requiredTier = GameManager.LayerConfigProvider.GetConfig(layerIndex).RequiredDrillTier;
+                GameManager.EventService.Dispatch(new NotificationEvent(
+                    $"Your drill can barely scratch this rock! Buy Drill Tier {requiredTier} in the Museum, then prestige.",
+                    NotificationUrgency.TimeSensitive));
+            }
+
             miningProgress += Time.deltaTime * upgradeManager.Mining_SpeedMultiplier * playerPowerUps.MiningSpeedMultiplier;
             playerController.ConsumeMiningFuel(Time.deltaTime);
             float targetBlockHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
@@ -155,7 +170,8 @@ namespace Player
             // GameDesignDoc "Insta-mine chance": rolled once per newly-acquired target.
             var canInstaMine = isNewTarget && upgradeManager != null && upgradeManager.Mining_InstaMineChance > 0f && Random.value < upgradeManager.Mining_InstaMineChance;
             // GameDesignDoc "the final upgrade makes dirt/stone an instant mine".
-            var canInstaMineDirt = blockType.Category == BlockCategory.Dirt && upgradeManager != null && upgradeManager.Mining_InstantMineDirt;
+            // Only in biomes the drill tier covers - otherwise it would skip the tier wall for most blocks.
+            var canInstaMineDirt = blockType.Category == BlockCategory.Dirt && hasDrillTier && upgradeManager != null && upgradeManager.Mining_InstantMineDirt;
             // Mining_ScrapAlloyInstaMine's capstone.
             var canInstaMineScrapAlloy = blockType.Id == BlockTypeId.ScrapAlloy && upgradeManager != null && upgradeManager.Mining_InstantMineScrapAlloy;
             var finishedMining =  miningProgress >= targetBlockHealth;
