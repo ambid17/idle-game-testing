@@ -72,6 +72,9 @@ namespace Persistence
         public float Fuel;
         public Vector3 Position;
         public List<OreCountEntry> OreCounts = new();
+        // PlayerMining's "this block can't be mined" notification tally per block type, so its
+        // show-N-times cap holds across reloads. Not reset by prestige. Empty on older saves.
+        public List<OreCountEntry> UnmineableNotifyCounts = new();
     }
 
     // A Chest that was still active (unlooted) at save time - see Economy.Chest/ChestSpawner.

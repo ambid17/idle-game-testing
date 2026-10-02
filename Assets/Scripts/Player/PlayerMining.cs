@@ -35,6 +35,8 @@ namespace Player
         [SerializeField] private float underTierNotifyCooldown = 30f;
         [Tooltip("Minimum seconds between \"this block can't be mined\" notifications (Grassy Dirt, Hardpan, Rocks without Rock Breaker).")]
         [SerializeField] private float unmineableNotifyCooldown = 4f;
+        [Tooltip("How many times the \"this block can't be mined\" notification shows per block type before it stops for good.")]
+        [SerializeField] private int maxUnmineableNotifiesPerBlockType = 3;
         [SerializeField] private bool debug;
 
         private PlayerController playerController;
@@ -52,11 +54,21 @@ namespace Player
         private float nextUnderTierNotifyTime;
         private bool wasPushingUnmineable;
         private float nextUnmineableNotifyTime;
+        private readonly Dictionary<BlockTypeId, int> unmineableNotifyCounts = new Dictionary<BlockTypeId, int>();
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
         // True only while actually working on a mineable block - PlayerAnimation plays the drill
         // frames off this rather than off raw input, so bumping an unmineable block doesn't drill.
         public bool IsMining => hasTarget;
+
+        // Persisted by SaveService so the per-block-type notification cap is per save, not per session.
+        public IReadOnlyDictionary<BlockTypeId, int> UnmineableNotifyCounts => unmineableNotifyCounts;
+
+        public void RestoreFromSaveData(Dictionary<BlockTypeId, int> savedUnmineableNotifyCounts)
+        {
+            unmineableNotifyCounts.Clear();
+            foreach (var kvp in savedUnmineableNotifyCounts) unmineableNotifyCounts[kvp.Key] = kvp.Value;
+        }
 
         private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.Economy_OverflowUnlocked;
         
@@ -153,9 +165,12 @@ namespace Player
             bool isHardpan = blockType != null && blockType.Id == BlockTypeId.Hardpan;
             bool isUnbreakableRock = blockType != null && blockType.Id == BlockTypeId.FallingRock && !PrestigeUpgradeManager.Instance.Mining_CanMineRocks;
             bool isPushingUnmineable = isGrassyDirt || isHardpan || isUnbreakableRock;
-            if (isPushingUnmineable && !wasPushingUnmineable && Time.time >= nextUnmineableNotifyTime)
+            // Capped per block type on top of that - past the first few the player knows, and it's just noise.
+            if (isPushingUnmineable && !wasPushingUnmineable && Time.time >= nextUnmineableNotifyTime
+                && unmineableNotifyCounts.GetValueOrDefault(blockType.Id) < maxUnmineableNotifiesPerBlockType)
             {
                 nextUnmineableNotifyTime = Time.time + unmineableNotifyCooldown;
+                unmineableNotifyCounts[blockType.Id] = unmineableNotifyCounts.GetValueOrDefault(blockType.Id) + 1;
                 string message = isUnbreakableRock
                     ? $"Your drill can't break {blockType.DisplayName}! Mine out what's holding it up instead."
                     : $"{blockType.DisplayName} can't be mined!";

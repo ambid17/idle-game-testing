@@ -46,6 +46,7 @@ namespace Persistence
         [SerializeField] private SkyArtifact skyArtifact;
         private PlayerInventory playerInventory;
         private PlayerHealth playerHealth;
+        private PlayerMining playerMining;
 
         protected override void Initialize()
         {
@@ -59,6 +60,7 @@ namespace Persistence
             {
                 playerInventory = playerController.GetComponent<PlayerInventory>();
                 playerHealth = playerController.GetComponent<PlayerHealth>();
+                playerMining = playerController.GetComponent<PlayerMining>();
             }
 
             if (chestSpawner == null)
@@ -168,6 +170,14 @@ namespace Persistence
                     foreach (var kvp in playerInventory.OreCounts)
                     {
                         data.Player.OreCounts.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
+                    }
+                }
+
+                if (playerMining != null)
+                {
+                    foreach (var kvp in playerMining.UnmineableNotifyCounts)
+                    {
+                        data.Player.UnmineableNotifyCounts.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
                     }
                 }
             }
@@ -369,7 +379,14 @@ namespace Persistence
                     playerOres[entry.Id] = entry.Count;
                 }
 
+                var unmineableNotifyCounts = new Dictionary<BlockTypeId, int>();
+                foreach (var entry in data.Player.UnmineableNotifyCounts)
+                {
+                    unmineableNotifyCounts[entry.Id] = entry.Count;
+                }
+
                 if (playerInventory != null) playerInventory.RestoreFromSaveData(playerOres);
+                if (playerMining != null) playerMining.RestoreFromSaveData(unmineableNotifyCounts);
                 if (playerHealth != null) playerHealth.RestoreFromSaveData(data.Player.CurrentHp);
                 if (playerController != null) playerController.RestoreFromSaveData(data.Player.Fuel, data.Player.Position);
             }
