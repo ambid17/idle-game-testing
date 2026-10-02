@@ -1,10 +1,6 @@
 todo 
-test hazards and set piece rooms
 
 
-SPACE to cycle through tutorials, denote this in the action button of the tutorial
-	- use bound button icon
-the bottom of the hilly background loses fidelity, especially when you fly up a little bit. it looks like the art is smeared
 - player 
 	- 
 - market

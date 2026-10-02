@@ -284,6 +284,12 @@ namespace Player
         // open at all - optionally opening the pause menu. See UI.ModalTracker.
         private static void OnPauseButtonPressed(bool openPauseIfNothingOpen)
         {
+            if (MainMenuUI.IsOpen)
+            {
+                GameManager.EventService.Dispatch<MainMenuBackRequestedEvent>();
+                return;
+            }
+
             if (ModalTracker.IsAnyModalOpen)
             {
                 GameManager.EventService.Dispatch<ModalCloseRequestedEvent>();

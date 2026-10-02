@@ -37,6 +37,7 @@ namespace Persistence
         private static readonly HashSet<string> RetiredMarketUpgradeKeys = new() { "Fuel Efficiency", "Marketing" };
         private string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
         private string MapSavePath => Path.Combine(Application.persistentDataPath, "map.json");
+        public bool HasSaveFile => File.Exists(SavePath);
         public bool HasLoadedData => hasLoadedData;
         private bool hasLoadedData = false;
 

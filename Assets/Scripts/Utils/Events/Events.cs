@@ -586,6 +586,11 @@ namespace Events
     // input - see PlayerController.Update. PauseMenuUI is the sole listener.
     public class PauseMenuOpenRequestedEvent { }
 
+    // Dispatched by PlayerController on Escape/B instead of its usual close-modal/close-panel
+    // handling while the main menu covers the screen (see UI.MainMenuUI.IsOpen), so the press
+    // can't dismiss a popup waiting unseen underneath. MainMenuUI is the sole listener.
+    public class MainMenuBackRequestedEvent { }
+
     // Tutorial popup system (Tutorial.TutorialManager). WorldPosition is null for a screen-space
     // overlay tutorial (UI.Panels.TutorialModalUI) or set for a world-anchored one
     // (UI.Panels.WorldTutorialPopupUI) - each display component ignores events that aren't theirs.
