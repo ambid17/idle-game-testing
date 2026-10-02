@@ -1,7 +1,7 @@
 todo 
 test hazards and set piece rooms
 
-move depth and layer to minimap, add biome/structure name to it
+
 SPACE to cycle through tutorials, denote this in the action button of the tutorial
 	- use bound button icon
 the bottom of the hilly background loses fidelity, especially when you fly up a little bit. it looks like the art is smeared
@@ -35,7 +35,6 @@ the bottom of the hilly background loses fidelity, especially when you fly up a 
 - ideas 
 	- XXXXXX missing an end goal
 	- find lost drones that become automatons
-	- stock-market style selling of processed goods
 	- shift to dash
 	- add a vibrating animation or light show when mining artifacts
 	- add spectate automaton view?
@@ -46,6 +45,7 @@ the bottom of the hilly background loses fidelity, especially when you fly up a 
 	- processing
 		- ? processing slots +1, +10, Max instead of slider
 	- treasure map that highlights where to go to find something
+	- ? move depth and layer to minimap, add biome/structure name to it
 
 
 sfx changes

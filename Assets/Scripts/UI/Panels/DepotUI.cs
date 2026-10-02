@@ -26,6 +26,7 @@ namespace UI
         [SerializeField] private TMP_Text dollarsLabel;
         [SerializeField] private Button sellAllButton;
         [SerializeField] private TMP_Text sellAllButtonLabel;
+        [SerializeField] private Button depositButton;
         [SerializeField] private Button closeButton;
 
         private readonly Dictionary<BlockTypeId, OreRowUI> rows = new();
@@ -41,6 +42,7 @@ namespace UI
             BuildOreRows();
 
             sellAllButton.onClick.AddListener(() => Depot.Instance.SellAll());
+            depositButton.onClick.AddListener(DepositAll);
             closeButton.onClick.AddListener(Close);
 
             panelRoot.SetActive(false);
@@ -54,6 +56,7 @@ namespace UI
             if (dollarsLabel == null) Debug.LogError("DepotUI.dollarsLabel is not assigned.");
             if (sellAllButton == null) Debug.LogError("DepotUI.sellAllButton is not assigned.");
             if (sellAllButtonLabel == null) Debug.LogError("DepotUI.sellAllButtonLabel is not assigned.");
+            if (depositButton == null) Debug.LogError("DepotUI.depositButton is not assigned.");
             if (closeButton == null) Debug.LogError("DepotUI.closeButton is not assigned.");
         }
 
