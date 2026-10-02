@@ -149,6 +149,13 @@ namespace Settings
             return index < 0 ? null : promptSelectAction.bindings[index].effectivePath;
         }
 
+        // Same, for the Close button.
+        public string GetPromptClosePath(InputScheme scheme)
+        {
+            int index = GetBindingIndex(promptCloseAction, scheme);
+            return index < 0 ? null : promptCloseAction.bindings[index].effectivePath;
+        }
+
         public static string GroupFor(InputScheme scheme) => scheme == InputScheme.Gamepad ? GamepadGroup : KeyboardGroup;
 
         // Gamepad movement is always the left stick + d-pad.

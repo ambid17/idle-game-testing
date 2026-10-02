@@ -72,10 +72,11 @@ namespace UI
         }
 
         // Polls so a tutorial deferred behind another modal shows as soon as that modal closes.
-        // Select (Space / A) dismisses the one on screen, which shows the next queued one (Close).
+        // Controller A dismisses the one on screen, which shows the next queued one (Close).
+        // Escape / B get here through ModalBase; Space deliberately doesn't dismiss.
         private void Update()
         {
-            if (IsOpen && PromptInput.WasSelectPressedThisFrame())
+            if (IsOpen && PromptInput.WasGamepadSelectPressedThisFrame())
             {
                 Close();
                 return;

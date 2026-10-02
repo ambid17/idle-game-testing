@@ -9,8 +9,8 @@ namespace UI.Panels
     // Bottom-of-screen cinematic subtitle shown during Buildings.BuildingRevealCinematicPlayer's
     // spawn cinematic, explaining whichever building just materialized. Body text appears
     // immediately; a "continue" prompt appears after promptDelaySeconds, and from then on clicking
-    // anywhere or pressing Select or Close (UI.PromptInput - Space / Escape, A / B on a
-    // controller) dismisses it and invokes the caller's callback. Purely a display panel -
+    // anywhere or pressing Escape (UI.PromptInput - A / B on a controller; Space deliberately
+    // doesn't) dismisses it and invokes the caller's callback. Purely a display panel -
     // BuildingRevealCinematicPlayer already owns Player.InputBlocker for the whole cinematic, so
     // unlike TutorialModalUI/WorldTutorialPopupUI this isn't a ModalBase, and it reads the prompt
     // buttons itself rather than through controller focus (it has no GamepadFocus). The prompt's
@@ -60,7 +60,7 @@ namespace UI.Panels
         private void Update()
         {
             if (!canDismiss) return;
-            if (PromptInput.WasSelectPressedThisFrame() || PromptInput.WasClosePressedThisFrame()) Dismiss();
+            if (PromptInput.WasGamepadSelectPressedThisFrame() || PromptInput.WasClosePressedThisFrame()) Dismiss();
         }
 
         private void Dismiss()

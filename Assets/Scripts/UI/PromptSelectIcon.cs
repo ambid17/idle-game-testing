@@ -1,4 +1,5 @@
 using Events;
+using Settings;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,10 @@ namespace UI
     [RequireComponent(typeof(Image))]
     public class PromptSelectIcon : MonoBehaviour
     {
+        // For prompts Space doesn't dismiss (the tutorial popups, the building reveal): shows the
+        // Close key (Escape) on keyboard instead. A controller still shows Select (A).
+        [SerializeField] private bool closeKeyOnKeyboard;
+
         private Image image;
 
         private void Awake() => image = GetComponent<Image>();
@@ -24,6 +29,10 @@ namespace UI
 
         private void OnInputSchemeChanged(InputSchemeChangedEvent evt) => Refresh();
 
-        private void Refresh() => image.sprite = PromptInput.SelectIcon;
+        private void Refresh()
+        {
+            bool showClose = closeKeyOnKeyboard && GameManager.KeybindService.CurrentScheme == InputScheme.KeyboardMouse;
+            image.sprite = showClose ? PromptInput.CloseIcon : PromptInput.SelectIcon;
+        }
     }
 }

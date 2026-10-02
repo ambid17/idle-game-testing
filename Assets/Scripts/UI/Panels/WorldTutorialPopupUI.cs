@@ -50,9 +50,10 @@ namespace UI
             GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
         }
 
+        // Controller A. Escape / B get here through ModalBase; Space deliberately doesn't dismiss.
         private void Update()
         {
-            if (IsOpen && PromptInput.WasSelectPressedThisFrame()) Close();
+            if (IsOpen && PromptInput.WasGamepadSelectPressedThisFrame()) Close();
         }
 
         private void OnShowTutorial(ShowTutorialEvent evt)

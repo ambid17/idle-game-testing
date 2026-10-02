@@ -93,6 +93,8 @@ MonoBehaviour:
     Sprite: {fileID: -1143748473, guid: 0959436723eedde45a7f4687fe6d0121, type: 3}
   - Key: 1
     Sprite: {fileID: -818593604, guid: 0959436723eedde45a7f4687fe6d0121, type: 3}
+  - Key: 60
+    Sprite: {fileID: -1424172189, guid: 0959436723eedde45a7f4687fe6d0121, type: 3}
   - Key: 2
     Sprite: {fileID: -497157583, guid: 0959436723eedde45a7f4687fe6d0121, type: 3}
   - Key: 77
