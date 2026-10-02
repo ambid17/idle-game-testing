@@ -107,7 +107,7 @@ namespace UI
                 if (shown - lastBlipCharacter >= charactersPerBlip)
                 {
                     lastBlipCharacter = shown;
-                    GameManager.AudioService.Play(SoundId.DialogBlip);
+                    GameManager.AudioService.Play(lines[lineIndex].Voice);
                 }
                 continueIndicator.SetActive(!IsTyping);
             }

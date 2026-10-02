@@ -859,12 +859,15 @@ namespace Events
         public string Speaker;
         public Sprite Portrait;
         public string Text;
+        // The chatter played as the line types out.
+        public Audio.SoundId Voice;
 
-        public DialogLine(string speaker, Sprite portrait, string text)
+        public DialogLine(string speaker, Sprite portrait, string text, Audio.SoundId voice = Audio.SoundId.DialogBlip)
         {
             Speaker = speaker;
             Portrait = portrait;
             Text = text;
+            Voice = voice;
         }
     }
 

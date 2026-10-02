@@ -7,6 +7,7 @@ using Events;
 using Museum;
 using Persistence;
 using Player;
+using UI;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,7 +46,7 @@ namespace Story
 
     // The Seals story's state (GameDesignDoc "# Story & Endgame: The Seals"): which stage the
     // player has dug down to, which Keystones they pried loose, and how it ended. Nothing here
-    // resets on prestige. Whispers the Bound's line the first time each layer is reached, shakes
+    // resets on prestige. Opens a dialog with the Bound the first time each layer is reached, shakes
     // the mine with ambient tremors that grow with the stage and Resonance count, hands the
     // curator / critter keeper / Resonance prompt their stage lines, and runs the ending sequence.
     // Child of the GameManager object, accessed via GameManager.StoryManager.
@@ -55,6 +56,7 @@ namespace Story
         private static readonly int[] StageFirstLayers = { 3, 6, 9 };
         private const int TotalSeals = 4;
         private const string EpilogueConversation = "Story.Epilogue";
+        private const string WhisperConversation = "Story.Whisper";
         private const string VoiceTag = "{voice}";
         private const string CuratorTag = "{curator}";
         private const string KeystonesTag = "{keystones}";
@@ -77,8 +79,8 @@ namespace Story
         [SerializeField, Range(0f, 1f)] private float storyLineChance = 0.6f;
 
         [Header("Whispers")]
-        [Tooltip("How much longer than an ordinary warning toast a whisper stays on screen.")]
-        [SerializeField, Min(0.1f)] private float whisperDurationMultiplier = 2f;
+        [Tooltip("Seconds between whatever set a whisper off and the Bound's dialog opening.")]
+        [SerializeField, Min(0f)] private float whisperDelay = 0.6f;
 
         [Header("Tremors")]
         [Tooltip("Seconds between tremors at the lowest and highest intensity.")]
@@ -98,7 +100,9 @@ namespace Story
 
         private readonly HashSet<int> takenKeystones = new();
         private readonly HashSet<int> examinedChambers = new();
+        private readonly Queue<string> pendingWhispers = new();
         private int deepestLayerIndex = -1;
+        private float whisperTimer;
         private float tremorTimer;
         private Image flash;
 
@@ -176,9 +180,12 @@ namespace Story
 
         private void Update()
         {
+            if (!SaveService.Instance.HasLoadedData || InputBlocker.IsBlocked || PrestigeCinematic.IsPlaying || IsEndingPlaying) return;
+
+            UpdateWhispers();
+
             float intensity = TremorIntensity;
             if (intensity <= 0f) return;
-            if (!SaveService.Instance.HasLoadedData || InputBlocker.IsBlocked || PrestigeCinematic.IsPlaying || IsEndingPlaying) return;
 
             tremorTimer -= Time.deltaTime;
             if (tremorTimer > 0f) return;
@@ -214,8 +221,30 @@ namespace Story
         {
             if (string.IsNullOrEmpty(line)) return;
 
+            if (pendingWhispers.Count == 0) whisperTimer = whisperDelay;
+            pendingWhispers.Enqueue(line);
+        }
+
+        // The Bound speaks in the dialog box, like the curator - but only once nothing else has
+        // the screen, so it never talks over a shop panel or the choice it is reacting to.
+        private void UpdateWhispers()
+        {
+            if (pendingWhispers.Count == 0 || ModalTracker.IsAnyModalOpen) return;
+
+            whisperTimer -= Time.deltaTime;
+            if (whisperTimer > 0f) return;
+
+            var lines = new List<DialogLine>();
+            while (pendingWhispers.Count > 0) AddVoicePages(lines, pendingWhispers.Dequeue());
+            GameManager.EventService.Dispatch(new DialogRequestedEvent(WhisperConversation, lines));
+        }
+
+        private void AddVoicePages(List<DialogLine> lines, string entry)
+        {
             string color = ColorUtility.ToHtmlStringRGB(content.VoiceColor);
-            GameManager.EventService.Dispatch(new NotificationEvent($"<color=#{color}><i>\"{line}\"</i></color>", NotificationUrgency.TimeSensitive, durationMultiplier: whisperDurationMultiplier));
+            int first = lines.Count;
+            AddPages(lines, RetranslationSeen || Ending != StoryEnding.None ? content.VoiceName : content.UnknownVoiceName, content.VoicePortrait, entry, SoundId.BoundVoice);
+            for (int i = first; i < lines.Count; i++) lines[i].Text = $"<color=#{color}><i>{lines[i].Text}</i></color>";
         }
 
         // ---- Character lines ----
@@ -269,7 +298,7 @@ namespace Story
             var text = chamberIndex == VaultChamberIndex ? content.Vault : content.Chambers[chamberIndex];
             var lines = new List<DialogLine>();
             AddPages(lines, string.Empty, null, text.Narration);
-            AddPages(lines, RetranslationSeen ? content.VoiceName : content.UnknownVoiceName, null, text.Voice);
+            AddVoicePages(lines, text.Voice);
             return lines;
         }
 
@@ -354,21 +383,21 @@ namespace Story
             foreach (string entry in release ? content.ReleaseEpilogue : content.ResealEpilogue)
             {
                 if (entry == KeystonesTag) AddPages(lines, string.Empty, null, keystoneLines[Mathf.Min(KeystonesTaken, keystoneLines.Length - 1)]);
-                else if (entry.StartsWith(VoiceTag)) AddPages(lines, content.VoiceName, null, entry.Substring(VoiceTag.Length));
+                else if (entry.StartsWith(VoiceTag)) AddVoicePages(lines, entry.Substring(VoiceTag.Length));
                 else if (entry.StartsWith(CuratorTag)) AddPages(lines, curator.SpeakerName, curator.Portrait, entry.Substring(CuratorTag.Length));
                 else AddPages(lines, string.Empty, null, entry);
             }
             return lines;
         }
 
-        private static void AddPages(List<DialogLine> lines, string speaker, Sprite portrait, string entry)
+        private static void AddPages(List<DialogLine> lines, string speaker, Sprite portrait, string entry, SoundId voice = SoundId.DialogBlip)
         {
             if (string.IsNullOrEmpty(entry)) return;
 
             foreach (var page in entry.Split(StoryContent.PageSeparator))
             {
                 var text = page.Trim();
-                if (text.Length > 0) lines.Add(new DialogLine(speaker, portrait, text));
+                if (text.Length > 0) lines.Add(new DialogLine(speaker, portrait, text, voice));
             }
         }
 

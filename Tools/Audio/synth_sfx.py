@@ -583,6 +583,31 @@ def dialog_blip():
     return bloop(460, 380, d, attack=0.004)
 
 
+def bound_voice(i):
+    # The Bound's "voice" while its dialog types out: one murmured syllable per clip. A breathy
+    # whisper shaped by two vowel formants over a low, slightly detuned hum that droops in pitch,
+    # swelling in rather than striking (reads as a voice from far below), with a faint echo.
+    # Everything stays under ~2kHz so it is eerie without being hissy.
+    rng = np.random.default_rng(60 + i)
+    formants = [(320, 900), (480, 1250), (280, 720), (560, 1500), (400, 1050)][i]
+    pitch = [98.0, 110.0, 87.3, 116.5, 103.8][i]
+    d = 0.2
+    n = int(SR * d)
+    t = t_axis(d)
+    swell = np.sin(np.pi * np.clip(t / d, 0, 1)) ** 1.5
+    breath = noise(d, rng)
+    breath = (filt(breath, "bandpass", [formants[0] * 0.8, formants[0] * 1.25])
+              + filt(breath, "bandpass", [formants[1] * 0.85, formants[1] * 1.18]) * 0.6)
+    f = sweep(pitch * 1.06, pitch * 0.94, d) * (1 + 0.012 * np.sin(2 * np.pi * 7 * t))
+    hum = osc(f, d) + osc(f * 1.012, d) * 0.8 + osc(f * 2.0, d, "tri") * 0.25
+    hum = filt(hum, "lowpass", formants[1], order=2)
+    syllable = (breath / np.max(np.abs(breath)) + hum / np.max(np.abs(hum)) * 0.22) * swell
+    buf = np.zeros(n + int(SR * 0.16))
+    place(buf, syllable, 0.0)
+    place(buf, filt(syllable, "lowpass", 700) * 0.3, 0.09)
+    return filt(buf, "lowpass", 2000, order=4)
+
+
 def building_portal():
     # The reveal portal tearing open in the sky: a soft whoosh that swells in under a rising,
     # warbling slide whistle, settling into a low hum.
@@ -731,6 +756,7 @@ SOUNDS = {
     "CritterTurnIn": critter_turn_in,
     "HatUnlocked": hat_unlocked,
     "DialogBlip": dialog_blip,
+    **{f"BoundVoice_{i + 1}": (lambda i=i: bound_voice(i)) for i in range(5)},
     "BuildingPortal": building_portal,
     "BuildingLand": building_land,
 }

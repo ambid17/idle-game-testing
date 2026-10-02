@@ -15,6 +15,7 @@ MonoBehaviour:
   UnknownVoiceName: ???
   VoiceName: The Bound
   VoiceColor: {r: 0.78, g: 0.49, b: 1, a: 1}
+  VoicePortrait: {fileID: 21300000, guid: e424839efb318334b87c220681963e27, type: 3}
   LayerWhispers:
   - 
   - 

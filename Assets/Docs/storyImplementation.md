@@ -9,7 +9,7 @@ The game had no long-term goal beyond earning money. We adopted "The Seals" stor
 Where things live
 
 - Assets/Scripts/Story/
-  - StoryManager.cs: the story state (GameManager.StoryManager, a child of the GameManager object). Stage from the deepest layer reached, Keystones taken, chambers examined, whispers heard, Retranslation seen, ending. Fires whispers and tremors, runs the ending sequence, exposes the post-game multipliers.
+  - StoryManager.cs: the story state (GameManager.StoryManager, a child of the GameManager object). Stage from the deepest layer reached, Keystones taken, chambers examined, whispers heard, Retranslation seen, ending. Opens the Bound's whisper dialogs (queued until no panel or cinematic has the screen) and fires tremors, runs the ending sequence, exposes the post-game multipliers.
   - StoryContent.cs: every line of story text as one ScriptableObject (Assets/ScriptableObjects/Story/StoryContent.asset). Field defaults are the shipped script.
   - SealChamber.cs: the Keystone / last Seal world object. One per chamber in the scene; each finds its room in the generated chunk and stands in it.
 - Assets/Scripts/UI/Panels/StoryChoiceUI.cs: the take/leave and Release/Reseal modal.

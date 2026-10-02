@@ -52,6 +52,7 @@ namespace Audio
         CritterTurnIn = 101,
         HatUnlocked = 102,
         DialogBlip = 103,
+        BoundVoice = 104,
 
         // Buildings
         BuildingPortal = 120,

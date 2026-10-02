@@ -160,7 +160,7 @@ Each beat fires the first time the player sets a depth record inside its layer r
 | The Vault | 10-11 | 3 | No more jokes. The Resonance prompt counts the Seals still holding. Curator and voice argue openly. The last Seal. |
 
 Delivery channels:
-- Whispers: a notification in the Bound's colour the first time each layer from 4 on is reached.
+- Whispers: the first time each layer from 4 on is reached, the Bound speaks in the dialog box (like chatting with the Professor) with its faceless portrait and an eerie murmuring voice. It waits until no panel or cinematic has the screen.
 - Curator: stage-keyed greetings and Talk lines, the Retranslation conversation, true rune readings.
 - Seal Chambers: a short mural description the first time each one is examined.
 - Resonance prompt: its text escalates with the stage.

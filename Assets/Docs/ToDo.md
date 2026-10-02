@@ -3,8 +3,6 @@ todo
 button size in "got it" tutorial prompt
 museum collection UI scaling
 
-play an audio cue on whispers that sound a bit eerie
-
 the grand finale ending, if you release the Bound should show him on screen. 
 if you keep him sealed, he teleports you into his cave to thank you for letting him rest and telling you he can't control his power and didn't want to destroy the world
 

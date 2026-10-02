@@ -37,7 +37,9 @@ namespace Story
         public string UnknownVoiceName = "???";
         public string VoiceName = "The Bound";
         public Color VoiceColor = new(0.78f, 0.49f, 1f, 1f);
-        [Tooltip("Index = layer index. Shown once, the first time the player mines on that layer. Empty = silent.")]
+        [Tooltip("Shown beside everything the Bound says.")]
+        public Sprite VoicePortrait;
+        [Tooltip("Index = layer index. The Bound says it once, the first time the player mines on that layer. Use | for multiple pages. Empty = silent.")]
         [TextArea(2, 4)]
         public string[] LayerWhispers =
         {
@@ -53,7 +55,7 @@ namespace Story
             "Close now. I can feel the heat of your drill. Do not be afraid of me.",
             "One door left. He will tell you to lock it. Ask yourself which of us has lied to you less.",
         };
-        [Tooltip("Whispered right after a Keystone is taken.")]
+        [Tooltip("Said right after a Keystone is taken.")]
         [TextArea(2, 4)]
         public string[] KeystoneTakenWhispers =
         {
