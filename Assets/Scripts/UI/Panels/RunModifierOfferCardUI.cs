@@ -7,7 +7,8 @@ using UnityEngine.UI;
 namespace UI
 {
     // One offered run modifier in RunModifierPickUI: name, Blessing/Gamble tag and description,
-    // tinted by kind. Clicking it picks that modifier.
+    // framed in the kind's colour (the kind label sits on the card sprite's header band).
+    // Clicking it picks that modifier.
     public class RunModifierOfferCardUI : MonoBehaviour
     {
         [SerializeField] private Button button;
@@ -15,12 +16,15 @@ namespace UI
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text kindLabel;
         [SerializeField] private TMP_Text descriptionLabel;
-        [SerializeField] private Color blessingColor = new(0.16f, 0.36f, 0.3f, 0.95f);
-        [SerializeField] private Color gambleColor = new(0.42f, 0.2f, 0.12f, 0.95f);
+        [SerializeField] private Sprite blessingSprite;
+        [SerializeField] private Sprite blessingHighlightedSprite;
+        [SerializeField] private Sprite gambleSprite;
+        [SerializeField] private Sprite gambleHighlightedSprite;
 
         public void Bind(RunModifierDefinition def, RunModifierState state, Action<RunModifierState> onPicked)
         {
-            if (button == null || background == null || nameLabel == null || kindLabel == null || descriptionLabel == null)
+            if (button == null || background == null || nameLabel == null || kindLabel == null || descriptionLabel == null
+                || blessingSprite == null || blessingHighlightedSprite == null || gambleSprite == null || gambleHighlightedSprite == null)
             {
                 Debug.LogError($"RunModifierOfferCardUI on {gameObject.name} is missing a reference.");
                 return;
@@ -30,7 +34,15 @@ namespace UI
             nameLabel.text = def.DisplayName;
             kindLabel.text = isBlessing ? "Blessing" : "Gamble";
             descriptionLabel.text = GameManager.RunModifierService.Describe(def, state);
-            background.color = isBlessing ? blessingColor : gambleColor;
+
+            // The button is a SpriteSwap, so hover/selection keeps the kind's colour.
+            var highlighted = isBlessing ? blessingHighlightedSprite : gambleHighlightedSprite;
+            background.sprite = isBlessing ? blessingSprite : gambleSprite;
+            var spriteState = button.spriteState;
+            spriteState.highlightedSprite = highlighted;
+            spriteState.selectedSprite = highlighted;
+            spriteState.pressedSprite = background.sprite;
+            button.spriteState = spriteState;
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => onPicked(state));
