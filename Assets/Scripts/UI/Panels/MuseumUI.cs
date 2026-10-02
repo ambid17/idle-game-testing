@@ -158,7 +158,7 @@ namespace UI
 
         private void RefreshArtifactCount()
         {
-            if (artifactCountLabel != null) artifactCountLabel.text = $"Stellar Credits: {Wallet.Instance.ArtifactCount}";
+            if (artifactCountLabel != null) artifactCountLabel.text = $"{Wallet.Instance.ArtifactCount}";
         }
     }
 }

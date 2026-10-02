@@ -20,16 +20,13 @@ PANEL_BORDER * SCALE for the panel and BORDER * SCALE for the slots.
 import numpy as np
 
 from make_dropdown import OUTLINE, CYAN, CYAN_DARK, draw_frame, save
-from make_panels import ROW_FRAME, MODAL_BODY, MODAL_SHADOW, CHAMFER
+from make_panels import ROW_FRAME, MODAL_BODY, MODAL_SHADOW, CHAMFER, BRACKET, GOLD, GOLD_DARK
 
-GOLD = (245, 181, 41)
-GOLD_DARK = (208, 133, 21)
 SLOT_BODY = (26, 30, 46)
 SLOT_SHADOW = (18, 21, 34)
 
 PANEL_SIZE = 17   # art pixels: 7 border + 3 stretch + 7 border
 PANEL_BORDER = 7
-BRACKET = 5       # how far the gold corner brackets run along each edge
 BODY_ALPHA = 236
 
 

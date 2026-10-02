@@ -596,14 +596,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3242120707287942968}
     m_Modifications:
-    - target: {fileID: 1616763251992424009, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1616763251992424009, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2381421233511709985, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_Name
       value: WearButton
@@ -611,22 +603,6 @@ PrefabInstance:
     - target: {fileID: 3197990980895482809, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_text
       value: Wear
-      objectReference: {fileID: 0}
-    - target: {fileID: 3197990980895482809, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
-      propertyPath: m_fontSize
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 3197990980895482809, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
-      propertyPath: m_fontSizeMax
-      value: 38
-      objectReference: {fileID: 0}
-    - target: {fileID: 3197990980895482809, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 36
-      objectReference: {fileID: 0}
-    - target: {fileID: 3197990980895482809, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
-      propertyPath: m_TextWrappingMode
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_Pivot.x
@@ -773,26 +749,6 @@ PrefabInstance:
     - target: {fileID: 1404289658307055446, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_text
       value: Remove
-      objectReference: {fileID: 0}
-    - target: {fileID: 1404289658307055446, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
-      propertyPath: m_fontSize
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1404289658307055446, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
-      propertyPath: m_fontSizeMax
-      value: 38
-      objectReference: {fileID: 0}
-    - target: {fileID: 1404289658307055446, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
-      propertyPath: m_TextWrappingMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3535073146703004145, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3535073146703004145, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5666177650123421238, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_Name

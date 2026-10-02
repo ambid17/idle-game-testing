@@ -6,8 +6,8 @@ the buttons and scrollbars, since AI-drawn 9-slice art has smeared at odd sizes 
     ListRow_{Normal,Highlighted,Pressed}.png  9-slice selectable list row (goods exchange,
                           recipe list): navy outline, muted frame that turns cyan on hover.
     ListRow_Selected.png  9-slice overlay for the chosen row: bright cyan frame, teal body.
-    ModalFrame.png        9-slice box for small modals: chamfered navy outline, cyan frame,
-                          inner shadow line, dark body.
+    ModalFrame.png        9-slice box for modals: chamfered navy outline, cyan frame with
+                          gold brackets on the corners, inner shadow line, dark body.
 
     RunModifierCard_{Blessing,Gamble}_{Normal,Highlighted}.png  9-slice offer card: the
                           modal frame's chamfered shape in the kind's colour (cyan blessing,
@@ -28,10 +28,13 @@ ROW_FRAME = (70, 80, 104)
 SELECTED_BODY = (14, 92, 104)
 MODAL_BODY = (30, 34, 50)
 MODAL_SHADOW = (20, 23, 38)
+GOLD = (245, 181, 41)
+GOLD_DARK = (208, 133, 21)
 ROW_BORDER = 4
 MODAL_SIZE = 17   # art pixels: 7 border + 3 stretch + 7 border
 MODAL_BORDER = 7
 CHAMFER = 2
+BRACKET = 5       # how far the gold corner brackets run along each edge
 
 def draw_modal():
     last = MODAL_SIZE - 1
@@ -40,11 +43,12 @@ def draw_modal():
         for x in range(MODAL_SIZE):
             edge = min(x, y, last - x, last - y)
             # distance in from the chamfered corner, so the rings follow the cut
-            corner = min(x, last - x) + min(y, last - y) - CHAMFER
-            depth = min(edge, corner)
+            along = min(x, last - x) + min(y, last - y)
+            depth = min(edge, along - CHAMFER)
             if depth < 0:
                 continue
-            colour = (OUTLINE, CYAN_DARK, CYAN, MODAL_SHADOW)[depth] if depth < 4 else MODAL_BODY
+            rings = (OUTLINE, GOLD, GOLD_DARK) if along <= BRACKET + depth else (OUTLINE, CYAN_DARK, CYAN)
+            colour = rings[depth] if depth < 3 else MODAL_SHADOW if depth == 3 else MODAL_BODY
             out[y, x] = (*colour, 255)
     return out
 
