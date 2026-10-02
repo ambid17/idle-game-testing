@@ -3,9 +3,9 @@
 Usage (from repo root): python Tools/Effects/make_reveal_fx.py
 Reads Tools/Effects/reveal_fx_raw.png (dust puffs + sparkles on a magenta-ish background with
 grid lines) and writes two vertical strips to Assets/Textures/Effects, one sprite per row, for
-ParticleSystem texture-sheet animation (Buildings.BuildingRevealCinematicPlayer):
+ParticleSystem texture-sheet animation (Effects.WorldEffects):
   RevealDustPuffs.png  - 4 puffs, 128x128 cells
-  RevealSparkles.png   - 2 sparkles, 64x64 cells
+  RevealSparkles.png   - 2 sparkles, 64x64 cells, whitened so the game can tint them
 Needs numpy, scipy, Pillow.
 """
 import os
@@ -54,6 +54,15 @@ def cut(rgb, box, mask, cell):
     return canvas
 
 
+def whiten(sprite):
+    """Sparkles are tinted per use in game (cyan for portals, gold for treasure), so the cyan
+    the model drew is replaced by its own brightness: white core, grey edge, dark outline."""
+    rgba = np.array(sprite).astype(float)
+    value = rgba[..., :3].max(axis=2, keepdims=True)
+    rgba[..., :3] = np.where(value > 110, np.clip(value * 1.15, 0, 255), value)
+    return Image.fromarray(rgba.astype(np.uint8), "RGBA")
+
+
 def strip(sprites, cell):
     sheet = Image.new("RGBA", (cell, cell * len(sprites)), (0, 0, 0, 0))
     for row, sprite in enumerate(sprites):
@@ -77,7 +86,7 @@ def main():
     sparkles = sorted(sparkles, key=lambda b: -b[2])[:SPARKLE_COUNT]
 
     strip([cut(rgb, box, mask, PUFF_CELL) for box, mask, _ in puffs], PUFF_CELL).save(os.path.join(OUT, "RevealDustPuffs.png"))
-    strip([cut(rgb, box, mask, SPARKLE_CELL) for box, mask, _ in sparkles], SPARKLE_CELL).save(os.path.join(OUT, "RevealSparkles.png"))
+    strip([whiten(cut(rgb, box, mask, SPARKLE_CELL)) for box, mask, _ in sparkles], SPARKLE_CELL).save(os.path.join(OUT, "RevealSparkles.png"))
 
 
 if __name__ == "__main__":

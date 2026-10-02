@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Atmosphere;
+using Events;
 using MapGeneration;
 using Museum;
 using UnityEngine;
@@ -66,6 +67,25 @@ namespace Player
         [SerializeField, Min(0f)] private float nuggetHomingAcceleration = 60f;
         [SerializeField, Min(0.5f)] private float nuggetMaxSpeed = 22f;
 
+        [Header("Artifact found")]
+        [SerializeField] private Color artifactBeamColor = new(1f, 0.85f, 0.35f, 0.8f);
+        [Tooltip("Game speed during the brief slow-motion beat (1 = none).")]
+        [SerializeField, Range(0.05f, 1f)] private float artifactSlowMoScale = 0.3f;
+        [Tooltip("Real seconds the slow-motion lasts.")]
+        [SerializeField, Min(0f)] private float artifactSlowMoSeconds = 0.45f;
+        [Tooltip("Height of the tablet (world units) as it spins up out of the cell.")]
+        [SerializeField, Min(0.05f)] private float artifactTabletSize = 0.8f;
+        [SerializeField] private float artifactRiseHeight = 1.1f;
+        [Tooltip("Real seconds the tablet takes to rise before it flies to the HUD.")]
+        [SerializeField, Min(0.05f)] private float artifactRiseSeconds = 0.75f;
+        [SerializeField] private float artifactBeamHeight = 6f;
+
+        [Header("Treasure chest")]
+        [Tooltip("The chest with its lid open - swapped in for the block's own (closed) icon when it pops.")]
+        [SerializeField] private Sprite openChestSprite;
+        [Tooltip("Width of the chest (world units).")]
+        [SerializeField, Min(0.05f)] private float chestSize = 0.9f;
+
         private ParticleSystem debrisSystem;
         private ParticleSystem dustSystem;
         private ParticleSystem sparkleSystem;
@@ -76,6 +96,7 @@ namespace Player
         private readonly Stack<Transform> nuggetPool = new();
         private Coroutine hitStopRoutine;
         private float nextHitStopTime;
+        private bool slowMoActive;
         private Color dirtColor;
 
         private void Awake()
@@ -83,6 +104,7 @@ namespace Player
             if (debrisMaterial == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its debrisMaterial reference.");
             if (nuggetSprite == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its nuggetSprite reference.");
             if (runeDebrisSheet == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its runeDebrisSheet reference.");
+            if (openChestSprite == null) Debug.LogError($"{nameof(DigFeedback)} on {name} is missing its openChestSprite reference.");
         }
 
         private void Start()
@@ -107,10 +129,12 @@ namespace Player
 
         private void OnDisable()
         {
-            // A hit-stop cut short (scene unload, player disabled) must not leave the game frozen.
-            if (hitStopRoutine == null) return;
-            StopCoroutine(hitStopRoutine);
+            // A hit-stop or slow-motion beat cut short (scene unload, player disabled) must not
+            // leave the game frozen or slowed.
+            if (hitStopRoutine == null && !slowMoActive) return;
+            if (hitStopRoutine != null) StopCoroutine(hitStopRoutine);
             hitStopRoutine = null;
+            slowMoActive = false;
             Time.timeScale = 1f;
         }
 
@@ -188,6 +212,155 @@ namespace Player
                     Age = 0f,
                 });
             }
+        }
+
+        // An artifact was dug up at cellCenter: time slows for a beat, a beam of light shoots up out
+        // of the cell and the tablet spins up through it, then flies off to the HUD's artifact
+        // counter (UI.HudFlyIconsUI). Runs on real time, so the slow-motion doesn't slow it too.
+        public void ArtifactFound(Vector3 cellCenter, Sprite tablet)
+        {
+            StartCoroutine(ArtifactSlowMo());
+            StartCoroutine(ArtifactFlourish(cellCenter, tablet));
+        }
+
+        // The chest block at cellCenter was mined: the chest squashes down, pops its lid and the
+        // ore that went into the bag (loot) fountains out of it and flies to the player.
+        public void TreasureChest(Vector3 cellCenter, BlockType chestBlock, IReadOnlyDictionary<BlockType, int> loot)
+        {
+            StartCoroutine(TreasureChestPop(cellCenter, chestBlock, loot));
+        }
+
+        private IEnumerator ArtifactSlowMo()
+        {
+            // Breaking the tablet's block may have started a hit-stop - let that finish first, and
+            // never fight over the clock with anything else that changed it.
+            yield return new WaitForSecondsRealtime(hitStopSeconds + 0.03f);
+            if (!Mathf.Approximately(Time.timeScale, 1f)) yield break;
+
+            slowMoActive = true;
+            Time.timeScale = artifactSlowMoScale;
+            yield return new WaitForSecondsRealtime(artifactSlowMoSeconds);
+
+            const float easeOutSeconds = 0.2f;
+            for (float t = 0f; t < easeOutSeconds && slowMoActive; t += Time.unscaledDeltaTime)
+            {
+                Time.timeScale = Mathf.Lerp(artifactSlowMoScale, 1f, t / easeOutSeconds);
+                yield return null;
+            }
+            if (!slowMoActive) yield break;
+
+            Time.timeScale = 1f;
+            slowMoActive = false;
+        }
+
+        private IEnumerator ArtifactFlourish(Vector3 cellCenter, Sprite tablet)
+        {
+            var gold = new Color(artifactBeamColor.r, artifactBeamColor.g, artifactBeamColor.b, 1f);
+            GameManager.WorldEffects.SparkleBurst(cellCenter, 14, 0.2f, 3f, gold);
+
+            // A radial glow stretched tall reads as a soft-edged beam.
+            var beam = GlowSprites.CreateGlow(transform.parent, artifactBeamColor, 1f);
+            beam.name = "Artifact Beam";
+            beam.sortingOrder = sortingOrder;
+            beam.transform.position = cellCenter + Vector3.up * (artifactBeamHeight * 0.4f);
+
+            var tabletRenderer = new GameObject("Artifact Tablet").AddComponent<SpriteRenderer>();
+            tabletRenderer.transform.SetParent(transform.parent, false);
+            tabletRenderer.sprite = tablet;
+            tabletRenderer.sortingOrder = sortingOrder + 2;
+            float tabletScale = artifactTabletSize / tablet.bounds.size.y;
+
+            Vector3 position = cellCenter;
+            float sparkleTimer = 0f;
+            for (float t = 0f; t < artifactRiseSeconds; t += Time.unscaledDeltaTime)
+            {
+                float k = t / artifactRiseSeconds;
+                position = cellCenter + Vector3.up * (artifactRiseHeight * Effects.Easing.OutCubic(k));
+                // Two full flips about its vertical axis, like a tossed coin, ending face-on.
+                float flip = Mathf.Cos(k * Mathf.PI * 4f);
+                float size = tabletScale * Mathf.Lerp(0.5f, 1f, Effects.Easing.OutBack(Mathf.Min(1f, k * 2f)));
+                tabletRenderer.transform.position = position;
+                tabletRenderer.transform.localScale = new Vector3(size * flip, size, 1f);
+
+                // Snaps on, then thins and fades as the tablet reaches the top.
+                float beamStrength = k < 0.12f ? k / 0.12f : 1f - (k - 0.12f) / 0.88f;
+                beam.color = new Color(artifactBeamColor.r, artifactBeamColor.g, artifactBeamColor.b, artifactBeamColor.a * beamStrength);
+                beam.transform.localScale = new Vector3(Mathf.Lerp(0.5f, 1.3f, beamStrength), artifactBeamHeight, 1f);
+
+                sparkleTimer -= Time.unscaledDeltaTime;
+                if (sparkleTimer <= 0f)
+                {
+                    sparkleTimer = 0.05f;
+                    Vector3 offset = Random.insideUnitCircle * (artifactTabletSize * 0.5f);
+                    GameManager.WorldEffects.Sparkle(position + offset, Vector3.up * Random.Range(0.5f, 1.5f), Random.Range(0.15f, 0.3f), 0.5f, gold);
+                }
+                yield return null;
+            }
+
+            Destroy(beam.gameObject);
+            Destroy(tabletRenderer.gameObject);
+            GameManager.WorldEffects.SparkleBurst(position, 10, 0.15f, 2.5f, gold);
+            GameManager.EventService.Dispatch(new HudIconFlyRequestedEvent(tablet, position));
+        }
+
+        private IEnumerator TreasureChestPop(Vector3 cellCenter, BlockType chestBlock, IReadOnlyDictionary<BlockType, int> loot)
+        {
+            var chest = new GameObject("Treasure Chest Effect").AddComponent<SpriteRenderer>();
+            chest.transform.SetParent(transform.parent, false);
+            chest.transform.position = cellCenter;
+            chest.sprite = chestBlock.Icon;
+            chest.sortingOrder = sortingOrder;
+            float scale = chestSize / chestBlock.Icon.bounds.size.x;
+
+            // Anticipation: squashes down before it pops.
+            const float squashSeconds = 0.14f;
+            for (float t = 0f; t < squashSeconds; t += Time.deltaTime)
+            {
+                float squash = 0.25f * Mathf.Sin(t / squashSeconds * Mathf.PI * 0.5f);
+                chest.transform.localScale = new Vector3(scale * (1f + squash), scale * (1f - squash), 1f);
+                yield return null;
+            }
+
+            // The open art is taller (lid up) at the same width, so it keeps the chest body's size.
+            chest.sprite = openChestSprite;
+            scale = chestSize / openChestSprite.bounds.size.x;
+            var gold = new Color(1f, 0.85f, 0.35f, 1f);
+            GameManager.WorldEffects.SparkleBurst(cellCenter + Vector3.up * 0.2f, 14, 0.15f, 3.5f, gold);
+
+            // One nugget per ore, fed out over the hop so it reads as a fountain rather than one clump.
+            var nuggets = new List<BlockType>();
+            foreach (var entry in loot)
+            {
+                for (int i = 0; i < entry.Value; i++) nuggets.Add(entry.Key);
+            }
+            int released = 0;
+
+            const float popSeconds = 0.45f;
+            for (float t = 0f; t < popSeconds; t += Time.deltaTime)
+            {
+                float k = t / popSeconds;
+                float spring = 0.3f * Mathf.Exp(-5f * k) * Mathf.Cos(k * Mathf.PI * 4f);
+                chest.transform.localScale = new Vector3(scale * (1f - spring * 0.6f), scale * (1f + spring), 1f);
+                chest.transform.position = cellCenter + Vector3.up * (Mathf.Sin(k * Mathf.PI) * 0.18f);
+
+                int due = Mathf.Min(nuggets.Count, Mathf.CeilToInt(k / 0.7f * nuggets.Count));
+                for (; released < due; released++) Pickup(cellCenter + Vector3.up * 0.15f, nuggets[released], 1);
+                yield return null;
+            }
+            for (; released < nuggets.Count; released++) Pickup(cellCenter + Vector3.up * 0.15f, nuggets[released], 1);
+            chest.transform.position = cellCenter;
+            chest.transform.localScale = Vector3.one * scale;
+
+            yield return new WaitForSeconds(0.5f);
+
+            const float vanishSeconds = 0.18f;
+            for (float t = 0f; t < vanishSeconds; t += Time.deltaTime)
+            {
+                chest.transform.localScale = Vector3.one * (scale * (1f - t / vanishSeconds));
+                yield return null;
+            }
+            GameManager.WorldEffects.Puff(cellCenter, 5, chestSize * 0.6f);
+            Destroy(chest.gameObject);
         }
 
         private IEnumerator HitStop()

@@ -1,3 +1,4 @@
+using Effects;
 using Events;
 using Interaction;
 using MapGeneration;
@@ -17,7 +18,9 @@ namespace Critters
         public InteractableType InteractableType => InteractableType.Critter;
 
         private const float VisibilityCheckInterval = 0.25f;
-        private const float CatchAnimationSeconds = 0.3f;
+        private const float CatchHopSeconds = 0.2f;
+        private const float CatchSuckSeconds = 0.3f;
+        private const float CatchJarSettleSeconds = 0.3f;
         private const float Gravity = 20f;
         private const float ProbeStep = 0.2f;
         private const int FlyerTargetAttempts = 6;
@@ -34,6 +37,7 @@ namespace Critters
         private SpriteRenderer glow;
         private Collider2D interactionCollider;
         private Color glowColor;
+        private Sprite jarSprite;
 
         private float halfHeight;
         private float halfWidth;
@@ -59,8 +63,9 @@ namespace Critters
         public CritterDefinition Definition => definition;
 
         // Called immediately after construction by CritterSpawner.
-        public void Configure(CritterDefinition critterDefinition, Vector3Int critterSpawnKey, Vector3 homePosition, SpriteRenderer body, SpriteRenderer glowRenderer, Collider2D collider2d)
+        public void Configure(CritterDefinition critterDefinition, Vector3Int critterSpawnKey, Vector3 homePosition, SpriteRenderer body, SpriteRenderer glowRenderer, Collider2D collider2d, Sprite jar)
         {
+            jarSprite = jar;
             definition = critterDefinition;
             spawnKey = critterSpawnKey;
             home = homePosition;
@@ -365,19 +370,57 @@ namespace Critters
             StartCoroutine(CatchAnimation());
         }
 
-        // Quick pop-and-shrink "into the jar", then gone.
+        // Startled hop, then sucked up into a jar that pops in overhead; the jar wobbles as the
+        // critter lands inside and poofs away.
         private System.Collections.IEnumerator CatchAnimation()
         {
             float baseScale = BaseScale;
-            for (float t = 0f; t < CatchAnimationSeconds; t += Time.deltaTime)
+            Vector3 startPosition = visual.localPosition;
+            visual.localRotation = Quaternion.identity;
+
+            float jarSize = Mathf.Max(definition.Size * 1.25f, 0.4f);
+            float jarScale = jarSize / jarSprite.bounds.size.y;
+            Vector3 jarPosition = startPosition + Vector3.up * (halfHeight + jarSize * 0.65f);
+            var jar = new GameObject("Jar").AddComponent<SpriteRenderer>();
+            jar.transform.SetParent(transform, false);
+            jar.transform.localPosition = jarPosition;
+            jar.transform.localScale = Vector3.zero;
+            jar.sprite = jarSprite;
+            jar.sortingOrder = spriteRenderer.sortingOrder + 1;
+
+            for (float t = 0f; t < CatchHopSeconds; t += Time.deltaTime)
             {
-                float p = t / CatchAnimationSeconds;
-                float scale = p < 0.3f ? Mathf.Lerp(1f, 1.4f, p / 0.3f) : Mathf.Lerp(1.4f, 0f, (p - 0.3f) / 0.7f);
-                visual.localScale = new Vector3(baseScale * scale, baseScale * scale, 1f);
-                visual.localPosition += Vector3.up * (Time.deltaTime * 1.5f);
+                float p = t / CatchHopSeconds;
+                float hop = Mathf.Sin(p * Mathf.PI);
+                visual.localPosition = startPosition + Vector3.up * (hop * 0.18f);
+                visual.localScale = new Vector3(baseScale * (1f - hop * 0.12f), baseScale * (1f + hop * 0.25f), 1f);
+                jar.transform.localScale = Vector3.one * (jarScale * Mathf.Max(0f, Easing.OutBack(p)));
+                yield return null;
+            }
+            jar.transform.localScale = Vector3.one * jarScale;
+
+            for (float t = 0f; t < CatchSuckSeconds; t += Time.deltaTime)
+            {
+                float p = Easing.InQuad(t / CatchSuckSeconds);
+                visual.localPosition = Vector3.Lerp(startPosition, jarPosition, p);
+                visual.localScale = Vector3.one * (baseScale * (1f - p));
+                visual.localRotation = Quaternion.Euler(0f, 0f, 540f * p);
                 if (glow != null) glow.color = new Color(glowColor.r, glowColor.g, glowColor.b, glowColor.a * (1f - p));
                 yield return null;
             }
+            spriteRenderer.enabled = false;
+            if (glow != null) glow.enabled = false;
+
+            GameManager.WorldEffects.SparkleBurst(jar.transform.position, 8, jarSize * 0.3f, 2.5f);
+            for (float t = 0f; t < CatchJarSettleSeconds; t += Time.deltaTime)
+            {
+                float p = t / CatchJarSettleSeconds;
+                float squash = 0.3f * Mathf.Exp(-4f * p) * Mathf.Cos(p * Mathf.PI * 4f);
+                jar.transform.localScale = new Vector3(jarScale * (1f + squash * 0.6f), jarScale * (1f - squash), 1f);
+                yield return null;
+            }
+
+            GameManager.WorldEffects.Puff(jar.transform.position, 4, jarSize * 0.6f);
             Destroy(gameObject);
         }
     }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Critters;
 using Economy;
@@ -101,7 +102,15 @@ namespace Tutorial
             }
         }
 
-        private void OnPrestigeCompleted(PrestigeCompletedEvent evt) => TryShow(TutorialId.NewRun);
+        private void OnPrestigeCompleted(PrestigeCompletedEvent evt) => StartCoroutine(ShowNewRunAfterCinematic());
+
+        // The reset happens in the middle of Economy.PrestigeCinematic - the popup waits until the
+        // buildings have landed again rather than covering them.
+        private IEnumerator ShowNewRunAfterCinematic()
+        {
+            yield return new WaitWhile(() => PrestigeCinematic.IsPlaying);
+            TryShow(TutorialId.NewRun);
+        }
 
         private void OnCritterCaught(CritterCaughtEvent evt) => TryShow(TutorialId.Critters, evt.Position);
 

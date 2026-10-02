@@ -18,6 +18,7 @@ namespace Player
     [RequireComponent(typeof(PlayerHealth))]
     [RequireComponent(typeof(PlayerController))]
     [RequireComponent(typeof(PlayerPortalTravel))]
+    [RequireComponent(typeof(DigFeedback))]
     public class PlayerPowerUps : MonoBehaviour
     {
         [Header("Treasure Chest")]
@@ -46,6 +47,7 @@ namespace Player
         private PlayerHealth playerHealth;
         private PlayerController playerController;
         private PlayerPortalTravel portalTravel;
+        private DigFeedback digFeedback;
         private MapGenerationService mapGenerationService => GameManager.MapGenerationService;
 
         private float overdriveEndTime;
@@ -75,6 +77,9 @@ namespace Player
 
             portalTravel = GetComponent<PlayerPortalTravel>();
             if (portalTravel == null) Debug.LogError($"{nameof(PlayerPowerUps)} on {name} requires a PlayerPortalTravel component.");
+
+            digFeedback = GetComponent<DigFeedback>();
+            if (digFeedback == null) Debug.LogError($"{nameof(PlayerPowerUps)} on {name} requires a DigFeedback component.");
         }
 
         public void Apply(BlockType blockType, int layerIndex, int x, int y)
@@ -150,6 +155,7 @@ namespace Player
 
             float weightBudget = treasureChestBaseWeight * Mathf.Pow(1f + treasureChestWeightGrowthPerLayer, layerIndex) * Effectiveness;
             var overflow = new Dictionary<BlockTypeId, int>();
+            var collected = new Dictionary<BlockType, int>();
             float rolledWeight = 0f;
             float addedWeight = 0f;
 
@@ -168,12 +174,17 @@ namespace Player
                 {
                     playerInventory.AddOre(ore);
                     addedWeight += ore.Weight;
+                    collected.TryGetValue(ore, out var collectedCount);
+                    collected[ore] = collectedCount + 1;
                     continue;
                 }
 
                 overflow.TryGetValue(ore.Id, out var current);
                 overflow[ore.Id] = current + 1;
             }
+
+            // Cosmetic: the chest pops open and the ore that went into the bag bursts out of it.
+            digFeedback.TreasureChest(mapGenerationService.CellToWorldCenter(layerIndex, x, y), chestBlock, collected);
 
             string message = $"Treasure Chest: +{addedWeight:0} weight of ore from the layers below";
             if (overflow.Count > 0)

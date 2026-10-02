@@ -28,6 +28,9 @@ namespace Critters
 
         private static MapGenerationService map => GameManager.MapGenerationService;
 
+        [Tooltip("The jar a caught critter is sucked into (Critter's catch animation).")]
+        [SerializeField] private Sprite jarSprite;
+
         private readonly Dictionary<int, List<Critter>> crittersByLayer = new();
         private int interactableLayer;
 
@@ -36,6 +39,7 @@ namespace Critters
             base.Initialize();
             interactableLayer = LayerMask.NameToLayer(InteractableLayerName);
             if (interactableLayer < 0) Debug.LogError($"CritterSpawner: no '{InteractableLayerName}' physics layer - critters won't be catchable.");
+            if (jarSprite == null) Debug.LogError("CritterSpawner.jarSprite is not assigned.");
         }
 
         private void OnEnable()
@@ -161,7 +165,7 @@ namespace Critters
             trigger.radius = InteractionRadius;
 
             var critter = root.AddComponent<Critter>();
-            critter.Configure(species, spawnKey, homePosition, body, glow, trigger);
+            critter.Configure(species, spawnKey, homePosition, body, glow, trigger, jarSprite);
             return critter;
         }
     }

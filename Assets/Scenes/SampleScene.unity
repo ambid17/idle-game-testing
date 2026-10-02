@@ -3837,6 +3837,7 @@ GameObject:
   m_Component:
   - component: {fileID: 95796209}
   - component: {fileID: 95796210}
+  - component: {fileID: 95796211}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -3896,6 +3897,33 @@ MonoBehaviour:
   fuelJiggleSpeed: 30
   fuelJiggleAngle: 8
   fuelJigglePulse: 0.15
+--- !u!114 &95796211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95796208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcfaf71b918815a439cde0db3833ef41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.HudFlyIconsUI
+  dollarsTarget: {fileID: 2090121378}
+  artifactTarget: {fileID: 1192089147}
+  coinSprite: {fileID: 21300000, guid: 272ad067c0dca024c831b3ff12d4eb1d, type: 3}
+  worldCamera: {fileID: 1150534568}
+  minCoins: 5
+  maxCoins: 16
+  coinSize: 0.045
+  burstRadius: 0.11
+  burstSeconds: 0.28
+  flySeconds: 0.45
+  coinStagger: 0.035
+  artifactSize: 0.075
+  artifactFlySeconds: 0.65
+  bumpScale: 0.3
+  bumpSeconds: 0.25
 --- !u!1 &98828405
 GameObject:
   m_ObjectHideFlags: 0
@@ -22274,6 +22302,7 @@ Transform:
   - {fileID: 2083422028}
   - {fileID: 1568846554}
   - {fileID: 561670757}
+  - {fileID: 1143484029}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &528579661
@@ -22308,6 +22337,7 @@ MonoBehaviour:
   _cameraShake: {fileID: 1378171582}
   _runModifierService: {fileID: 1640991444}
   _runModifierDatabase: {fileID: 11400000, guid: dce497a0714b97a4ea175ea7e2511aa5, type: 2}
+  _worldEffects: {fileID: 1143484028}
   _inputActions: {fileID: -944628639613478452, guid: d8f278eeea9810542adaada5807332bf, type: 3}
 --- !u!114 &528579662
 MonoBehaviour:
@@ -30919,6 +30949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3af964fc275365b479ce235735eb55d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Critters.CritterSpawner
+  jarSprite: {fileID: 21300000, guid: 71e1d502e56a17548ada0000e4359723, type: 3}
 --- !u!1 &814955849 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5666177650123421238, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
@@ -45239,6 +45270,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1141833144}
   m_CullTransparentMesh: 1
+--- !u!1 &1143484027
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1143484029}
+  - component: {fileID: 1143484028}
+  m_Layer: 0
+  m_Name: WorldEffects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1143484028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143484027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 833c30a28205e344f8b12a4c99d907fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Effects.WorldEffects
+  particleMaterial: {fileID: 2100000, guid: 728fd68045524cd4c914bbe0e052c0ae, type: 2}
+  dustSheet: {fileID: 2800000, guid: 3b1946a4563ff254586d960b11987b74, type: 3}
+  dustSheetRows: 4
+  sparkleSheet: {fileID: 2800000, guid: 09562235074ce404e82ca6541d6bb47e, type: 3}
+  sparkleSheetRows: 2
+  sortingOrder: 5
+  defaultSparkleColor: {r: 0.45, g: 1, b: 1, a: 1}
+--- !u!4 &1143484029
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143484027}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 528579660}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1143899744
 GameObject:
   m_ObjectHideFlags: 0
@@ -45564,7 +45646,7 @@ Transform:
   m_GameObject: {fileID: 1150534566}
   serializedVersion: 2
   m_LocalRotation: {x: -4.6565474e-10, y: 0.000000029816878, z: 1.388437e-17, w: 1}
-  m_LocalPosition: {x: 19.746666, y: 2.1699998, z: -10}
+  m_LocalPosition: {x: 19.933926, y: 2.1699998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -47573,6 +47655,82 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1932534949}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1216517200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1216517201}
+  - component: {fileID: 1216517202}
+  m_Layer: 0
+  m_Name: Prestige Cinematic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1216517201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1216517200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1932534949}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1216517202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1216517200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 682ebc1c9c2fbd040aece6885a938372, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeCinematic
+  followCamera: {fileID: 128491273}
+  worldCamera: {fileID: 1150534568}
+  player: {fileID: 2055974193}
+  buildings:
+  - {fileID: 7444900480721566319}
+  - {fileID: 7209973636834580498}
+  - {fileID: 8685694701086835699}
+  - {fileID: 6907794065964602238}
+  - {fileID: 8017626579445525058}
+  portalSprite: {fileID: 21300000, guid: bd0c788adc904624391af8dc0bfd7199, type: 3}
+  portalDiameter: 5.5
+  portalLift: 1.6
+  portalSpinSpeed: -300
+  portalGlowColor: {r: 0.75, g: 0.3, b: 1, a: 0.6}
+  portalSparkleRate: 45
+  portalOpenSeconds: 0.6
+  portalChargeSeconds: 0.5
+  suckSeconds: 0.75
+  suckStagger: 0.2
+  swirlDegrees: 200
+  flashInSeconds: 0.3
+  flashHoldSeconds: 0.3
+  flashOutSeconds: 0.6
+  emergeSeconds: 0.22
+  dropSeconds: 0.34
+  minimumDropHeight: 3
+  settleSeconds: 0.5
+  dropStagger: 0.16
+  landingSquash: 0.22
+  landingDustPuffs: 16
+  landingShakeForce: 0.3
+  portalCloseSeconds: 0.35
 --- !u!114 &1221112684 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1404289658307055446, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
@@ -75385,6 +75543,7 @@ Transform:
   - {fileID: 7713042903}
   - {fileID: 1215310626}
   - {fileID: 2133846263}
+  - {fileID: 1216517201}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1938950548
@@ -80865,6 +81024,9 @@ MonoBehaviour:
   cornerCorrectionMaxNudge: 0.2
   fallDamageVelocityThreshold: 12
   fallDamagePerExcessUnit: 5
+  landingDustSpeedRange: {x: 6, y: 20}
+  landingShakeMinSpeed: 11
+  landingShakeMaxForce: 0.25
   groundCheckOffset: {x: 0, y: -0.35}
   groundCheckSize: {x: 0.6, y: 0.1}
   groundLayer:
@@ -81179,6 +81341,15 @@ MonoBehaviour:
   nuggetPopSeconds: 0.3
   nuggetHomingAcceleration: 60
   nuggetMaxSpeed: 22
+  artifactBeamColor: {r: 1, g: 0.85, b: 0.35, a: 0.8}
+  artifactSlowMoScale: 0.3
+  artifactSlowMoSeconds: 0.45
+  artifactTabletSize: 0.8
+  artifactRiseHeight: 1.1
+  artifactRiseSeconds: 0.75
+  artifactBeamHeight: 6
+  openChestSprite: {fileID: 21300000, guid: 67c68bf0851cf954682f65d69f86eeac, type: 3}
+  chestSize: 0.9
 --- !u!114 &2055974209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85014,12 +85185,6 @@ MonoBehaviour:
   portalSpinSpeed: -240
   portalGlowColor: {r: 0.75, g: 0.3, b: 1, a: 0.55}
   emergeTint: {r: 0.8, g: 0.55, b: 1, a: 1}
-  particleMaterial: {fileID: 2100000, guid: 728fd68045524cd4c914bbe0e052c0ae, type: 2}
-  dustSheet: {fileID: 2800000, guid: 3b1946a4563ff254586d960b11987b74, type: 3}
-  dustSheetRows: 4
-  sparkleSheet: {fileID: 2800000, guid: 09562235074ce404e82ca6541d6bb47e, type: 3}
-  sparkleSheetRows: 2
-  particleSortingOrder: 5
   landingDustPuffs: 26
   portalSparkleRate: 28
   cameraPanInSeconds: 1
@@ -85882,6 +86047,7 @@ GameObject:
   - component: {fileID: 1238215286523532649}
   - component: {fileID: 7605568101870169481}
   - component: {fileID: 7605568101870169482}
+  - component: {fileID: 7605568101870169483}
   m_Layer: 6
   m_Name: Market
   m_TagString: Untagged
@@ -86976,6 +87142,31 @@ MonoBehaviour:
   size: 7
   clampToEdge: 0
   drawOnTop: 0
+--- !u!114 &7605568101870169483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542460189346818420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92fe8ef91ab4dbd47b522cc518994cbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Buildings.MarketSignLights
+  signPositions:
+  - {x: -0.1123, y: 0.1514}
+  - {x: 0, y: 0.1631}
+  - {x: 0.1133, y: 0.1514}
+  signColors:
+  - {r: 1, g: 0.25, b: 0.3, a: 1}
+  - {r: 0.3, g: 0.55, b: 1, a: 1}
+  - {r: 0.3, g: 1, b: 0.45, a: 1}
+  glowDiameter: 0.2
+  stepSeconds: 0.45
+  lapsPerBlink: 4
+  dimAlpha: 0.08
+  litAlpha: 0.75
 --- !u!212 &8017626579445525058
 SpriteRenderer:
   serializedVersion: 3

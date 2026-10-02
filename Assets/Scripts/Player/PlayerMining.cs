@@ -339,7 +339,7 @@ namespace Player
                 var rune = GameManager.MuseumCollectionDatabase.GetRuneAt(layerIndex, x, y);
                 Wallet.Instance.AddArtifact();
                 RuneCollection.Instance.RecordFound(rune, byPlayer: true);
-                digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, 1, rune.Icon);
+                digFeedback.ArtifactFound(mapGenerationService.CellToWorldCenter(layerIndex, x, y), rune.Icon);
                 return;
             }
             if (blockType.Category != BlockCategory.Ore) return;

@@ -5,6 +5,8 @@ and listed in reading order; pick the ones to keep by index.
 
   python Tools/UI/slice_icon_sheet.py <sheet.png>                       # list blobs + preview
   python Tools/UI/slice_icon_sheet.py <sheet.png> 3=Assets/.../A.png …  # write blob 3 to A.png
+  python Tools/UI/slice_icon_sheet.py <sheet.png> --size 128 --padding 17 7=Assets/.../Tile.png
+      # the same icon as a power-up tile foreground: 128x128, with the margin the other tiles have
 """
 import sys
 
@@ -49,33 +51,45 @@ def find_icons(sheet):
     return rgb, alpha, boxes
 
 
-def cut(rgb, alpha, box):
+def cut(rgb, alpha, box, size=SIZE, padding=PADDING):
     crop = np.dstack([rgb[box], alpha[box] * 255]).astype(np.uint8)
     icon = Image.fromarray(crop, "RGBA")
-    scale = (SIZE - 2 * PADDING) / max(icon.size)
+    scale = (size - 2 * padding) / max(icon.size)
     icon = icon.resize((max(1, round(icon.size[0] * scale)), max(1, round(icon.size[1] * scale))), Image.LANCZOS)
-    out = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    out.paste(icon, ((SIZE - icon.size[0]) // 2, (SIZE - icon.size[1]) // 2))
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    out.paste(icon, ((size - icon.size[0]) // 2, (size - icon.size[1]) // 2))
     return out
 
 
+def take_option(args, name, default):
+    if name not in args:
+        return default
+    i = args.index(name)
+    value = int(args[i + 1])
+    del args[i:i + 2]
+    return value
+
+
 def main():
-    sheet = Image.open(sys.argv[1])
+    args = sys.argv[1:]
+    size = take_option(args, "--size", SIZE)
+    padding = take_option(args, "--padding", PADDING)
+    sheet = Image.open(args[0])
     rgb, alpha, boxes = find_icons(sheet)
 
-    if len(sys.argv) == 2:
+    if len(args) == 1:
         preview = sheet.convert("RGB")
         draw = ImageDraw.Draw(preview)
         for i, box in enumerate(boxes):
             draw.rectangle((box[1].start, box[0].start, box[1].stop, box[0].stop), outline=(255, 255, 255), width=2)
             draw.text((box[1].start + 4, box[0].start + 4), str(i), fill=(255, 255, 255))
             print(i, (box[1].start, box[0].start, box[1].stop, box[0].stop))
-        preview.save(sys.argv[1].replace(".png", "_blobs.png"))
+        preview.save(args[0].replace(".png", "_blobs.png"))
         return
 
-    for arg in sys.argv[2:]:
+    for arg in args[1:]:
         index, path = arg.split("=", 1)
-        cut(rgb, alpha, boxes[int(index)]).save(path)
+        cut(rgb, alpha, boxes[int(index)], size, padding).save(path)
         print(index, "->", path)
 
 

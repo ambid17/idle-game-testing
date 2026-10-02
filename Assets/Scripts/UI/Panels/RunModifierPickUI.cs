@@ -9,7 +9,8 @@ using UnityEngine.UI;
 namespace UI
 {
     // Second step of "Prestige Now" (after MuseumPrestigeConfirmUI): the player picks the next
-    // run's modifier from PrestigeManager.PendingOffers - picking one executes the prestige. A
+    // run's modifier from PrestigeManager.PendingOffers - picking one executes the prestige
+    // (inside Economy.PrestigeCinematic's portal collapse). A
     // nested modal like the confirm, so Escape backs out of just this step.
     public class RunModifierPickUI : ModalBase
     {
@@ -92,7 +93,7 @@ namespace UI
         private void OnPicked(RunModifierState offer)
         {
             Close();
-            PrestigeManager.Instance.ExecutePrestige(offer);
+            PrestigeCinematic.Instance.Play(() => PrestigeManager.Instance.ExecutePrestige(offer));
         }
     }
 }

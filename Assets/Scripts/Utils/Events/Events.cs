@@ -837,6 +837,20 @@ namespace Events
         }
     }
 
+    // Asks UI.HudFlyIconsUI to fly an icon from a world position into the HUD's artifact counter
+    // (Player.DigFeedback, once a found artifact's tablet has finished its flourish).
+    public class HudIconFlyRequestedEvent : IEvent
+    {
+        public Sprite Icon;
+        public Vector3 WorldPosition;
+
+        public HudIconFlyRequestedEvent(Sprite icon, Vector3 worldPosition)
+        {
+            Icon = icon;
+            WorldPosition = worldPosition;
+        }
+    }
+
     // Dispatched by UI.DialogUI once the player clicks past the last line (or skips the whole
     // conversation with Escape).
     public class DialogFinishedEvent : IEvent

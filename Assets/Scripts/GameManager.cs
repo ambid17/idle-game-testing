@@ -4,6 +4,7 @@ using Automation;
 using CameraControl;
 using Critters;
 using Economy;
+using Effects;
 using Events;
 using MapGeneration;
 using Museum;
@@ -38,6 +39,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private CameraShake _cameraShake;
     [SerializeField] private RunModifierService _runModifierService;
     [SerializeField] private RunModifierDatabase _runModifierDatabase;
+    [SerializeField] private WorldEffects _worldEffects;
     // GameControls.inputactions - also the scene EventSystem's InputSystemUIInputModule asset,
     // so KeybindService's binding overrides and the UI share one set of actions.
     [SerializeField] private InputActionAsset _inputActions;
@@ -62,6 +64,7 @@ public class GameManager : Singleton<GameManager>
     public static CameraShake CameraShake => Instance._cameraShake;
     public static RunModifierService RunModifierService => Instance._runModifierService;
     public static RunModifierDatabase RunModifierDatabase => Instance._runModifierDatabase;
+    public static WorldEffects WorldEffects => Instance._worldEffects;
 
     // Deliberately static rather than routed through Instance: many listeners remove themselves
     // from this in OnDisable/OnDestroy, and teardown order across objects isn't guaranteed when
@@ -168,6 +171,10 @@ public class GameManager : Singleton<GameManager>
         if (_runModifierDatabase == null)
         {
             Debug.LogError("RunModifierDatabase is not assigned in GameManager.");
+        }
+        if (_worldEffects == null)
+        {
+            Debug.LogError("WorldEffects is not assigned in GameManager.");
         }
         if (_inputActions == null)
         {

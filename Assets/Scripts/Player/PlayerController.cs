@@ -53,6 +53,13 @@ namespace Player
         [SerializeField] private float fallDamageVelocityThreshold = 12f;
         [SerializeField] private float fallDamagePerExcessUnit = 2f;
 
+        [Header("Landing Dust")]
+        [Tooltip("Slowest landing (m/s) that kicks up dust, and the speed at which the dust ring is at its biggest.")]
+        [SerializeField] private Vector2 landingDustSpeedRange = new(6f, 20f);
+        [Tooltip("Landings faster than this (m/s) also bump the camera.")]
+        [SerializeField] private float landingShakeMinSpeed = 11f;
+        [SerializeField, Min(0f)] private float landingShakeMaxForce = 0.25f;
+
         [Header("Ground Check")]
         [SerializeField] private Vector2 groundCheckOffset = new(0f, -0.5f);
         [SerializeField] private Vector2 groundCheckSize = new(0.9f, 0.1f);
@@ -427,6 +434,8 @@ namespace Player
                 return;
             }
 
+            if (!wasGrounded) EmitLandingDust(lastFallSpeed);
+
             float threshold = fallDamageVelocityThreshold + (upgrades != null ? upgrades.Mining_ExcavatorFallSpeedThresholdBonus : 0f);
             if (!wasGrounded && lastFallSpeed > threshold)
             {
@@ -438,6 +447,21 @@ namespace Player
             }
 
             lastFallSpeed = 0f;
+        }
+
+        // Cosmetic only: a dust ring at the player's feet (and a camera bump on hard landings),
+        // growing with how fast they hit the ground.
+        private void EmitLandingDust(float fallSpeed)
+        {
+            if (fallSpeed < landingDustSpeedRange.x) return;
+
+            float strength = Mathf.InverseLerp(landingDustSpeedRange.x, landingDustSpeedRange.y, fallSpeed);
+            Vector3 feet = transform.position + (Vector3)groundCheckOffset;
+            GameManager.WorldEffects.DustRing(feet, capsuleCollider.size.x * 0.5f, Mathf.RoundToInt(Mathf.Lerp(4f, 12f, strength)), Mathf.Lerp(0.3f, 0.6f, strength));
+
+            if (fallSpeed < landingShakeMinSpeed) return;
+            float shake = Mathf.InverseLerp(landingShakeMinSpeed, landingDustSpeedRange.y, fallSpeed);
+            GameManager.CameraShake.Shake(Vector2.down * Mathf.Lerp(0.06f, landingShakeMaxForce, shake), 0.2f);
         }
 
         // Accelerates toward targetVelocityX via AddForce instead of snapping rb.linearVelocity.
