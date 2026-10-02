@@ -117,187 +117,59 @@ The value and weight scales as you go down the tiers. Value scales faster than w
 ## Artifacts:
 	- at least 1 artifact is guaranteed per depth layer, with a separate low change of bonus artifacts beyond the guaranteed one
 	- artifact spawn rate increases as you go to deeper layers
-	- artifacts are secretly the Seals holding back what's buried at the bottom of the mine - see "# Story & Endgame: The Seals"
-
-
-# Passive upgrades
-	- mining over 50% of a layer increases the value of minerals (or processed goods made from minerals) in that layer by 2x. 
-		- mining 75%, and 95% double it again
-# Market Upgrades
-Upgrades will be a skill tree that fans out and requires the player to unlock the previous tier.
-- Mining
-	- Increase mining size (vein mining): mining an ore block chains into adjacent ore blocks for free.
-		- only triggers when the block you mined is an ore (mining dirt/stone never chains).
-		- each level lets the chain reach 1 more ore block, spreading outward through connected ore (not a fixed direction) - so a level-3 upgrade clears up to 3 extra ore blocks if there's an ore vein to chain through, fewer if the vein is smaller.
-	- Increase mining speed: this will increase the rate at which the player mines blocks
-		- each tier adds 10% mining speed. 
-		- the final upgrade makes dirt/stone an instant mine
-	- Insta-mine chance
-	- Lantern:
-		- you start out only being able to see the blocks adjacent to your mine shaft
-		- the lantern extends your vision radius and enables you to see deeper into the dirt to find minerals and plan a route
-		- capstone: 
-			- zoom, enhance: zooms the camera out to reveal more of the map
-	- Enable digging while flying
-- Economy
-	- Inventory: increase the player's max carrying weight
-	- Marketing: increase sales value of minerals
-	- Overflow: once inventory is full, you can continue to mine and ores will auto-sell at a reduced value
-- Automation
-	- Auto miner: Add an automated miner that will mine a random tunnel
-		- auto miner upgrades 
-			- miner count
-			- miner speed
-			- miner radius
-			- targeting : more intelligently target higher value blocks, and favor depth
-		- capstones:
-			- foreman: Miners gain a portion of your upgrades to mining speed/radius
-	- Processing center: processes a certain amount of minerals per minute to turn them into a higher value
-		- first upgrade unlocks the processing center
-		- one side of the upgrade tree unlocks new recipes
-			- capstone: 
-				- shard of possibility: uses one of every mineral to produce a high value shard
-		- other side of the tree improves the processing center production
-			- overtime: increase production speed
-			- quality: increase value of produced goods
-	- Drone delivery: drones will come pick up minerals from you so you don't have to return to the depot. They will fly the fastest route to get to you and follow that route back to the depot
-		- upgrade drone carrying capacity
-		- upgrade drone speed
-		- increase drone count
-		- capstones:
-			- Market Sense: drones will auto sell their inventory above a certain threshold market value when they reach the depot 
-- Survival
-	- Increase fuel cap
-	- Increase fly speed
-	- Increase fly acceleration for changing speed
-	- Core Stability: reduces all damage taken by a percentage per level
-		- Core Integrity: increases max HP by a flat amount per level
-	- Increase fall speed
-	
-# Prestige
-In-game name: **Resonance**. "Prestige" stays as the internal/code name (PrestigeManager, save keys, this heading), but the player never sees it. Player-facing vocabulary:
-- Resonance: the prestige action ("Begin Resonance"). The Museum's Maker machine, the Resonator, fires, and the mine collapses and reshapes - see "# Story & Endgame: The Seals"
-- Attunements: prestige upgrades. Queuing one means placing artifacts on the Resonator; they only take effect when it fires
-- Dig: one run (Dig 1, Dig 2...)
-- Aftershocks: run modifiers, i.e. how the mine settles after the quake. Blessings and Gambles are the two kinds
-
-At a certain point the game will become too difficult. You will have to use a new currency when resetting to work towards a more "meta" skill tree that will make your next run faster. Artifacts are that currency - mining one banks it directly, no separate conversion step.
-
-Prestige is manually triggered at the museum. This is a hard reset of all your world upgrades, dollars, and materials in the depot (both minerals and processed goods)
-
-Prestige upgrades can be purchased (spending artifacts) at any time, but only queue - none of them take effect until you actually trigger a prestige. This is what lets map-generation perks (grid size, layer size, etc.) apply cleanly to the freshly-regenerated map instead of retroactively to the one you're standing in, and it keeps every prestige perk's timing consistent with each other.
-
-I would aim for the first prestige to take around 2 hours, with future prestiges being faster due to the upgrades accelerating the player's progress.
-
-The map will regenerate, all of your dug tunnels will be gone. All of your money will be gone. The only thing that will remain is the prestige perks you've purchased (including anything you had queued).
-
-- Mining:
-	- view: zooms out the camera a certain percentage to view more of the mineable area
-	- Increase grid size: this will add width to the horizontal grid generation
-		- true sight: unlimited vision radius (reveals the whole mine)
-	- keep "digging while flying" upgrade between prestige runs
-	- adjust layer sizes: smaller layers let you get deeper faster
-		- need to balance with processing recipes
-- Economy
-	- mineral value multiplier
-		- capstone: passive layer bonus - clearing 50%/75%/95% of a layer each multiply its ore value by 1.5x (1.5^3x at 95%)
-	- processing
-		- processed good production multiplier
-- idle
-	- auto miner
-		- keep 1 idle miner (3 upgrades)
-			- these effectively increase the max upgrade tier. If you purchase this, then purchase the idle miner with normal currency, you get another.
-		- keep 1 tier of miner speed (3 upgrades)
-		- keep 1 tier of miner dig speed (x3)
-		- keep 1 tier of miner move speed
-- Prestige
-	- increase artifact spawn rate
-	- increase how many artifacts you get per artifact-ore mined
-	- add passive artifact gain over time
-		- grant funding: start each run with a % of the dollars earned during the previous run
-			- legacy: each prestige ever completed adds a permanent, stacking % to all sale value
-	- museum dividends: each unspent artifact held adds a % to all sale value (spend vs. hoard tension)
-- Progression
-	- Increase spawn odds of next tier of blocks in upper layers
-	- increase the spawn odds of all ores
-	- power up blocks 
-		- increase effectiveness of power up blocks
-		- increase spawn rate
-- Survival
-	- one time shield charges that regenerate over time, preventing damage
-	- increased move speed
-	- reduced fall damage
-	- gas resistance
-
-# Story & Endgame: The Seals
-Motherload's structure (friendly employer, stranger signs the deeper you go, a twist, a fight at the bottom) without copying its content. The goal is a real ending to dig toward, so prestige means "getting strong enough to reach the bottom" rather than just "numbers go faster". Names below are working titles.
+	- artifacts are secretly the Seals holding back what's buried at the bottom of the mine - see "# Story & Endgame: The Seals
+A real ending to dig toward, with no combat: resonating means "getting strong enough to reach the bottom", and the player's own choices on the way down decide what the ending costs. Names below are working titles. Implementation plan: storyImplementation.md.
 
 ## Premise
-- The Museum is your eager patron. The curator pays well for every artifact you bring up and is the reason you prestige.
-- The curator is NOT the villain (this is the main break from Mr. Natas). They're an honest collector who doesn't understand what they're buying.
-- The twist: artifacts aren't relics, they're Seals. An ancient civilization buried something (working name: "the Bound") beneath the mine and locked it away with thousands of wards spread through the layers. Every artifact you dig up weakens the prison.
+- The Museum is your eager patron. The curator (Prof. Dustworth) pays well for every artifact you bring up and is the reason you resonate.
+- The curator is NOT the villain. They're an honest collector who doesn't understand what they're buying.
+- The twist: artifacts aren't relics, they're Seals. The Makers buried something (working name: "the Bound") beneath the mine and locked it away with thousands of wards spread through the layers. Every artifact you dig up weakens the prison.
 - The player is responsible. Their core loop (dig artifacts, spend them at the Museum) is what frees it.
 - The Resonator: a Maker machine in the Museum. The curator feeds it your artifacts and it retunes your rig with Maker tech (Attunements). The side effect is a quake that collapses and reshapes the mine, which he waves off as "geological enthusiasm". It is really the prison's lock: every Resonance spends Seals, and the quake is the Bound stirring.
+- The Bound is ambiguous on purpose. The curator comes to believe the Makers imprisoned a devourer. The Bound's own voice says the Makers stole its light and called it ore. Neither is ever confirmed, so the final choice is a real one.
+- No combat. The wall between biomes is the drill tier (Mining_DrillTier gates layers 3, 6 and 9), not a boss.
 
-## Delivering the story
-- Artifact lore: lore fragments unlock as you find artifacts in each layer, readable in a Museum lore/collection tab. The tone gets darker with depth:
-	- layers 1-3: museum placards ("ceremonial disc, fired clay, purpose unknown")
-	- layers 4-7: translated inscriptions that start to warn ("...so that it may not rise...", "do not lift")
-	- layers 8-11: the full account of what was sealed and why, and the realization of what the player has been doing
-- Curator dialogue: short lines when the Museum opens, keyed to story progress. Excited early, uneasy in the middle, horrified after the twist. After the twist the curator becomes your ally, translating inscriptions to reveal guardian and boss weaknesses.
-- Hazards as symptoms: the existing depth scaling of gas, lava, and falling rocks is explained as the Bound stirring. Optional screen-shake "tremors" that grow more frequent as total artifacts collected rises.
-- Resonance as a story beat: the map regenerating is diegetic. Each Resonance the Bound stirs and the mine collapses and reshapes itself. The Resonance confirmation and the "A New Dig" text say so.
-- The curator's translations: his joke rune translations ("Please do not check my work") are wrong. The twist is him rechecking them - each one was a warning, and the vault inscription was never "KEEP DIGGING".
-- Story progress (lore unlocked, guardians defeated, twist seen) is permanent and survives prestige, like lifetime stats.
+## Three voices
+- The curator: argues for resealing once he understands. Comic early, uneasy in the middle, frightened and honest late.
+- The Bound: whispers to the player as they set depth records. Never threatens; asks. Argues for release.
+- The critter keeper (Grizzle Mossbeard): takes no side, just reports what the critters are doing.
 
-## Story beats
-Each beat fires the first time the player sets a depth record inside its layer range. Drill tier Attunements gate those layers, so depth reached and Resonances completed both drive the story.
-1. The Commission (drill tier 0, layers 0-2): the curator hires you and artifacts are just museum pieces. You hit rock your drill can't scratch, and he reveals the Resonator. The first Resonance is played as a triumph.
-2. The Warnings (tier 1, layers 3-5): the trap rooms and ancient brick read as built to keep diggers out, not to guard treasure. Tremors grow with each Resonance. The Stone Warden blocks the way.
-3. The Retranslation (tier 2, layers 6-8): the twist. The prison is already failing, so the only way to fix it is to go deeper, which needs more Resonances. The Censer guards this stretch.
-4. The Vault (tier 3, layers 9-10 and below): the Bound, then Reseal or Destroy.
-5. After: "the mine stirs again", with the curator's lines reflecting the ending.
+## Choices: Keystones and the last Seal
+- Seal Chambers: one brick room on each of layers 3, 6 and 9 (indices 2, 5, 8 - the last layer before each drill-tier gate), regenerated every Dig. Each holds a Keystone.
+	- Take it: a large one-time artifact payout (15 / 30 / 60). Permanent - the socket stays empty in every later Dig.
+	- Leave it: nothing happens, and the player can come back in any later Dig and change their mind.
+- The Vault: a larger room on layer 11 (index 10) holding the last Seal and the final choice.
+	- Release: break it. Always available.
+	- Reseal: return what was taken. Costs a base 20 artifacts plus 2x the payout of every Keystone pried loose (20 if none were taken, 230 if all three were). A greedy player pays heavily, a careful one pays little. This also plays on the Museum Dividends spend-vs-hoard tension.
+- Earlier choices set the price of Reseal; they never lock an ending out.
 
-## Guardians (mini-bosses)
-Constructs the old civilization left to stop anyone digging toward the prison. Each one guards a layer boundary and teaches one way to turn hazards into weapons, as preparation for the final fight.
-- Guardians are the "too difficult" wall that motivates prestige: a guardian blocks further descent until it's defeated in the current run. The first run should hit the Stone Warden at about the 2-hour mark, matching the first-prestige target.
-- The Stone Warden: bottom of layer 4
-	- a slow construct of rock and wards
-	- can't be damaged directly. The arena ceiling is lined with falling rocks and scattered with explosive blocks
-	- teaches: mine a rock's support to drop it on the guardian, and lure it into explosives
-- The Censer: bottom of layer 8
-	- a construct that vents gas clouds into the arena as it moves
-	- teaches: ignite its gas while it's standing in it (requires the deferred gas chain-ignition mechanic)
-	- its gas also damages the player, so fuel/HP management and Survival perks matter
+## Endings
+- Both play a short sequence (quake, white flash, epilogue with the Keystone count reflected in it), unlock an achievement, and leave the game playable.
+- Release: "The Bound is free." The light leaves the ore and goes up the shaft. Post-game: +25% to all ore and goods sale value. Tremors stop.
+- Reseal: "The Seal holds." Taken Keystones are back in their sockets. Post-game: -25% to all damage taken. Tremors stop.
+- The curator, the critter keeper and the Resonance prompt all have post-ending lines for each.
 
-## The final fight: the Bound
-Below layer 11 is the Vault, a hand-authored arena rather than a generated layer. As with the guardians, the player never gets a direct attack. Every hazard they've learned to fear becomes their arsenal.
-- Phase 1 (chained): the Bound is held by the last remaining seals. It swipes and triggers cave-ins. The player drops falling rocks and sets off explosives on it.
-- Phase 2 (loose): it burrows through the arena terrain, leaving tunnels and gas pockets. The player ignites the gas while it's inside, using what the Censer taught.
-- Phase 3 (rising): lava floods the Vault from below and the Bound climbs toward the surface. The player has to climb with the jetpack while hitting it with the rocks and explosives around the shaft. This is a fuel-management test, the tension the whole game has been training.
-- Optional: owned automatons and drones join the fight (draw fire, ferry fuel), so idle investment pays off in the finale.
+## Dropping hints by depth
+Each beat fires the first time the player sets a depth record inside its layer range. Drill tier Attunements gate those layers, so depth reached and Resonances completed both drive the story. Story progress is permanent and survives Resonance.
 
-## Ending
-- After phase 3 the player chooses:
-	- Reseal: sacrifice a large number of artifacts to rebuild the prison. This plays on the Museum Dividends spend-vs-hoard tension, since you're giving up your hoard to fix what you caused.
-	- Destroy: an extra, harder phase that ends it for good.
-- Both roll credits, unlock a unique achievement, and leave the game playable afterward (post-game / NG+: "the mine stirs again", with the ending reflected in curator dialogue and lore).
+| Stage | Layers (1-based) | Drill tier | What the player sees |
+|---|---|---|---|
+| The Commission | 1-3 | 0 | Joke rune translations, a giddy curator. The first chamber's mural shows Makers carrying tablets *down*. First Resonance is played as a triumph. |
+| The Warnings | 4-6 | 1 | Whispers begin, one per new layer reached. Curator notices the trap rooms face *down* the shaft. Critter keeper notes critters moving up-shaft. Ambient tremors start and grow with each Resonance. |
+| The Retranslation | 7-9 | 2 | On the next Museum visit the curator rechecks his work: the tablets are Seals, the Resonator is the lock, the vault inscription reads KEEP IT BURIED. The Collection tab shows each rune's true reading over the struck-through joke. Whispers address the player directly. |
+| The Vault | 10-11 | 3 | No more jokes. The Resonance prompt counts the Seals still holding. Curator and voice argue openly. The last Seal. |
 
-## Systems impact
-What this adds to the current build:
-- persistent story progress in the save file (lore unlocked, guardians beaten, ending chosen), not reset by prestige
-- lore fragment data per layer and a Museum lore/collection tab
-- curator dialogue lines keyed to story progress
-- guardian/boss arenas at the layer 4 and 8 boundaries and below layer 11, plus a descent gate while a guardian is alive
-- boss entities with health, AI, and phases
-- hazards (falling rocks, explosives, gas, lava) able to damage non-player entities, not just the player
-- gas chain-ignition, currently deferred (needed for the Censer and phase 2)
-- new achievements: each guardian, each ending
+Delivery channels:
+- Whispers: a notification in the Bound's colour the first time each layer from 4 on is reached.
+- Curator: stage-keyed greetings and Talk lines, the Retranslation conversation, true rune readings.
+- Seal Chambers: a short mural description the first time each one is examined.
+- Resonance prompt: its text escalates with the stage.
+- Tremors: ambient camera shake, more frequent with stage and Resonance count, silent after either ending.
+- Critter keeper: stage-keyed Talk lines.
 
 ## Open questions
-- once a guardian is defeated, does it stay dead across prestiges, or return every run (tougher each time)? Leaning toward returning every run for the first few runs so it stays the prestige wall, then permanent after enough prestige perks
-- are artifacts still an anonymous count, or do they become unique named items (sets, rarities)? Lore per layer works with either
-- does the twist hit at a fixed depth (e.g. defeating the Stone Warden) or at a lifetime-artifacts threshold?
-- how many prestiges should reaching the Vault take? Target an 8-15 hour total playtime
-- guardians sit at the bottom of layers 4 and 8, but drill tiers gate at layers 3, 6 and 9. Move the guardians to the tier gates so the wall and the boss are the same moment?
-- the sky relic (hidden Seal at y=200): the one Seal the Makers hid up instead of down - make it the key to the Reseal ending?
+- the sky relic (hidden Seal at y=200): the one Seal the Makers hid up instead of down - give it a role in the Reseal ending?
+- credits: the endings close on a "thank you for playing" page, not a real credits roll
+- chamber and Vault art: the Keystone and Seal use placeholder sprites; murals are text only
+- post-game: is a flat bonus enough, or should each ending change the world (sky, ore glow, music)?
+- how many Resonances should reaching the Vault take? Target an 8-15 hour total playtime

@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 12
   DisplayName: Sowilo
   CuratorTranslation: The sun! The Makers never saw it. They drew it from rumours.
+  TrueTranslation: It remembers the sun. It asks for nothing else.
   Icon: {fileID: 21300000, guid: 8458fc0829887b54c8af53b714f712bb, type: 3}
   Tile: {fileID: 11400000, guid: c6568c7dcdecb194294ff141ffc8ef4c, type: 2}

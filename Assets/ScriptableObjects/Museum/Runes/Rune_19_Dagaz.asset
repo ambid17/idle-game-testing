@@ -15,5 +15,7 @@ MonoBehaviour:
   Index: 18
   DisplayName: Dagaz
   CuratorTranslation: Dawn! Breakthrough! Lunch!
+  TrueTranslation: Should it see daylight, a day ends or a day begins. We could not
+    tell which.
   Icon: {fileID: 21300000, guid: 765b1e49eea92164595f5b4c20ef32fb, type: 3}
   Tile: {fileID: 11400000, guid: 62edf9b8a4a07864d95a1f5489ca7d07, type: 2}

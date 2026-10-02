@@ -12,6 +12,7 @@ namespace Museum
     public class MuseumCuratorController : Singleton<MuseumCuratorController>
     {
         public const string IntroConversation = "Museum.Intro";
+        public const string RetranslationConversation = "Museum.Retranslation";
         private const string ChatConversation = "Museum.Chat";
         private const string TurnInConversation = "Museum.TurnIn";
 
@@ -46,8 +47,15 @@ namespace Museum
             StartConversation(IntroConversation, BuildLines(dialog.IntroLines));
         }
 
+        // The story's twist (Story.StoryManager): the curator has rechecked his translations.
+        public void PlayRetranslation()
+        {
+            GameManager.StoryManager.MarkRetranslationSeen();
+            StartConversation(RetranslationConversation, BuildLines(GameManager.StoryManager.Content.RetranslationLines));
+        }
+
         // Collection tab's Talk button.
-        public void Chat() => StartConversation(ChatConversation, BuildLines(CuratorDialog.PickRandom(dialog.Chatter)));
+        public void Chat() => StartConversation(ChatConversation, BuildLines(GameManager.StoryManager.CuratorChatter() ?? CuratorDialog.PickRandom(dialog.Chatter)));
 
         // Collection tab's Turn In button.
         public void TurnIn()
@@ -63,9 +71,15 @@ namespace Museum
             string countText = result.NewRunes.Count == 1 ? "A new rune" : $"{result.NewRunes.Count} new runes";
             var lines = BuildLines(string.Format(CuratorDialog.PickRandom(dialog.TurnInLines), countText));
 
+            // Once he has rechecked his work, new runes get their true reading.
+            var story = GameManager.StoryManager;
+            bool retranslated = story.RetranslationSeen;
             foreach (var rune in result.NewRunes)
             {
-                lines.AddRange(BuildLines(string.Format(CuratorDialog.PickRandom(dialog.RuneTranslatedLines), rune.DisplayName, rune.CuratorTranslation)));
+                string line = retranslated
+                    ? string.Format(CuratorDialog.PickRandom(story.Content.TrueRuneTranslatedLines), rune.DisplayName, rune.TrueTranslation)
+                    : string.Format(CuratorDialog.PickRandom(dialog.RuneTranslatedLines), rune.DisplayName, rune.CuratorTranslation);
+                lines.AddRange(BuildLines(line));
             }
 
             int runeCount = GameManager.MuseumCollectionDatabase.RuneCount;
@@ -77,7 +91,7 @@ namespace Museum
                 lines.AddRange(BuildLines(string.Format(CuratorDialog.PickRandom(dialog.AccessoryUnlockedLines), accessory.DisplayName)));
             }
 
-            if (completedCollection) lines.AddRange(BuildLines(dialog.AllFoundLines));
+            if (completedCollection) lines.AddRange(BuildLines(retranslated ? story.Content.AllFoundAfterRetranslationLines : dialog.AllFoundLines));
 
             StartConversation(TurnInConversation, lines);
         }

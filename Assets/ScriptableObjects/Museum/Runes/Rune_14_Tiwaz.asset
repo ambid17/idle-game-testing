@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 13
   DisplayName: Tiwaz
   CuratorTranslation: Point this end toward the enemy.
+  TrueTranslation: The point faces down. Always down.
   Icon: {fileID: 21300000, guid: 99c4089b4ee693847962df751aa30ac8, type: 3}
   Tile: {fileID: 11400000, guid: 9a1aef95f4c725b4c8cb9e52242ad7a2, type: 2}

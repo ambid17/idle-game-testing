@@ -82,8 +82,9 @@ namespace Player
 
         public void TakeDamage(float amount, DeathReason reason)
         {
-            // Market "Core Stability": reduces all incoming damage by a percentage.
-            amount *= UpgradeManager.Instance.Movement_CoreStabilityDamageMultiplier;
+            // Market "Core Stability": reduces all incoming damage by a percentage, as does the
+            // story's Reseal ending.
+            amount *= UpgradeManager.Instance.Movement_CoreStabilityDamageMultiplier * GameManager.StoryManager.DamageTakenMultiplier;
             if (amount <= 0f || IsDead) return;
 
             if (CurrentShieldCharges > 0)

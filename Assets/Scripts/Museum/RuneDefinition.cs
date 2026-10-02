@@ -16,6 +16,9 @@ namespace Museum
         [Tooltip("The curator's (confident, almost certainly wrong) translation. Shown in the rune grid once donated, and read out when it's turned in.")]
         [TextArea(2, 4)]
         public string CuratorTranslation;
+        [Tooltip("What it really says - shown over the struck-through CuratorTranslation once the curator has rechecked his work (Story.StoryManager.RetranslationSeen).")]
+        [TextArea(2, 4)]
+        public string TrueTranslation;
         [Tooltip("The full tablet with this rune - UI icon, notifications and pickup nugget.")]
         public Sprite Icon;
         [Tooltip("Transparent tablet foreground drawn over the layer's dirt (like the Artifact BlockType's own Tile).")]

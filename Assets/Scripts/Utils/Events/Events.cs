@@ -98,13 +98,16 @@ namespace Events
         public Sprite Icon;
         // Drawn behind Icon (see Image.SetIcon) - BlockType.IconBackground for ore icons.
         public Sprite IconBackground;
+        // Scales how long the toast stays up (its hold, not its fade) - e.g. the story's whispers linger.
+        public float DurationMultiplier;
 
-        public NotificationEvent(string message, NotificationUrgency urgency, Sprite icon = null, Sprite iconBackground = null)
+        public NotificationEvent(string message, NotificationUrgency urgency, Sprite icon = null, Sprite iconBackground = null, float durationMultiplier = 1f)
         {
             Message = message;
             Urgency = urgency;
             Icon = icon;
             IconBackground = iconBackground;
+            DurationMultiplier = durationMultiplier;
         }
     }
 
@@ -895,6 +898,38 @@ namespace Events
         public DialogFinishedEvent(string conversationId)
         {
             ConversationId = conversationId;
+        }
+    }
+
+    // Story.StoryManager's state changed (new depth record, Keystone taken, Retranslation seen,
+    // ending chosen, save restore) - Seal Chambers, the rune cards and achievements re-read it.
+    public class StoryProgressChangedEvent { }
+
+    // Opens UI.StoryChoiceUI. Option B is optional (null OnOptionB hides its button); cancelling
+    // (its button or Escape) calls nothing.
+    public class StoryChoiceRequestedEvent : IEvent
+    {
+        public string Title;
+        public string Body;
+        public string CancelLabel;
+        public string OptionALabel;
+        public System.Action OnOptionA;
+        public string OptionBLabel;
+        public System.Action OnOptionB;
+        // Shown but greyed out when false (e.g. a Reseal the player can't afford yet).
+        public bool OptionBEnabled;
+
+        public StoryChoiceRequestedEvent(string title, string body, string cancelLabel, string optionALabel, System.Action onOptionA,
+            string optionBLabel = null, System.Action onOptionB = null, bool optionBEnabled = true)
+        {
+            Title = title;
+            Body = body;
+            CancelLabel = cancelLabel;
+            OptionALabel = optionALabel;
+            OnOptionA = onOptionA;
+            OptionBLabel = optionBLabel;
+            OnOptionB = onOptionB;
+            OptionBEnabled = optionBEnabled;
         }
     }
 }

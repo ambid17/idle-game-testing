@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 8
   DisplayName: Naudiz
   CuratorTranslation: 'Need. As in: I need a snack.'
+  TrueTranslation: Need. Ours was greater than our shame.
   Icon: {fileID: 21300000, guid: b3e60b367ef266a469c444f7363d6639, type: 3}
   Tile: {fileID: 11400000, guid: c49abb17e4750da4791a319a006e7cb7, type: 2}

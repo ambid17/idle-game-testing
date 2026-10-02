@@ -50,6 +50,7 @@ namespace UI
         {
             GameManager.EventService.Add<RuneCollectionChangedEvent>(Refresh);
             GameManager.EventService.Add<PlayerAccessoriesChangedEvent>(Refresh);
+            GameManager.EventService.Add<StoryProgressChangedEvent>(Refresh);
             Refresh();
         }
 
@@ -57,6 +58,7 @@ namespace UI
         {
             GameManager.EventService.Remove<RuneCollectionChangedEvent>(Refresh);
             GameManager.EventService.Remove<PlayerAccessoriesChangedEvent>(Refresh);
+            GameManager.EventService.Remove<StoryProgressChangedEvent>(Refresh);
         }
 
         // MuseumUI, each time the panel opens.
@@ -65,7 +67,7 @@ namespace UI
             var dialog = MuseumCuratorController.Instance.Dialog;
             portraitImage.sprite = dialog.Portrait;
             portraitImage.enabled = dialog.Portrait != null;
-            greetingLabel.text = CuratorDialog.PickRandom(dialog.Greetings);
+            greetingLabel.text = GameManager.StoryManager.CuratorGreeting() ?? CuratorDialog.PickRandom(dialog.Greetings);
         }
 
         private void BuildIfNeeded()

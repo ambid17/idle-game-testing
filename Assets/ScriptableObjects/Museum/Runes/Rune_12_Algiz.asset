@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 11
   DisplayName: Algiz
   CuratorTranslation: Protection. Wear a helmet.
+  TrueTranslation: Ward. Each tablet is a hand held up against it.
   Icon: {fileID: 21300000, guid: f0e889bd195884441b126746faa61fb8, type: 3}
   Tile: {fileID: 11400000, guid: e87e49e28e805ba478c5b142281b6fda, type: 2}

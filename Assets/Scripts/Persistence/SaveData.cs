@@ -160,6 +160,8 @@ namespace Persistence
         public Museum.MuseumSaveData Museum = new();
         // Economy.SkyArtifact - the one-time relic on the cloud 200m up. Not reset by prestige.
         public bool SkyArtifactCollected;
+        // Story.StoryManager - stage, Keystones taken, ending. Not reset by prestige.
+        public Story.StorySaveData Story = new();
         // ISO-8601 string, since JsonUtility can't serialize DateTime directly.
         public string LastActiveUtcTimestamp;
     }

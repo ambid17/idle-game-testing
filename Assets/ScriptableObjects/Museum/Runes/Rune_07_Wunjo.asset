@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 6
   DisplayName: Wunjo
   CuratorTranslation: Joy! Pure, boundless joy! Possibly sarcastic.
+  TrueTranslation: It was glad of us, at first.
   Icon: {fileID: 21300000, guid: 2e987ea14eb16b64ab7aec7920d78c98, type: 3}
   Tile: {fileID: 11400000, guid: c2838ef50495a7547a9ae0fd269f7ccc, type: 2}

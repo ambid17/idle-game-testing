@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 15
   DisplayName: Ehwaz
   CuratorTranslation: Horse. The Makers had no horses. A deeply aspirational rune.
+  TrueTranslation: It carried us, once. We repaid it with a harness.
   Icon: {fileID: 21300000, guid: 3ad45ae0d9aa6f94b912489518b55407, type: 3}
   Tile: {fileID: 11400000, guid: 92dd0f070cb1c094fb3af7f0ef328cca, type: 2}

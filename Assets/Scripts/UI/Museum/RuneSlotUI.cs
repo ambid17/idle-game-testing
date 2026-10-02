@@ -7,7 +7,8 @@ namespace UI
 {
     // One rune card in the Museum's Collection tab. Donated runes show their name and the curator's
     // translation; runes found but not yet turned in show their name and a nudge to donate; the rest
-    // are dark silhouettes so the player can see how many are left without spoiling them.
+    // are dark silhouettes so the player can see how many are left without spoiling them. After the
+    // story's Retranslation the curator's reading is struck through over the true one.
     public class RuneSlotUI : MonoBehaviour
     {
         [SerializeField] private Image iconImage;
@@ -43,7 +44,9 @@ namespace UI
 
             iconImage.color = donated || found ? Color.white : silhouetteColor;
             nameLabel.text = donated || found ? rune.DisplayName : "???";
-            descriptionLabel.text = donated ? $"\"{rune.CuratorTranslation}\"" : string.Empty;
+            descriptionLabel.text = !donated ? string.Empty
+                : GameManager.StoryManager.RetranslationSeen ? $"<s>\"{rune.CuratorTranslation}\"</s>\n\"{rune.TrueTranslation}\""
+                : $"\"{rune.CuratorTranslation}\"";
             statusLabel.text = found ? "NEW - Turn in!" : string.Empty;
             statusLabel.color = foundColor;
         }

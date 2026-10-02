@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 1
   DisplayName: Uruz
   CuratorTranslation: Strong like an ox. Smells like an ox.
+  TrueTranslation: Strong. It was stronger than all of us together.
   Icon: {fileID: 21300000, guid: 3898b91ea950af547b3cf6c68c90136b, type: 3}
   Tile: {fileID: 11400000, guid: 238df5db266ab14448d1a00ff85f1050, type: 2}

@@ -180,8 +180,9 @@ namespace Economy
         }
 
         // Combined Prestige-branch income bonus, applied on top of Economy_MineralValueMultiplier /
-        // Economy_ProcessedGoodMultiplier to every ore and processed-good sale.
-        public float Prestige_IncomeMultiplier => Prestige_MuseumDividendsMultiplier * Prestige_LegacyMultiplier;
+        // Economy_ProcessedGoodMultiplier to every ore and processed-good sale. Also carries the
+        // story's Release ending bonus (Story.StoryManager), which applies to the same sales.
+        public float Prestige_IncomeMultiplier => Prestige_MuseumDividendsMultiplier * Prestige_LegacyMultiplier * GameManager.StoryManager.SaleValueMultiplier;
 
         // Legacy: +EffectValuePerLevel per level, per prestige ever completed (counting prestiges
         // from before the perk was bought).

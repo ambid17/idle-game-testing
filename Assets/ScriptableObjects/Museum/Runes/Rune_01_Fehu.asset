@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 0
   DisplayName: Fehu
   CuratorTranslation: 'Wealth flows to those who dig. Also: pay your bills.'
+  TrueTranslation: The wealth below is not ours. Take none of it up.
   Icon: {fileID: 21300000, guid: 395a162337f17574e97224cda9c6654d, type: 3}
   Tile: {fileID: 11400000, guid: a763b4e7487b1cb4b8411bbbb025666e, type: 2}

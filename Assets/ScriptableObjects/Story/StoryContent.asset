@@ -1,0 +1,224 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a31a2d366b6f2443b25f8fc9eb659de, type: 3}
+  m_Name: StoryContent
+  m_EditorClassIdentifier: Assembly-CSharp::Story.StoryContent
+  UnknownVoiceName: ???
+  VoiceName: The Bound
+  VoiceColor: {r: 0.78, g: 0.49, b: 1, a: 1}
+  LayerWhispers:
+  - 
+  - 
+  - 
+  - ...digging. Something is digging.
+  - I hear your little engine. It has been so long since anything came down.
+  - The tablets you carry up to him. Do you know what they were holding shut?
+  - Your scholar reads my jailers' words and calls them warnings. Ask him who wrote
+    them.
+  - The glow in the rock is mine. They mined me first. You are only finishing their
+    work.
+  - Every time his machine sings, I can move a little more. Thank him for me.
+  - Close now. I can feel the heat of your drill. Do not be afraid of me.
+  - One door left. He will tell you to lock it. Ask yourself which of us has lied
+    to you less.
+  KeystoneTakenWhispers:
+  - Thank you.
+  - Lighter. Oh, that is lighter.
+  - It is only a stone. They were all only stones.
+  CuratorGreetings:
+  - Lines: []
+  - Lines:
+    - Welcome back! Did you feel that little shake? Perfectly normal. Mines settle.
+      So I'm told. By me.
+    - You've been deeper! I can smell it. Old air. Lovely. Slightly ominous. Mostly
+      lovely.
+    - The Resonator has been humming on its own again. I've asked it to stop. It
+      has not.
+  - Lines:
+    - Oh. It's you. Good. Please don't read the old labels. I've put the true ones
+      on top.
+    - I've stopped dusting the Resonator. I don't like standing near it.
+    - Every tablet you brought me was holding something shut. I put them in a display
+      case.
+  - Lines:
+    - You're close to the bottom now. I've left the lights on, in case you'd rather
+      come back up.
+    - '{0} of 4 Seals still hold. I counted twice. I''d count a third time but I''m
+      afraid of the answer.'
+    - Whatever it says to you down there - it has had a very long time to practise.
+  CuratorChatter:
+  - Lines: []
+  - Lines:
+    - Those trap rooms you've been finding - the darts, the crushers.|I assumed they
+      guarded treasure.|But every trigger faces DOWN the shaft.|Who builds a trap
+      to catch something climbing up?
+    - There's a rune I can't place. It keeps turning up next to 'DIG'.|It might be
+      'KEEP'. It might be 'NEVER'.|They're very similar. One has a little hat.
+  - Lines:
+    - The Makers didn't dig this mine to take something out.|They dug it to put something
+      in.|And then they filled it back up. Carefully. In layers.
+    - The Resonator isn't a workshop.|It's a key. A very slow key.|And I've been
+      turning it for you every time you asked. With a smile!
+    - It talks to you, doesn't it?|It says the Makers robbed it.|It may even be true.
+      Jailers are rarely polite.|That doesn't tell us what it does when it gets out.
+  - Lines:
+    - If you choose to mend the last Seal, it will want back what was taken.|Every
+      Keystone pried loose is a debt.|I'm sorry. I'd have told you sooner, if I'd
+      been able to read.
+    - I keep thinking about the one who carved 'SORRY' down there.|Sorry to us? Or
+      sorry to IT?|I've translated it nine times. It doesn't say.
+  RetranslationLines:
+  - Ah. You're here. Sit down. No - don't sit on that, it's an exhibit. Stand, then.
+  - I checked my work. I know I asked you not to. I asked MYSELF not to. I did it
+    anyway.
+  - 'The rune I''ve been reading as ''DIG''. It isn''t ''DIG''. It''s ''DEPTH''.
+    As in: keep it in the.'
+  - The inscription over the vault door doesn't say KEEP DIGGING. It says KEEP IT
+    BURIED.
+  - The tablets aren't messages. They're Seals. Thousands of them, layer on layer,
+    holding something down there.
+  - And the Resonator - my lovely Resonator - breaks them to power your Attunements.
+    Every Resonance the mine shakes, because something underneath has a little more
+    room.
+  - I've re-labelled the whole collection. The true readings are in the Collection
+    tab. I'm so sorry about the soup one.
+  - We can't put back what's been spent. But the last Seal is still whole, at the
+    very bottom. If you can reach it, there may be a way to mend this.
+  - Or you could stop digging. ...No. No, I didn't think so. Neither could I.
+  TrueRuneTranslatedLines:
+  - '<b>{0}</b>. I know this one now. It reads: "{1}"'
+  - '<b>{0}</b>... I''d rather not, but: "{1}"'
+  - '<b>{0}</b>. Properly, this time: "{1}"'
+  AllFoundAfterRetranslationLines:
+  - That's twenty. The whole Maker alphabet. I used to dream about this.
+  - I can read all of it now. Every wall down there says the same thing, twenty different
+    ways.
+  - Here. The Halo of the Makers. I think they'd want someone to have it who's still
+    going down.
+  CuratorGreetingsAfterRelease:
+  - The sky was a different colour this morning. Nobody else seems to mind. I mind
+    a little.
+  - It hasn't eaten anyone. I keep checking. Still no one.
+  CuratorGreetingsAfterReseal:
+  - Quiet, isn't it? I'd forgotten what quiet sounded like. Tea?
+  - The Resonator hasn't hummed since. I've put a doily on it.
+  ShopkeeperChatter:
+  - Lines: []
+  - Lines:
+    - Critters are movin' house.|Whole families, headin' UP the shaft.|Critters don't
+      go up. Up's where the birds are.
+  - Lines:
+    - The deep ones've started hummin'.|Same note as that machine in the Museum.|I
+      asked a Void Wisp what it meant. It just looked sorry for me.
+  - Lines:
+    - Somethin' down there's been singin' to my critters.|They ain't scared of it.|Critters
+      is scared of everything. Make of that what you like.
+  ShopkeeperChatterAfterRelease:
+  - Critters all went quiet the day the light left.|Then they went back to bein'
+    critters.|Reckon it said goodbye.
+  ShopkeeperChatterAfterReseal:
+  - Deep ones stopped hummin'.|Jar's gone awful quiet.|Reckon they miss it. Don't
+    tell the Professor.
+  FirstResonancePrompt: Begin Resonance? The Resonator will retune your rig, and
+    the mine will collapse and reshape. This reset is permanent.
+  ResonancePrompts:
+  - Begin Resonance? The mine will collapse and reshape. This reset is permanent.
+  - Begin Resonance? The tremors have been getting worse. The mine will collapse.
+    This reset is permanent.
+  - Begin Resonance? You know what it spends now. The mine will collapse. This reset
+    is permanent.
+  - Begin Resonance? {0} of 4 Seals still hold. The mine will collapse. This reset
+    is permanent.
+  ResonancePromptAfterEnding: Begin Resonance? The mine will collapse and reshape.
+    This reset is permanent.
+  Chambers:
+  - Narration: 'A chamber of fitted brick. On the far wall, a mural: small figures
+      in a long line, each carrying a tablet DOWN a stair.|At the centre a Keystone
+      sits in a socket of black stone. It is warm.'
+    Voice: 
+  - Narration: The mural here is cut deeper. The figures are no longer carrying their
+      tablets. They are pressing them into the walls, shoulder to shoulder.|Below
+      them something large was drawn, and then chiselled away.
+    Voice: They would not even leave my picture.
+  - Narration: No figures in this mural. Only the tablets, ring inside ring, and
+      at the centre a single shape with its hands open.|Someone has carved one word
+      under it, in a hurry. You don't need the curator to read it. It says SORRY.
+    Voice: Take it. It is only a stone. I am so tired of stones.
+  Vault:
+    Narration: 'The last door. The Seal fills the far wall, turning slowly, humming
+      the same note as the Resonator.|You remember what the curator said: mend it,
+      and it will want back what was taken.'
+    Voice: 'You came all this way. I will not lie to you now: I do not know what
+      I will do when I stand up.|I have not stood in so long.'
+  KeystoneTitle: The Keystone
+  KeystoneBody: 'Pry it loose and the Seal it anchors breaks for good. The Museum
+    would pay {0} Artifacts for it.
+
+
+    This cannot be undone.'
+  KeystoneTakeLabel: Take it (+{0})
+  KeystoneLeaveLabel: Leave it
+  VaultTitle: The Last Seal
+  VaultBody: 'Break it, and whatever is below goes free.
+
+    Mend it, and the Seal
+    takes back what was taken: {0} Artifacts. You have {1}.
+
+
+    Either choice is
+    final.'
+  VaultReleaseLabel: Release
+  VaultResealLabel: Reseal ({0})
+  VaultLeaveLabel: Not yet
+  ResealTooExpensive: The Seal needs {0} Artifacts to mend. You have {1}.
+  ReleaseEpilogue:
+  - You break the last Seal. The note the Resonator has been humming all this time
+    finally stops.
+  - The mine does not collapse. The light in the ore goes out, vein by vein, and
+    climbs past you up the shaft.
+  - '{voice}Oh. Oh, I had forgotten the sky.'
+  - It does not thank you. It does not harm you. By the time you reach the surface
+    it is a brightness on the horizon, getting smaller.
+  - '{keystones}'
+  - '{curator}Well. We''re all still here. I''ve checked twice. ...I''m going to
+    need a new label for the Resonator. ''Door, Formerly.'''
+  - 'THE BOUND IS FREE.
+
+    Thank you for playing. The mine is still yours to dig
+    - and ore sells for more, now that its light has somewhere to go.'
+  ResealEpilogue:
+  - You press the Artifacts back into the Seal, one by one. Each takes its place
+    as if it had only been waiting.
+  - '{voice}...I see. No. I understand. You have only ever known me as a noise in
+    the dark.'
+  - '{voice}Dig carefully, little engine. I will still be here.'
+  - The humming drops below hearing. The tremors stop.
+  - '{keystones}'
+  - '{curator}It''s holding. It''s HOLDING! I''ve put a doily on the Resonator. Nobody
+    is to touch it. Especially me.'
+  - 'THE SEAL HOLDS.
+
+    Thank you for playing. The mine is still yours to dig -
+    and it is gentler, now that nothing below is pushing back.'
+  ReleaseKeystoneLines:
+  - You never took a Keystone. It left every one of them where it lay, as if out
+    of manners.
+  - One socket stands empty on the way up. It pauses there a moment, and goes on.
+  - Two sockets stand empty on the way up. It does not look at them.
+  - The sockets where the Keystones sat are warm for days.
+  ResealKeystoneLines:
+  - You never took a Keystone. The Seal asked almost nothing of you, and closed like
+    a held breath let go.
+  - Somewhere above, one Keystone settles back into its socket.
+  - Somewhere above, two Keystones settle back into their sockets.
+  - Somewhere above, three Keystones settle back into their sockets, one after another,
+    like a lock turning.

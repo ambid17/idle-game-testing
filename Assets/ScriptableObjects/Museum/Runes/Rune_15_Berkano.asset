@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 14
   DisplayName: Berkano
   CuratorTranslation: Birth, renewal, and birch trees. Mostly birch trees.
+  TrueTranslation: It will not die. It only waits to begin again.
   Icon: {fileID: 21300000, guid: c2d7ea911fbb9f94084367f5963cae65, type: 3}
   Tile: {fileID: 11400000, guid: 8b3f8fc4362328843b65c807c360fda5, type: 2}

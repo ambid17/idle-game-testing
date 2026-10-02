@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,6 +12,7 @@ namespace UI
     public class MuseumPrestigeConfirmUI : ModalBase
     {
         [SerializeField] private GameObject root;
+        [SerializeField] private TMP_Text messageLabel;
         [SerializeField] private Button yesButton;
         [SerializeField] private Button noButton;
 
@@ -21,12 +23,15 @@ namespace UI
             if (yesButton != null) yesButton.onClick.AddListener(OnYesClicked);
             if (noButton != null) noButton.onClick.AddListener(Close);
             if (root != null) root.SetActive(false);
+            if (messageLabel == null) Debug.LogError("MuseumPrestigeConfirmUI.messageLabel is not assigned.");
         }
 
         public void Initialize(Action onConfirm) => this.onConfirm = onConfirm;
 
         public void Show()
         {
+            // The warning grows with the story (Story.StoryManager).
+            messageLabel.text = GameManager.StoryManager.ResonancePrompt();
             if (root != null) root.SetActive(true);
             SetOpened();
         }

@@ -16,5 +16,6 @@ MonoBehaviour:
   DisplayName: Eihwaz
   CuratorTranslation: The great tree that holds up the world. We dug through its
     roots. Oops.
+  TrueTranslation: The pillar that holds the world shut. Do not dig at its roots.
   Icon: {fileID: 21300000, guid: d4efe2bb29761644ba7cc1b9219c0760, type: 3}
   Tile: {fileID: 11400000, guid: 0126039ecff77844383c51cb446e0ef1, type: 2}

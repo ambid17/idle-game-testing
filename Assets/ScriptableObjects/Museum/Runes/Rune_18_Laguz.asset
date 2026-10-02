@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 17
   DisplayName: Laguz
   CuratorTranslation: Water. Do not drink the water.
+  TrueTranslation: The glow seeps into the water. Do not drink the water.
   Icon: {fileID: 21300000, guid: a7ab39f86e907db41a8c216299be1f03, type: 3}
   Tile: {fileID: 11400000, guid: d1e74d30a39b2ba43860785977605fc2, type: 2}

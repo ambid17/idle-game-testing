@@ -16,5 +16,6 @@ MonoBehaviour:
   DisplayName: Othala
   CuratorTranslation: Home. Please return your ancestors to the ancestral home when
     finished.
+  TrueTranslation: This is its home. We are the ones who moved in.
   Icon: {fileID: 21300000, guid: 06fb38b735089844694658f9ab836029, type: 3}
   Tile: {fileID: 11400000, guid: 6ab5dfc0f45360445a895d0613415f30, type: 2}

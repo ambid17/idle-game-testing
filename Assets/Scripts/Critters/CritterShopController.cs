@@ -119,7 +119,7 @@ namespace Critters
         }
 
         // CritterShopUI's Talk button.
-        public void Chat() => StartConversation(ChatConversation, BuildLines(ShopkeeperDialog.PickRandom(dialog.Chatter)), openShopAfter: false);
+        public void Chat() => StartConversation(ChatConversation, BuildLines(GameManager.StoryManager.ShopkeeperChatter() ?? ShopkeeperDialog.PickRandom(dialog.Chatter)), openShopAfter: false);
 
         // CritterShopUI's Turn In button.
         public void TurnIn()

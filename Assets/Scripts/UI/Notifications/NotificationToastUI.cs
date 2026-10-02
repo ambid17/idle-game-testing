@@ -44,7 +44,7 @@ namespace UI.Notifications
             if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
 
-        public void Play(string message, Sprite icon, Sprite iconBackground, NotificationUrgency urgency, Action onComplete)
+        public void Play(string message, Sprite icon, Sprite iconBackground, NotificationUrgency urgency, float durationMultiplier, Action onComplete)
         {
             if (messageLabel != null) messageLabel.text = message;
             if (iconImage != null)
@@ -60,14 +60,14 @@ namespace UI.Notifications
             rectTransform.anchoredPosition = timeSensitive ? TimeSensitivePosition : QueuedPosition;
             canvasGroup.alpha = 1f;
 
-            float queuedSeconds = Mathf.Max(HoldSeconds, message.Length * QueuedSecondsPerCharacter);
-            StartCoroutine(timeSensitive ? PlayTimeSensitive(onComplete) : PlayQueued(queuedSeconds, onComplete));
+            float queuedSeconds = Mathf.Max(HoldSeconds, message.Length * QueuedSecondsPerCharacter) * durationMultiplier;
+            StartCoroutine(timeSensitive ? PlayTimeSensitive(HoldSeconds * durationMultiplier, onComplete) : PlayQueued(queuedSeconds, onComplete));
         }
 
-        // Solid display for HoldSeconds, then a quick fade-out - no movement.
-        private IEnumerator PlayTimeSensitive(Action onComplete)
+        // Solid display for holdSeconds, then a quick fade-out - no movement.
+        private IEnumerator PlayTimeSensitive(float holdSeconds, Action onComplete)
         {
-            yield return new WaitForSeconds(HoldSeconds);
+            yield return new WaitForSeconds(holdSeconds);
 
             float elapsed = 0f;
             while (elapsed < TimeSensitiveFadeSeconds)

@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 2
   DisplayName: Thurisaz
   CuratorTranslation: Beware the thorn. Specifically the one in the break room.
+  TrueTranslation: Thorn. One in every wall, the points turned inward.
   Icon: {fileID: 21300000, guid: bd42f261e1fd8fa4eb8ab637e5d6d844, type: 3}
   Tile: {fileID: 11400000, guid: 25394187424340c40b828572feca42e0, type: 2}

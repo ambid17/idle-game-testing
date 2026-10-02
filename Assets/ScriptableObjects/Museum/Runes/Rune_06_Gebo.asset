@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 5
   DisplayName: Gebo
   CuratorTranslation: A gift! Receipt not included.
+  TrueTranslation: It gave us light freely. We took more than was given.
   Icon: {fileID: 21300000, guid: 02b239b1e5901e04c8ebfb7ec2e21c60, type: 3}
   Tile: {fileID: 11400000, guid: 351bec8b4ef028e4d96b10f197939fe0, type: 2}

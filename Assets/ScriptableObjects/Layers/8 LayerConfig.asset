@@ -67,6 +67,7 @@ MonoBehaviour:
   EmptyPocketSizeMin: 2
   EmptyPocketSizeMax: 5
   Features:
+  - {fileID: 11400000, guid: cbf70dc70d7929740b6677c30b3ba0aa, type: 2}
   - {fileID: 11400000, guid: 085bec42858418545b6facb3e47deed7, type: 2}
   - {fileID: 11400000, guid: ece5d7d2a677396469d3445a56b5e39a, type: 2}
   - {fileID: 11400000, guid: 38806e5678a34ea438bba323dcc4716a, type: 2}

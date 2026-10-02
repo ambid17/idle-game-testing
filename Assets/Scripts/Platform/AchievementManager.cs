@@ -4,6 +4,7 @@ using Events;
 using MapGeneration;
 using Persistence;
 using Player;
+using Story;
 #if !DISABLESTEAMWORKS
 using Steamworks;
 #endif
@@ -27,7 +28,9 @@ namespace Platform
         LayerClear,
         FirstPrestige,
         Prestige10,
-        HazardDeaths
+        HazardDeaths,
+        EndingRelease,
+        EndingReseal
     }
 
     // Tracks cumulative LifetimeStats (saved in save.json, never reset by prestige) and unlocks
@@ -56,6 +59,8 @@ namespace Platform
             { AchievementId.FirstPrestige, "ACH_FIRST_PRESTIGE" },
             { AchievementId.Prestige10, "ACH_PRESTIGE_10" },
             { AchievementId.HazardDeaths, "ACH_HAZARD_DEATHS" },
+            { AchievementId.EndingRelease, "ACH_ENDING_RELEASE" },
+            { AchievementId.EndingReseal, "ACH_ENDING_RESEAL" },
         };
 
         // Layer indices are 0-based; the achievement names use the 1-based layer number.
@@ -84,6 +89,7 @@ namespace Platform
             GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Add<PlayerDiedEvent>(OnPlayerDied);
             GameManager.EventService.Add<LoadCompletedEvent>(OnLoadCompleted);
+            GameManager.EventService.Add<StoryProgressChangedEvent>(EvaluateStoryAchievements);
         }
 
         private void OnDisable()
@@ -95,6 +101,7 @@ namespace Platform
             GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Remove<PlayerDiedEvent>(OnPlayerDied);
             GameManager.EventService.Remove<LoadCompletedEvent>(OnLoadCompleted);
+            GameManager.EventService.Remove<StoryProgressChangedEvent>(EvaluateStoryAchievements);
         }
 
         // Called by SaveService.ApplyLoadedData, before LoadCompletedEvent fires.
@@ -165,6 +172,7 @@ namespace Platform
             EvaluateStatAchievements();
             EvaluateUpgradeAchievements();
             EvaluatePrestigeAchievements();
+            EvaluateStoryAchievements();
             if (Stats.DollarsEarned >= DollarsTarget) Unlock(AchievementId.Earn1M);
 
             SyncAllToSteam();
@@ -200,6 +208,13 @@ namespace Platform
             int count = PrestigeManager.Instance.PrestigeCount;
             if (count >= 1) Unlock(AchievementId.FirstPrestige);
             if (count >= PrestigeTarget) Unlock(AchievementId.Prestige10);
+        }
+
+        private void EvaluateStoryAchievements()
+        {
+            var ending = GameManager.StoryManager.Ending;
+            if (ending == StoryEnding.Release) Unlock(AchievementId.EndingRelease);
+            if (ending == StoryEnding.Reseal) Unlock(AchievementId.EndingReseal);
         }
 
         private static int CountBlockTypes(BlockCategory category)

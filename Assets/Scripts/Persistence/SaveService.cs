@@ -213,6 +213,7 @@ namespace Persistence
             data.Critters = CritterCollection.Instance.ToSaveData();
             data.Museum = RuneCollection.Instance.ToSaveData();
             data.SkyArtifactCollected = skyArtifact.IsCollected;
+            data.Story = GameManager.StoryManager.ToSaveData();
 
             try
             {
@@ -313,6 +314,7 @@ namespace Persistence
             CritterCollection.Instance.RestoreFromSaveData(data.Critters);
             RuneCollection.Instance.RestoreFromSaveData(data.Museum);
             skyArtifact.RestoreCollected(data.SkyArtifactCollected);
+            GameManager.StoryManager.RestoreFromSaveData(data.Story, data.LifetimeStats != null ? data.LifetimeStats.DeepestLayerIndex : -1);
 
             foreach (var entry in data.UpgradeLevels)
             {

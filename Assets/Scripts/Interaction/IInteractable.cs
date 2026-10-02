@@ -15,6 +15,8 @@ namespace Interaction
         Critter,
         Building_CritterShop,
         SkyArtifact,
+        // A Keystone or the Vault's last Seal (Story.SealChamber).
+        SealChamber,
     }
 
     public enum InteractionType

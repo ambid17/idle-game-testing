@@ -15,5 +15,6 @@ MonoBehaviour:
   Index: 16
   DisplayName: Mannaz
   CuratorTranslation: Humanity. Two stick figures holding hands, or one doing a cartwheel.
+  TrueTranslation: We did this. Let whoever reads remember it was us.
   Icon: {fileID: 21300000, guid: 2975f68d5a3ccae428a419731b2df331, type: 3}
   Tile: {fileID: 11400000, guid: 1ab99c52c29215a40b393e1916d49733, type: 2}

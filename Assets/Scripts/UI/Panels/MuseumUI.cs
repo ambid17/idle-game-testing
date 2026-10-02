@@ -18,7 +18,8 @@ namespace UI
     // toggles the child rendererRoot. Blocks player input while open (like ControlCenterUI) since
     // "Prestige Now" is a destructive, irreversible action that shouldn't be one accidental click away.
     // Two tabs (TabGroupUI on this panel root): the perk tree, and the curator's rune Collection
-    // (MuseumCollectionUI). The very first visit plays the curator's intro before the panel opens.
+    // (MuseumCollectionUI). The very first visit plays the curator's intro before the panel opens,
+    // as does the first visit after the story reaches the Retranslation.
     public class MuseumUI : MonoBehaviour
     {
         [Header("Panel")]
@@ -93,6 +94,11 @@ namespace UI
                     MuseumCuratorController.Instance.PlayIntro();
                     return;
                 }
+                if (GameManager.StoryManager.ShouldPlayRetranslation)
+                {
+                    MuseumCuratorController.Instance.PlayRetranslation();
+                    return;
+                }
                 Open();
             }
             else
@@ -103,7 +109,7 @@ namespace UI
 
         private void OnDialogFinished(DialogFinishedEvent evt)
         {
-            if (evt.ConversationId == MuseumCuratorController.IntroConversation) Open();
+            if (evt.ConversationId == MuseumCuratorController.IntroConversation || evt.ConversationId == MuseumCuratorController.RetranslationConversation) Open();
         }
 
         private void Open()

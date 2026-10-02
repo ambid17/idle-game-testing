@@ -16,5 +16,6 @@ MonoBehaviour:
   DisplayName: Raidho
   CuratorTranslation: Journey well. The journey is downward. All journeys are downward
     here.
+  TrueTranslation: The road goes down. Do not let it come back up the road.
   Icon: {fileID: 21300000, guid: 57995cdcce2150040a0bb7e063ea272e, type: 3}
   Tile: {fileID: 11400000, guid: b9fcaeef792a20e4e9b9a5a9f508d529, type: 2}
