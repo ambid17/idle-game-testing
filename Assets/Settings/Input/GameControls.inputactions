@@ -340,7 +340,7 @@
                 {
                     "name": "",
                     "id": "51d282a6-e8d3-4d73-a76a-390548a71893",
-                    "path": "<Gamepad>/rightStickPress",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -362,7 +362,7 @@
                 {
                     "name": "",
                     "id": "079265fe-3cdf-4e93-9716-30bf203c18e5",
-                    "path": "<Gamepad>/leftStickPress",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -492,9 +492,19 @@
                     "priority": 0
                 },
                 {
-                    "name": "TutorialAdvance",
+                    "name": "PromptSelect",
                     "type": "Button",
                     "id": "4d1f8a26-6c3e-4b57-9a02-7e5b1c9d3f48",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "PromptClose",
+                    "type": "Button",
+                    "id": "0b7d3e92-5a41-4c68-9f1e-2d8c6a4b7e13",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -510,7 +520,40 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "TutorialAdvance",
+                    "action": "PromptSelect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3f6a9c18-7e2d-4b05-8c41-9a5d1e7f2b60",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "PromptSelect",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a4c81f57-2b9e-4d36-b70a-6e3f5d8c1a92",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "PromptClose",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d92e5b04-8c17-4fa3-a65d-1b7c4e9f3068",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "PromptClose",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

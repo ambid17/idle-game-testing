@@ -71,7 +71,8 @@ namespace Settings
         private readonly InputAction tabPreviousAction;
         private readonly InputAction subTabNextAction;
         private readonly InputAction subTabPreviousAction;
-        private readonly InputAction tutorialAdvanceAction;
+        private readonly InputAction promptSelectAction;
+        private readonly InputAction promptCloseAction;
 
         private InputActionRebindingExtensions.RebindingOperation rebinding;
         private int captureEndedFrame = -1;
@@ -101,7 +102,8 @@ namespace Settings
             tabPreviousAction = asset.FindAction("Menu/TabPrevious", throwIfNotFound: true);
             subTabNextAction = asset.FindAction("Menu/SubTabNext", throwIfNotFound: true);
             subTabPreviousAction = asset.FindAction("Menu/SubTabPrevious", throwIfNotFound: true);
-            tutorialAdvanceAction = asset.FindAction("Menu/TutorialAdvance", throwIfNotFound: true);
+            promptSelectAction = asset.FindAction("Menu/PromptSelect", throwIfNotFound: true);
+            promptCloseAction = asset.FindAction("Menu/PromptClose", throwIfNotFound: true);
 
             Load();
             asset.FindActionMap("Gameplay", throwIfNotFound: true).Enable();
@@ -127,9 +129,17 @@ namespace Settings
         public bool WasSubTabNextPressedThisFrame() => subTabNextAction.WasPressedThisFrame();
         public bool WasSubTabPreviousPressedThisFrame() => subTabPreviousAction.WasPressedThisFrame();
 
-        // Keyboard-only (Space, fixed): dismisses the tutorial popup on screen, showing the next
-        // queued one if any. A controller does the same through UI Submit on the focused button.
-        public bool WasTutorialAdvancePressedThisFrame() => tutorialAdvanceAction.WasPressedThisFrame();
+        // Fixed buttons for on-screen prompts (UI.PromptInput): Select is Space / gamepad A, Close
+        // is Escape / gamepad B.
+        public bool WasPromptSelectPressedThisFrame() => promptSelectAction.WasPressedThisFrame();
+        public bool WasPromptClosePressedThisFrame() => promptCloseAction.WasPressedThisFrame();
+
+        // Effective control path of the Select button for scheme, for KeyIconDatabase lookups.
+        public string GetPromptSelectPath(InputScheme scheme)
+        {
+            int index = GetBindingIndex(promptSelectAction, scheme);
+            return index < 0 ? null : promptSelectAction.bindings[index].effectivePath;
+        }
 
         public static string GroupFor(InputScheme scheme) => scheme == InputScheme.Gamepad ? GamepadGroup : KeyboardGroup;
 
@@ -143,14 +153,14 @@ namespace Settings
 
         public string GetDisplayName(GameAction action, InputScheme scheme)
         {
-            int index = GetBindingIndex(action, scheme);
+            int index = GetBindingIndex(actions[action], scheme);
             return index < 0 ? "-" : actions[action].GetBindingDisplayString(index);
         }
 
         // Effective control path (e.g. "<Gamepad>/buttonSouth"), for KeyIconDatabase lookups.
         public string GetBindingPath(GameAction action, InputScheme scheme)
         {
-            int index = GetBindingIndex(action, scheme);
+            int index = GetBindingIndex(actions[action], scheme);
             return index < 0 ? null : actions[action].bindings[index].effectivePath;
         }
 
@@ -169,7 +179,7 @@ namespace Settings
             CancelRebind();
 
             var inputAction = actions[action];
-            int index = GetBindingIndex(action, scheme);
+            int index = GetBindingIndex(inputAction, scheme);
             string previousPath = inputAction.bindings[index].effectivePath;
             bool isGamepad = scheme == InputScheme.Gamepad;
 
@@ -225,7 +235,7 @@ namespace Settings
             {
                 if (pair.Key == action || !IsRebindable(pair.Key, scheme)) continue;
 
-                int otherIndex = GetBindingIndex(pair.Key, scheme);
+                int otherIndex = GetBindingIndex(pair.Value, scheme);
                 if (otherIndex < 0) continue;
                 if (string.Equals(pair.Value.bindings[otherIndex].effectivePath, newPath, StringComparison.OrdinalIgnoreCase))
                 {
@@ -236,9 +246,9 @@ namespace Settings
 
         // The first binding in the scheme's group is the one shown and rebound. The asset lists
         // the gamepad d-pad before the left stick for movement actions.
-        private int GetBindingIndex(GameAction action, InputScheme scheme)
+        private static int GetBindingIndex(InputAction action, InputScheme scheme)
         {
-            var bindings = actions[action].bindings;
+            var bindings = action.bindings;
             string group = GroupFor(scheme);
             for (int i = 0; i < bindings.Count; i++)
             {
@@ -298,7 +308,7 @@ namespace Settings
 
                 if (!Enum.TryParse(saved, out Key key) || key == Key.None) continue;
                 string path = "<Keyboard>/" + keyboard[key].name;
-                int index = GetBindingIndex(action, InputScheme.KeyboardMouse);
+                int index = GetBindingIndex(actions[action], InputScheme.KeyboardMouse);
                 if (actions[action].bindings[index].path != path)
                 {
                     actions[action].ApplyBindingOverride(index, path);

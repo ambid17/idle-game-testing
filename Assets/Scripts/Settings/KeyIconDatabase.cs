@@ -42,7 +42,12 @@ namespace Settings
         {
             var keybinds = GameManager.KeybindService;
             var scheme = keybinds.CurrentScheme;
-            string path = keybinds.GetBindingPath(action, scheme);
+            return GetIcon(keybinds.GetBindingPath(action, scheme), scheme);
+        }
+
+        // Icon for a binding's control path (e.g. "<Keyboard>/space", "<Gamepad>/buttonSouth").
+        public Sprite GetIcon(string path, InputScheme scheme)
+        {
             if (path == null) return scheme == InputScheme.Gamepad ? GamepadFallbackSprite : FallbackSprite;
 
             if (scheme == InputScheme.Gamepad) return GetGamepadIcon(path);

@@ -43,12 +43,15 @@ namespace UI
         // A TMP_Dropdown's option list is spawned as a child of the dropdown, so a selection below
         // a dropdown (rather than the dropdown itself) means its list is open. Cancel then belongs
         // to the dropdown (closing the list), not to PlayerController's close-the-panel handling.
+        // The EventSystem may deliver that Cancel before PlayerController reads the same press, by
+        // which point the dropdown has already re-selected itself - but IsExpanded stays true
+        // while the list fades out, so the press is still recognised as the dropdown's.
         public static bool IsDropdownListOpen()
         {
             var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
             if (selected == null) return false;
             var dropdown = selected.GetComponentInParent<TMP_Dropdown>();
-            return dropdown != null && dropdown.gameObject != selected;
+            return dropdown != null && (dropdown.gameObject != selected || dropdown.IsExpanded);
         }
 
         private void OnEnable()

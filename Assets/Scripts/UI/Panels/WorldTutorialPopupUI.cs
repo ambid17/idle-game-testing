@@ -23,21 +23,9 @@ namespace UI
         [SerializeField] private TMP_Text bodyLabel;
         [SerializeField] private Button closeButton;
 
-        // closeButton's label and its authored text ("Got it"), which gets the Space hint appended
-        // - see TutorialAdvancePrompt.
-        private TMP_Text closeLabel;
-        private string closeLabelText;
-
-        private void Awake()
-        {
-            if (closeButton != null) closeLabel = closeButton.GetComponentInChildren<TMP_Text>(true);
-            if (closeLabel == null)
-            {
-                Debug.LogError("WorldTutorialPopupUI.closeButton has no TMP_Text label.");
-                return;
-            }
-            closeLabelText = closeLabel.text;
-        }
+        // The press that brought a tutorial up (e.g. A, when that is what mined the Artifact) mustn't also
+        // dismiss it.
+        private int shownFrame = -1;
 
         private void Start()
         {
@@ -54,27 +42,17 @@ namespace UI
         {
             base.OnEnable();
             GameManager.EventService.Add<ShowTutorialEvent>(OnShowTutorial);
-            GameManager.EventService.Add<InputSchemeChangedEvent>(OnInputSchemeChanged);
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
             GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
-            GameManager.EventService.Remove<InputSchemeChangedEvent>(OnInputSchemeChanged);
-        }
-
-        private void OnInputSchemeChanged(InputSchemeChangedEvent evt) => RefreshCloseLabel();
-
-        private void RefreshCloseLabel()
-        {
-            if (closeLabel == null) return;
-            closeLabel.text = TutorialAdvancePrompt.Label(closeLabelText);
         }
 
         private void Update()
         {
-            if (IsOpen && TutorialAdvancePrompt.WasPressedThisFrame()) Close();
+            if (IsOpen && PromptInput.WasSelectPressedThisFrame()) Close();
         }
 
         private void OnShowTutorial(ShowTutorialEvent evt)
@@ -85,16 +63,17 @@ namespace UI
             transform.position = evt.WorldPosition.Value;
             titleLabel.text = evt.Entry.Title;
             bodyLabel.text = evt.Entry.Body;
-            RefreshCloseLabel();
 
             InputBlocker.SetBlocked(true);
             rendererRoot.SetActive(true);
+            shownFrame = Time.frameCount;
             SetOpened();
         }
 
         public override void Close()
         {
             if (rendererRoot == null || !rendererRoot.activeSelf) return;
+            if (Time.frameCount == shownFrame) return;
 
             InputBlocker.SetBlocked(false);
             rendererRoot.SetActive(false);

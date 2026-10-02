@@ -27,10 +27,10 @@ namespace UI
 
         private readonly Queue<TutorialEntry> pending = new();
 
-        // closeButton's label and its authored text ("Got it"), which gets the Space hint appended
-        // - see TutorialAdvancePrompt.
-        private TMP_Text closeLabel;
-        private string closeLabelText;
+        // The press that brought a tutorial up (buying an upgrade with A, dismissing the previous
+        // tutorial) mustn't also dismiss it, however many ways that one press is delivered -
+        // PromptInput here, UI Submit on closeButton, ModalCloseRequestedEvent.
+        private int shownFrame = -1;
 
         // Hides the root in Awake rather than Start: on a fresh game the CoreGoal tutorial is
         // dispatched during load, which can land before this component's Start. Hiding it in Start
@@ -39,14 +39,6 @@ namespace UI
         private void Awake()
         {
             if (rendererRoot != null) rendererRoot.SetActive(false);
-
-            if (closeButton != null) closeLabel = closeButton.GetComponentInChildren<TMP_Text>(true);
-            if (closeLabel == null)
-            {
-                Debug.LogError("TutorialModalUI.closeButton has no TMP_Text label.");
-                return;
-            }
-            closeLabelText = closeLabel.text;
         }
 
         private void Start()
@@ -63,22 +55,12 @@ namespace UI
         {
             base.OnEnable();
             GameManager.EventService.Add<ShowTutorialEvent>(OnShowTutorial);
-            GameManager.EventService.Add<InputSchemeChangedEvent>(OnInputSchemeChanged);
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
             GameManager.EventService.Remove<ShowTutorialEvent>(OnShowTutorial);
-            GameManager.EventService.Remove<InputSchemeChangedEvent>(OnInputSchemeChanged);
-        }
-
-        private void OnInputSchemeChanged(InputSchemeChangedEvent evt) => RefreshCloseLabel();
-
-        private void RefreshCloseLabel()
-        {
-            if (closeLabel == null) return;
-            closeLabel.text = TutorialAdvancePrompt.Label(closeLabelText);
         }
 
         private void OnShowTutorial(ShowTutorialEvent evt)
@@ -90,10 +72,10 @@ namespace UI
         }
 
         // Polls so a tutorial deferred behind another modal shows as soon as that modal closes.
-        // Space dismisses the one on screen, which shows the next queued one (Close).
+        // Select (Space / A) dismisses the one on screen, which shows the next queued one (Close).
         private void Update()
         {
-            if (IsOpen && TutorialAdvancePrompt.WasPressedThisFrame())
+            if (IsOpen && PromptInput.WasSelectPressedThisFrame())
             {
                 Close();
                 return;
@@ -111,9 +93,9 @@ namespace UI
             var entry = pending.Dequeue();
             titleLabel.text = entry.Title;
             bodyLabel.text = entry.Body;
-            RefreshCloseLabel();
 
             rendererRoot.SetActive(true);
+            shownFrame = Time.frameCount;
             SetOpened();
         }
 
@@ -122,6 +104,7 @@ namespace UI
         public override void Close()
         {
             if (rendererRoot == null || !rendererRoot.activeSelf) return;
+            if (Time.frameCount == shownFrame) return;
 
             rendererRoot.SetActive(false);
             SetClosed();

@@ -8,11 +8,13 @@ namespace UI.Panels
 {
     // Bottom-of-screen cinematic subtitle shown during Buildings.BuildingRevealCinematicPlayer's
     // spawn cinematic, explaining whichever building just materialized. Body text appears
-    // immediately; a "click to continue" prompt appears after promptDelaySeconds, and clicking
-    // anywhere afterward dismisses it and invokes the caller's callback. Purely a display panel -
+    // immediately; a "continue" prompt appears after promptDelaySeconds, and from then on clicking
+    // anywhere or pressing Select or Close (UI.PromptInput - Space / Escape, A / B on a
+    // controller) dismisses it and invokes the caller's callback. Purely a display panel -
     // BuildingRevealCinematicPlayer already owns Player.InputBlocker for the whole cinematic, so
-    // unlike TutorialModalUI/WorldTutorialPopupUI this isn't a ModalBase (no independent
-    // input-blocking or Escape-to-skip).
+    // unlike TutorialModalUI/WorldTutorialPopupUI this isn't a ModalBase, and it reads the prompt
+    // buttons itself rather than through controller focus (it has no GamepadFocus). The prompt's
+    // button icon is a UI.PromptSelectIcon in the scene.
     public class BuildingRevealTextUI : MonoBehaviour
     {
         [SerializeField] private GameObject rendererRoot;
@@ -22,6 +24,7 @@ namespace UI.Panels
 
         private Action onDismissed;
         private Coroutine promptCoroutine;
+        private bool canDismiss;
 
         private void Start()
         {
@@ -30,13 +33,14 @@ namespace UI.Panels
             if (continuePrompt == null) Debug.LogError("BuildingRevealTextUI.continuePrompt is not assigned.");
             if (clickCatcher == null) Debug.LogError("BuildingRevealTextUI.clickCatcher is not assigned.");
 
-            if (clickCatcher != null) clickCatcher.onClick.AddListener(OnClicked);
+            if (clickCatcher != null) clickCatcher.onClick.AddListener(Dismiss);
             if (rendererRoot != null) rendererRoot.SetActive(false);
         }
 
         public void Show(string body, float promptDelaySeconds, Action onDismissedCallback)
         {
             onDismissed = onDismissedCallback;
+            canDismiss = false;
             if (bodyLabel != null) bodyLabel.text = body;
             if (continuePrompt != null) continuePrompt.SetActive(false);
             if (clickCatcher != null) clickCatcher.interactable = false;
@@ -50,10 +54,20 @@ namespace UI.Panels
             yield return new WaitForSeconds(delay);
             if (continuePrompt != null) continuePrompt.SetActive(true);
             if (clickCatcher != null) clickCatcher.interactable = true;
+            canDismiss = true;
         }
 
-        private void OnClicked()
+        private void Update()
         {
+            if (!canDismiss) return;
+            if (PromptInput.WasSelectPressedThisFrame() || PromptInput.WasClosePressedThisFrame()) Dismiss();
+        }
+
+        private void Dismiss()
+        {
+            if (!canDismiss) return;
+            canDismiss = false;
+
             if (promptCoroutine != null) StopCoroutine(promptCoroutine);
             if (rendererRoot != null) rendererRoot.SetActive(false);
 
