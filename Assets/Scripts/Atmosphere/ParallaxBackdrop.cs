@@ -63,8 +63,10 @@ namespace Atmosphere
         [Header("Surface (where the mine meets the sky)")]
         [Tooltip("Packed-earth back wall just under the surface (Tools/Backdrops/make_surface_backdrops.py), in front of the cave planes - its ragged lower edge is the cave ceiling. Its top row stretches upward so it always reaches the surface.")]
         [SerializeField] private BackdropPlane surfaceSoil;
-        [Tooltip("Hill silhouettes standing on the horizon, drawn with the sky. Their bottom row stretches downward as solid ground, so no sky shows under them from any camera height.")]
+        [Tooltip("Hill silhouettes standing on the horizon, drawn with the sky. Their ground band repeats downward as solid ground, so no sky shows under them from any camera height.")]
         [SerializeField] private List<BackdropPlane> horizonHills = new();
+        [Tooltip("Fraction of the hill art's height, at its bottom, that is plain ground authored to tile vertically (GROUND_ROWS in make_surface_backdrops.py). Repeated below the hills instead of stretching one row, which smears the dithering into streaks.")]
+        [Range(0f, 1f)] [SerializeField] private float horizonGroundBand = 0.125f;
 
         [Header("Sky (above the surface)")]
         [Tooltip("Bands stacked upward from the surface; the last one repeats forever.")]
@@ -95,6 +97,7 @@ namespace Atmosphere
         private static readonly int EdgeShadeLengthId = Shader.PropertyToID("_EdgeShadeLength");
         private static readonly int TileRectId = Shader.PropertyToID("_TileRect");
         private static readonly int TileClampYId = Shader.PropertyToID("_TileClampY");
+        private static readonly int TileGroundBandId = Shader.PropertyToID("_TileGroundBand");
 
         private void OnEnable()
         {
@@ -190,6 +193,7 @@ namespace Atmosphere
             block.SetFloat(EdgeShadeId, 1f);
             block.SetVector(TileRectId, new Vector4(gridWorldWidth * 0.5f, originY, tileSize.x, tileSize.y));
             block.SetFloat(TileClampYId, 1f);
+            block.SetFloat(TileGroundBandId, sky ? horizonGroundBand : 0f);
             renderer.SetPropertyBlock(block);
         }
 

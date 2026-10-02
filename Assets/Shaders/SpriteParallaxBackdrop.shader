@@ -18,6 +18,9 @@
 //    rows land and can put biome cuts on the empty rows between formations. _TileClampY = 1
 //    repeats only sideways: past the strip's top or bottom the edge row stretches on, for the
 //    surface strips (soil wall, horizon hills) that must always reach the surface line.
+//    A stretched row only holds up if it is one flat colour; the hills' dithered ground would
+//    smear into vertical streaks, so _TileGroundBand > 0 instead repeats the strip's bottom band
+//    (that fraction of its height, authored to tile vertically) below it.
 // Built on Unity's sprite include so SpriteRenderer colour (_RendererColor) and Tiled draw mode
 // work exactly like Sprites-Default.
 Shader "Custom/SpriteParallaxBackdrop"
@@ -42,6 +45,7 @@ Shader "Custom/SpriteParallaxBackdrop"
         [PerRendererData] _EdgeShadeLength ("Seam Shade Length", Float) = 1
         [PerRendererData] _TileRect ("World Tile (origin xy, size zw; z = 0 uses sprite UVs)", Vector) = (0, 0, 0, 0)
         [PerRendererData] _TileClampY ("Clamp World Tile Vertically", Float) = 0
+        [PerRendererData] _TileGroundBand ("Clamped Tile: Repeating Bottom Band (fraction of tile height)", Float) = 0
     }
 
     SubShader
@@ -83,6 +87,7 @@ Shader "Custom/SpriteParallaxBackdrop"
             float _EdgeShadeLength;
             float4 _TileRect;
             float _TileClampY;
+            float _TileGroundBand;
 
             float Hash(float n)
             {
@@ -143,7 +148,9 @@ Shader "Custom/SpriteParallaxBackdrop"
                 {
                     uv = (IN.worldPos.xy - _TileRect.xy) / _TileRect.zw;
                     // Clamp inside the edge texel rows (point filtering, repeat wrap).
-                    uv = float2(frac(uv.x), _TileClampY > 0.5 ? clamp(uv.y, 0.0005, 0.9995) : frac(uv.y));
+                    float v = clamp(uv.y, 0.0005, 0.9995);
+                    if (_TileGroundBand > 0 && uv.y < 0) v = frac(uv.y / _TileGroundBand) * _TileGroundBand;
+                    uv = float2(frac(uv.x), _TileClampY > 0.5 ? v : frac(uv.y));
                 }
                 fixed4 c = SampleSpriteTexture(uv) * IN.color;
                 float y = IN.worldPos.y;

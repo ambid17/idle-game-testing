@@ -7,8 +7,8 @@ horizonHills), procedurally in the same chunky pixel art as cave_layout.py.
   lower edge is a ragged cave ceiling with roots and drips, transparent below, where the cavern
   opens up behind it.
 - Backdrop_HorizonFar / _Near: hill silhouettes along the horizon, hazed toward the sky colour.
-  Their bottom row is solid ground, which the clamp extends downward, so no sky shows between
-  the hills and the surface when the camera looks down from above.
+  Their bottom GROUND_ROWS are plain dithered ground, which the shader repeats downward, so no
+  sky shows between the hills and the surface when the camera looks down from above.
 
 Everything wraps horizontally. Run from anywhere: python Tools/Backdrops/make_surface_backdrops.py
 """
@@ -28,6 +28,9 @@ SOIL = [(26, 16, 14), (38, 24, 19), (50, 32, 25), (62, 40, 31), (76, 50, 39)]
 PEBBLE = [(52, 50, 52), (74, 72, 74)]
 ROOT_THREAD = [(66, 46, 34), (112, 92, 66)]
 SKY = np.array([67, 178, 222], float)  # SkyLow far plane, near the horizon
+# Bottom rows of the hill art that are plain ground, tiling vertically (a multiple of the Bayer
+# period). ParallaxBackdrop.horizonGroundBand must equal GROUND_ROWS / the art's rows.
+GROUND_ROWS = 16
 
 
 def periodic(n, periods, rng, octaves=((1.0, 1),)):
@@ -97,16 +100,18 @@ def soil_wall(seed=11, rows=256):
 
 
 def hills(seed, rows, base, height, colour, rim, trees):
-    """Rolling hills: top silhouette, a lit rim, darker toward the ground, solid bottom row."""
+    """Rolling hills: top silhouette, a lit rim, darker toward the ground, plain ground band."""
     rng = np.random.default_rng(seed)
     w = WIDTH // ART_PX
     art = np.zeros((rows, w, 4), np.uint8)
     profile = base + height * periodic(w, 2, rng, ((1.0, 1), (0.3, 3))) + 2 * periodic(w, 25, rng)
-    tops = np.round(rows - 1 - profile).astype(int)
+    tops = np.round(rows - 1 - GROUND_ROWS - profile).astype(int)  # hills stand on the ground band
     colour = np.array(colour, float)
     for x in range(w):
         for y in range(max(0, tops[x]), rows):
-            depth = (y - tops[x]) / max(1, rows - tops[x])
+            # The shading bottoms out at the ground band, which stays one dithered tone so the
+            # shader can repeat it downward without a visible step.
+            depth = min(1.0, (y - tops[x]) / max(1, rows - GROUND_ROWS - tops[x]))
             shade = 1.0 - 0.18 * depth + 0.06 * (BAYER[y % 4, x % 4] - 0.5)
             c = colour * shade
             if y - tops[x] < 2:
