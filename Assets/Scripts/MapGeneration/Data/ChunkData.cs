@@ -24,6 +24,11 @@ namespace MapGeneration
         // below it (yMax) is the unmineable GrassyDirt floor the shop stands on.
         public RectInt? ShopCave;
 
+        // Every StructureDefinition stamped onto this layer (StructureStampFeature) and where it
+        // landed, in chunk-local cells. Rebuilt on every generation like EmptyPockets; only read by
+        // UI.DevPanelSetPiecesTab to find rooms.
+        public readonly List<(StructureDefinition structure, RectInt rect)> StampedStructures = new();
+
         public int TotalCells => Width * Height;
         public float CompletionRatio => TotalCells == 0 ? 0f : (float)MinedCount / TotalCells;
 

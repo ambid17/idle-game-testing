@@ -379,6 +379,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UI.DevUpgradeRowUI
   nameLabel: {fileID: 267504652404513367}
   actionButton: {fileID: 8601155352626959825}
+  actionLabel: {fileID: 9120371036095855731}
 --- !u!1 &8721382212226509818
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,10 +11,13 @@ namespace UI
     {
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private Button actionButton;
+        [SerializeField] private TMP_Text actionLabel;
 
-        public void Bind(string displayName, Action onActionClicked)
+        // actionText null keeps the prefab's own button caption.
+        public void Bind(string displayName, Action onActionClicked, string actionText = null)
         {
             if (nameLabel != null) nameLabel.text = displayName;
+            if (actionLabel != null && actionText != null) actionLabel.text = actionText;
             if (actionButton != null) actionButton.onClick.AddListener(() => onActionClicked());
         }
     }

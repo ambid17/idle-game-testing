@@ -399,6 +399,13 @@ namespace MapGeneration
         public void RefreshCellVisual(int layerIndex, int x, int y) =>
             streamingManager.NotifyCellMined(layerIndex, x, y, System.Array.Empty<Vector2Int>());
 
+        // Repaints cells whose data was rewritten outside the mining path (dev tools).
+        public void RefreshCellVisuals(int layerIndex, IReadOnlyList<Vector2Int> cells)
+        {
+            if (cells.Count == 0) return;
+            streamingManager.NotifyCellMined(layerIndex, cells[0].x, cells[0].y, cells);
+        }
+
         // Hides a DrawDirtBehind block's foreground tile while leaving its dirt, for effects that
         // take over drawing the block (FallingRockHazardEffect's jiggle).
         public void HideCellForeground(int layerIndex, int x, int y) =>

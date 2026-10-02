@@ -12,6 +12,8 @@ namespace MapGeneration
         [SerializeField] private StructureDefinition structure;
         [Min(0)] [SerializeField] private int edgeMargin = 2;
 
+        public StructureDefinition Structure => structure;
+
         protected override void Apply(MapEditContext ctx, int instance)
         {
             if (structure == null)
@@ -29,19 +31,29 @@ namespace MapGeneration
             if (w == 0 || h == 0) return;
             if (!ctx.TryFindRect(w, h, edgeMargin, CellFilters.Buildable, SaltFor(instance, 5), out var rect)) return;
 
+            Stamp(ctx, structure, grid, rect.xMin, rect.yMin, SaltFor(instance, 6));
+        }
+
+        // Writes an already-oriented grid with its top-left cell at (x0, y0), which must fit inside
+        // the chunk. Also used by UI.DevPanelSetPiecesTab to drop a structure into a live world.
+        public static void Stamp(MapEditContext ctx, StructureDefinition structure, char[,] grid, int x0, int y0, int oreSalt)
+        {
+            int w = grid.GetLength(0), h = grid.GetLength(1);
+            var rect = new RectInt(x0, y0, w, h);
             if (structure.ClearHazardMargin >= 0) ctx.ClearHazards(rect, structure.ClearHazardMargin);
 
-            int oreSalt = SaltFor(instance, 6);
             for (int gy = 0; gy < h; gy++)
             {
                 for (int gx = 0; gx < w; gx++)
                 {
-                    int x = rect.xMin + gx, y = rect.yMin + gy;
+                    int x = x0 + gx, y = y0 + gy;
                     structure.TryResolve(grid[gx, gy], out var action, out var block);
                     StampCell(ctx, x, y, action, block, oreSalt);
                     if (structure.ClaimFootprint || action != StructureCellAction.Keep) ctx.Claim(x, y);
                 }
             }
+
+            ctx.Chunk.StampedStructures.Add((structure, rect));
         }
 
         private static void StampCell(MapEditContext ctx, int x, int y, StructureCellAction action, BlockType block, int oreSalt)
