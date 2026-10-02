@@ -76492,6 +76492,7 @@ MonoBehaviour:
   hitStopSeconds: 0.07
   menuDelaySeconds: 0.45
   cleanupFadeSeconds: 0.35
+  slumpSink: 0.14
   scrapColumns: 3
   scrapRows: 3
   scrapSpeedRange: {x: 2.5, y: 5}

@@ -211,16 +211,6 @@ def mine_dirt(i):
     return mix(pomf, bloop(260 - 20 * i, 110, 0.14) * 0.7)
 
 
-def mine_ore(i):
-    # Dirt pomf + a soft two-note chime (grace note a fourth below).
-    d = 0.55
-    note = [392.0, 440.0, 523.25][i]  # G4 / A4 / C5
-    buf = np.zeros(int(SR * d))
-    place(buf, chime(note * 0.75, 0.3, 0.06) * 0.3, 0.02)
-    place(buf, chime(note, 0.5, 0.14) * 0.6, 0.08)
-    return mix(mine_dirt(i) * 0.5, buf)
-
-
 def artifact_found():
     # Gentle chime "ta-da": a rising run into a held two-note top.
     d = 1.3
@@ -654,7 +644,7 @@ AMBIENCE = {
 SOUNDS = {
     **{f"MiningHit_{i + 1}": (lambda i=i: mining_hit(i)) for i in range(3)},
     **{f"MineDirt_{i + 1}": (lambda i=i: mine_dirt(i)) for i in range(3)},
-    **{f"MineOre_{i + 1}": (lambda i=i: mine_ore(i)) for i in range(3)},
+    # MineOre_1..3 are cut from an AI-generated clip: see make_mine_ore.py.
     "ArtifactFound": artifact_found,
     "PowerUpCollected": powerup,
     "PlayerHurt": player_hurt,

@@ -185,7 +185,7 @@ namespace UI
 
         private void OnDollarsChanged()
         {
-            dollarsLabel.text = $"${Wallet.Instance.Dollars:0}";
+            dollarsLabel.text = $"{Wallet.Instance.Dollars:0}";
         }
     }
 }
