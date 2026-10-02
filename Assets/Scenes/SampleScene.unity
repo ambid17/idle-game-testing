@@ -2243,6 +2243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &65666101
 GameObject:
   m_ObjectHideFlags: 0
@@ -3620,6 +3621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &90720668 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8125938756317514523, guid: 7a071076d659db145adb99489e0a3aed, type: 3}
@@ -13122,6 +13124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &231108157
 GameObject:
   m_ObjectHideFlags: 0
@@ -14008,10 +14011,10 @@ RectTransform:
   - {fileID: 254743838}
   m_Father: {fileID: 622418912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 88}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -58.246956}
+  m_SizeDelta: {x: 1165, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &244636267
 MonoBehaviour:
@@ -14428,10 +14431,10 @@ RectTransform:
   - {fileID: 154856260}
   m_Father: {fileID: 244636266}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 892.5, y: -44}
+  m_SizeDelta: {x: 545, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &254743839
 MonoBehaviour:
@@ -14994,10 +14997,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1749811751}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 149.20459, y: -191.205}
+  m_SizeDelta: {x: 266.40918, y: 183.0925}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &269109283
 MonoBehaviour:
@@ -18059,6 +18062,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 1698717310}
+  alwaysOnTop: 0
 --- !u!1 &328902175
 GameObject:
   m_ObjectHideFlags: 0
@@ -20353,10 +20357,10 @@ RectTransform:
   - {fileID: 627933734}
   m_Father: {fileID: 622418912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 88}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -407.7287}
+  m_SizeDelta: {x: 1165, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &384041489
 MonoBehaviour:
@@ -23133,7 +23137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3197990980895482809, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_fontSize
-      value: 37.75
+      value: 44.25
       objectReference: {fileID: 0}
     - target: {fileID: 3197990980895482809, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_fontSizeMax
@@ -23177,7 +23181,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMin.x
@@ -23185,15 +23189,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 266.40918
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 55.49875
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_LocalPosition.x
@@ -23225,11 +23229,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 149.20459
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -318.5006
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -24739,7 +24743,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &491222238
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25293,10 +25297,10 @@ RectTransform:
   - {fileID: 398028750}
   m_Father: {fileID: 1082789928}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 892.5, y: -44}
+  m_SizeDelta: {x: 545, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &493840688
 MonoBehaviour:
@@ -27225,7 +27229,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMin.x
@@ -27233,7 +27237,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_SizeDelta.x
@@ -27273,11 +27277,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 582.5
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -42.061737
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -30127,10 +30131,10 @@ RectTransform:
   - {fileID: 317440662}
   m_Father: {fileID: 1569338077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -121.345215}
+  m_SizeDelta: {x: 1165, y: 84.123474}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &620183258
 MonoBehaviour:
@@ -30337,10 +30341,10 @@ RectTransform:
   - {fileID: 492961940}
   m_Father: {fileID: 384041488}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 892.5, y: -44}
+  m_SizeDelta: {x: 545, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &627933735
 MonoBehaviour:
@@ -31375,6 +31379,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 1591411096}
+  alwaysOnTop: 0
 --- !u!114 &659314924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36638,10 +36643,10 @@ RectTransform:
   - {fileID: 1570396085}
   m_Father: {fileID: 622418912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 88}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -174.74088}
+  m_SizeDelta: {x: 1165, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &839724398
 MonoBehaviour:
@@ -40562,7 +40567,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8449412663278312822, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8449412663278312822, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_AnchorMin.x
@@ -40570,7 +40575,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8449412663278312822, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8449412663278312822, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_SizeDelta.x
@@ -40610,11 +40615,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8449412663278312822, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 582.5
       objectReference: {fileID: 0}
     - target: {fileID: 8449412663278312822, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -44.561737
       objectReference: {fileID: 0}
     - target: {fileID: 8449412663278312822, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -48862,10 +48867,10 @@ RectTransform:
   - {fileID: 493840687}
   m_Father: {fileID: 622418912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 88}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -291.23477}
+  m_SizeDelta: {x: 1165, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1082789929
 MonoBehaviour:
@@ -50519,7 +50524,7 @@ Transform:
   m_GameObject: {fileID: 1150534566}
   serializedVersion: 2
   m_LocalRotation: {x: -4.6565474e-10, y: 0.000000029816878, z: 1.388437e-17, w: 1}
-  m_LocalPosition: {x: 20.723675, y: 2.1699998, z: -10}
+  m_LocalPosition: {x: 22.385508, y: 2.1699998, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51260,10 +51265,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1569338077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -39.64174}
+  m_SizeDelta: {x: 1165, y: 79.28348}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1191267788
 MonoBehaviour:
@@ -51822,10 +51827,10 @@ RectTransform:
   - {fileID: 2103994679}
   m_Father: {fileID: 1569338077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -790.43823}
+  m_SizeDelta: {x: 1165, y: 89.123474}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1199861389
 MonoBehaviour:
@@ -52673,7 +52678,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMin.x
@@ -52681,7 +52686,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_SizeDelta.x
@@ -52721,11 +52726,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 772.5
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -42.061737
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -56996,6 +57001,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &1355311486
 GameObject:
   m_ObjectHideFlags: 0
@@ -57374,10 +57380,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 244636266}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 310, y: -44}
+  m_SizeDelta: {x: 620, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1368491850
 MonoBehaviour:
@@ -57747,6 +57753,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1001 &1372895342
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -59978,6 +59985,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &1431477847
 GameObject:
   m_ObjectHideFlags: 0
@@ -60467,6 +60475,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &1443980197
 GameObject:
   m_ObjectHideFlags: 0
@@ -60694,7 +60703,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1451347533
 RectTransform:
   m_ObjectHideFlags: 0
@@ -60766,6 +60775,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &1453153903
 GameObject:
   m_ObjectHideFlags: 0
@@ -63021,7 +63031,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 4.923077, y: 4.923077}
+    oldSize: {x: 5.054294, y: 5.054294}
     newSize: {x: 4.923077, y: 4.923077}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -63468,6 +63478,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &1524042490
 GameObject:
   m_ObjectHideFlags: 0
@@ -66500,10 +66511,10 @@ RectTransform:
   - {fileID: 2091410183}
   m_Father: {fileID: 839724397}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 892.5, y: -44}
+  m_SizeDelta: {x: 545, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1570396086
 MonoBehaviour:
@@ -66746,10 +66757,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1659407249}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 310, y: -44}
+  m_SizeDelta: {x: 620, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1577795448
 MonoBehaviour:
@@ -67546,10 +67557,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1082789928}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 310, y: -44}
+  m_SizeDelta: {x: 620, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1596449973
 MonoBehaviour:
@@ -68834,6 +68845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!114 &1636677012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69702,10 +69714,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 839724397}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 310, y: -44}
+  m_SizeDelta: {x: 620, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1645588308
 MonoBehaviour:
@@ -70081,10 +70093,10 @@ RectTransform:
   - {fileID: 2090150300}
   m_Father: {fileID: 622418912}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 88}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -524.2226}
+  m_SizeDelta: {x: 1165, y: 88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1659407250
 MonoBehaviour:
@@ -70222,7 +70234,7 @@ MonoBehaviour:
   dialog: {fileID: 11400000, guid: 05f8ac21b666fb14c8ff578fbadae98a, type: 2}
   lanternGlowColor: {r: 1, g: 0.75, b: 0.35, a: 0.55}
   lanternGlowSize: 4
-  lanternGlowOffset: {x: 0, y: 1.5}
+  lanternGlowOffset: {x: 0.74, y: 1.13}
 --- !u!1 &1666589098
 GameObject:
   m_ObjectHideFlags: 0
@@ -71624,10 +71636,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1749811751}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 149.20459, y: -53.829376}
+  m_SizeDelta: {x: 266.40918, y: 75.65875}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1717572262
 MonoBehaviour:
@@ -72084,20 +72096,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &1734144199
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1734144113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 202557cd6b7ed2644ba19dcdeaec7ae5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
-  firstSelected: {fileID: 1236305682}
-  alwaysOnTop: 1
 --- !u!224 &1734144114
 RectTransform:
   m_ObjectHideFlags: 0
@@ -72118,6 +72116,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1734144199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1734144113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 202557cd6b7ed2644ba19dcdeaec7ae5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
+  firstSelected: {fileID: 1236305682}
+  alwaysOnTop: 1
 --- !u!1 &1734399044
 GameObject:
   m_ObjectHideFlags: 0
@@ -73075,7 +73087,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1749811751
 RectTransform:
   m_ObjectHideFlags: 0
@@ -73606,6 +73618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &1773610403
 GameObject:
   m_ObjectHideFlags: 0
@@ -74464,10 +74477,10 @@ RectTransform:
   - {fileID: 1105695565}
   m_Father: {fileID: 1569338077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 582.5, y: -454.64172}
+  m_SizeDelta: {x: 1165, y: 582.46954}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1799230250
 MonoBehaviour:
@@ -76209,6 +76222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!114 &1835573839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79113,7 +79127,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMin.x
@@ -79121,7 +79135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_SizeDelta.x
@@ -79161,11 +79175,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 392.5
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -42.061737
       objectReference: {fileID: 0}
     - target: {fileID: 4236405523079306063, guid: c9dcc9e09ac7d014a831f3f6c9bf72da, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -79833,10 +79847,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 384041488}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 310, y: -44}
+  m_SizeDelta: {x: 620, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1911764460
 MonoBehaviour:
@@ -85163,6 +85177,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &2038123807
 GameObject:
   m_ObjectHideFlags: 0
@@ -86280,7 +86295,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 4
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1235984715, guid: 48ec1ffa380f0ec4eac415d25a3434a2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -86324,10 +86339,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerController
   groundSpeed: 5
-  flySpeed: 8
+  flySpeed: 7
   jetpackForce: 15
   maxJetpackRiseSpeed: 20
-  moveAcceleration: 80
+  moveAcceleration: 60
   verticalBrakeDeceleration: 30
   fallDamageVelocityThreshold: 12
   fallDamagePerExcessUnit: 5
@@ -87156,6 +87171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.GamepadFocus
   firstSelected: {fileID: 0}
+  alwaysOnTop: 0
 --- !u!1 &2066554864
 GameObject:
   m_ObjectHideFlags: 0
@@ -88474,10 +88490,10 @@ RectTransform:
   - {fileID: 898819531}
   m_Father: {fileID: 1659407249}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 40}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 892.5, y: -44}
+  m_SizeDelta: {x: 545, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2090150301
 MonoBehaviour:
@@ -88977,7 +88993,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 4
   m_TargetDisplay: 0
 --- !u!224 &2092673530
 RectTransform:
