@@ -24,6 +24,7 @@ namespace Audio
         Jetpack = 24,
         Warning = 25,
         RespawnPortal = 26,
+        PlayerLand = 27,
 
         // Hazards
         ExplosiveFuse = 40,

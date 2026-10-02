@@ -449,8 +449,8 @@ namespace Player
             lastFallSpeed = 0f;
         }
 
-        // Cosmetic only: a dust ring at the player's feet (and a camera bump on hard landings),
-        // growing with how fast they hit the ground.
+        // Cosmetic only: a dust ring and thump at the player's feet (and a camera bump on hard
+        // landings), growing with how fast they hit the ground.
         private void EmitLandingDust(float fallSpeed)
         {
             if (fallSpeed < landingDustSpeedRange.x) return;
@@ -458,6 +458,7 @@ namespace Player
             float strength = Mathf.InverseLerp(landingDustSpeedRange.x, landingDustSpeedRange.y, fallSpeed);
             Vector3 feet = transform.position + (Vector3)groundCheckOffset;
             GameManager.WorldEffects.DustRing(feet, capsuleCollider.size.x * 0.5f, Mathf.RoundToInt(Mathf.Lerp(4f, 12f, strength)), Mathf.Lerp(0.3f, 0.6f, strength));
+            GameManager.AudioService.Play(SoundId.PlayerLand, Mathf.Lerp(0.45f, 1f, strength));
 
             if (fallSpeed < landingShakeMinSpeed) return;
             float shake = Mathf.InverseLerp(landingShakeMinSpeed, landingDustSpeedRange.y, fallSpeed);

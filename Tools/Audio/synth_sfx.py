@@ -299,6 +299,18 @@ def player_death():
     return buf
 
 
+def player_land():
+    # Feet hitting the ground after a fall: a short, round thump with a soft scuff of dust.
+    # Lighter and higher than RockLand's boulder thud. No notes.
+    rng = np.random.default_rng(27)
+    d = 0.28
+    buf = np.zeros(int(SR * d))
+    place(buf, bloop(150, 60, 0.2, attack=0.003), 0)
+    place(buf, poof(0.28, rng, 700, 0.06) * 0.55, 0)
+    place(buf, poof(0.08, rng, 1400, 0.015) * 0.2, 0)
+    return buf
+
+
 def respawn_portal():
     # Portal woosh for the respawn arrival, timed to PlayerPortalTravel.ArrivalRoutine: air
     # swells in as the portal opens (0-0.3s), sweeps up to a peak as the player is spat out
@@ -698,6 +710,7 @@ SOUNDS = {
     "ShieldBlock": shield_block,
     "PlayerDeath": player_death,
     "RespawnPortal": respawn_portal,
+    "PlayerLand": player_land,
     "Warning": warning,
     "ExplosiveFuse": explosive_fuse,
     "Explosion": explosion,
