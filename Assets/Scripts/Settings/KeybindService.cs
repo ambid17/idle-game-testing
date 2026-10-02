@@ -69,6 +69,8 @@ namespace Settings
         private readonly InputAction zoomViewAction;
         private readonly InputAction tabNextAction;
         private readonly InputAction tabPreviousAction;
+        private readonly InputAction subTabNextAction;
+        private readonly InputAction subTabPreviousAction;
         private readonly InputAction tutorialAdvanceAction;
 
         private InputActionRebindingExtensions.RebindingOperation rebinding;
@@ -97,6 +99,8 @@ namespace Settings
             zoomViewAction = asset.FindAction("Menu/ZoomView", throwIfNotFound: true);
             tabNextAction = asset.FindAction("Menu/TabNext", throwIfNotFound: true);
             tabPreviousAction = asset.FindAction("Menu/TabPrevious", throwIfNotFound: true);
+            subTabNextAction = asset.FindAction("Menu/SubTabNext", throwIfNotFound: true);
+            subTabPreviousAction = asset.FindAction("Menu/SubTabPrevious", throwIfNotFound: true);
             tutorialAdvanceAction = asset.FindAction("Menu/TutorialAdvance", throwIfNotFound: true);
 
             Load();
@@ -119,6 +123,9 @@ namespace Settings
         public float ZoomViewInput => zoomViewAction.ReadValue<float>();
         public bool WasTabNextPressedThisFrame() => tabNextAction.WasPressedThisFrame();
         public bool WasTabPreviousPressedThisFrame() => tabPreviousAction.WasPressedThisFrame();
+        // LT/RT, for a tab group nested inside another one's tab (Control Center drone dashboards).
+        public bool WasSubTabNextPressedThisFrame() => subTabNextAction.WasPressedThisFrame();
+        public bool WasSubTabPreviousPressedThisFrame() => subTabPreviousAction.WasPressedThisFrame();
 
         // Keyboard-only (Space, fixed): dismisses the tutorial popup on screen, showing the next
         // queued one if any. A controller does the same through UI Submit on the focused button.

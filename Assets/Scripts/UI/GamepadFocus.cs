@@ -4,6 +4,7 @@ using Settings;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace UI
@@ -87,7 +88,58 @@ namespace UI
                 return;
             }
 
+            // Automatic navigation knows nothing about panels: when a control in a panel
+            // underneath (or on the HUD) is the closest one in the pressed direction, the
+            // selection jumps out to it. Redo that move among this panel's own controls, so the
+            // player isn't blocked from reaching the next one down.
+            var redirected = selected != null && IsValidSelection(lastSelected) ? FindInMoveDirection(lastSelected) : null;
+            if (redirected != null)
+            {
+                EventSystem.current.SetSelectedGameObject(redirected);
+                lastSelected = redirected;
+                return;
+            }
+
             SelectRemembered();
+        }
+
+        // Nearest navigable control inside this panel in the direction the stick/d-pad is held,
+        // scored like Selectable.FindSelectable (closest, weighted towards straight ahead).
+        private GameObject FindInMoveDirection(GameObject from)
+        {
+            var module = EventSystem.current.currentInputModule as InputSystemUIInputModule;
+            if (module == null || module.move == null || module.move.action == null) return null;
+
+            Vector2 move = module.move.action.ReadValue<Vector2>();
+            if (move == Vector2.zero) return null;
+            Vector3 direction = Mathf.Abs(move.x) > Mathf.Abs(move.y)
+                ? new Vector3(Mathf.Sign(move.x), 0f, 0f)
+                : new Vector3(0f, Mathf.Sign(move.y), 0f);
+
+            Vector3 origin = WorldCenter(from.transform);
+            GameObject best = null;
+            float bestScore = 0f;
+            foreach (var selectable in GetComponentsInChildren<Selectable>())
+            {
+                if (selectable.gameObject == from || !selectable.isActiveAndEnabled || !IsNavigable(selectable)) continue;
+
+                Vector3 offset = WorldCenter(selectable.transform) - origin;
+                float dot = Vector3.Dot(direction, offset);
+                if (dot <= 0f) continue;
+
+                float score = dot / offset.sqrMagnitude;
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    best = selectable.gameObject;
+                }
+            }
+            return best;
+        }
+
+        private static Vector3 WorldCenter(Transform t)
+        {
+            return t is RectTransform rect ? rect.TransformPoint(rect.rect.center) : t.position;
         }
 
         private void OnInputSchemeChanged(InputSchemeChangedEvent evt)
@@ -123,7 +175,7 @@ namespace UI
             GameObject scrollbarFallback = null;
             foreach (var selectable in GetComponentsInChildren<Selectable>())
             {
-                if (!selectable.isActiveAndEnabled || !selectable.IsInteractable()) continue;
+                if (!selectable.isActiveAndEnabled || !IsNavigable(selectable)) continue;
                 if (selectable is not Scrollbar) return selectable.gameObject;
                 if (scrollbarFallback == null) scrollbarFallback = selectable.gameObject;
             }
@@ -134,7 +186,14 @@ namespace UI
         {
             if (selected == null || !selected.activeInHierarchy || !selected.transform.IsChildOf(transform)) return false;
             var selectable = selected.GetComponent<Selectable>();
-            return selectable == null || selectable.IsInteractable();
+            return selectable == null || IsNavigable(selectable);
+        }
+
+        // Navigation.None marks a control as mouse-only (TabGroupUI's tab buttons, which a
+        // controller switches with the bumpers), so it never holds the controller selection.
+        private static bool IsNavigable(Selectable selectable)
+        {
+            return selectable.IsInteractable() && selectable.navigation.mode != Navigation.Mode.None;
         }
     }
 }

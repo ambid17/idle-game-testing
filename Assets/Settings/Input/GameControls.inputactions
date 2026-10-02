@@ -472,6 +472,26 @@
                     "priority": 0
                 },
                 {
+                    "name": "SubTabNext",
+                    "type": "Button",
+                    "id": "2a9d4f61-7c3b-4e85-b1d0-5f8e6a3c9d27",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "SubTabPrevious",
+                    "type": "Button",
+                    "id": "8e1b6c34-0d5f-4a72-9c68-3b7a2e4f1d90",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
                     "name": "TutorialAdvance",
                     "type": "Button",
                     "id": "4d1f8a26-6c3e-4b57-9a02-7e5b1c9d3f48",
@@ -557,6 +577,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "TabPrevious",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5c7e2a18-9b4d-4f63-8a05-d1e6f3b29c74",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SubTabNext",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f04b8d53-6a1e-4c97-b382-7e9d5c1a6f08",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SubTabPrevious",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
