@@ -66,6 +66,7 @@ namespace Player
         private Rigidbody2D rb;
         private CapsuleCollider2D capsuleCollider;
         private PlayerHealth health;
+        private PlayerMining mining;
         private FuelSystem fuelSystem;
         private bool wasGrounded;
         private Collider2D groundCollider;
@@ -128,6 +129,8 @@ namespace Player
             rb.WakeUp();
             baseGravityScale = rb.gravityScale;
             health = GetComponent<PlayerHealth>();
+            mining = GetComponent<PlayerMining>();
+            if (mining == null) Debug.LogError($"{nameof(PlayerController)} on {name} requires a PlayerMining component.");
 
             fuelSystem = GetComponent<FuelSystem>();
             if (fuelSystem == null) fuelSystem = gameObject.AddComponent<FuelSystem>();
@@ -343,6 +346,15 @@ namespace Player
             // GameDesignDoc "Survival > Increase fall speed" (Movement_GravityIncrease): reset to
             // base * multiplier rather than compounding, since this runs every FixedUpdate.
             rb.gravityScale = baseGravityScale * (upgrades != null ? upgrades.Movement_GravityMultiplier : 1f);
+
+            // Digging sideways in mid-air (DigWhileFlying perk) holds the player level with the
+            // block instead of letting them drop off it. Only while the jetpack is off - with it
+            // firing, the player is steering vertically themselves.
+            if (!IsGrounded && !IsFlying && mining.IsMiningHorizontally)
+            {
+                rb.gravityScale = 0f;
+                rb.linearVelocityY = 0f;
+            }
 
             if (IsFlying) ApplyCeilingCornerCorrection();
 

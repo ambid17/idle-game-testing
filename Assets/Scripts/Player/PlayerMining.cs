@@ -46,6 +46,7 @@ namespace Player
         private CapsuleCollider2D capsuleCollider;
         private bool hasTarget;
         private int targetLayer, targetX, targetY;
+        private Vector2Int targetDirection;
         private float miningProgress;
         private float miningHitTimer;
         private enum InventoryBlockReason { None, Full, TooHeavy }
@@ -60,6 +61,10 @@ namespace Player
         // True only while actually working on a mineable block - PlayerAnimation plays the drill
         // frames off this rather than off raw input, so bumping an unmineable block doesn't drill.
         public bool IsMining => hasTarget;
+
+        // PlayerController holds the player in the air off this, so a mid-air sideways dig
+        // (DigWhileFlying perk) doesn't drop them off the block they're working on.
+        public bool IsMiningHorizontally => hasTarget && targetDirection.x != 0;
 
         // Persisted by SaveService so the per-block-type notification cap is per save, not per session.
         public IReadOnlyDictionary<BlockTypeId, int> UnmineableNotifyCounts => unmineableNotifyCounts;
@@ -128,6 +133,7 @@ namespace Player
                 // Due immediately, so the first hit lands the moment the player starts digging.
                 miningHitTimer = 0f;
             }
+            targetDirection = direction.Value;
 
             var blockType = mapGenerationService.GetBlockTypeAt(layerIndex, targetCellX, targetCellY);
             // Blocked when the ore wouldn't fit in the remaining capacity, not just when the bag is
