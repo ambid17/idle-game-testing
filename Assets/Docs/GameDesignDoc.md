@@ -47,6 +47,21 @@ I want to make an incremental game similar to motherload
 - upgrades
 	- all regular upgrades are purchased at the market using Dollars
 	- all prestige upgrades at the museum are purchased with artifacts, but only queue - see "# Prestige"
+# Art Style
+- World (tiles, buildings, props, backdrops)
+	- vibrant pixel art of glowing ores, crystalline minerals and ancient tech in a neon-lit fantasy mine
+	- the buildings are the style and detail target
+- UI (icons, buttons, panels, HUD)
+	- flat, smooth pixel art: bold simple shapes, large flat colour areas with clean edges, 2 to 3 tones per colour, dark outline, small white highlight
+	- no texture, noise, dithering, gradients or glow
+	- the lock icon (SellLockClosed) and health icon (HudIcon_Health) are the style target
+	- color palette: cyan, gold, dark gray and white, with neon purple accents
+		- gold is the main body colour, cyan the secondary/interactive colour
+		- dark gray for panels, backing plates and disabled states
+		- white for highlights and text
+		- neon purple only as a small accent
+	- text uses the Orbitron font
+
 # Map Layout 
 	- you start out at 0 meters in depth. 
 	- Buildings are on the top of the digging zone on the ground

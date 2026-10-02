@@ -1,5 +1,24 @@
 Art asset prompts
 
+# UI (icons, buttons, panels, HUD):
+
+Flat, smooth pixel art. Style targets: Assets/Textures/UI/SellLockClosed.png (lock icon) and
+Assets/Textures/UI/HudIcon_Health.png (health icon).
+
+Palette: cyan, gold, dark gray, white, with neon purple accents only.
+- gold is the main body colour (base #F5B529, shadow #D08515, highlight #F5D560)
+- cyan (#22F0F0) for secondary/interactive details
+- dark gray for backing plates and disabled states, dark navy (#201040) outline
+- white for highlights, glints and text
+- neon purple as a small accent, never the main fill
+
+A flat, smooth pixel art icon of <subject>: one bold simple shape, front-facing and centred,
+64x64. Large flat colour areas with clean smooth edges, 2 to 3 flat tones per colour, a dark
+navy outline and a small white highlight. Golden-yellow body with cyan details, dark gray
+secondary parts, white highlights and small neon purple accents only. No texture, no noise,
+no dithering, no gradients, no glow, no background.
+
+
 # Ores:
 
 A vibrant pixel-art style of glowing ores, crystalline minerals, and ancient tech in a

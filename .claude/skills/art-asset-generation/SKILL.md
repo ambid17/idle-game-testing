@@ -1,10 +1,35 @@
 ---
 name: art-asset-generation
-description: Generate pixel-art game assets (UI/upgrade/currency icons, ore tiles, buildings) for idle-game-testing via OpenRouter, matching the project's neon fantasy-mine style, Orbitron font, and per-category size/style specs. Use when creating or regenerating game art.
+description: Generate pixel-art game assets (UI/upgrade/currency icons, ore tiles, buildings) for idle-game-testing via OpenRouter, matching the project's two styles - flat smooth pixel art in a cyan/gold/dark gray/white/neon-purple palette for UI, the neon fantasy-mine building style for world art - plus the Orbitron font and per-category size/style specs. Use when creating or regenerating game art.
 ---
 
 # Art asset generation
-- A vibrant pixel-art style of glowing ores, crystalline minerals, and ancient tech in a neon-lit fantasy mine, each block detailed with sci-fi textures and magical luminescence, rendered in clean anime-inspired lines with soft depth and dynamic lighting.
+There are two styles. UI art follows "UI style" below; world art (tiles, props, buildings, backdrops) follows the building style.
+
+- World art: a vibrant pixel-art style of glowing ores, crystalline minerals, and ancient tech in a neon-lit fantasy mine, each block detailed with sci-fi textures and magical luminescence, rendered in clean anime-inspired lines with soft depth and dynamic lighting.
+
+## UI style (icons, buttons, panels, HUD - anything drawn on the UI)
+Flat, smooth pixel art. `Assets/Textures/UI/SellLockClosed.png` (lock) and `Assets/Textures/UI/HudIcon_Health.png` (heart) are the style target - attach one as the style reference when generating image-to-image, and compare new art against them before importing.
+
+- One bold, simple, front-facing shape that still reads at 64x64. No scene, no background, no perspective.
+- Large flat colour areas with smooth, clean edges: 2 to 3 tones per colour (base, one shadow, one highlight), a dark outline, and a small white specular glint. No texture, grain, noise, dithering, gradients, bevel-and-emboss, glow halos or soft blur.
+- Palette, and nothing outside it:
+	- gold - the main body colour (base `#F5B529`, shadow `#D08515`, highlight `#F5D560`)
+	- cyan - the secondary/interactive colour (`#22F0F0`)
+	- dark gray - backing plates, panels, disabled states, and the near-black outline (`#201040`-ish dark navy)
+	- white - highlights, glints and text
+	- neon purple - accents only (a gem, a trim line, a status pip), never the main fill
+- Colour is not reliable from the prompt (see below): generate for shape and smoothness, then remap onto the palette in post if it drifts.
+
+Prompt opener for UI art:
+
+> Use the attached image ONLY as an art-style reference (do not draw its subject). Match its style exactly: flat, smooth pixel art icon; one bold simple shape, front-facing, centred; large flat colour areas with clean smooth edges; 2 to 3 flat tones per colour, a dark navy outline and a small white highlight; golden-yellow body with cyan details, dark gray secondary parts, white highlights and small neon purple accents only; no texture, no noise, no dithering, no gradients, no glow, no background.
+
+Workflow that produced the power-up icons and badges (2026-10-02):
+- Batch every icon into one request on flat pure magenta (#FF00FF). The model ignores the requested grid and may draw extras, so don't rely on cell positions: `python Tools/UI/slice_icon_sheet.py <sheet.png>` lists the blobs it finds, then `... <sheet.png> 3=Assets/path/Icon.png` writes the chosen ones as 64x64 transparent sprites (keeps purple accents, cuts enclosed handle holes).
+- A 2x2 sheet of the lock, heart, fuel and backpack HUD icons as the reference held the style better than one icon. For a redo of a weak icon, attach the first generated sheet (`Tools/UI/icon_sheet_raw_a.png`) as the reference and ask for just one or two large icons.
+- The reference image must be under `Assets/` for `generate_image`; use a temporary `Assets/_Concepts` folder and delete it afterwards.
+- Overwrite the existing PNG in place so the `.meta` and every reference survive.
 
 ## Building-style prompt (use for world tiles and props)
 The buildings in `Assets/Textures/Buildings` are the style target. Generate image-to-image with a building (e.g. `market.png`) attached as the style reference, and open the prompt with:
@@ -31,7 +56,7 @@ Then describe the subject. For tiles add:
 ## Asset requirements
 - UI/Upgrade/Currency Icons
 	- size: 64x64
-	- style notes: flat icon style
+	- style notes: flat smooth pixel art in the UI palette - see "UI style" above
 - Ore tiles
 	- size 128x128
 	- style notes: 
