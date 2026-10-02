@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Economy;
+using Settings;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace UI.SkillTree
 {
@@ -22,6 +24,16 @@ namespace UI.SkillTree
         private readonly List<SkillTreeNodeUI> nodes = new();
         private readonly List<SkillTreeConnectorUI> connectors = new();
         private SkillTreeNodeUI hoveredNode;
+
+        // The upgrade the player last hovered/selected, kept for the rest of the game session so
+        // the tree re-opens on it (view centered, and selected on a controller). Held as the
+        // definition rather than the node, since dynamically built nodes are recreated on refresh.
+        private UpgradeDefinitionBase lastFocusedUpgrade;
+        private bool isOpen;
+        // Set when the tree becomes visible (opened, or its tab switched back to); handled in
+        // Update, once the nodes are active. Until then selections aren't remembered - they're
+        // GamepadFocus picking its default node, not the player's choice.
+        private bool pendingFocusRestore;
 
         // Read by the skill tree editor tool so it can bake nodes/connectors using this panel's
         // own prefabs/layout config instead of duplicating them.
@@ -59,6 +71,8 @@ namespace UI.SkillTree
             tooltip?.Hide();
             hoveredNode = null;
             RefreshAll();
+            isOpen = true;
+            pendingFocusRestore = true;
         }
 
         // Called by the owning panel (MarketUI/MuseumUI) when it closes, so a still-visible
@@ -67,6 +81,44 @@ namespace UI.SkillTree
         {
             tooltip?.Hide();
             hoveredNode = null;
+            isOpen = false;
+            pendingFocusRestore = false;
+        }
+
+        // Covers the tree living in a tab (Museum): coming back to that tab restores the focus too.
+        private void OnEnable()
+        {
+            if (isOpen) pendingFocusRestore = true;
+        }
+
+        private void Update()
+        {
+            if (!pendingFocusRestore) return;
+
+            var node = FindNode(lastFocusedUpgrade != null ? lastFocusedUpgrade : source?.DefaultFocus);
+            // Not visible yet (the Museum can open on its other tab) - wait until it is.
+            if (node != null && !node.isActiveAndEnabled) return;
+
+            pendingFocusRestore = false;
+            if (node == null) return;
+
+            if (GameManager.KeybindService.CurrentScheme == InputScheme.Gamepad && EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(node.gameObject);
+                // No select event fires if GamepadFocus had already landed on this node.
+                OnNodeHoverEnter(node);
+            }
+            panZoom.CenterOn(node.GetComponent<RectTransform>(), instant: true);
+        }
+
+        private SkillTreeNodeUI FindNode(UpgradeDefinitionBase definition)
+        {
+            if (definition == null) return null;
+
+            // Dynamically built nodes are tracked in the list (content may still hold last
+            // refresh's destroyed ones this frame); a baked tree only exists as content's children.
+            IEnumerable<SkillTreeNodeUI> candidates = nodes.Count > 0 ? nodes : content.GetComponentsInChildren<SkillTreeNodeUI>(true);
+            return candidates.FirstOrDefault(node => node.UpgradeDefinition == definition);
         }
 
         public void RefreshAll()
@@ -153,6 +205,7 @@ namespace UI.SkillTree
         private void OnNodeHoverEnter(SkillTreeNodeUI node)
         {
             hoveredNode = node;
+            if (isOpen && !pendingFocusRestore) lastFocusedUpgrade = node.UpgradeDefinition;
             tooltip?.Show(node.UpgradeDefinition, node.GetComponent<RectTransform>());
         }
 

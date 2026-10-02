@@ -14,6 +14,7 @@ namespace UI.SkillTree
 
         public int BranchCount => Enum.GetValues(typeof(UpgradeBranch)).Length;
         public SkillTreeType SkillTreeType { get { return SkillTreeType.Upgrades; } }
+        public UpgradeDefinitionBase DefaultFocus => database.Find(UpgradeEffect.Economy_InventoryCapacity);
 
         public IReadOnlyList<SkillTreeNodeViewModel> BuildViewModels()
         {

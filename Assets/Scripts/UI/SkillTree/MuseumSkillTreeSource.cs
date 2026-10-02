@@ -17,6 +17,7 @@ namespace UI.SkillTree
 
         public int BranchCount => Enum.GetValues(typeof(PrestigeUpgradeBranch)).Length;
         public SkillTreeType SkillTreeType { get { return SkillTreeType.PrestigeUpgrades; } }
+        public UpgradeDefinitionBase DefaultFocus => database.Find(PrestigeUpgradeEffect.Mining_DrillTier);
 
         public IReadOnlyList<SkillTreeNodeViewModel> BuildViewModels()
         {

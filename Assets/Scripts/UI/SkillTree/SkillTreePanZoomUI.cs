@@ -184,8 +184,9 @@ namespace UI.SkillTree
         }
 
         // Pans (smoothly) so target sits at the center of the viewport - used when a controller
-        // moves the selection onto a node, which may be off-screen.
-        public void CenterOn(RectTransform target)
+        // moves the selection onto a node, which may be off-screen. instant skips the easing, for
+        // putting the view back on a node as the tree opens.
+        public void CenterOn(RectTransform target, bool instant = false)
         {
             if (content == null || content.parent == null) return;
             // The crosshair picked this node - the view is already where the player put it.
@@ -195,7 +196,16 @@ namespace UI.SkillTree
             var viewport = (RectTransform)transform;
             Vector3 viewportCenter = parent.InverseTransformPoint(viewport.TransformPoint(viewport.rect.center));
             Vector3 targetPoint = parent.InverseTransformPoint(target.TransformPoint(target.rect.center));
-            panTarget = content.anchoredPosition + (Vector2)(viewportCenter - targetPoint);
+            Vector2 destination = content.anchoredPosition + (Vector2)(viewportCenter - targetPoint);
+            if (instant)
+            {
+                content.anchoredPosition = destination;
+                panTarget = null;
+            }
+            else
+            {
+                panTarget = destination;
+            }
         }
 
         private void EaseTowardPanTarget()

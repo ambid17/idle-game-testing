@@ -15,6 +15,9 @@ namespace UI.SkillTree
     {
         int BranchCount { get; }
         SkillTreeType SkillTreeType { get; }
+        // The upgrade the tree opens on before the player has hovered/selected one this session.
+        // Null leaves it to the default view and GamepadFocus's first node.
+        UpgradeDefinitionBase DefaultFocus { get; }
         IReadOnlyList<SkillTreeNodeViewModel> BuildViewModels();
         void RequestPurchase(UpgradeDefinitionBase definition);
 
