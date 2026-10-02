@@ -40,6 +40,12 @@ namespace Player
         // upward momentum but never pushes them into a descent (see ApplyVerticalBrakeForce).
         [SerializeField] private float verticalBrakeDeceleration = 30f;
 
+        [Header("Corner Correction")]
+        // Furthest the player is shifted sideways to slip past a ceiling corner they'd otherwise
+        // clip while flying up (see ApplyCeilingCornerCorrection). Too small and clips still eat
+        // their speed; too large and the sideways snap becomes visible.
+        [SerializeField] private float cornerCorrectionMaxNudge = 0.2f;
+
         [Header("Fall Damage")]
         [SerializeField] private float fallDamageVelocityThreshold = 12f;
         [SerializeField] private float fallDamagePerExcessUnit = 2f;
@@ -48,6 +54,11 @@ namespace Player
         [SerializeField] private Vector2 groundCheckOffset = new(0f, -0.5f);
         [SerializeField] private Vector2 groundCheckSize = new(0.9f, 0.1f);
         [SerializeField] private LayerMask groundLayer;
+
+        private const float CornerCorrectionStep = 0.05f;
+        // The probe capsule is shrunk by this much per side so a wall or floor the player is merely
+        // resting against doesn't read as a ceiling hit.
+        private const float CornerCorrectionSkin = 0.02f;
 
         private const float LowFuelWarningFraction = 0.5f;
         public const float CriticalFuelWarningFraction = 0.2f;
@@ -333,6 +344,8 @@ namespace Player
             // base * multiplier rather than compounding, since this runs every FixedUpdate.
             rb.gravityScale = baseGravityScale * (upgrades != null ? upgrades.Movement_GravityMultiplier : 1f);
 
+            if (IsFlying) ApplyCeilingCornerCorrection();
+
             // Jetpack pushes rather than snapping vertical velocity, so gravity still pulls
             // against it - lets the player feather W for a soft landing instead of a hard cutoff.
             if (IsFlying && rb.linearVelocityY < maxJetpackRiseSpeed)
@@ -420,6 +433,39 @@ namespace Player
             float maxForce = moveAcceleration * rb.mass;
             float force = Mathf.Clamp(velocityDiff * rb.mass / Time.fixedDeltaTime, -maxForce, maxForce);
             rb.AddForce(new Vector2(force, 0f), ForceMode2D.Force);
+        }
+
+        // Without this, flying up while slightly misaligned with a shaft clips the capsule's rounded
+        // top on the ceiling tile's corner, and that contact eats nearly all of the player's speed.
+        // Probes this step's upward travel first: if the head would catch a corner and shifting
+        // sideways by at most cornerCorrectionMaxNudge clears it, the player is moved into the
+        // opening before the contact ever happens, so velocity is untouched. A real ceiling fails
+        // every probe and is left to normal physics.
+        private void ApplyCeilingCornerCorrection()
+        {
+            Vector2 scale = transform.lossyScale;
+            Vector2 size = capsuleCollider.size * new Vector2(Mathf.Abs(scale.x), Mathf.Abs(scale.y))
+                - Vector2.one * (CornerCorrectionSkin * 2f);
+            Vector2 origin = rb.position + capsuleCollider.offset * scale;
+            float distance = Mathf.Max(rb.linearVelocityY, 0f) * Time.fixedDeltaTime + CornerCorrectionSkin * 2f;
+
+            RaycastHit2D hit = Physics2D.CapsuleCast(origin, size, capsuleCollider.direction, 0f, Vector2.up, distance, groundLayer);
+            if (hit.collider == null || hit.collider.isTrigger) return;
+
+            // A corner is struck off-centre, so the opening is on the side away from the hit point.
+            // A flat ceiling is struck dead-centre - nothing to slip past.
+            float hitOffsetX = hit.point.x - origin.x;
+            if (Mathf.Abs(hitOffsetX) < CornerCorrectionSkin) return;
+            float nudgeDirection = -Mathf.Sign(hitOffsetX);
+
+            for (float nudge = CornerCorrectionStep; nudge <= cornerCorrectionMaxNudge + 0.0001f; nudge += CornerCorrectionStep)
+            {
+                Vector2 nudgedOrigin = origin + new Vector2(nudgeDirection * nudge, 0f);
+                if (Physics2D.CapsuleCast(nudgedOrigin, size, capsuleCollider.direction, 0f, Vector2.up, distance, groundLayer).collider != null) continue;
+
+                rb.position += new Vector2(nudgeDirection * nudge, 0f);
+                return;
+            }
         }
 
         // Slows upward velocity toward zero. Capped at exactly the force that would zero vy this
