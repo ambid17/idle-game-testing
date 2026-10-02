@@ -14,6 +14,9 @@ death animation
 
 5-6 more music tracks
 
+respawn sfx: portal woosh 
+check hard landing sfx
+
 
 
 

@@ -211,4 +211,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f5874157e49602449a1ca0500a945473, type: 3}
   - {fileID: 8300000, guid: 04244506d99131047bf158a2159b5235, type: 3}
   - {fileID: 8300000, guid: 529eed1d7c64bf549a80b76365f9cde3, type: 3}
+  - {fileID: 8300000, guid: 5d74b52053392ed4c9d53a6faa138c5e, type: 3}
+  - {fileID: 8300000, guid: f5ce32c9dcf20564ea581a491c0cb2bb, type: 3}
+  - {fileID: 8300000, guid: cd4600357da50b54dbea4635344a6060, type: 3}
+  - {fileID: 8300000, guid: afe94b6fea1f0cb41be1112aa7a9b696, type: 3}
+  - {fileID: 8300000, guid: 072f2ca3495d5334bbf790f5d7b1cce9, type: 3}
+  - {fileID: 8300000, guid: e13b4c94f198188488e76d2f4abf9308, type: 3}
   MusicVolume: 0.35
