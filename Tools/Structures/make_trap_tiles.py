@@ -1,46 +1,66 @@
-"""Procedural tiles and sprites for the trap-room set-pieces (Dart Corridor, Sealed Vault;
-the Crusher Room's art comes from make_crusher_art.py). Everything is derived from the Ancient Brick tile so it matches the masonry it
-sits in. Deterministic (fixed seed) - rerun freely; make_masonry_tiles.py must have run first.
+"""Tiles and sprites for the trap-room set-pieces (Dart Corridor, Sealed Vault; the Crusher
+Room's art comes from make_crusher_art.py). The Dart Corridor's fixtures are cut from the
+AI-generated sheet (source/dart_sheet_raw.png - OpenRouter via UnityMCP generate_image,
+crusher_sheet_raw.png as the style reference) and laid over the Ancient Brick tile so they match
+the masonry they sit in; the Cracked Brick is procedural. Deterministic (fixed seed) - rerun
+freely; make_masonry_tiles.py must have run first.
 
     python Tools/Structures/make_trap_tiles.py
 """
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
+from scipy import ndimage
 
 ROOT = Path(__file__).resolve().parents[2]
+SHEET = Path(__file__).resolve().parent / "source/dart_sheet_raw.png"
 ORES = ROOT / "Assets/Textures/Ores"
 HAZARDS = ROOT / "Assets/Textures/Hazards"
 BRICK = ORES / "30 ancientBrick.png"
 
 SIZE = 128
-METAL = (126, 132, 142)
-METAL_DARK = (58, 62, 72)
-METAL_LIGHT = (188, 194, 204)
 RECESS = (22, 20, 24)
-WARN = (214, 96, 44)
+# Quadrant interiors of the 1024 sheet (inside the magenta gutters).
+QUADS = {"plate": (70, 70, 494, 494), "trap": (530, 70, 954, 494), "dart": (70, 530, 494, 954)}
+BACKGROUND_LUMA = 26
+# Rows of each cut subject that hold the metal fixture; the model's own stonework is dropped.
+PLATE_ROWS = (62, 148)  # the plate's front lip and the slot it sinks into, not its top face
+TRAP_ROWS = (0, 183)
+DART_LENGTH = 64        # half a cell
 
 
 def brick():
     return Image.open(BRICK).convert("RGBA")
 
 
-def grain(rng, img, amount=10):
-    """Per-pixel luma noise on the opaque pixels, so flat fills pick up the tile grain."""
-    a = np.asarray(img, dtype=np.int16).copy()
-    noise = rng.integers(-amount, amount + 1, size=a.shape[:2])
-    a[..., :3] = np.clip(a[..., :3] + noise[..., None], 0, 255)
-    return Image.fromarray(a.astype(np.uint8), "RGBA")
+def cut(name):
+    """The quadrant's subject, cropped to its bounds, with the black backdrop made transparent.
+    Only backdrop connected to the quadrant edge is keyed, so dark outlines and recesses stay."""
+    quad = Image.open(SHEET).convert("RGBA").crop(QUADS[name])
+    a = np.asarray(quad).copy()
+    dark = a[..., :3].max(axis=2) <= BACKGROUND_LUMA
+    labels, _ = ndimage.label(dark)
+    edge = np.unique(np.concatenate([labels[0], labels[-1], labels[:, 0], labels[:, -1]]))
+    backdrop = np.isin(labels, edge[edge != 0])
+    a[backdrop] = 0
+    ys, xs = np.where(~backdrop)
+    return Image.fromarray(a, "RGBA").crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
 
 
-def metal_box(d, box, bevel=4):
-    x0, y0, x1, y1 = box
-    d.rectangle(box, fill=METAL)
-    d.rectangle((x0, y0, x1, y0 + bevel - 1), fill=METAL_LIGHT)
-    d.rectangle((x0, y0, x0 + bevel - 1, y1), fill=METAL_LIGHT)
-    d.rectangle((x0, y1 - bevel + 1, x1, y1), fill=METAL_DARK)
-    d.rectangle((x1 - bevel + 1, y0, x1, y1), fill=METAL_DARK)
+def crisp(img, size):
+    """Downscale, then snap alpha to on/off so edges stay hard like the rest of the pixel art."""
+    out = np.asarray(img.resize(size, Image.BOX)).copy()
+    out[..., 3] = np.where(out[..., 3] >= 128, 255, 0)
+    out[out[..., 3] == 0] = 0
+    return Image.fromarray(out, "RGBA")
+
+
+def fixture(name, rows):
+    """The subject's metal rows, scaled to span the full cell width."""
+    src = cut(name)
+    src = src.crop((0, rows[0], src.width, rows[1]))
+    return crisp(src, (SIZE, round(src.height * SIZE / src.width)))
 
 
 def cracked_brick(rng):
@@ -67,42 +87,26 @@ def cracked_brick(rng):
     return img
 
 
-def pressure_plate(rng):
-    """Floor block: brick with a raised metal plate along its top face."""
+def pressure_plate():
+    """Floor block: brick with a metal plate along its top face, over the slot it presses into."""
     img = brick()
-    d = ImageDraw.Draw(img)
-    d.rectangle((10, 0, SIZE - 11, 25), fill=RECESS)
-    metal_box(d, (14, 0, SIZE - 15, 19))
-    for x in (24, SIZE - 25):
-        d.ellipse((x - 3, 7, x + 3, 13), fill=METAL_DARK)
-    d.rectangle((40, 8, SIZE - 41, 11), fill=WARN)
-    return grain(rng, img, 6)
+    img.alpha_composite(fixture("plate", PLATE_ROWS))
+    return img
 
 
-def dart_trap(rng):
-    """Wall block: brick with a metal-ringed bore. Symmetrical, since a trap fires out of
-    whichever faces open onto dug-out ground."""
+def dart_trap():
+    """Wall block: brick with a launcher housing across it, an arrow port at each side. The
+    corridor's traps only ever face left or right (the structure mirrors but never rotates)."""
     img = brick()
-    d = ImageDraw.Draw(img)
-    c = SIZE // 2
-    d.ellipse((c - 36, c - 36, c + 36, c + 36), fill=METAL_DARK)
-    d.ellipse((c - 33, c - 34, c + 31, c + 30), fill=METAL)
-    d.ellipse((c - 22, c - 22, c + 22, c + 22), fill=METAL_DARK)
-    d.ellipse((c - 18, c - 18, c + 18, c + 18), fill=RECESS)
-    for dx, dy in ((0, -29), (0, 29), (-29, 0), (29, 0)):
-        d.ellipse((c + dx - 3, c + dy - 3, c + dx + 3, c + dy + 3), fill=WARN)
-    return grain(rng, img, 6)
+    housing = fixture("trap", TRAP_ROWS)
+    img.alpha_composite(housing, (0, (SIZE - housing.height) // 2))
+    return img
 
 
 def dart():
     """Transparent sprite, half a cell long, pointing right."""
-    img = Image.new("RGBA", (64, 16), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    d.rectangle((6, 6, 46, 9), fill=(96, 70, 48))
-    d.polygon([(44, 2), (63, 8), (44, 13)], fill=METAL_LIGHT)
-    d.polygon([(44, 8), (63, 8), (44, 13)], fill=METAL)
-    d.polygon([(0, 1), (12, 6), (12, 9), (0, 14)], fill=WARN)
-    return img
+    src = cut("dart")
+    return crisp(src, (DART_LENGTH, round(src.height * DART_LENGTH / src.width)))
 
 
 def main():
@@ -110,8 +114,8 @@ def main():
     HAZARDS.mkdir(parents=True, exist_ok=True)
     outputs = {
         ORES / "31 crackedBrick.png": cracked_brick(rng),
-        ORES / "32 pressurePlate.png": pressure_plate(rng),
-        ORES / "33 dartTrap.png": dart_trap(rng),
+        ORES / "32 pressurePlate.png": pressure_plate(),
+        ORES / "33 dartTrap.png": dart_trap(),
         HAZARDS / "dart.png": dart(),
     }
     for path, img in outputs.items():
