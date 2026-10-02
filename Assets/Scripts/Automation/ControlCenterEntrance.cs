@@ -43,8 +43,8 @@ namespace Automation
             rightClosedPosition = rightDoor.transform.localPosition;
         }
 
-        // The reveal cinematic fades the building in through its SpriteRenderer's alpha - the
-        // door leaves are separate renderers, so they follow it.
+        // The reveal cinematic tints the building through its SpriteRenderer's colour as it comes
+        // out of the portal - the door leaves are separate renderers, so they follow it.
         private void LateUpdate()
         {
             leftDoor.color = buildingSprite.color;

@@ -546,6 +546,32 @@ def dialog_blip():
     return bloop(460, 380, d, attack=0.004)
 
 
+def building_portal():
+    # The reveal portal tearing open in the sky: a soft whoosh that swells in under a rising,
+    # warbling slide whistle, settling into a low hum.
+    rng = np.random.default_rng(40)
+    d = 1.2
+    t = t_axis(d)
+    swell = np.where(t < 0.35, (t / 0.35) ** 2, np.exp(-(t - 0.35) / 0.3))
+    whoosh = filt(noise(d, rng), "bandpass", [180, 900]) * swell
+    rise = slide_whistle(170, 520, 0.5, vib_rate=9.0, vib_depth=0.04) * env_adsr(0.5, 0.08, 0.1, 0.8, 0.2)
+    hum = mix(osc(130.81, d), osc(196.0, d) * 0.5) * env_adsr(d, 0.3, 0.2, 0.7, 0.5)
+    return mix(whoosh * 0.9, rise * 0.45, hum * 0.35)
+
+
+def building_land():
+    # A building plopping onto the ground: a big round thump, a springy wobble as it settles,
+    # a long puff of dust and a few pebbles.
+    rng = np.random.default_rng(41)
+    d = 1.1
+    buf = np.zeros(int(SR * d))
+    place(buf, bloop(110, 36, 0.6, attack=0.003) * 1.4, 0.0)
+    place(buf, poof(0.8, rng, 500, 0.22) * 0.7, 0.01)
+    place(buf, boing(98, 0.45, depth=0.18, rate=11) * 0.3, 0.08)
+    place(buf, plinks(0.5, rng, 6, [196.0, 220.0, 261.63, 293.66], gain=0.14, decay=0.04), 0.3)
+    return buf
+
+
 # ---------- ambient loops ----------
 # 24s beds, seamless by construction: tones use whole cycles per loop, noise is FFT-circular,
 # and one-shot events wrap around the end. Everything sits under ~1.2kHz and stays quiet -
@@ -665,6 +691,8 @@ SOUNDS = {
     "CritterTurnIn": critter_turn_in,
     "HatUnlocked": hat_unlocked,
     "DialogBlip": dialog_blip,
+    "BuildingPortal": building_portal,
+    "BuildingLand": building_land,
 }
 
 if __name__ == "__main__":

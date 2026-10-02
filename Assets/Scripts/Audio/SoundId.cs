@@ -49,5 +49,9 @@ namespace Audio
         CritterTurnIn = 101,
         HatUnlocked = 102,
         DialogBlip = 103,
+
+        // Buildings
+        BuildingPortal = 120,
+        BuildingLand = 121,
     }
 }
