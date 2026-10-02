@@ -5,14 +5,13 @@ import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, 'out')
-ROBOT = 'Assets/Textures/Player/RobotMining.png'  # 8-frame horizontal strip
+ROBOT = 'Assets/Textures/Player/RobotMining.png'  # 384x320 cells, 4 columns
 DIAMOND = 'Assets/Textures/Ores/8 diamond.png'
 
 
 def robot_frame():
     strip = Image.open(ROBOT).convert('RGBA')
-    fw = strip.width // 8
-    f = strip.crop((0, 0, fw, strip.height))
+    f = strip.crop((0, 0, 384, 320))
     return f.crop(f.getbbox())
 
 
