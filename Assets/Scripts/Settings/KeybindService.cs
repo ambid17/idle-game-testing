@@ -77,7 +77,15 @@ namespace Settings
         private InputActionRebindingExtensions.RebindingOperation rebinding;
         private int captureEndedFrame = -1;
 
-        public InputScheme CurrentScheme { get; private set; } = InputScheme.KeyboardMouse;
+        // Carried across scene reloads (New Game rebuilds the GameManager and this service), so a
+        // player who drove the main menu with a controller still gets controller prompts on the
+        // far side - before they've pressed anything in the new scene.
+        private static InputScheme lastScheme = InputScheme.KeyboardMouse;
+
+        public InputScheme CurrentScheme { get; private set; } = lastScheme;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetLastScheme() => lastScheme = InputScheme.KeyboardMouse;
 
         // True while a rebind is waiting for input, and for the rest of the frame one ends in -
         // so the Escape/Start that cancels a capture (or any press that completes one) isn't
@@ -269,6 +277,7 @@ namespace Settings
 
             if (scheme == CurrentScheme) return;
             CurrentScheme = scheme;
+            lastScheme = scheme;
             GameManager.EventService.Dispatch(new InputSchemeChangedEvent(scheme));
         }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Settings;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,6 +8,8 @@ namespace UI.SkillTree
 {
     // Click-drag, the movement keybinds (WASD by default) or the right stick to pan; scroll wheel or
     // the gamepad triggers to zoom, on a uGUI RectTransform content container.
+    // Panning with the right stick shows a crosshair at the center of the view and moves the
+    // controller selection to whichever node is under it, so the stick alone can pick an upgrade.
     // Lives on a full-bleed transparent raycast-target Image over the tree's viewport, so
     // drag/scroll register anywhere in the empty background, not just on top of nodes.
     [RequireComponent(typeof(Image))]
@@ -26,6 +29,13 @@ namespace UI.SkillTree
         // dropped the moment the player pans or zooms by hand.
         private Vector2? panTarget;
 
+        // Built at runtime (two bars) as a sibling just above content, so it draws over the nodes.
+        private RectTransform crosshair;
+        private readonly List<SkillTreeNodeUI> nodeBuffer = new();
+        // True while the right stick is panning - the selection then follows the crosshair, so
+        // CenterOn mustn't pull the view to each node the crosshair passes over.
+        private bool stickPanning;
+
         private void Awake()
         {
             canvas = GetComponentInParent<Canvas>();
@@ -40,6 +50,7 @@ namespace UI.SkillTree
             if (content == null) return;
 
             var keybinds = GameManager.KeybindService;
+            if (keybinds.CurrentScheme != InputScheme.Gamepad) SetCrosshairVisible(false);
 
             float zoomInput = keybinds.ZoomViewInput;
             if (!Mathf.Approximately(zoomInput, 0f))
@@ -61,7 +72,9 @@ namespace UI.SkillTree
                 if (keybinds.IsPressed(GameAction.MoveRight)) move.x -= 1f;
             }
             // Right stick: pushing it moves the view the way the stick points.
-            move -= keybinds.PanViewInput;
+            Vector2 stick = keybinds.PanViewInput;
+            stickPanning = stick != Vector2.zero;
+            move -= stick;
             move = Vector2.ClampMagnitude(move, 1f);
             if (move == Vector2.zero)
             {
@@ -73,6 +86,90 @@ namespace UI.SkillTree
 
             content.anchoredPosition = content.anchoredPosition
                 + move * (keyboardPanSpeed * Time.deltaTime / content.localScale.x);
+
+            if (stickPanning)
+            {
+                SetCrosshairVisible(true);
+                SelectNodeUnderCrosshair();
+            }
+        }
+
+        // Selects the node whose rect covers the center of the viewport (the closest one, should
+        // two overlap it). With no node there the selection stays where it was.
+        private void SelectNodeUnderCrosshair()
+        {
+            if (EventSystem.current == null) return;
+
+            var viewport = (RectTransform)transform;
+            Vector3 center = viewport.TransformPoint(viewport.rect.center);
+
+            SkillTreeNodeUI best = null;
+            float bestSqrDistance = float.MaxValue;
+            content.GetComponentsInChildren(false, nodeBuffer);
+            foreach (var node in nodeBuffer)
+            {
+                var rect = (RectTransform)node.transform;
+                Vector2 local = rect.InverseTransformPoint(center);
+                if (!rect.rect.Contains(local)) continue;
+
+                float sqrDistance = (local - rect.rect.center).sqrMagnitude;
+                if (sqrDistance < bestSqrDistance)
+                {
+                    bestSqrDistance = sqrDistance;
+                    best = node;
+                }
+            }
+
+            if (best != null && EventSystem.current.currentSelectedGameObject != best.gameObject)
+            {
+                EventSystem.current.SetSelectedGameObject(best.gameObject);
+            }
+        }
+
+        private void SetCrosshairVisible(bool visible)
+        {
+            if (crosshair == null)
+            {
+                if (!visible) return;
+                BuildCrosshair();
+            }
+
+            if (visible)
+            {
+                var viewport = (RectTransform)transform;
+                crosshair.position = viewport.TransformPoint(viewport.rect.center);
+            }
+            if (crosshair.gameObject.activeSelf != visible) crosshair.gameObject.SetActive(visible);
+        }
+
+        private void BuildCrosshair()
+        {
+            var root = new GameObject("Crosshair", typeof(RectTransform));
+            crosshair = (RectTransform)root.transform;
+            crosshair.SetParent(content.parent, false);
+            crosshair.SetSiblingIndex(content.GetSiblingIndex() + 1);
+            crosshair.sizeDelta = Vector2.zero;
+
+            AddCrosshairBar(new Vector2(36f, 4f));
+            AddCrosshairBar(new Vector2(4f, 36f));
+        }
+
+        private void AddCrosshairBar(Vector2 size)
+        {
+            var bar = new GameObject("Bar", typeof(RectTransform), typeof(Image), typeof(Outline));
+            var rect = (RectTransform)bar.transform;
+            rect.SetParent(crosshair, false);
+            rect.sizeDelta = size;
+            bar.GetComponent<Image>().raycastTarget = false;
+            var outline = bar.GetComponent<Outline>();
+            outline.effectColor = new Color(0f, 0f, 0f, 0.8f);
+            outline.effectDistance = new Vector2(2f, -2f);
+        }
+
+        private void OnDisable()
+        {
+            stickPanning = false;
+            SetCrosshairVisible(false);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -91,6 +188,9 @@ namespace UI.SkillTree
         public void CenterOn(RectTransform target)
         {
             if (content == null || content.parent == null) return;
+            // The crosshair picked this node - the view is already where the player put it.
+            if (stickPanning) return;
+            SetCrosshairVisible(false);
             var parent = content.parent;
             var viewport = (RectTransform)transform;
             Vector3 viewportCenter = parent.InverseTransformPoint(viewport.TransformPoint(viewport.rect.center));
@@ -146,6 +246,7 @@ namespace UI.SkillTree
         {
             if (content == null) return;
             panTarget = null;
+            SetCrosshairVisible(false);
             content.anchoredPosition = Vector2.zero;
             content.localScale = new Vector3(defaultScale, defaultScale, 1f);
         }

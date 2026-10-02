@@ -36,6 +36,10 @@ namespace UI
         private float visibleCharacters;
         private int lastBlipCharacter;
         private int openedFrame = -1;
+        // One press can arrive twice in a frame - gamepad A is both UI Submit on advanceButton and
+        // InteractPrimary in Update - and must only count once, or it finishes the line being
+        // typed and skips to the next one in the same press.
+        private int advancedFrame = -1;
 
         private bool IsTyping => bodyLabel.maxVisibleCharacters < bodyLabel.textInfo.characterCount;
 
@@ -118,7 +122,8 @@ namespace UI
 
         private void Advance()
         {
-            if (!IsOpen || Time.frameCount == openedFrame) return;
+            if (!IsOpen || Time.frameCount == openedFrame || Time.frameCount == advancedFrame) return;
+            advancedFrame = Time.frameCount;
 
             if (IsTyping)
             {

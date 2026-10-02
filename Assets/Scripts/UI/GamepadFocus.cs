@@ -21,6 +21,10 @@ namespace UI
     public class GamepadFocus : MonoBehaviour
     {
         [SerializeField] private Selectable firstSelected;
+        // For overlays drawn above every panel (TutorialModalUI): keeps controller focus even when
+        // a panel opens after it - a building's first-open tutorial is shown by the same interact
+        // press that opens the panel, and which of the two is enabled first isn't defined.
+        [SerializeField] private bool alwaysOnTop;
 
         // Open GamepadFocus instances in opening order - the last one owns the selection.
         private static readonly List<GamepadFocus> openStack = new();
@@ -57,10 +61,15 @@ namespace UI
         private void OnEnable()
         {
             openStack.Remove(this);
-            openStack.Add(this);
+            int index = openStack.Count;
+            if (!alwaysOnTop)
+            {
+                while (index > 0 && openStack[index - 1].alwaysOnTop) index--;
+            }
+            openStack.Insert(index, this);
             lastSelected = null;
             GameManager.EventService.Add<InputSchemeChangedEvent>(OnInputSchemeChanged);
-            if (IsGamepad) SelectRemembered();
+            if (IsTopmost && IsGamepad) SelectRemembered();
         }
 
         private void OnDisable()
