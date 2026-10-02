@@ -39,6 +39,9 @@ namespace Player
         // Downward decel applied while MoveDown is held and the player is rising - bleeds off
         // upward momentum but never pushes them into a descent (see ApplyVerticalBrakeForce).
         [SerializeField] private float verticalBrakeDeceleration = 30f;
+        // Fastest vertical speed (m/s, either direction) at which a mid-air sideways dig still
+        // catches and holds the player (see the hover in FixedUpdate). Above it they keep moving.
+        [SerializeField] private float hoverDigMaxVerticalSpeed = 2f;
 
         [Header("Corner Correction")]
         // Furthest the player is shifted sideways to slip past a ceiling corner they'd otherwise
@@ -349,8 +352,9 @@ namespace Player
 
             // Digging sideways in mid-air (DigWhileFlying perk) holds the player level with the
             // block instead of letting them drop off it. Only while the jetpack is off - with it
-            // firing, the player is steering vertically themselves.
-            if (!IsGrounded && !IsFlying && mining.IsMiningHorizontally)
+            // firing, the player is steering vertically themselves - and only when they're already
+            // nearly stationary, so it can't be used to cancel a fast fall (and its fall damage).
+            if (!IsGrounded && !IsFlying && mining.IsMiningHorizontally && Mathf.Abs(rb.linearVelocityY) <= hoverDigMaxVerticalSpeed)
             {
                 rb.gravityScale = 0f;
                 rb.linearVelocityY = 0f;
