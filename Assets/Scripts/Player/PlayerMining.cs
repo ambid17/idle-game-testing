@@ -146,7 +146,11 @@ namespace Player
             // notifications sharing the same toast. The edge resets whenever the player stops
             // pushing into the block, so a cooldown also gates it - otherwise bobbing against the
             // ceiling while flying up re-triggers it every bump.
-            if (blockedByFullInventory && inventoryBlock != lastInventoryBlock && Time.time >= nextInventoryBlockNotifyTime)
+            // Also silent while airborne without the DigWhileFlying perk: the only way to get here
+            // then is digging up, i.e. jetpacking into a ceiling, where the player is usually just
+            // flying rather than trying to mine.
+            bool canNotifyBlocked = playerController.IsGrounded || PrestigeUpgradeManager.Instance.Mining_DigWhileFlyingUnlocked;
+            if (canNotifyBlocked && blockedByFullInventory && inventoryBlock != lastInventoryBlock && Time.time >= nextInventoryBlockNotifyTime)
             {
                 nextInventoryBlockNotifyTime = Time.time + inventoryBlockNotifyCooldown;
                 string message = inventoryBlock == InventoryBlockReason.Full
@@ -166,7 +170,7 @@ namespace Player
             bool isUnbreakableRock = blockType != null && blockType.Id == BlockTypeId.FallingRock && !PrestigeUpgradeManager.Instance.Mining_CanMineRocks;
             bool isPushingUnmineable = isGrassyDirt || isHardpan || isUnbreakableRock;
             // Capped per block type on top of that - past the first few the player knows, and it's just noise.
-            if (isPushingUnmineable && !wasPushingUnmineable && Time.time >= nextUnmineableNotifyTime
+            if (canNotifyBlocked && isPushingUnmineable && !wasPushingUnmineable && Time.time >= nextUnmineableNotifyTime
                 && unmineableNotifyCounts.GetValueOrDefault(blockType.Id) < maxUnmineableNotifiesPerBlockType)
             {
                 nextUnmineableNotifyTime = Time.time + unmineableNotifyCooldown;
