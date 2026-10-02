@@ -1,6 +1,6 @@
-"""Procedural tiles and sprites for the trap-room set-pieces (Dart Corridor, Crusher Room,
-Sealed Vault). Everything is derived from the Ancient Brick tile so it matches the masonry it
-sits in. Deterministic (fixed seed) - rerun freely; make_ancient_brick.py must have run first.
+"""Procedural tiles and sprites for the trap-room set-pieces (Dart Corridor, Sealed Vault;
+the Crusher Room's art comes from make_crusher_art.py). Everything is derived from the Ancient Brick tile so it matches the masonry it
+sits in. Deterministic (fixed seed) - rerun freely; make_masonry_tiles.py must have run first.
 
     python Tools/Structures/make_trap_tiles.py
 """
@@ -94,43 +94,6 @@ def dart_trap(rng):
     return grain(rng, img, 6)
 
 
-def crusher_block(rng):
-    """Ceiling block: a metal housing framed in brick. The CrusherPiston head sits over its
-    lower half at rest."""
-    img = brick()
-    d = ImageDraw.Draw(img)
-    metal_box(d, (8, 8, SIZE - 9, SIZE - 1), bevel=5)
-    d.rectangle((20, 22, SIZE - 21, SIZE - 1), fill=RECESS)
-    for x in range(20, SIZE - 20, 16):
-        d.polygon([(x, 8), (x + 8, 8), (x + 16, 21), (x + 8, 21)], fill=WARN)
-    return grain(rng, img, 6)
-
-
-def crusher_head(rng):
-    """Transparent sprite, one cell: a slab with a row of spikes along the bottom."""
-    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    metal_box(d, (14, 44, SIZE - 15, 99), bevel=5)
-    d.rectangle((14, 62, SIZE - 15, 67), fill=WARN)
-    spikes = 5
-    w = (SIZE - 28) / spikes
-    for i in range(spikes):
-        x0 = 14 + i * w
-        d.polygon([(x0, 100), (x0 + w, 100), (x0 + w / 2, SIZE - 1)], fill=METAL)
-        d.polygon([(x0 + w / 2, 100), (x0 + w, 100), (x0 + w / 2, SIZE - 1)], fill=METAL_DARK)
-    return grain(rng, img, 6)
-
-
-def crusher_shaft(rng):
-    """Transparent sprite, one cell tall, stretched vertically by CrusherPiston."""
-    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    d = ImageDraw.Draw(img)
-    d.rectangle((48, 0, 79, SIZE - 1), fill=METAL)
-    d.rectangle((48, 0, 53, SIZE - 1), fill=METAL_LIGHT)
-    d.rectangle((72, 0, 79, SIZE - 1), fill=METAL_DARK)
-    return grain(rng, img, 4)
-
-
 def dart():
     """Transparent sprite, half a cell long, pointing right."""
     img = Image.new("RGBA", (64, 16), (0, 0, 0, 0))
@@ -149,9 +112,6 @@ def main():
         ORES / "31 crackedBrick.png": cracked_brick(rng),
         ORES / "32 pressurePlate.png": pressure_plate(rng),
         ORES / "33 dartTrap.png": dart_trap(rng),
-        ORES / "34 crusher.png": crusher_block(rng),
-        HAZARDS / "crusherHead.png": crusher_head(rng),
-        HAZARDS / "crusherShaft.png": crusher_shaft(rng),
         HAZARDS / "dart.png": dart(),
     }
     for path, img in outputs.items():

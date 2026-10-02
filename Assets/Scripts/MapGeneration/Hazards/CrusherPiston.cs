@@ -9,8 +9,9 @@ namespace MapGeneration
     // a travelling wave the player can time. Purely a function of time: nothing is saved, and a
     // crusher the player has never revealed stays hidden and silent.
     //
-    // The head is not a physical obstacle; it only hurts at the moment it lands (CrusherSlamEvent,
-    // resolved by Player.HazardDamageHandler).
+    // It only hurts at the moment it lands (CrusherSlamEvent, resolved by Player.HazardDamageHandler),
+    // but once down the extended head and shaft are solid until they retract - the blocker comes
+    // on after the slam so the hit registers before physics shoves the player out of the column.
     public class CrusherPiston : MonoBehaviour
     {
         [Tooltip("How many open cells below the Crusher block the head can reach.")]
@@ -26,6 +27,10 @@ namespace MapGeneration
         [SerializeField] private Transform head;
         [Tooltip("One cell tall at scale 1; stretched between the block and the head.")]
         [SerializeField] private Transform shaft;
+        [Tooltip("On this object, on the Ground layer. Resized to the extended column while the piston is down.")]
+        [SerializeField] private BoxCollider2D blocker;
+        [Tooltip("Blocker width as a fraction of a cell - the head art's width.")]
+        [SerializeField] private float blockerWidthCells = 0.8f;
 
         private int layerIndex;
         private int cellX;
@@ -41,6 +46,7 @@ namespace MapGeneration
         {
             if (head == null) Debug.LogError($"{nameof(CrusherPiston)} on {name} has no head assigned.");
             if (shaft == null) Debug.LogError($"{nameof(CrusherPiston)} on {name} has no shaft assigned.");
+            if (blocker == null) Debug.LogError($"{nameof(CrusherPiston)} on {name} has no blocker assigned.");
         }
 
         public void Begin(int layerIndex, int x, int y, float phaseOffsetSeconds)
@@ -95,6 +101,11 @@ namespace MapGeneration
             shaft.gameObject.SetActive(revealed && drop > 0f);
             shaft.localPosition = new Vector3(0f, -drop * 0.5f, 0f);
             shaft.localScale = new Vector3(1f, drop / mapGen.CellSize, 1f);
+
+            // The column from the Crusher block's underside down to the spike tips.
+            blocker.enabled = cycleTime >= holdStart && drop > 0f;
+            blocker.size = new Vector2(blockerWidthCells * mapGen.CellSize, drop);
+            blocker.offset = new Vector2(0f, -(mapGen.CellSize + drop) * 0.5f);
         }
 
         private int MeasureReach(MapGenerationService mapGen)
