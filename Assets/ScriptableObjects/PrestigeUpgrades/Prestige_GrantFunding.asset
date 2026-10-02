@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Prestige_GrantFunding
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Grant Funding
-  Description: 'Start each new run with a share of the total Dollars you earned last run: 2% at level 1, doubling each level (4%, 8%, 16%, up to 32% at max level).'
+  Description: 'Start each new Dig with a share of the total Dollars you earned last Dig: 2% at level 1, doubling each level (4%, 8%, 16%, up to 32% at max level).'
   Icon: {fileID: 21300000, guid: 834ea64732ef91643b80d4f9bad7af60, type: 3}
   EffectValuePerLevel: 0.02
   MaxLevel: 5

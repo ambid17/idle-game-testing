@@ -209,7 +209,7 @@ namespace Player
                 nextUnderTierNotifyTime = Time.time + underTierNotifyCooldown;
                 int requiredTier = GameManager.LayerConfigProvider.GetConfig(layerIndex).RequiredDrillTier;
                 GameManager.EventService.Dispatch(new NotificationEvent(
-                    $"Your drill can barely scratch this rock! Buy Drill Tier {requiredTier} in the Museum, then prestige.",
+                    $"Your drill can barely scratch this rock! Buy Drill Tier {requiredTier} in the Museum, then begin a Resonance.",
                     NotificationUrgency.TimeSensitive));
             }
 

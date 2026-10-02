@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Idle_KeepAutomatonMoveSpeed
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Quick Treads
-  Description: Start every run with 1 free level of Automaton Move Speed per level (+10% automaton movement speed each, up to +30% at max level).
+  Description: Start every Dig with 1 free level of Automaton Move Speed per level (+10% automaton movement speed each, up to +30% at max level).
   Icon: {fileID: 21300000, guid: 18861d138afb7c34fb246985de0d0ecd, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Prestige_Legacy
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Legacy
-  Description: +5% sale value of ore and processed goods per level, for every prestige you have ever completed (e.g. level 1 with 4 prestiges = +20%).
+  Description: +5% sale value of ore and processed goods per level, for every Resonance you have ever completed (e.g. level 1 with 4 Resonances = +20%).
   Icon: {fileID: 21300000, guid: ecda2083f5b40aa44a27107226c97170, type: 3}
   EffectValuePerLevel: 0.05
   MaxLevel: 5

@@ -175,6 +175,12 @@ Upgrades will be a skill tree that fans out and requires the player to unlock th
 	- Increase fall speed
 	
 # Prestige
+In-game name: **Resonance**. "Prestige" stays as the internal/code name (PrestigeManager, save keys, this heading), but the player never sees it. Player-facing vocabulary:
+- Resonance: the prestige action ("Begin Resonance"). The Museum's Maker machine, the Resonator, fires, and the mine collapses and reshapes - see "# Story & Endgame: The Seals"
+- Attunements: prestige upgrades. Queuing one means placing artifacts on the Resonator; they only take effect when it fires
+- Dig: one run (Dig 1, Dig 2...)
+- Aftershocks: run modifiers, i.e. how the mine settles after the quake. Blessings and Gambles are the two kinds
+
 At a certain point the game will become too difficult. You will have to use a new currency when resetting to work towards a more "meta" skill tree that will make your next run faster. Artifacts are that currency - mining one banks it directly, no separate conversion step.
 
 Prestige is manually triggered at the museum. This is a hard reset of all your world upgrades, dollars, and materials in the depot (both minerals and processed goods)
@@ -231,6 +237,7 @@ Motherload's structure (friendly employer, stranger signs the deeper you go, a t
 - The curator is NOT the villain (this is the main break from Mr. Natas). They're an honest collector who doesn't understand what they're buying.
 - The twist: artifacts aren't relics, they're Seals. An ancient civilization buried something (working name: "the Bound") beneath the mine and locked it away with thousands of wards spread through the layers. Every artifact you dig up weakens the prison.
 - The player is responsible. Their core loop (dig artifacts, spend them at the Museum) is what frees it.
+- The Resonator: a Maker machine in the Museum. The curator feeds it your artifacts and it retunes your rig with Maker tech (Attunements). The side effect is a quake that collapses and reshapes the mine, which he waves off as "geological enthusiasm". It is really the prison's lock: every Resonance spends Seals, and the quake is the Bound stirring.
 
 ## Delivering the story
 - Artifact lore: lore fragments unlock as you find artifacts in each layer, readable in a Museum lore/collection tab. The tone gets darker with depth:
@@ -239,8 +246,17 @@ Motherload's structure (friendly employer, stranger signs the deeper you go, a t
 	- layers 8-11: the full account of what was sealed and why, and the realization of what the player has been doing
 - Curator dialogue: short lines when the Museum opens, keyed to story progress. Excited early, uneasy in the middle, horrified after the twist. After the twist the curator becomes your ally, translating inscriptions to reveal guardian and boss weaknesses.
 - Hazards as symptoms: the existing depth scaling of gas, lava, and falling rocks is explained as the Bound stirring. Optional screen-shake "tremors" that grow more frequent as total artifacts collected rises.
-- Prestige as a story beat: the map regenerating is diegetic. Each prestige the Bound stirs and the mine collapses and reshapes itself. The prestige confirmation and post-prestige text should say so.
+- Resonance as a story beat: the map regenerating is diegetic. Each Resonance the Bound stirs and the mine collapses and reshapes itself. The Resonance confirmation and the "A New Dig" text say so.
+- The curator's translations: his joke rune translations ("Please do not check my work") are wrong. The twist is him rechecking them - each one was a warning, and the vault inscription was never "KEEP DIGGING".
 - Story progress (lore unlocked, guardians defeated, twist seen) is permanent and survives prestige, like lifetime stats.
+
+## Story beats
+Each beat fires the first time the player sets a depth record inside its layer range. Drill tier Attunements gate those layers, so depth reached and Resonances completed both drive the story.
+1. The Commission (drill tier 0, layers 0-2): the curator hires you and artifacts are just museum pieces. You hit rock your drill can't scratch, and he reveals the Resonator. The first Resonance is played as a triumph.
+2. The Warnings (tier 1, layers 3-5): the trap rooms and ancient brick read as built to keep diggers out, not to guard treasure. Tremors grow with each Resonance. The Stone Warden blocks the way.
+3. The Retranslation (tier 2, layers 6-8): the twist. The prison is already failing, so the only way to fix it is to go deeper, which needs more Resonances. The Censer guards this stretch.
+4. The Vault (tier 3, layers 9-10 and below): the Bound, then Reseal or Destroy.
+5. After: "the mine stirs again", with the curator's lines reflecting the ending.
 
 ## Guardians (mini-bosses)
 Constructs the old civilization left to stop anyone digging toward the prison. Each one guards a layer boundary and teaches one way to turn hazards into weapons, as preparation for the final fight.
@@ -283,3 +299,5 @@ What this adds to the current build:
 - are artifacts still an anonymous count, or do they become unique named items (sets, rarities)? Lore per layer works with either
 - does the twist hit at a fixed depth (e.g. defeating the Stone Warden) or at a lifetime-artifacts threshold?
 - how many prestiges should reaching the Vault take? Target an 8-15 hour total playtime
+- guardians sit at the bottom of layers 4 and 8, but drill tiers gate at layers 3, 6 and 9. Move the guardians to the tier gates so the wall and the boss are the same moment?
+- the sky relic (hidden Seal at y=200): the one Seal the Makers hid up instead of down - make it the key to the Reseal ending?

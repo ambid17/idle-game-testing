@@ -29,12 +29,12 @@ MonoBehaviour:
   - Id: 2
     DisplayType: 0
     Title: Market
-    Body: Spend money here on upgrades. These upgrades are lost when prestiging.
+    Body: Spend money here on upgrades. These upgrades are lost in a Resonance.
   - Id: 3
     DisplayType: 0
     Title: Museum
-    Body: Spend the Artifacts you've found here on permanent Prestige upgrades that
-      carry across resets. Purchases queue up and only take effect once you prestige.
+    Body: Spend the Artifacts you've found here on permanent Attunements that
+      carry across Digs. They queue up and only take effect at your next Resonance.
   - Id: 4
     DisplayType: 0
     Title: Processing Center
@@ -49,9 +49,9 @@ MonoBehaviour:
   - Id: 6
     DisplayType: 2
     Title: Museum
-    Body: The Museum is where you spend Artifacts on permanent perks. Purchases queue
-      up and only take effect once you prestige, which resets everything including
-      money and upgrades - but your next run will be faster!
+    Body: The Museum is where you spend Artifacts on permanent Attunements. They queue
+      up and only take effect once you begin a Resonance, which collapses the mine and
+      resets your money and upgrades - but your next Dig will be faster!
   - Id: 7
     DisplayType: 2
     Title: Processing Center
@@ -99,16 +99,16 @@ MonoBehaviour:
       use the respawn prompt to head back to the surface.
   - Id: 15
     DisplayType: 0
-    Title: Run Modifiers
-    Body: Pick one modifier for your next run. Blessings are pure upside. Gambles
+    Title: Aftershocks
+    Body: Pick one Aftershock for your next Dig. Blessings are pure upside. Gambles
       give a bigger bonus but come with a drawback. Contracts pay out Artifacts when
       you deliver enough of one ore.
   - Id: 16
     DisplayType: 0
-    Title: A New Run
-    Body: Your money, Market upgrades and the mine have been reset. You keep your
-      Artifacts and Museum perks, which now take effect. Check the HUD for your run
-      modifier and its contract progress.
+    Title: A New Dig
+    Body: The Resonance has reshaped the mine and reset your money and Market upgrades.
+      You keep your Artifacts and Attunements, which now take effect. Check the HUD
+      for your Aftershock and its contract progress.
   - Id: 17
     DisplayType: 0
     Title: Critter Caught!
