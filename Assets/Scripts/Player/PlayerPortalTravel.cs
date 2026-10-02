@@ -1,4 +1,5 @@
 using System.Collections;
+using Audio;
 using Events;
 using UnityEngine;
 
@@ -181,6 +182,7 @@ namespace Player
             yield return new WaitForSeconds(transitSeconds);
             Vector3 destination = transform.position;
 
+            GameManager.AudioService.Play(SoundId.RespawnPortal);
             yield return AnimatePortal(destination, 0f, 1f, portalOpenSeconds, EaseOutBack);
             yield return AnimatePlayer(0f, 1f, spitOutSeconds, EaseOutBack);
             GameManager.WorldEffects.SparkleBurst(destination, 14, 0.3f, 3.5f);

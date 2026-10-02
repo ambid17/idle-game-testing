@@ -232,6 +232,28 @@ def powerup():
     return buf
 
 
+def chest_poof():
+    # A chest giving up its ore: a soft, round puff of air over a small low thump. No notes.
+    rng = np.random.default_rng(30)
+    d = 0.45
+    buf = np.zeros(int(SR * d))
+    place(buf, poof(0.45, rng, 800, 0.1), 0)
+    place(buf, poof(0.2, rng, 1500, 0.03) * 0.3, 0)
+    place(buf, bloop(190, 80, 0.25, attack=0.004) * 0.6, 0)
+    return buf
+
+
+def ore_collect(i):
+    # One ore chunk landing in the bag: a tiny pebble "tup". Played per chunk as a chest's loot
+    # arrives, so a burst of them reads as a clatter. Non-melodic, like MineOre's pop.
+    rng = np.random.default_rng(310 + i)
+    d = 0.09
+    f = [470.0, 530.0, 600.0][i]
+    return mix(bloop(f, f * 0.6, d, attack=0.003),
+               marimba(f / 2, d, 0.02) * 0.5,
+               poof(0.03, rng, 1400, 0.006) * 0.25)
+
+
 def player_hurt():
     # Cartoon "bonk": a springy boing that sags in pitch, over a soft thump.
     rng = np.random.default_rng(5)
@@ -275,6 +297,29 @@ def player_death():
     place(buf, poof(0.5, rng, 600, 0.12) * 0.8, 0.9)
     place(buf, bloop(120, 45, 0.4) * 0.8, 0.9)
     return buf
+
+
+def respawn_portal():
+    # Portal woosh for the respawn arrival, timed to PlayerPortalTravel.ArrivalRoutine: air
+    # swells in as the portal opens (0-0.3s), sweeps up to a peak as the player is spat out
+    # (~0.45s), then falls away as it closes. The sweep is three noise bands taking turns, over
+    # a quiet swirling hum. No notes - the old arpeggio was removed.
+    rng = np.random.default_rng(9)
+    d = 1.1
+    t = t_axis(d)
+    nz = noise(d, rng)
+
+    def hump(center, width):
+        return np.exp(-0.5 * ((t - center) / width) ** 2)
+
+    low = filt(nz, "bandpass", [150, 500]) * hump(0.30, 0.20)
+    mid = filt(nz, "bandpass", [400, 1100]) * hump(0.42, 0.13)
+    high = filt(nz, "bandpass", [900, 2000]) * hump(0.48, 0.08)
+    swirl_f = (130 + 190 * hump(0.45, 0.16)) * (1 + 0.05 * np.sin(2 * np.pi * 11 * t))
+    swirl = osc(swirl_f, d) * hump(0.42, 0.22)
+    buf = low * 0.7 + mid * 1.0 + high * 0.7 + swirl * 0.05
+    place(buf, bloop(260, 120, 0.22, attack=0.01) * 0.07, 0.44)
+    return soft(buf, 2200) * np.minimum(1, t / 0.08) * np.minimum(1, (d - t) / 0.3)
 
 
 def jetpack_loop():
@@ -647,9 +692,12 @@ SOUNDS = {
     # MineOre_1..3 are cut from an AI-generated clip: see make_mine_ore.py.
     "ArtifactFound": artifact_found,
     "PowerUpCollected": powerup,
+    "ChestPoof": chest_poof,
+    **{f"OreCollect_{i + 1}": (lambda i=i: ore_collect(i)) for i in range(3)},
     "PlayerHurt": player_hurt,
     "ShieldBlock": shield_block,
     "PlayerDeath": player_death,
+    "RespawnPortal": respawn_portal,
     "Warning": warning,
     "ExplosiveFuse": explosive_fuse,
     "Explosion": explosion,

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Atmosphere;
+using Audio;
 using Events;
 using MapGeneration;
 using Museum;
@@ -17,6 +18,8 @@ namespace Player
     //  - Pickup: collected ore/artifacts pop out of the cell as nuggets that home in on the player -
     //    a chunk of the ore itself, or a tinted generic nugget for anything without chunk art.
     //    The inventory is credited immediately by PlayerMining as before - this is visual only.
+    //    Chests (the Treasure Chest block and a lootable Economy.Chest) give up their ore the same
+    //    way, with a poof and a little "tup" as each chunk lands in the bag.
     // Shake goes through GameManager.CameraShake (which honours the Options "Screen Shake" toggle).
     public class DigFeedback : MonoBehaviour
     {
@@ -27,6 +30,8 @@ namespace Player
             public float Age;
             public float Size;
             public Color SparkleColor;
+            // Plays SoundId.OreCollect when it reaches the player (chest loot only).
+            public bool CollectSound;
         }
 
         private const int DebrisSheetRows = 4;
@@ -95,6 +100,8 @@ namespace Player
         [SerializeField] private Sprite openChestSprite;
         [Tooltip("Width of the chest (world units).")]
         [SerializeField, Min(0.05f)] private float chestSize = 0.9f;
+        [Tooltip("Seconds over which a looted chest's ore pops out, so it reads as a fountain rather than one clump.")]
+        [SerializeField, Min(0f)] private float chestLootSeconds = 0.3f;
 
         private ParticleSystem debrisSystem;
         private ParticleSystem dustSystem;
@@ -205,7 +212,8 @@ namespace Player
 
         // Nuggets popping out of cellCenter and flying to the player - one per unit collected.
         // sprite: drawn untinted in place of the nugget (an artifact's rune tablet).
-        public void Pickup(Vector3 cellCenter, BlockType block, int count, Sprite sprite = null)
+        // collectSound: each nugget plays SoundId.OreCollect as it arrives.
+        public void Pickup(Vector3 cellCenter, BlockType block, int count, Sprite sprite = null, bool collectSound = false)
         {
             for (int i = 0; i < count && nuggets.Count < MaxNuggets; i++)
             {
@@ -235,6 +243,7 @@ namespace Player
                     Age = 0f,
                     Size = size,
                     SparkleColor = block.MinimapColor,
+                    CollectSound = collectSound,
                 });
             }
         }
@@ -253,6 +262,13 @@ namespace Player
         public void TreasureChest(Vector3 cellCenter, BlockType chestBlock, IReadOnlyDictionary<BlockType, int> loot)
         {
             StartCoroutine(TreasureChestPop(cellCenter, chestBlock, loot));
+        }
+
+        // A lootable Economy.Chest at position handed loot over to the player: a poof, and the ore
+        // pops out of it and flies to the player.
+        public void ChestLoot(Vector3 position, IReadOnlyDictionary<BlockType, int> loot)
+        {
+            StartCoroutine(ChestLootPop(position, loot));
         }
 
         private IEnumerator ArtifactSlowMo()
@@ -351,13 +367,10 @@ namespace Player
             scale = chestSize / openChestSprite.bounds.size.x;
             var gold = new Color(1f, 0.85f, 0.35f, 1f);
             GameManager.WorldEffects.SparkleBurst(cellCenter + Vector3.up * 0.2f, 14, 0.15f, 3.5f, gold);
+            GameManager.AudioService.Play(SoundId.ChestPoof);
 
-            // One nugget per ore, fed out over the hop so it reads as a fountain rather than one clump.
-            var nuggets = new List<BlockType>();
-            foreach (var entry in loot)
-            {
-                for (int i = 0; i < entry.Value; i++) nuggets.Add(entry.Key);
-            }
+            // Fed out over the hop so it reads as a fountain rather than one clump.
+            var nuggets = LootNuggets(loot);
             int released = 0;
 
             const float popSeconds = 0.45f;
@@ -369,10 +382,10 @@ namespace Player
                 chest.transform.position = cellCenter + Vector3.up * (Mathf.Sin(k * Mathf.PI) * 0.18f);
 
                 int due = Mathf.Min(nuggets.Count, Mathf.CeilToInt(k / 0.7f * nuggets.Count));
-                for (; released < due; released++) Pickup(cellCenter + Vector3.up * 0.15f, nuggets[released], 1);
+                for (; released < due; released++) Pickup(cellCenter + Vector3.up * 0.15f, nuggets[released], 1, collectSound: true);
                 yield return null;
             }
-            for (; released < nuggets.Count; released++) Pickup(cellCenter + Vector3.up * 0.15f, nuggets[released], 1);
+            for (; released < nuggets.Count; released++) Pickup(cellCenter + Vector3.up * 0.15f, nuggets[released], 1, collectSound: true);
             chest.transform.position = cellCenter;
             chest.transform.localScale = Vector3.one * scale;
 
@@ -386,6 +399,40 @@ namespace Player
             }
             GameManager.WorldEffects.Puff(cellCenter, 5, chestSize * 0.6f);
             Destroy(chest.gameObject);
+        }
+
+        private IEnumerator ChestLootPop(Vector3 position, IReadOnlyDictionary<BlockType, int> loot)
+        {
+            GameManager.WorldEffects.Puff(position, 5, chestSize * 0.6f);
+            GameManager.AudioService.Play(SoundId.ChestPoof);
+
+            var nuggets = LootNuggets(loot);
+            int released = 0;
+            for (float t = 0f; t < chestLootSeconds; t += Time.deltaTime)
+            {
+                int due = Mathf.Min(nuggets.Count, Mathf.CeilToInt(t / chestLootSeconds * nuggets.Count));
+                for (; released < due; released++) Pickup(position, nuggets[released], 1, collectSound: true);
+                yield return null;
+            }
+            for (; released < nuggets.Count; released++) Pickup(position, nuggets[released], 1, collectSound: true);
+        }
+
+        // The nuggets to show for a chest's loot: one per ore, thinned out evenly when there are
+        // more than MaxNuggets (every ore type keeps at least one).
+        private static List<BlockType> LootNuggets(IReadOnlyDictionary<BlockType, int> loot)
+        {
+            int total = 0;
+            foreach (var entry in loot) total += entry.Value;
+            float scale = Mathf.Min(1f, (float)MaxNuggets / Mathf.Max(1, total));
+
+            var nuggets = new List<BlockType>();
+            foreach (var entry in loot)
+            {
+                if (entry.Value <= 0) continue;
+                int count = Mathf.Max(1, Mathf.RoundToInt(entry.Value * scale));
+                for (int i = 0; i < count; i++) nuggets.Add(entry.Key);
+            }
+            return nuggets;
         }
 
         private IEnumerator HitStop()
@@ -437,6 +484,7 @@ namespace Player
                 if (arrived || nugget.Age > 3f)
                 {
                     if (arrived) EmitSparkles(position, nugget.SparkleColor);
+                    if (arrived && nugget.CollectSound) GameManager.AudioService.Play(SoundId.OreCollect);
                     nugget.Transform.gameObject.SetActive(false);
                     nuggetPool.Push(nugget.Transform);
                     nuggets.RemoveAt(i);

@@ -13,6 +13,8 @@ namespace Economy
     // bespoke trigger, so a chest can never fire alongside another nearby interactable on one press.
     // Looting withdraws as much as fits into the player's inventory (OreInventory.WithdrawUpToWeight)
     // and leaves any remainder in the chest rather than requiring an all-or-nothing pickup.
+    // Every loot that moves ore (the first, and any later top-up once there's room again) pops
+    // that ore out of the chest and flies it to the player - Player.DigFeedback.ChestLoot.
     [RequireComponent(typeof(OreInventory))]
     public class Chest : MonoBehaviour, IInteractable
     {
@@ -22,6 +24,7 @@ namespace Economy
 
         private OreInventory oreInventory;
         private PlayerInventory playerInventory;
+        private DigFeedback digFeedback;
 
         public string PromptText => $"Press {GameManager.KeybindService.GetDisplayName(Settings.GameAction.InteractPrimary)} to pick up lost ores";
 
@@ -36,7 +39,14 @@ namespace Economy
         private void Start()
         {
             playerInventory = FindAnyObjectByType<PlayerInventory>();
-            if (playerInventory == null) Debug.LogError("Chest: no PlayerInventory found in scene.");
+            if (playerInventory == null)
+            {
+                Debug.LogError("Chest: no PlayerInventory found in scene.");
+                return;
+            }
+
+            digFeedback = playerInventory.GetComponent<DigFeedback>();
+            if (digFeedback == null) Debug.LogError("Chest: the player has no DigFeedback component.");
         }
 
         private void OnEnable()
@@ -76,12 +86,15 @@ namespace Economy
             if (space <= 0f) return;
 
             var withdrawn = oreInventory.WithdrawUpToWeight(space);
+            var looted = new Dictionary<BlockType, int>();
             foreach (var kvp in withdrawn)
             {
                 if (kvp.Value <= 0) continue;
                 var blockType = GameManager.BlockTypeDatabase.Get((byte)kvp.Key);
                 playerInventory.AddOre(blockType, kvp.Value);
+                looted[blockType] = kvp.Value;
             }
+            if (looted.Count > 0) digFeedback.ChestLoot(transform.position, looted);
 
             RefreshWeightBar();
 

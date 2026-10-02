@@ -14,6 +14,8 @@ namespace Audio
         MineOre = 3,
         ArtifactFound = 4,
         PowerUpCollected = 5,
+        ChestPoof = 6,
+        OreCollect = 7,
 
         // Player
         PlayerHurt = 20,
@@ -21,6 +23,7 @@ namespace Audio
         PlayerDeath = 22,
         Jetpack = 24,
         Warning = 25,
+        RespawnPortal = 26,
 
         // Hazards
         ExplosiveFuse = 40,

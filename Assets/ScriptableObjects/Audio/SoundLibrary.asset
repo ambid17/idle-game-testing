@@ -49,6 +49,20 @@ MonoBehaviour:
     Volume: 0.5
     PitchVariance: 0
     MinInterval: 0.1
+  - Id: 6
+    Clips:
+    - {fileID: 8300000, guid: e08f04577306bad47bfe926dd1efc7b9, type: 3}
+    Volume: 0.5
+    PitchVariance: 0.04
+    MinInterval: 0.1
+  - Id: 7
+    Clips:
+    - {fileID: 8300000, guid: 350a3378448092942b111a4564d65f0c, type: 3}
+    - {fileID: 8300000, guid: f713e21c36a989f4089315d7adeb27cb, type: 3}
+    - {fileID: 8300000, guid: fc5fc5c3934c43549bb05e6a8832bc36, type: 3}
+    Volume: 0.35
+    PitchVariance: 0.1
+    MinInterval: 0.045
   - Id: 20
     Clips:
     - {fileID: 8300000, guid: 58c3fcee825942c44810a34c9deae099, type: 3}
@@ -79,6 +93,12 @@ MonoBehaviour:
     Volume: 0.4
     PitchVariance: 0
     MinInterval: 0.5
+  - Id: 26
+    Clips:
+    - {fileID: 8300000, guid: 06145b8e296d9014caba289f3ad08a59, type: 3}
+    Volume: 0.6
+    PitchVariance: 0
+    MinInterval: 0.2
   - Id: 40
     Clips:
     - {fileID: 8300000, guid: 4b25f89f8b280224ca6a53b8eb21c9ff, type: 3}
