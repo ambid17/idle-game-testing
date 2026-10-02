@@ -105,12 +105,15 @@ namespace Effects
         }
 
         // A small round poof, e.g. something vanishing.
-        public void Puff(Vector3 center, int puffs, float size)
+        public void Puff(Vector3 center, int puffs, float size) => Puff(center, puffs, size, Color.white, Vector3.zero);
+
+        // color tints the (pale) dust art, e.g. dark for smoke; drift is added to every puff's velocity.
+        public void Puff(Vector3 center, int puffs, float size, Color color, Vector3 drift)
         {
             for (int i = 0; i < puffs; i++)
             {
                 Vector2 direction = Random.insideUnitCircle;
-                EmitDust(center + (Vector3)(direction * size * 0.3f), direction * (size * 3f), size * Random.Range(0.7f, 1.2f), Random.Range(0.35f, 0.6f), Mathf.Sign(direction.x));
+                EmitDust(center + (Vector3)(direction * size * 0.3f), (Vector3)(direction * (size * 3f)) + drift, size * Random.Range(0.7f, 1.2f), Random.Range(0.35f, 0.6f), Mathf.Sign(direction.x), color);
             }
         }
 
@@ -143,7 +146,9 @@ namespace Effects
             sparkleSystem.Emit(emitParams, 1);
         }
 
-        private void EmitDust(Vector3 position, Vector3 velocity, float size, float lifetime, float spinDirection)
+        private void EmitDust(Vector3 position, Vector3 velocity, float size, float lifetime, float spinDirection) => EmitDust(position, velocity, size, lifetime, spinDirection, Color.white);
+
+        private void EmitDust(Vector3 position, Vector3 velocity, float size, float lifetime, float spinDirection, Color color)
         {
             var emitParams = new ParticleSystem.EmitParams
             {
@@ -151,7 +156,7 @@ namespace Effects
                 velocity = velocity,
                 startSize = size,
                 startLifetime = lifetime,
-                startColor = Color.white,
+                startColor = color,
                 rotation = Random.Range(-20f, 20f),
                 angularVelocity = spinDirection * Random.Range(20f, 90f),
                 applyShapeToPosition = false,

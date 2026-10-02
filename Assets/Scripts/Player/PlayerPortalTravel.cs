@@ -6,7 +6,8 @@ namespace Player
 {
     // Shared portal trip to the Depot, used by the Depot Recall ability and the Portal power-up:
     // a portal opens on the player and sucks them in (shrink + spin into its center), closes,
-    // then reopens at depotArrivalPoint and spits them back out. The player is out of physics and
+    // then reopens at depotArrivalPoint and spits them back out. Respawning after a death plays
+    // just the arrival half at the spawn point. The player is out of physics and
     // input for the whole trip (PlayerController.SetInPortal). One runtime-built SpriteRenderer is
     // reused for both ends. Dying mid-trip (shouldn't happen with physics off, but a DoT could)
     // cancels it and restores the player so the normal respawn takes over.
@@ -37,6 +38,7 @@ namespace Player
         private Coroutine travelRoutine;
         private Vector3 playerBaseScale;
         private Quaternion playerBaseRotation;
+        private bool diedSinceLastRevive;
 
         public bool IsTraveling => travelRoutine != null;
 
@@ -69,11 +71,13 @@ namespace Player
         private void OnEnable()
         {
             GameManager.EventService.Add<PlayerDiedEvent>(HandleDied);
+            GameManager.EventService.Add<PlayerRevivedEvent>(HandleRevived);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<PlayerDiedEvent>(HandleDied);
+            GameManager.EventService.Remove<PlayerRevivedEvent>(HandleRevived);
         }
 
         private void OnDestroy()
@@ -150,8 +154,38 @@ namespace Player
 
         private void HandleDied(PlayerDiedEvent evt)
         {
+            diedSinceLastRevive = true;
             if (!IsTraveling) return;
             StopCoroutine(travelRoutine);
+            EndTravel();
+        }
+
+        // Respawning after a death arrives through a portal at the spawn point - the spit-out half
+        // of a trip. PlayerRevivedEvent also fires on prestige and from dev tools, which just
+        // reset the player in place.
+        private void HandleRevived()
+        {
+            if (!diedSinceLastRevive) return;
+            diedSinceLastRevive = false;
+            if (IsTraveling) return;
+
+            playerController.SetInPortal(true);
+            transform.localScale = Vector3.zero;
+            travelRoutine = StartCoroutine(ArrivalRoutine());
+        }
+
+        private IEnumerator ArrivalRoutine()
+        {
+            // PlayerController moves the player to the spawn point on the same event, possibly
+            // after this listener - and the camera needs a moment to pan over from the death site.
+            yield return new WaitForSeconds(transitSeconds);
+            Vector3 destination = transform.position;
+
+            yield return AnimatePortal(destination, 0f, 1f, portalOpenSeconds, EaseOutBack);
+            yield return AnimatePlayer(0f, 1f, spitOutSeconds, EaseOutBack);
+            GameManager.WorldEffects.SparkleBurst(destination, 14, 0.3f, 3.5f);
+            yield return AnimatePortal(destination, 1f, 0f, portalCloseSeconds, EaseInQuad);
+
             EndTravel();
         }
 

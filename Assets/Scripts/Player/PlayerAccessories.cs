@@ -37,6 +37,18 @@ namespace Player
             }
         }
 
+        // The pieces currently worn, for effects that need a copy of the dressed player (PlayerDeathEffect).
+        public IEnumerable<SpriteRenderer> WornRenderers
+        {
+            get
+            {
+                foreach (var entry in worn.Values)
+                {
+                    if (entry.Accessory != null) yield return entry.Renderer;
+                }
+            }
+        }
+
         private void OnEnable() => GameManager.EventService.Add<PlayerAccessoriesChangedEvent>(Refresh);
         private void OnDisable() => GameManager.EventService.Remove<PlayerAccessoriesChangedEvent>(Refresh);
 

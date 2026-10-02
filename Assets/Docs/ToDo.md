@@ -1,5 +1,21 @@
 todo 
 
+can we completely regenerate the MineOre sound? it needs to be more satisfying. Think mobile game styling, gifting dopamine. You can use the fal.ai tool to generate this
+
+new animations
+prestige portal collapse, treasure chest powerup
+
+can you name some synonyms for prestige/reset in this game's context?
+
+
+interact prompt needs to match UI styling
+
+death animation
+
+5-6 more music tracks
+
+
+
 
 - player 
 	- 
@@ -59,11 +75,9 @@ steamworld dig 2: art reference
 dome keeper
 
 
-I think the biggest visual issue with the game currently is the drastic difference in pixels per unit across the various assets. I like the level of detail in the buildings and parallax backgrounds. Could you put together a checklist of everything that would need to be regenerated to match?
+
 
 after art style is set in stone:
 	Ask about more visual fluff 
 	- ui animations
 	- vfx 
-	- expand player animations
-	- building animations
