@@ -287,16 +287,6 @@ def player_death():
     return buf
 
 
-def player_revive():
-    # Gentle music-box arpeggio up over a soft chorused glow.
-    d = 1.2
-    buf = np.zeros(int(SR * d))
-    for k, f in enumerate([392.0, 523.25, 659.25, 783.99, 1046.5]):
-        place(buf, chime(f, 0.6, 0.22) * 0.55, k * 0.1)
-    glow = mix(osc(523.25, d, "tri"), osc(523.25 * 1.004, d, "tri"), osc(783.99 * 0.998, d, "tri") * 0.6)
-    return mix(buf, soft(glow, 1500) * env_adsr(d, 0.35, 0.2, 0.5, 0.5) * 0.12)
-
-
 def jetpack_loop():
     # Whimsical toy-rocket "putt-putt": soft sine bloops (little puffs, pitch dropping) riding on
     # a quiet pillowy airflow, plus a warbly hum like a tiny motor. Everything stays under ~1.2kHz
@@ -670,7 +660,6 @@ SOUNDS = {
     "PlayerHurt": player_hurt,
     "ShieldBlock": shield_block,
     "PlayerDeath": player_death,
-    "PlayerRevive": player_revive,
     "Warning": warning,
     "ExplosiveFuse": explosive_fuse,
     "Explosion": explosion,

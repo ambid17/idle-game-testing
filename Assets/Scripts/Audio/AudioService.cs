@@ -86,7 +86,6 @@ namespace Audio
             GameManager.EventService.Add<PlayerDamagedEvent>(OnPlayerDamaged);
             GameManager.EventService.Add<ShieldChargeChangedEvent>(OnShieldChargeChanged);
             GameManager.EventService.Add<PlayerDiedEvent>(OnPlayerDied);
-            GameManager.EventService.Add<PlayerRevivedEvent>(OnPlayerRevived);
             GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
             GameManager.EventService.Add<SellGoodsRequestedEvent>(OnSellGoodsRequested);
             GameManager.EventService.Add<UpgradePurchasedEvent>(OnUpgradePurchased);
@@ -110,7 +109,6 @@ namespace Audio
             GameManager.EventService.Remove<PlayerDamagedEvent>(OnPlayerDamaged);
             GameManager.EventService.Remove<ShieldChargeChangedEvent>(OnShieldChargeChanged);
             GameManager.EventService.Remove<PlayerDiedEvent>(OnPlayerDied);
-            GameManager.EventService.Remove<PlayerRevivedEvent>(OnPlayerRevived);
             GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
             GameManager.EventService.Remove<SellGoodsRequestedEvent>(OnSellGoodsRequested);
             GameManager.EventService.Remove<UpgradePurchasedEvent>(OnUpgradePurchased);
@@ -353,7 +351,6 @@ namespace Audio
             PlayEvent(SoundId.PlayerDeath);
         }
 
-        private void OnPlayerRevived() => PlayEvent(SoundId.PlayerRevive);
         private void OnSellRequested(SellRequestedEvent e) => PlayEvent(SoundId.Sell);
         private void OnSellGoodsRequested(SellGoodsRequestedEvent e) => PlayEvent(SoundId.Sell);
         private void OnUpgradePurchased(UpgradePurchasedEvent e) => PlayEvent(SoundId.UpgradePurchased);

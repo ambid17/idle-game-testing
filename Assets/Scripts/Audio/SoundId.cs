@@ -19,7 +19,6 @@ namespace Audio
         PlayerHurt = 20,
         ShieldBlock = 21,
         PlayerDeath = 22,
-        PlayerRevive = 23,
         Jetpack = 24,
         Warning = 25,
 

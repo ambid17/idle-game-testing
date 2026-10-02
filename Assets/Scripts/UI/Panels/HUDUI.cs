@@ -160,7 +160,7 @@ namespace UI
 
         private void RefreshDollars()
         {
-            dollarsLabel.text = $"${Wallet.Instance.Dollars:0}";
+            dollarsLabel.text = $"{Wallet.Instance.Dollars:0}";
         }
 
         private void RefreshArtifactCount()
