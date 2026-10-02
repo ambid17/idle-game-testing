@@ -6,8 +6,9 @@ using UnityEngine;
 namespace Buildings
 {
     // Shows the player banking their ore from outside the Depot (the Deposit / Deposit & Sell
-    // interactions, which otherwise just empty the HUD inventory): chunks of each carried ore hop
-    // out of the player one after another and arc into the doorway, each landing with a sparkle.
+    // interactions, which otherwise just empty the HUD inventory): loose chunks of each carried ore
+    // (WorldEffects.OreChunk, the same ones mining sheds) hop out of the player one after another
+    // and arc into the doorway, each landing with a sparkle.
     // When the trip also sold the Depot's stock, the last chunk landing sends coins from the
     // doorway to the HUD's dollars counter (HudCoinBurstRequestedEvent). Cosmetic only - the ore
     // and dollars are credited before any of this. Lives on the Depot building.
@@ -20,7 +21,9 @@ namespace Buildings
 
         [Tooltip("Most chunks one deposit throws, however much ore was carried.")]
         [SerializeField, Range(1, PoolSize)] private int maxIcons = 14;
-        [Tooltip("Chunk size in world units.")]
+        [Tooltip("Scale of an ore chunk (1 = the size it was in its tile).")]
+        [SerializeField] private float chunkScale = 1.5f;
+        [Tooltip("Size in world units of the block's whole icon, flown for anything without chunk art.")]
         [SerializeField] private float iconSize = 0.6f;
         [SerializeField] private float flySeconds = 0.5f;
         [Tooltip("Delay between one chunk leaving the player and the next.")]
@@ -103,13 +106,15 @@ namespace Buildings
                 int i = FreeIconIndex();
                 if (i < 0) break;
 
-                var sprite = GameManager.BlockTypeDatabase.Get((byte)spawnOrder[n]).Icon;
+                var block = GameManager.BlockTypeDatabase.Get((byte)spawnOrder[n]);
+                var chunk = GameManager.WorldEffects.OreChunk(block);
+                var sprite = chunk != null ? chunk : block.Icon;
                 bool last = n == spawnOrder.Count - 1;
 
                 icons[i].Source = evt.Source;
                 icons[i].SourceOffset = new Vector3(Random.Range(-spawnExtents.x, spawnExtents.x), Random.Range(-spawnExtents.y, spawnExtents.y), 0f);
                 icons[i].Target = dropPoint.position + new Vector3(Random.Range(-landExtents.x, landExtents.x), Random.Range(-landExtents.y, landExtents.y), 0f);
-                icons[i].BaseScale = iconSize / Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y);
+                icons[i].BaseScale = chunk != null ? chunkScale : iconSize / Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y);
                 icons[i].Spin = Random.Range(-360f, 360f);
                 icons[i].Age = -n * iconStagger;
                 icons[i].Flying = true;

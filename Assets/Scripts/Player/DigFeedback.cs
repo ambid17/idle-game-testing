@@ -10,11 +10,13 @@ namespace Player
 {
     // Purely cosmetic "juice" for the player's digging, driven by PlayerMining:
     //  - Hit: a few chips flick off the block face toward the player on every pickaxe hit.
-    //  - Break: a burst of chunks (tinted by the block, plus dirt-coloured ones for ores) and a dust
-    //    puff, a screen shake scaled by the block's effective health, and a brief hit-stop on hard blocks.
+    //  - Break: a burst of chunks (tinted by the block) and a dust puff, a screen shake scaled by
+    //    the block's effective health, and a brief hit-stop on hard blocks. Ores shed loose chunks
+    //    of their own art (WorldEffects.OreChunk) among dirt-coloured chips.
     //    Artifact tablets also shed little copies of themselves, carved with the same rune.
-    //  - Pickup: collected ore/artifacts pop out of the cell as tinted nuggets that home in on the
-    //    player. The inventory is credited immediately by PlayerMining as before - this is visual only.
+    //  - Pickup: collected ore/artifacts pop out of the cell as nuggets that home in on the player -
+    //    a chunk of the ore itself, or a tinted generic nugget for anything without chunk art.
+    //    The inventory is credited immediately by PlayerMining as before - this is visual only.
     // Shake goes through GameManager.CameraShake (which honours the Options "Screen Shake" toggle).
     public class DigFeedback : MonoBehaviour
     {
@@ -23,10 +25,14 @@ namespace Player
             public Transform Transform;
             public Vector3 Velocity;
             public float Age;
+            public float Size;
+            public Color SparkleColor;
         }
 
         private const int DebrisSheetRows = 4;
         private const int MaxNuggets = 24;
+        // The nugget glow's diameter, relative to a generic nugget.
+        private const float NuggetGlowScale = 2.2f;
 
         [Header("Rendering")]
         [Tooltip("Alpha-blended material (Sprites/Default) carrying the DebrisChips sheet - 4 chip shapes stacked vertically.")]
@@ -41,8 +47,10 @@ namespace Player
         [Header("Debris")]
         [SerializeField, Min(0)] private int chipsPerHit = 3;
         [SerializeField, Min(0)] private int chunksPerBreak = 12;
-        [Tooltip("Share of an ore's break chunks tinted with the ore colour - the rest use the dirt colour of the tile background.")]
+        [Tooltip("Share of an ore's debris that is chunks of the ore itself - the rest are chips in the dirt colour of the tile background.")]
         [SerializeField, Range(0f, 1f)] private float oreChunkFraction = 0.45f;
+        [Tooltip("How much bigger than a plain chip an ore chunk is drawn, so its shape reads.")]
+        [SerializeField, Min(0.1f)] private float oreChunkSizeScale = 1.8f;
         [SerializeField, Min(0)] private int dustPerBreak = 5;
         [Tooltip("Mini rune tablets an artifact sheds when it breaks, on top of its chunks.")]
         [SerializeField, Min(0)] private int runeTabletsPerBreak = 5;
@@ -62,6 +70,8 @@ namespace Player
 
         [Header("Pickup nuggets")]
         [SerializeField, Min(0.05f)] private float nuggetSize = 0.4f;
+        [Tooltip("Scale of an ore chunk flying to the player (1 = the size it was in its tile).")]
+        [SerializeField, Min(0.05f)] private float oreNuggetScale = 1.25f;
         [Tooltip("Seconds a nugget arcs out of the cell before homing in on the player.")]
         [SerializeField, Min(0f)] private float nuggetPopSeconds = 0.3f;
         [SerializeField, Min(0f)] private float nuggetHomingAcceleration = 60f;
@@ -92,6 +102,9 @@ namespace Player
         // One per rune, made the first time that rune breaks - each shows a single row of runeDebrisSheet.
         private readonly Dictionary<int, ParticleSystem> runeDebrisSystems = new();
         private Material runeDebrisMaterial;
+        // One per ore, made the first time that ore is hit - each shows a single column of the ore chunk sheet.
+        private readonly Dictionary<BlockTypeId, ParticleSystem> oreChunkSystems = new();
+        private Material oreChunkMaterial;
         private readonly List<Nugget> nuggets = new();
         private readonly Stack<Transform> nuggetPool = new();
         private Coroutine hitStopRoutine;
@@ -115,6 +128,7 @@ namespace Player
             ConfigureDebris(debrisSystem, DebrisSheetRows, ParticleSystemAnimationRowMode.Random, 0);
 
             runeDebrisMaterial = new Material(debrisMaterial) { name = "Rune Debris", mainTexture = runeDebrisSheet };
+            oreChunkMaterial = new Material(debrisMaterial) { name = "Ore Chunks", mainTexture = GameManager.WorldEffects.OreChunkSheet };
 
             var dustMaterial = new Material(debrisMaterial) { name = "Dig Dust", mainTexture = GlowSprites.SoftDot.texture };
             dustSystem = CreateSystem("Dig Dust", dustMaterial, 100, gravity: -0.02f);
@@ -148,7 +162,7 @@ namespace Player
             for (int i = 0; i < chipsPerHit; i++)
             {
                 var velocity = away * Random.Range(1.5f, 3f) + Vector3.up * Random.Range(1f, 2.5f) + (Vector3)(Random.insideUnitCircle * 0.8f);
-                EmitDebris(face + (Vector3)(Random.insideUnitCircle * 0.2f), velocity, Random.Range(0.08f, 0.14f), Random.Range(0.35f, 0.55f), ChipColor(block));
+                EmitDebris(block, face + (Vector3)(Random.insideUnitCircle * 0.2f), velocity, Random.Range(0.08f, 0.14f), Random.Range(0.35f, 0.55f));
             }
         }
 
@@ -163,7 +177,7 @@ namespace Player
             {
                 var offset = new Vector3(Random.Range(-0.4f, 0.4f), Random.Range(-0.4f, 0.4f), 0f);
                 var velocity = offset.normalized * Random.Range(1f, 3.5f) + Vector3.up * Random.Range(1.5f, 3.5f);
-                EmitDebris(cellCenter + offset, velocity, Random.Range(0.12f, 0.24f), Random.Range(0.6f, 1.1f), ChipColor(block));
+                EmitDebris(block, cellCenter + offset, velocity, Random.Range(0.12f, 0.24f), Random.Range(0.6f, 1.1f));
             }
 
             var dust = Color.Lerp(dirtColor, Color.white, 0.35f);
@@ -190,7 +204,7 @@ namespace Player
         }
 
         // Nuggets popping out of cellCenter and flying to the player - one per unit collected.
-        // sprite: drawn untinted in place of the generic nugget (an artifact's rune tablet).
+        // sprite: drawn untinted in place of the nugget (an artifact's rune tablet).
         public void Pickup(Vector3 cellCenter, BlockType block, int count, Sprite sprite = null)
         {
             for (int i = 0; i < count && nuggets.Count < MaxNuggets; i++)
@@ -198,11 +212,20 @@ namespace Player
                 var nuggetTransform = nuggetPool.Count > 0 ? nuggetPool.Pop() : CreateNugget();
                 nuggetTransform.position = cellCenter;
                 var body = nuggetTransform.GetComponent<SpriteRenderer>();
-                body.sprite = sprite != null ? sprite : nuggetSprite;
-                body.color = sprite != null ? Color.white : block.MinimapColor;
+
+                // A chunk of the ore itself where there is one, else the generic nugget in its colour.
+                var chunk = sprite == null ? GameManager.WorldEffects.OreChunk(block) : null;
+                float size = chunk != null ? oreNuggetScale : nuggetSize;
+                if (chunk != null) body.sprite = chunk;
+                else body.sprite = sprite != null ? sprite : nuggetSprite;
+                body.color = sprite != null || chunk != null ? Color.white : block.MinimapColor;
+
                 var glowColor = block.MinimapColor;
                 glowColor.a = 0.5f;
-                nuggetTransform.GetChild(0).GetComponent<SpriteRenderer>().color = glowColor;
+                var glow = nuggetTransform.GetChild(0);
+                glow.GetComponent<SpriteRenderer>().color = glowColor;
+                // The glow is a child, so cancel out the body's scale to keep it the same size.
+                glow.localScale = Vector3.one * (NuggetGlowScale * nuggetSize / size);
                 nuggetTransform.gameObject.SetActive(true);
 
                 nuggets.Add(new Nugget
@@ -210,6 +233,8 @@ namespace Player
                     Transform = nuggetTransform,
                     Velocity = new Vector3(Random.Range(-1.8f, 1.8f), Random.Range(3.5f, 5f), 0f),
                     Age = 0f,
+                    Size = size,
+                    SparkleColor = block.MinimapColor,
                 });
             }
         }
@@ -405,13 +430,13 @@ namespace Player
                 nugget.Transform.position = position;
                 // Slight squash-and-stretch pulse while flying.
                 float pulse = 1f + 0.12f * Mathf.Sin(nugget.Age * 30f);
-                nugget.Transform.localScale = new Vector3(nuggetSize * pulse, nuggetSize / pulse, 1f);
+                nugget.Transform.localScale = new Vector3(nugget.Size * pulse, nugget.Size / pulse, 1f);
 
                 bool arrived = nugget.Age >= nuggetPopSeconds && (target - position).sqrMagnitude < 0.3f * 0.3f;
                 // Safety net: a nugget that somehow never arrives still cleans itself up.
                 if (arrived || nugget.Age > 3f)
                 {
-                    if (arrived) EmitSparkles(position, nugget.Transform.GetComponent<SpriteRenderer>().color);
+                    if (arrived) EmitSparkles(position, nugget.SparkleColor);
                     nugget.Transform.gameObject.SetActive(false);
                     nuggetPool.Push(nugget.Transform);
                     nuggets.RemoveAt(i);
@@ -429,7 +454,7 @@ namespace Player
             body.sprite = nuggetSprite;
             body.sortingOrder = sortingOrder + 1;
 
-            var glow = GlowSprites.CreateGlow(go.transform, Color.white, 2.2f);
+            var glow = GlowSprites.CreateGlow(go.transform, Color.white, NuggetGlowScale);
             glow.sortingOrder = sortingOrder;
             return go.transform;
         }
@@ -444,19 +469,37 @@ namespace Player
             }
         }
 
-        // Ores and artifacts shed a mix of their own colour and the dirt of their tile background.
-        private Color ChipColor(BlockType block)
+        // One piece of debris off a block. Ores and artifacts shed a mix of themselves and the dirt
+        // of their tile background; an ore's own share is loose chunks of its art rather than chips.
+        private void EmitDebris(BlockType block, Vector3 position, Vector3 velocity, float size, float lifetime)
         {
             bool hasDirtBackground = block.Category == BlockCategory.Ore || block.Category == BlockCategory.Artifact;
-            var color = hasDirtBackground && Random.value > oreChunkFraction ? dirtColor : block.MinimapColor;
+            bool dirt = hasDirtBackground && Random.value > oreChunkFraction;
+            if (!dirt && GameManager.WorldEffects.HasOreChunks(block))
+            {
+                Emit(OreChunkSystem(block), position, velocity, size * oreChunkSizeScale, lifetime, Color.white, Random.Range(0f, 360f));
+                return;
+            }
+
+            var color = dirt ? dirtColor : block.MinimapColor;
             // Small per-chip brightness variation keeps a burst from looking flat.
             float shade = Random.Range(0.85f, 1.1f);
-            return new Color(color.r * shade, color.g * shade, color.b * shade, 1f);
+            Emit(debrisSystem, position, velocity, size, lifetime, new Color(color.r * shade, color.g * shade, color.b * shade, 1f), Random.Range(0f, 360f));
         }
 
-        private void EmitDebris(Vector3 position, Vector3 velocity, float size, float lifetime, Color color)
+        private ParticleSystem OreChunkSystem(BlockType block)
         {
-            Emit(debrisSystem, position, velocity, size, lifetime, color, Random.Range(0f, 360f));
+            if (oreChunkSystems.TryGetValue(block.Id, out var system)) return system;
+
+            system = CreateSystem($"Ore Chunks {block.Id}", oreChunkMaterial, 60, gravity: 2.2f);
+            // Row = a random variant; the frame within it is pinned to this ore's column.
+            ConfigureDebris(system, GameManager.WorldEffects.OreChunkVariants, ParticleSystemAnimationRowMode.Random, 0);
+            int columns = GameManager.WorldEffects.OreChunkColumns;
+            var sheet = system.textureSheetAnimation;
+            sheet.numTilesX = columns;
+            sheet.frameOverTime = new ParticleSystem.MinMaxCurve(((int)block.Id + 0.5f) / columns);
+            oreChunkSystems[block.Id] = system;
+            return system;
         }
 
         // Bigger, slower-tumbling and longer-lived than the chunks, so the carved rune stays readable.

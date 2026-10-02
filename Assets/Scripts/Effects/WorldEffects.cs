@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using MapGeneration;
 using UnityEngine;
 
 namespace Effects
@@ -6,6 +8,7 @@ namespace Effects
     // sparkles, used by the building reveal and prestige cinematics, the player's fall landing,
     // critter catches, artifact finds and treasure chests. Emission is driven by hand (Emit), like
     // Player.DigFeedback; each particle shows one random row of its vertical sheet.
+    // Also hands out the loose ore chunks that mining debris, pickups and Depot deposits show.
     public class WorldEffects : MonoBehaviour
     {
         [Tooltip("Alpha-blended material (Sprites/Default) the effect sheets are drawn with.")]
@@ -22,11 +25,46 @@ namespace Effects
         [Tooltip("Tint of sparkles that don't ask for a colour of their own (the sparkle sheet is white).")]
         [SerializeField] private Color defaultSparkleColor = new(0.45f, 1f, 1f, 1f);
 
+        [Header("Ore chunks")]
+        [Tooltip("Loose chunks cut out of each ore's tile art: column = BlockTypeId, one row per variant (Tools/Effects/make_ore_chunks.py).")]
+        [SerializeField] private Texture2D oreChunkSheet;
+        [SerializeField, Min(1)] private int oreChunkVariants = 4;
+        [Tooltip("Matches the ore tile art, so a chunk is the size it was in its tile.")]
+        [SerializeField, Min(1f)] private float oreChunkPixelsPerUnit = 128f;
+
         private ParticleSystem dustSystem;
         private ParticleSystem sparkleSystem;
+        private readonly Dictionary<BlockTypeId, Sprite[]> oreChunkSprites = new();
+
+        public Texture2D OreChunkSheet => oreChunkSheet;
+        public int OreChunkVariants => oreChunkVariants;
+        // Cells are square, so the sheet's height gives their size.
+        public int OreChunkColumns => oreChunkSheet.width / (oreChunkSheet.height / oreChunkVariants);
+
+        public bool HasOreChunks(BlockType block) => block.Category == BlockCategory.Ore && (int)block.Id < OreChunkColumns;
+
+        // A random loose chunk of this ore, or null for blocks that have none (non-ores).
+        public Sprite OreChunk(BlockType block)
+        {
+            if (!HasOreChunks(block)) return null;
+
+            if (!oreChunkSprites.TryGetValue(block.Id, out var sprites))
+            {
+                int cell = oreChunkSheet.height / oreChunkVariants;
+                sprites = new Sprite[oreChunkVariants];
+                for (int i = 0; i < oreChunkVariants; i++)
+                {
+                    var rect = new Rect((int)block.Id * cell, i * cell, cell, cell);
+                    sprites[i] = Sprite.Create(oreChunkSheet, rect, new Vector2(0.5f, 0.5f), oreChunkPixelsPerUnit);
+                }
+                oreChunkSprites[block.Id] = sprites;
+            }
+            return sprites[Random.Range(0, sprites.Length)];
+        }
 
         private void Awake()
         {
+            if (oreChunkSheet == null) Debug.LogError($"{nameof(WorldEffects)}.oreChunkSheet is not assigned.");
             if (particleMaterial == null) Debug.LogError($"{nameof(WorldEffects)}.particleMaterial is not assigned.");
             if (dustSheet == null) Debug.LogError($"{nameof(WorldEffects)}.dustSheet is not assigned.");
             if (sparkleSheet == null) Debug.LogError($"{nameof(WorldEffects)}.sparkleSheet is not assigned.");
