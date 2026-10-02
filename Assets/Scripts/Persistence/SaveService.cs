@@ -99,7 +99,8 @@ namespace Persistence
                 {
                     StorageDroneTargetMode = AutomationSettings.Instance.StorageDroneTargetMode,
                     FuelDroneTargetMode = AutomationSettings.Instance.FuelDroneTargetMode,
-                    StorageDroneDepositMode = AutomationSettings.Instance.StorageDroneDepositMode
+                    StorageDroneDepositMode = AutomationSettings.Instance.StorageDroneDepositMode,
+                    DroneNotificationsMuted = !AutomationSettings.Instance.DroneNotifications
                 }
             };
 
@@ -337,7 +338,8 @@ namespace Persistence
                 AutomationSettings.Instance.RestoreFromSaveData(
                     data.AutomationSettings.StorageDroneTargetMode,
                     data.AutomationSettings.FuelDroneTargetMode,
-                    data.AutomationSettings.StorageDroneDepositMode);
+                    data.AutomationSettings.StorageDroneDepositMode,
+                    !data.AutomationSettings.DroneNotificationsMuted);
             }
 
             var depotOres = new Dictionary<BlockTypeId, int>();

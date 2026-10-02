@@ -26,6 +26,9 @@ namespace Automation
         public TargetMode StorageDroneTargetMode { get; private set; } = TargetMode.FullestInventory;
         public TargetMode FuelDroneTargetMode { get; private set; } = TargetMode.PlayerAlways;
         public StorageDroneDepositMode StorageDroneDepositMode { get; private set; } = StorageDroneDepositMode.Deposit;
+        // Whether automatons and drones report to the player with toasts (deposit reports, the
+        // fuel drone's "refueled you"). Off only silences the toasts - the Miner Dashboard still counts.
+        public bool DroneNotifications { get; private set; } = true;
 
         public void SetStorageDroneTargetMode(TargetMode mode)
         {
@@ -45,10 +48,17 @@ namespace Automation
             GameManager.EventService.Dispatch<AutomationSettingsChangedEvent>();
         }
 
+        public void SetDroneNotifications(bool enabled)
+        {
+            DroneNotifications = enabled;
+            GameManager.EventService.Dispatch<AutomationSettingsChangedEvent>();
+        }
+
         // Bulk restore from SaveService - silent (no event) since this only ever runs once at
         // startup before any UI has subscribed.
-        public void RestoreFromSaveData(TargetMode storageMode, TargetMode fuelMode, StorageDroneDepositMode storageDepositMode)
+        public void RestoreFromSaveData(TargetMode storageMode, TargetMode fuelMode, StorageDroneDepositMode storageDepositMode, bool droneNotifications)
         {
+            DroneNotifications = droneNotifications;
             StorageDroneTargetMode = storageMode;
             FuelDroneTargetMode = fuelMode;
             StorageDroneDepositMode = storageDepositMode;

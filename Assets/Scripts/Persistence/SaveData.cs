@@ -28,6 +28,8 @@ namespace Persistence
         public TargetMode StorageDroneTargetMode;
         public TargetMode FuelDroneTargetMode;
         public StorageDroneDepositMode StorageDroneDepositMode;
+        // Inverted so older saves (where this is missing, i.e. false) keep notifications on.
+        public bool DroneNotificationsMuted;
     }
 
     [Serializable]

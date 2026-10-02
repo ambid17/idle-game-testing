@@ -24,6 +24,8 @@ namespace Automation
 
             GameManager.EventService.Dispatch(new OreDepositedByAutomationEvent(entityDisplayName, withdrawn));
 
+            if (!AutomationSettings.Instance.DroneNotifications) return;
+
             string message = DepositNotificationFormatter.Format(entityDisplayName, withdrawn, GameManager.BlockTypeDatabase);
             GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.Queued));
         }

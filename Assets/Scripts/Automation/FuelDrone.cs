@@ -161,7 +161,7 @@ namespace Automation
 
                     // Only the player cares to be told about this - a refueled MiningAutomaton has
                     // no player-facing report (mirrors how it has no low-fuel warning either).
-                    if (currentTarget is PlayerController)
+                    if (currentTarget is PlayerController && AutomationSettings.Instance.DroneNotifications)
                     {
                         GameManager.EventService.Dispatch(new NotificationEvent($"Fuel drone refueled you (+{amountToGive:0} fuel)", NotificationUrgency.Queued));
                     }

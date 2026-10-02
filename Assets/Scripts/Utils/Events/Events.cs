@@ -474,6 +474,13 @@ namespace Events
         public SetStorageDroneDepositModeRequestedEvent(StorageDroneDepositMode mode) => Mode = mode;
     }
 
+    // Dispatched by the Control Center's notifications toggle (UI.ControlCenterUI).
+    public class SetDroneNotificationsRequestedEvent : IEvent
+    {
+        public bool Enabled;
+        public SetDroneNotificationsRequestedEvent(bool enabled) => Enabled = enabled;
+    }
+
     public class AutomationSettingsChangedEvent { }
 
     // Dispatched by MiningAutomaton/StorageDrone (via AutomationDepositService) whenever they

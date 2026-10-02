@@ -1,22 +1,15 @@
 todo 
 
-can we completely regenerate the MineOre sound? it needs to be more satisfying. Think mobile game styling, gifting dopamine. You can use the fal.ai tool to generate this
+button size in "got it" tutorial prompt
+museum collection UI scaling
 
-new animations
-prestige portal collapse, treasure chest powerup
+play an audio cue on whispers that sound a bit eerie
 
-can you name some synonyms for prestige/reset in this game's context?
+the grand finale ending, if you release the Bound should show him on screen. 
+if you keep him sealed, he teleports you into his cave to thank you for letting him rest and telling you he can't control his power and didn't want to destroy the world
 
 
-interact prompt needs to match UI styling
-
-death animation
-
-5-6 more music tracks
-
-respawn sfx: portal woosh 
-check hard landing sfx
-
+new animation ideas, need more fluff
 
 
 
@@ -50,9 +43,6 @@ check hard landing sfx
 - ideas 
 	- XXXXXX missing an end goal
 	- find lost drones that become automatons
-	- shift to dash
-	- add a vibrating animation or light show when mining artifacts
-	- add spectate automaton view?
 	- upgrades
 		- chance to duplicate ores on mine
 	- automatons
