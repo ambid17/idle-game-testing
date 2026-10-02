@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Buildings;
 using Critters;
 using Economy;
 using Events;
@@ -64,6 +65,7 @@ namespace Automation
         [SerializeField] private Vector2Int digTargetCell;
         [SerializeField] private float miningProgress;
         [SerializeField] private Vector3 _depotLocation;
+        private DepotDoor depotDoor;
 
         public int DisplayIndex { get; private set; } = 1;
         public Transform CarrierTransform => transform;
@@ -83,10 +85,11 @@ namespace Automation
 
         // Assigned by AutomationSpawner - used for notification text ("Automaton #2") and the
         // Control Center earnings graph's per-automaton series.
-        public void Configure(int displayIndex, Vector3 depotPosition)
+        public void Configure(int displayIndex, Vector3 depotPosition, DepotDoor depotDoor)
         {
             DisplayIndex = displayIndex;
             _depotLocation = depotPosition;
+            this.depotDoor = depotDoor;
             RefreshHat();
         }
 
@@ -504,6 +507,7 @@ namespace Automation
 
             float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, _depotLocation, speed);
+            depotDoor.NotifyApproach(transform.position);
             if (!arrived) return;
 
             Deposit();
@@ -528,6 +532,7 @@ namespace Automation
         {
             float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, _depotLocation, speed);
+            depotDoor.NotifyApproach(transform.position);
             if (!arrived) return;
 
             // Fuel is free, so this always fills the tank.

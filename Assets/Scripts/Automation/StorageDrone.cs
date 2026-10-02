@@ -1,4 +1,5 @@
 using System.Linq;
+using Buildings;
 using Economy;
 using Events;
 using Player;
@@ -28,6 +29,7 @@ namespace Automation
 
         private IOreCarrier currentTarget;
         private Vector3 _depositLocation;
+        private DepotDoor depotDoor;
         private float idleRepollTimer;
         private bool isParked;
 
@@ -39,9 +41,10 @@ namespace Automation
 
         // Assigned by AutomationSpawner - control center position is the idle/refuel anchor,
         // displayIndex feeds notification text ("Storage Drone #2").
-        public void Configure(Vector3 depotDepositLocation, int displayIndex)
+        public void Configure(Vector3 depotDepositLocation, int displayIndex, DepotDoor depotDoor)
         {
             _depositLocation = depotDepositLocation;
+            this.depotDoor = depotDoor;
             DisplayIndex = displayIndex;
         }
 
@@ -222,6 +225,7 @@ namespace Automation
         {
             float speed = config.StorageDroneBaseMoveSpeed * upgrades.Automation_StorageDroneMoveSpeedMultiplier;
             bool arrived = mover.StepDirect(transform, _depositLocation, speed);
+            depotDoor.NotifyApproach(transform.position);
             if (!arrived) return;
 
             Deposit();

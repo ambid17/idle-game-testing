@@ -582,6 +582,35 @@ namespace Events
         }
     }
 
+    // Dispatched by Player.PlayerDepotResupply as the player walks into / out of the Depot's
+    // zone. Buildings.DepotDoor opens the garage door while they're there.
+    public class PlayerAtDepotChangedEvent : IEvent
+    {
+        public bool AtDepot;
+
+        public PlayerAtDepotChangedEvent(bool atDepot)
+        {
+            AtDepot = atDepot;
+        }
+    }
+
+    // Dispatched by Player.PlayerDepotResupply when arriving at the Depot topped off enough fuel
+    // and/or health to be worth showing (same threshold as its toast). Target is who was
+    // resupplied - Buildings.DepotResupplyEffect plays over them.
+    public class DepotResupplyEvent : IEvent
+    {
+        public Transform Target;
+        public bool Refueled;
+        public bool Repaired;
+
+        public DepotResupplyEvent(Transform target, bool refueled, bool repaired)
+        {
+            Target = target;
+            Refueled = refueled;
+            Repaired = repaired;
+        }
+    }
+
     // Dispatched by PlayerController on Escape, but only when nothing else was already blocking
     // input - see PlayerController.Update. PauseMenuUI is the sole listener.
     public class PauseMenuOpenRequestedEvent { }

@@ -50,7 +50,10 @@ namespace Player
                 : refueled ? "Refueled at the Depot"
                 : repaired ? "Repaired at the Depot"
                 : null;
-            if (message != null) GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.Queued));
+            if (message == null) return;
+
+            GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.Queued));
+            GameManager.EventService.Dispatch(new DepotResupplyEvent(transform, refueled, repaired));
         }
 
         private bool IsDepot(Collider2D collision)
@@ -64,13 +67,19 @@ namespace Player
         {
             if (!IsDepot(collision)) return;
             depotOverlapCount++;
-            if (depotOverlapCount == 1) Resupply(true);
+            if (depotOverlapCount != 1) return;
+
+            GameManager.EventService.Dispatch(new PlayerAtDepotChangedEvent(true));
+            Resupply(true);
         }
 
         private void OnTriggerExit2D(Collider2D collision)
         {
             if (!IsDepot(collision)) return;
-            depotOverlapCount = Mathf.Max(0, depotOverlapCount - 1);
+            if (depotOverlapCount == 0) return;
+
+            depotOverlapCount--;
+            if (depotOverlapCount == 0) GameManager.EventService.Dispatch(new PlayerAtDepotChangedEvent(false));
         }
     }
 }
