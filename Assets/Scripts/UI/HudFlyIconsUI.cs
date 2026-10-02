@@ -11,7 +11,8 @@ namespace UI
     // Icons that fly across the screen into the HUD's counters, drawn on their own overlay canvas
     // above every panel:
     //  - Selling (ore at the Depot, goods at the Exchange, critters at the shop) fountains coins
-    //    out of the button that was pressed and into the dollars counter.
+    //    out of the button that was pressed and into the dollars counter. A sale made out in the
+    //    world (Deposit & Sell at the Depot) fountains them from there (HudCoinBurstRequestedEvent).
     //  - A found artifact's tablet flies from the world into the artifact counter
     //    (HudIconFlyRequestedEvent, from Player.DigFeedback).
     // Each arrival bumps the counter. Cosmetic only - the wallet is credited before any of this.
@@ -73,6 +74,8 @@ namespace UI
         private void OnEnable()
         {
             GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
+            GameManager.EventService.Add<SellAllRequestedEvent>(NoteSell);
+            GameManager.EventService.Add<HudCoinBurstRequestedEvent>(OnCoinBurstRequested);
             GameManager.EventService.Add<SellGoodsRequestedEvent>(OnSellGoodsRequested);
             GameManager.EventService.Add<CrittersTurnedInEvent>(OnCrittersTurnedIn);
             GameManager.EventService.Add<DollarsEarnedEvent>(OnDollarsEarned);
@@ -82,6 +85,8 @@ namespace UI
         private void OnDisable()
         {
             GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
+            GameManager.EventService.Remove<SellAllRequestedEvent>(NoteSell);
+            GameManager.EventService.Remove<HudCoinBurstRequestedEvent>(OnCoinBurstRequested);
             GameManager.EventService.Remove<SellGoodsRequestedEvent>(OnSellGoodsRequested);
             GameManager.EventService.Remove<CrittersTurnedInEvent>(OnCrittersTurnedIn);
             GameManager.EventService.Remove<DollarsEarnedEvent>(OnDollarsEarned);
@@ -97,6 +102,7 @@ namespace UI
         private void OnSellGoodsRequested(SellGoodsRequestedEvent evt) => NoteSell();
         private void OnCrittersTurnedIn(CrittersTurnedInEvent evt) => NoteSell();
         private void OnDollarsEarned(DollarsEarnedEvent evt) => earnedThisFrame += evt.Amount;
+        private void OnCoinBurstRequested(HudCoinBurstRequestedEvent evt) => SpawnCoins(worldCamera.WorldToScreenPoint(evt.WorldPosition), evt.Dollars);
 
         // The sale itself is handled by another listener of the same event, which may run before
         // or after this one - so the two halves (a sale was asked for, dollars arrived) are only

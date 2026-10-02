@@ -611,6 +611,41 @@ namespace Events
         }
     }
 
+    // Dispatched by UI.DepotUI when the player banks their carried ore from outside the Depot
+    // (the Deposit / Deposit & Sell interactions, not the panel's buttons). Ores is what they
+    // were carrying; SoldFor is what the trip's sale paid, 0 for a plain deposit.
+    // Buildings.DepotDepositEffect flies the ore from Source into the doorway.
+    public class PlayerDepotDropOffEvent : IEvent
+    {
+        public Transform Source;
+        public IReadOnlyDictionary<BlockTypeId, int> Ores;
+        public double SoldFor;
+
+        public PlayerDepotDropOffEvent(Transform source, IReadOnlyDictionary<BlockTypeId, int> ores, double soldFor)
+        {
+            Source = source;
+            Ores = ores;
+            SoldFor = soldFor;
+        }
+    }
+
+    // The Depot panel's Sell All button was pressed. UI.DepotUI performs the sale.
+    public class SellAllRequestedEvent { }
+
+    // Asks UI.HudFlyIconsUI to fountain coins out of a point in the world and into the dollars
+    // counter, for a sale that didn't come from a button (Buildings.DepotDepositEffect).
+    public class HudCoinBurstRequestedEvent : IEvent
+    {
+        public Vector3 WorldPosition;
+        public double Dollars;
+
+        public HudCoinBurstRequestedEvent(Vector3 worldPosition, double dollars)
+        {
+            WorldPosition = worldPosition;
+            Dollars = dollars;
+        }
+    }
+
     // Dispatched by PlayerController on Escape, but only when nothing else was already blocking
     // input - see PlayerController.Update. PauseMenuUI is the sole listener.
     public class PauseMenuOpenRequestedEvent { }

@@ -41,8 +41,8 @@ namespace UI
 
             BuildOreRows();
 
-            sellAllButton.onClick.AddListener(() => Depot.Instance.SellAll());
-            depositButton.onClick.AddListener(DepositAll);
+            sellAllButton.onClick.AddListener(() => GameManager.EventService.Dispatch<SellAllRequestedEvent>());
+            depositButton.onClick.AddListener(() => DepositAll());
             closeButton.onClick.AddListener(Close);
 
             panelRoot.SetActive(false);
@@ -66,6 +66,7 @@ namespace UI
             GameManager.EventService.Add<DepotChangedEvent>(Refresh);
             GameManager.EventService.Add<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Add<SellRequestedEvent>(OnSellRequested);
+            GameManager.EventService.Add<SellAllRequestedEvent>(OnSellAllRequested);
             GameManager.EventService.Add<SellLockToggleRequestedEvent>(OnSellLockToggleRequested);
             GameManager.EventService.Add<UICloseEvent>(Close);
         }
@@ -76,6 +77,7 @@ namespace UI
             GameManager.EventService.Remove<DepotChangedEvent>(Refresh);
             GameManager.EventService.Remove<DollarsChangedEvent>(OnDollarsChanged);
             GameManager.EventService.Remove<SellRequestedEvent>(OnSellRequested);
+            GameManager.EventService.Remove<SellAllRequestedEvent>(OnSellAllRequested);
             GameManager.EventService.Remove<SellLockToggleRequestedEvent>(OnSellLockToggleRequested);
             GameManager.EventService.Remove<UICloseEvent>(Close);
         }
@@ -94,13 +96,11 @@ namespace UI
                     Open();
                     break;
                 case InteractionType.Secondary:
-                    DepositAll();
-                    // TODO: show toast with ore deposited, and animate inventory weight bar emptying
+                    DropOff(DepositAll(), 0);
                     break;
                 case InteractionType.Tertiary:
-                    DepositAll();
-                    Depot.Instance.SellAll();
-                    // TODO: show toast with ore deposited, animate inventory weight bar emptying, and money made from selling it
+                    var deposited = DepositAll();
+                    DropOff(deposited, Depot.Instance.SellAll());
                     break;
                 default:
                     Close();
@@ -140,15 +140,26 @@ namespace UI
         }
 
         private void OnSellRequested(SellRequestedEvent evt) => Depot.Instance.Sell(evt.Id, evt.Fraction);
+        private void OnSellAllRequested() => Depot.Instance.SellAll();
         private void OnSellLockToggleRequested(SellLockToggleRequestedEvent evt) => Depot.Instance.SetSellLocked(evt.Id, !Depot.Instance.IsSellLocked(evt.Id));
 
         // Explicit action (as opposed to an implicit side effect of opening the panel) so banking
         // carried ore reads as an intentional player choice, distinct from selling it.
-        private void DepositAll()
+        private Dictionary<BlockTypeId, int> DepositAll()
         {
             var withdrawn = playerInventory.WithdrawAllOre();
             Depot.Instance.Deposit(withdrawn);
             if (withdrawn.Count > 0) GameManager.AudioService.Play(SoundId.Deposit);
+            return withdrawn;
+        }
+
+        // Banking from outside the building, with the panel shut: the ore is shown flying from
+        // the player into the Depot (Buildings.DepotDepositEffect), and coins flying back out
+        // if it was sold.
+        private void DropOff(Dictionary<BlockTypeId, int> deposited, double soldFor)
+        {
+            if (deposited.Count == 0 && soldFor <= 0) return;
+            GameManager.EventService.Dispatch(new PlayerDepotDropOffEvent(playerInventory.transform, deposited, soldFor));
         }
 
         private void Refresh()
