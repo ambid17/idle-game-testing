@@ -23,6 +23,7 @@ namespace Automation
 
         private OreInventory oreInventory;
         private readonly GridPathMover mover = new();
+        [SerializeField]
         private State state = State.SelectingTarget;
 
         private IOreCarrier currentTarget;
@@ -80,6 +81,14 @@ namespace Automation
             currentTarget = FindTarget();
             if (currentTarget == null)
             {
+                // Nothing left that fits (or nothing to collect at all): bank a partial load
+                // rather than idling with it.
+                if (oreInventory.CurrentWeight > 0f)
+                {
+                    state = State.FlyingToDepot;
+                    return;
+                }
+
                 state = State.IdleAtControlCenter;
                 idleRepollTimer = 0f;
                 return;
@@ -95,12 +104,26 @@ namespace Automation
             {
                 foreach (var carrier in OreCarrierRegistry.Instance.Carriers)
                 {
-                    if (carrier is PlayerInventory && carrier.Inventory.CurrentWeight > 0f) return carrier;
+                    if (carrier is PlayerInventory && CanTakeAnythingFrom(carrier)) return carrier;
                 }
                 return null;
             }
 
             return FindFullestUnclaimedCarrier() ?? FindNearestUnclaimedCarrierWithOre();
+        }
+
+        // Whether the carrier holds at least one unit of ore light enough for this drone's
+        // remaining capacity. Just "has ore" isn't enough: a nearly-full drone (say 0.5 weight
+        // free) would otherwise keep chasing carriers it can't take a single ore from.
+        private bool CanTakeAnythingFrom(IOreCarrier carrier)
+        {
+            foreach (var kvp in carrier.Inventory.OreCounts)
+            {
+                if (kvp.Value <= 0) continue;
+                var blockType = GameManager.BlockTypeDatabase.Get((byte)kvp.Key);
+                if (blockType != null && oreInventory.CanFit(blockType)) return true;
+            }
+            return false;
         }
 
         private IOreCarrier FindFullestUnclaimedCarrier()
@@ -110,7 +133,7 @@ namespace Automation
 
             foreach (var carrier in OreCarrierRegistry.Instance.Carriers)
             {
-                if (OreCarrierRegistry.Instance.IsClaimed(carrier)) continue;
+                if (OreCarrierRegistry.Instance.IsClaimed(carrier) || !CanTakeAnythingFrom(carrier)) continue;
                 float weight = carrier.Inventory.CurrentWeight;
                 if (weight <= bestWeight) continue;
 
@@ -130,7 +153,7 @@ namespace Automation
 
             foreach (var carrier in OreCarrierRegistry.Instance.Carriers)
             {
-                if (OreCarrierRegistry.Instance.IsClaimed(carrier) || carrier.Inventory.CurrentWeight <= 0f) continue;
+                if (OreCarrierRegistry.Instance.IsClaimed(carrier) || !CanTakeAnythingFrom(carrier)) continue;
 
                 float distSq = (carrier.CarrierTransform.position - transform.position).sqrMagnitude;
                 if (distSq >= nearestDistSq) continue;
@@ -156,7 +179,7 @@ namespace Automation
             }
 
             float speed = config.StorageDroneBaseMoveSpeed * upgrades.Automation_StorageDroneMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, currentTarget.CarrierTransform.position, speed);
+            bool arrived = mover.StepChase(transform, currentTarget.CarrierTransform, speed, config.DroneChaseMaxSpeedMatch);
             if (arrived) state = State.Draining;
         }
 

@@ -17,6 +17,33 @@ namespace Automation
             return (t.position - destination).sqrMagnitude <= arriveThreshold * arriveThreshold;
         }
 
+        private Transform chaseTarget;
+        private Vector3 lastChasePosition;
+        private int lastChaseFrame;
+
+        // StepDirect at a target that may itself be moving (the player, a walking automaton):
+        // adds the target's own current speed (capped at maxSpeedMatch) on top of `speed`, so the
+        // gap always closes at no less than `speed` however fast the target is running away -
+        // otherwise a drone slower than the player never arrives while they keep moving. The cap
+        // stops a teleport (portal, recall) from dragging the chaser across the map with it.
+        public bool StepChase(Transform t, Transform target, float speed, float maxSpeedMatch, float arriveThreshold = 0.5f)
+        {
+            Vector3 destination = target.position;
+            // Only trust the last sample if it's from the previous frame of this same chase.
+            bool isContinuingChase = chaseTarget == target && lastChaseFrame == Time.frameCount - 1;
+            if (isContinuingChase && Time.deltaTime > 0f)
+            {
+                float targetSpeed = (destination - lastChasePosition).magnitude / Time.deltaTime;
+                speed += Mathf.Min(targetSpeed, maxSpeedMatch);
+            }
+
+            chaseTarget = target;
+            lastChasePosition = destination;
+            lastChaseFrame = Time.frameCount;
+
+            return StepDirect(t, destination, speed, arriveThreshold);
+        }
+
         // Walks a precomputed list of world-space waypoints in order ("walk"/tunnel-constrained
         // movement). Returns true once the final waypoint is reached.
         //

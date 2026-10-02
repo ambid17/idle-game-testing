@@ -145,7 +145,7 @@ namespace Automation
                 return;
             }
 
-            bool arrived = mover.StepDirect(transform, currentTarget.FuelTransform.position, Speed);
+            bool arrived = mover.StepChase(transform, currentTarget.FuelTransform, Speed, config.DroneChaseMaxSpeedMatch);
             if (arrived) state = State.Depositing;
         }
 

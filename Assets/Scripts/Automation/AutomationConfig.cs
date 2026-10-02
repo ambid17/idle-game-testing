@@ -28,6 +28,11 @@ namespace Automation
         // Fuel capacity/drain rates live on the Economy.FuelSystem component on
         // MiningAutomaton.prefab itself, not here - see FuelSystem's own Inspector.
 
+        [Header("Drones (shared)")]
+        // Most of a moving target's own speed a Storage/Fuel Drone adds to its move speed while
+        // chasing it - see GridPathMover.StepChase. 0 = no catch-up help at all.
+        [Min(0f)] public float DroneChaseMaxSpeedMatch = 25f;
+
         [Header("Storage Drone")]
         public float StorageDroneBaseMoveSpeed = 4f;
         public float StorageDroneBaseInventoryWeight = 20f;
