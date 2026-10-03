@@ -56,7 +56,8 @@ namespace Processing
                 {
                     Debug.LogError($"ProcessingRecipeDefinition '{recipe.name}' has no ingredients.");
                 }
-                if (recipe.SaleValue <= 0)
+                // The artifact recipe is never sold.
+                if (recipe.SaleValue <= 0 && !recipe.ProducesArtifact)
                 {
                     Debug.LogError($"ProcessingRecipeDefinition '{recipe.name}' has an invalid SaleValue.");
                 }

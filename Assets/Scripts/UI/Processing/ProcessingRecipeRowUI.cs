@@ -57,10 +57,25 @@ namespace UI.Processing
             button.onClick.AddListener(() => onClicked?.Invoke(recipe));
         }
 
+        // Past this many ingredients the "count + icon" chips overflow the column, so a recipe whose
+        // ingredients are all 1 each (Artifact Synthesis) shows a compact icon grid instead.
+        private const int MaxChipIngredients = 4;
+        private const int CompactRows = 2;
+        private const float CompactIconSize = 28f;
+        private const float CompactIconSpacing = 3f;
+        // Ores the Depot is short of are dimmed in the grid, in place of the chips' red count.
+        private static readonly Color CompactShortTint = new(1f, 1f, 1f, 0.3f);
+
         private void FormatIngredients(ProcessingRecipeDefinition recipe)
         {
             foreach (var row in spawnedRows) Destroy(row);
             spawnedRows.Clear();
+
+            if (recipe.Ingredients.Count > MaxChipIngredients && recipe.Ingredients.TrueForAll(i => i.Count == 1))
+            {
+                BuildCompactIngredients(recipe);
+                return;
+            }
 
             foreach (var ingredient in recipe.Ingredients)
             {
@@ -70,6 +85,43 @@ namespace UI.Processing
                 row.Bind(ingredient.Count, blockType.Icon, blockType.IconBackground, stored >= ingredient.Count);
                 row.gameObject.name = $"ProcessingIngredientRowUI_{blockType.DisplayName}";
                 spawnedRows.Add(row.gameObject);
+            }
+        }
+
+        // Built in code rather than from a prefab: it's just a GridLayoutGroup of ore icons, and
+        // only the one many-ingredient recipe ever uses it.
+        private void BuildCompactIngredients(ProcessingRecipeDefinition recipe)
+        {
+            var grid = new GameObject("CompactIngredients", typeof(RectTransform), typeof(GridLayoutGroup), typeof(LayoutElement));
+            grid.transform.SetParent(ingredientContainer, false);
+            // Reports one chip's width to the row's layout so the time/value columns stay aligned
+            // with the other rows - the icons draw past it into the column's free space.
+            var chipLayout = ingredientRowPrefab.GetComponent<LayoutElement>();
+            var gridLayout = grid.GetComponent<LayoutElement>();
+            gridLayout.minWidth = chipLayout.minWidth;
+            gridLayout.preferredWidth = chipLayout.preferredWidth;
+            var layout = grid.GetComponent<GridLayoutGroup>();
+            layout.cellSize = new Vector2(CompactIconSize, CompactIconSize);
+            layout.spacing = new Vector2(CompactIconSpacing, CompactIconSpacing);
+            layout.constraint = GridLayoutGroup.Constraint.FixedRowCount;
+            layout.constraintCount = CompactRows;
+            layout.childAlignment = TextAnchor.MiddleLeft;
+            spawnedRows.Add(grid);
+
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                var blockType = GameManager.BlockTypeDatabase.Get((byte)ingredient.Material);
+                Depot.Instance.StoredOres.TryGetValue(ingredient.Material, out var stored);
+
+                var iconObject = new GameObject($"Ingredient_{blockType.DisplayName}", typeof(RectTransform), typeof(Image));
+                iconObject.transform.SetParent(grid.transform, false);
+                var image = iconObject.GetComponent<Image>();
+                image.raycastTarget = false;
+                image.preserveAspect = true;
+                image.SetIcon(blockType.Icon, blockType.IconBackground);
+
+                if (stored >= ingredient.Count) continue;
+                foreach (var part in iconObject.GetComponentsInChildren<Image>(true)) part.color = CompactShortTint;
             }
         }
     }
