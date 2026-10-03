@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Economy;
 using Events;
 using MapGeneration;
@@ -148,6 +149,8 @@ namespace Platform
 
         private void OnProcessingUnitCompleted(ProcessingUnitCompletedEvent e)
         {
+            // RecipesCompleted is goods only - it also seeds Depot.DiscoveredGoods on old saves.
+            if (e.Recipe.ProducesArtifact) return;
             AddUnique(Stats.RecipesCompleted, e.Recipe.Id);
             EvaluateStatAchievements();
         }
@@ -189,7 +192,7 @@ namespace Platform
 
             if (Stats.OreTypesMined.Count >= CountBlockTypes(BlockCategory.Ore)) Unlock(AchievementId.AllOres);
             if (Stats.PowerUpTypesCollected.Count >= CountBlockTypes(BlockCategory.PowerUp)) Unlock(AchievementId.AllPowerUps);
-            if (Stats.RecipesCompleted.Count >= GameManager.ProcessingRecipeDatabase.Recipes.Count) Unlock(AchievementId.AllRecipes);
+            if (Stats.RecipesCompleted.Count >= GameManager.ProcessingRecipeDatabase.Recipes.Count(r => !r.ProducesArtifact)) Unlock(AchievementId.AllRecipes);
         }
 
         private void EvaluateUpgradeAchievements()

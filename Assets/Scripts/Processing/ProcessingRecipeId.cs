@@ -11,6 +11,8 @@ namespace Processing
         Swords,
         Bracelets,
         Earrings,
-        WeddingRings
+        WeddingRings,
+        // Outputs an artifact (ProcessingRecipeDefinition.ProducesArtifact) instead of a good.
+        ArtifactSynthesis
     }
 }

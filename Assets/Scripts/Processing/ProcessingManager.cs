@@ -167,7 +167,7 @@ namespace Processing
         // short recipe still averages out to the right rate.
         private void CompleteUnit(int slotIndex, ProcessingJob job)
         {
-            Depot.Instance.DepositGood(job.Recipe.Id, 1);
+            Bank(job.Recipe, 1);
             job.Remaining--;
             GameManager.EventService.Dispatch(new ProcessingUnitCompletedEvent(slotIndex, job.Recipe));
 
@@ -180,6 +180,14 @@ namespace Processing
             slots[slotIndex] = null;
             GameManager.EventService.Dispatch(new ProcessingJobCompletedEvent(slotIndex, job.Recipe));
             MarkCompletionUncollected();
+        }
+
+        // Finished units go to the Depot as goods, or straight to the Wallet for the artifact
+        // recipe - a flat 1 each, not Prestige_ArtifactValueMultiplier (that's for mined artifacts).
+        private static void Bank(ProcessingRecipeDefinition recipe, int units)
+        {
+            if (recipe.ProducesArtifact) Wallet.Instance.AddArtifacts(units);
+            else Depot.Instance.DepositGood(recipe.Id, units);
         }
 
         private static Dictionary<BlockTypeId, int> ScaleIngredients(ProcessingRecipeDefinition recipe, int quantity)
@@ -236,7 +244,7 @@ namespace Processing
 
                 if (finished > 0)
                 {
-                    Depot.Instance.DepositGood(recipe.Id, finished);
+                    Bank(recipe, finished);
                     GameManager.EventService.Dispatch(new ProcessingUnitCompletedEvent(entry.SlotIndex, recipe));
                 }
 

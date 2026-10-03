@@ -81,6 +81,7 @@ namespace Processing
 
             foreach (var recipe in GameManager.ProcessingRecipeDatabase.Recipes)
             {
+                if (recipe.ProducesArtifact) continue;
                 Tick(GetState(recipe.Id));
             }
             GameManager.EventService.Dispatch<GoodsMarketTickedEvent>();

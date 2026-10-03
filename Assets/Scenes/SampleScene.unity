@@ -53459,6 +53459,7 @@ MonoBehaviour:
   messageLabel: {fileID: 1773610405}
   yesButton: {fileID: 710029025}
   noButton: {fileID: 1540149096}
+  noButtonLabel: {fileID: 2118508332}
 --- !u!114 &1421697042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85178,6 +85179,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4461566399682110523}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2118508332 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1404289658307055446, guid: faa077d087f3d2945bc06bf526a4d365, type: 3}
+  m_PrefabInstance: {fileID: 1534301495}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &2119286796
 GameObject:
   m_ObjectHideFlags: 0

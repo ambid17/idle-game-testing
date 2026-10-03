@@ -25,6 +25,9 @@ namespace Processing
         public Sprite Icon;
         public List<RecipeIngredient> Ingredients = new();
 
+        [Tooltip("Each unit is banked as one artifact in the Wallet instead of a good in the Depot - never sold, so SaleValue is unused and the recipe stays off the Exchange.")]
+        public bool ProducesArtifact;
+
         [Tooltip("Sell value of one crafted unit - mirrors BlockType.Value.")]
         public float SaleValue;
 

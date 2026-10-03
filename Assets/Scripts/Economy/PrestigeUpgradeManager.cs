@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Events;
 using MapGeneration;
 using UnityEngine;
@@ -49,6 +50,13 @@ namespace Economy
             queuedLevels[key] = newLevel - RawLevel(def);
             GameManager.EventService.Dispatch(new PrestigeUpgradeQueuedEvent(def, newLevel));
         }
+
+        // Anything paid for this run that the next Resonance will apply - MuseumPrestigeConfirmUI
+        // warns (or, before the first Resonance, refuses) when this is false.
+        public bool HasQueuedUpgrades => queuedLevels.Count > 0;
+
+        // How many perks the player could buy right now, for the empty-queue Resonance warning.
+        public int AffordableUpgradeCount => database.Upgrades.Count(CanPurchase);
 
         private int QueuedRawLevel(PrestigeUpgradeDefinition def) =>
             def != null && queuedLevels.TryGetValue(KeyOf(def), out var lvl) ? lvl : 0;

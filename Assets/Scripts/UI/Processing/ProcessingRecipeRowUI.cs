@@ -46,8 +46,9 @@ namespace UI.Processing
             gameObject.name = $"ProcessingRecipeRowUI_{recipe.DisplayName}";
 
             durationLabel.text = $"{ProcessingManager.Instance.UnitDuration(recipe):0.#}s";
-            valueLabel.text = $"${Depot.Instance.GoodUnitValue(recipe):0}";
-            changeLabel.text = GoodsExchangeUI.FormatChange(GoodsMarket.Instance.Multiplier(recipe.Id));
+            // The artifact recipe is never sold, so it has no price or market movement to show.
+            valueLabel.text = recipe.ProducesArtifact ? "+1 artifact" : $"${Depot.Instance.GoodUnitValue(recipe):0}";
+            changeLabel.text = recipe.ProducesArtifact ? string.Empty : GoodsExchangeUI.FormatChange(GoodsMarket.Instance.Multiplier(recipe.Id));
             selectedHighlight.SetActive(selected);
 
             FormatIngredients(recipe);

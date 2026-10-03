@@ -90,6 +90,9 @@ namespace Economy
         Movement_MoveSpeed = 406,
 
         // Processing 500-599
+        // Unlocks the Artifact Synthesis recipe (1 of every ore -> 1 artifact). Not in the design doc -
+        // an artifact source for players saving up for expensive Museum perks.
+        Processing_ArtifactRecipeUnlock = 509,
         Processing_DiamondRecipeUnlock = 503,
         Processing_EmeraldRecipeUnlock = 504,
         Processing_GoldRecipeUnlock = 505,

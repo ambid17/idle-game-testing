@@ -158,27 +158,34 @@ namespace UI.Processing
             progressLabel.text = $"{job.Remaining} left\n{Mathf.Max(0f, job.UnitTimeRemaining):0.#}s";
         }
 
+        // The scarcest ingredient decides - one missing ore makes the whole recipe uncraftable.
         private static int MaxCraftableQuantity(ProcessingRecipeDefinition recipe)
         {
-            int max = 0;
+            int max = int.MaxValue;
             foreach (var ingredient in recipe.Ingredients)
             {
                 Depot.Instance.StoredOres.TryGetValue(ingredient.Material, out var stored);
-                int craftableCount = stored / ingredient.Count;
-                if (max == 0) max = craftableCount;
-                else
-                    max = Mathf.Min(craftableCount, max);
+                max = Mathf.Min(max, stored / ingredient.Count);
             }
-            return Mathf.Max(0, max);
+            return max == int.MaxValue ? 0 : max;
         }
+
+        // Beyond this many ingredients the per-ore list no longer fits the slot.
+        private const int MaxListedIngredients = 4;
 
         private string FormatIngredients(ProcessingRecipeDefinition recipe)
         {
+            int quantity = (int)recipeSizeSlider.value;
+            if (recipe.Ingredients.Count > MaxListedIngredients && recipe.Ingredients.TrueForAll(i => i.Count == recipe.Ingredients[0].Count))
+            {
+                return $"Cost:\n- {recipe.Ingredients[0].Count * quantity} each of {recipe.Ingredients.Count} ores";
+            }
+
             var parts = new List<string>();
             parts.Add("Cost:");
             foreach (var ingredient in recipe.Ingredients)
             {
-                var ingredientCount = ingredient.Count * (int)recipeSizeSlider.value;
+                var ingredientCount = ingredient.Count * quantity;
                 string line = $"- {ingredientCount} {ingredient.Material}";
                 parts.Add(line);
             }
