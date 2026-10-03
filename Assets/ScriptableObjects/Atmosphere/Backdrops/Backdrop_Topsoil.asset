@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f313334e4c25d499ea892bab50db58, type: 3}
   m_Name: Backdrop_Topsoil
   m_EditorClassIdentifier: Assembly-CSharp::Atmosphere.BiomeBackdrop
+  DisplayName: The Topsoil
+  TitleColor: {r: 1, g: 0.86, b: 0.6, a: 1}
   Planes:
   - Sprite: {fileID: 21300000, guid: e78c6b7b5658c524c8243846ea09558f, type: 3}
     Depth: 20

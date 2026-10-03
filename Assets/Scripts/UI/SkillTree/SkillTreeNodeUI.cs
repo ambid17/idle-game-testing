@@ -40,6 +40,19 @@ namespace UI.SkillTree
         [SerializeField] private Color affordableColor = Color.white;
         [SerializeField] private Color unaffordableColor = Color.red;
 
+        [Header("Juice")]
+        [Tooltip("The border breathes toward this while the node can be bought.")]
+        [SerializeField] private Color affordableGlowColor = new(0.45f, 1f, 1f, 1f);
+        [SerializeField] private float affordableBreatheSpeed = 3f;
+        [Tooltip("Icon scale at the peak of the purchase punch.")]
+        [SerializeField] private float purchasePunchScale = 1.35f;
+        [SerializeField] private float punchSeconds = 0.35f;
+
+        private Color borderBaseColor;
+        private float punchAge = -1f;
+        private float punchStrength;
+        private float flashAge = -1f;
+
         // Set by the skill tree editor tool when a node is baked into the scene at edit time, so
         // SkillTreePanelUI can match this pre-placed instance back to its view model's Source
         // (an UpgradeDefinition/PrestigeUpgradeDefinition) on every RefreshAll without needing to
@@ -120,6 +133,77 @@ namespace UI.SkillTree
         private void OnDisable()
         {
             GameManager.EventService.Remove<InputSchemeChangedEvent>(OnInputSchemeChanged);
+            punchAge = flashAge = -1f;
+            icon.rectTransform.localScale = Vector3.one;
+            if (ViewModel != null) border.color = borderBaseColor;
+        }
+
+        // Just bought (a level, or queued one): the icon punches, the border flashes white, and a
+        // glow and gold sparkles burst out behind it. effectsParent: where the particles go (the
+        // tree's content, so they pan/zoom with it and outlive a node rebuild).
+        public void PlayPurchased(RectTransform effectsParent)
+        {
+            Punch(1f);
+            flashAge = 0f;
+            Vector2 center = effectsParent.InverseTransformPoint(transform.position);
+            float size = ((RectTransform)transform).rect.width;
+            UiFx.GlowFlash(effectsParent, center, size * 2.2f, new Color(1f, 0.9f, 0.5f, 0.8f), 0.45f);
+            UiFx.SparkleBurst(effectsParent, center, ViewModel.IsMaxed ? 22 : 14, size * 0.35f, size * 4f, size * 0.32f, ViewModel.IsMaxed ? UiFx.Gold : UiFx.Cyan);
+        }
+
+        // Its prerequisite was just bought, revealing it: a smaller pop and a cyan flash.
+        public void PlayUnlocked(RectTransform effectsParent)
+        {
+            Punch(0.7f);
+            flashAge = 0f;
+            Vector2 center = effectsParent.InverseTransformPoint(transform.position);
+            float size = ((RectTransform)transform).rect.width;
+            UiFx.GlowFlash(effectsParent, center, size * 1.8f, new Color(0.45f, 1f, 1f, 0.6f), 0.4f);
+            UiFx.SparkleBurst(effectsParent, center, 8, size * 0.4f, size * 2.5f, size * 0.25f, UiFx.Cyan);
+        }
+
+        // Just became affordable while the tree is open: a little ping so the eye finds it.
+        public void PlayBecameAffordable() => Punch(0.4f);
+
+        private void Punch(float strength)
+        {
+            punchAge = 0f;
+            punchStrength = strength;
+        }
+
+        private void Update()
+        {
+            if (ViewModel == null) return;
+            float dt = Time.unscaledDeltaTime;
+
+            if (punchAge >= 0f)
+            {
+                punchAge += dt;
+                float k = Mathf.Clamp01(punchAge / punchSeconds);
+                // Snaps up fast, then a damped wobble back to rest.
+                float wobble = Mathf.Exp(-6f * k) * Mathf.Cos(k * Mathf.PI * 3f);
+                icon.rectTransform.localScale = Vector3.one * (1f + (purchasePunchScale - 1f) * punchStrength * wobble);
+                if (k >= 1f)
+                {
+                    punchAge = -1f;
+                    icon.rectTransform.localScale = Vector3.one;
+                }
+            }
+
+            var color = borderBaseColor;
+            if (ViewModel.CanPurchase)
+            {
+                float breathe = 0.5f - 0.5f * Mathf.Cos(Time.unscaledTime * affordableBreatheSpeed);
+                color = Color.Lerp(borderBaseColor, affordableGlowColor, breathe * 0.75f);
+            }
+            if (flashAge >= 0f)
+            {
+                flashAge += dt;
+                float flash = 1f - Mathf.Clamp01(flashAge / 0.3f);
+                color = Color.Lerp(color, Color.white, flash);
+                if (flash <= 0f) flashAge = -1f;
+            }
+            border.color = color;
         }
 
         private void OnInputSchemeChanged(InputSchemeChangedEvent evt)
@@ -162,6 +246,7 @@ namespace UI.SkillTree
                 border.color = unlockedColor;
                 levelBadge.color = unlockedColor;
             }
+            borderBaseColor = border.color;
 
             bool showCost = viewModel.IsUnlocked && !viewModel.IsMaxed;
             costLabel.gameObject.SetActive(showCost);

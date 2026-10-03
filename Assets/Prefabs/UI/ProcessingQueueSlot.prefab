@@ -727,6 +727,7 @@ GameObject:
   - component: {fileID: 3470354754855732587}
   - component: {fileID: 1279985651891177831}
   - component: {fileID: 248985433316244265}
+  - component: {fileID: 7170118363562429997}
   m_Layer: 5
   m_Name: RecipeSelector
   m_TagString: Untagged
@@ -839,6 +840,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7170118363562429997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4994685028245033870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &5082765625159391847
 GameObject:
   m_ObjectHideFlags: 0

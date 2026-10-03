@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Economy;
 using Events;
 using MapGeneration;
+using UnityEngine;
 
 namespace Automation
 {
@@ -11,7 +12,7 @@ namespace Automation
     // it themselves.
     public static class AutomationDepositService
     {
-        public static void Deposit(string entityDisplayName, IReadOnlyDictionary<BlockTypeId, int> withdrawn)
+        public static void Deposit(string entityDisplayName, IReadOnlyDictionary<BlockTypeId, int> withdrawn, Transform source)
         {
             if (withdrawn == null || withdrawn.Count == 0) return;
 
@@ -22,7 +23,7 @@ namespace Automation
                 if (kvp.Value > 0) IdleEarningsTracker.Instance.RecordOreDeposited(kvp.Key, kvp.Value);
             }
 
-            GameManager.EventService.Dispatch(new OreDepositedByAutomationEvent(entityDisplayName, withdrawn));
+            GameManager.EventService.Dispatch(new OreDepositedByAutomationEvent(entityDisplayName, withdrawn, source));
 
             if (!AutomationSettings.Instance.DroneNotifications) return;
 

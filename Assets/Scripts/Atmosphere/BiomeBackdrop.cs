@@ -23,6 +23,10 @@ namespace Atmosphere
     [CreateAssetMenu(fileName = "BiomeBackdrop", menuName = "Atmosphere/Biome Backdrop")]
     public class BiomeBackdrop : ScriptableObject
     {
+        [Tooltip("The biome's name, shown on the title card when the player first reaches it in a run (Atmosphere.BiomeEntryAnnouncer).")]
+        public string DisplayName;
+        [Tooltip("Colour of that title.")]
+        public Color TitleColor = Color.white;
         public List<BackdropPlane> Planes = new();
     }
 }

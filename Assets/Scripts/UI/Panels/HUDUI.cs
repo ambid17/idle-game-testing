@@ -41,7 +41,21 @@ namespace UI
         [Tooltip("Max extra scale of the pulse at empty.")]
         [SerializeField] private float fuelJigglePulse = 0.15f;
 
+        [Header("Dollars counter")]
+        [Tooltip("Seconds the dollars counter takes to roll to a new total.")]
+        [SerializeField] private float dollarsRollSeconds = 0.45f;
+        [SerializeField] private Color dollarsGainColor = new(1f, 0.85f, 0.3f, 1f);
+        [SerializeField] private Color dollarsSpendColor = new(1f, 0.4f, 0.35f, 1f);
+        [SerializeField] private float dollarsFlashSeconds = 0.5f;
+
         private Color fuelLabelBaseColor;
+        private Color dollarsLabelBaseColor;
+        private double displayedDollars;
+        private double rollFromDollars;
+        private double targetDollars;
+        private float rollAge = -1f;
+        private float dollarsFlashAge = -1f;
+        private Color dollarsFlashColor;
         private Quaternion fuelLabelBaseRotation;
         private Vector3 fuelLabelBaseScale;
 
@@ -55,9 +69,10 @@ namespace UI
             fuelLabelBaseColor = fuelLabel.color;
             fuelLabelBaseRotation = fuelLabel.rectTransform.localRotation;
             fuelLabelBaseScale = fuelLabel.rectTransform.localScale;
+            dollarsLabelBaseColor = dollarsLabel.color;
 
             renderer.SetActive(true);
-            RefreshDollars();
+            SnapDollars();
             RefreshArtifactCount();
             RefreshWeight();
             RefreshRunModifier();
@@ -87,6 +102,8 @@ namespace UI
         private void OnEnable()
         {
             GameManager.EventService.Add<DollarsChangedEvent>(RefreshDollars);
+            GameManager.EventService.Add<LoadCompletedEvent>(SnapDollars);
+            GameManager.EventService.Add<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Add<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Add<InventoryChangedEvent>(RefreshWeight);
             GameManager.EventService.Add<UpgradePurchasedEvent>(HandleUpdatePurchased);
@@ -96,6 +113,8 @@ namespace UI
         private void OnDisable()
         {
             GameManager.EventService.Remove<DollarsChangedEvent>(RefreshDollars);
+            GameManager.EventService.Remove<LoadCompletedEvent>(SnapDollars);
+            GameManager.EventService.Remove<PrestigeCompletedEvent>(OnPrestigeCompleted);
             GameManager.EventService.Remove<ArtifactCountChangedEvent>(RefreshArtifactCount);
             GameManager.EventService.Remove<InventoryChangedEvent>(RefreshWeight);
             GameManager.EventService.Remove<UpgradePurchasedEvent>(HandleUpdatePurchased);
@@ -107,6 +126,7 @@ namespace UI
             RefreshFuel();
             RefreshHealth();
             RefreshDepth();
+            AnimateDollars();
         }
 
         private void RefreshFuel()
@@ -158,9 +178,54 @@ namespace UI
             weightLabel.text = $"{playerInventory.CurrentWeight:0}/{playerInventory.MaxWeight:0}";
         }
 
+        // Rolls the counter to the new total and flashes it gold (earned) or red (spent). Coins
+        // flying in from a sale bump its scale on arrival (HudFlyIconsUI).
         private void RefreshDollars()
         {
-            dollarsLabel.text = $"{Wallet.Instance.Dollars:0}";
+            double dollars = Wallet.Instance.Dollars;
+            if (dollars == targetDollars) return;
+
+            dollarsFlashColor = dollars > targetDollars ? dollarsGainColor : dollarsSpendColor;
+            dollarsFlashAge = 0f;
+            rollFromDollars = displayedDollars;
+            targetDollars = dollars;
+            rollAge = 0f;
+        }
+
+        // Loads and resets jump straight to the total - nothing was earned or spent.
+        private void SnapDollars()
+        {
+            targetDollars = displayedDollars = Wallet.Instance.Dollars;
+            rollAge = dollarsFlashAge = -1f;
+            dollarsLabel.text = $"{displayedDollars:0}";
+            dollarsLabel.color = dollarsLabelBaseColor;
+        }
+
+        private void OnPrestigeCompleted(PrestigeCompletedEvent evt) => SnapDollars();
+
+        private void AnimateDollars()
+        {
+            float dt = Time.unscaledDeltaTime;
+            if (rollAge >= 0f)
+            {
+                rollAge += dt;
+                float k = Mathf.Clamp01(rollAge / dollarsRollSeconds);
+                displayedDollars = rollFromDollars + (targetDollars - rollFromDollars) * Effects.Easing.OutCubic(k);
+                if (k >= 1f)
+                {
+                    displayedDollars = targetDollars;
+                    rollAge = -1f;
+                }
+                dollarsLabel.text = $"{displayedDollars:0}";
+            }
+
+            if (dollarsFlashAge >= 0f)
+            {
+                dollarsFlashAge += dt;
+                float flash = 1f - Mathf.Clamp01(dollarsFlashAge / dollarsFlashSeconds);
+                dollarsLabel.color = Color.Lerp(dollarsLabelBaseColor, dollarsFlashColor, flash);
+                if (flash <= 0f) dollarsFlashAge = -1f;
+            }
         }
 
         private void RefreshArtifactCount()

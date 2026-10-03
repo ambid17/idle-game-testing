@@ -38,6 +38,14 @@ namespace Audio
         [Tooltip("How many times a music track loops before shuffling to another.")]
         [SerializeField] private int musicLoopsPerTrack = 2;
 
+        [Header("Mining streak (break sounds climb in pitch while blocks break in quick succession)")]
+        [Tooltip("A break within this many seconds of the last one continues the streak.")]
+        [SerializeField] private float streakWindowSeconds = 0.9f;
+        [Tooltip("Pitch added per break in a streak...")]
+        [SerializeField] private float streakPitchStep = 0.035f;
+        [Tooltip("...up to this many steps.")]
+        [SerializeField] private int streakMaxSteps = 8;
+
         private readonly List<AudioSource> sfxVoices = new();
         private readonly Dictionary<SoundId, AudioSource> loopSources = new();
         private readonly Dictionary<SoundId, float> lastPlayedAt = new();
@@ -46,6 +54,8 @@ namespace Audio
         private float musicFadeFactor = 1f;
         private int nextVoice;
         private int lastShieldCharges = -1;
+        private int miningStreak;
+        private float lastBreakTime = float.NegativeInfinity;
         // Load restores (queued prestige upgrades, offline processing completions...) replay the
         // same events live gameplay does - event-driven sounds stay muted until loading finishes.
         private bool hasLoaded;
@@ -128,6 +138,12 @@ namespace Audio
             PlayInternal(id, volumeScale, 0f);
         }
 
+        // As Play, with the pitch scaled on top of the entry's random variance (1 = unchanged).
+        public void PlayPitched(SoundId id, float pitch)
+        {
+            PlayInternal(id, 1f, 0f, pitch);
+        }
+
         // One-shot at a world position - quieter/panned with distance from the listener, and
         // skipped entirely beyond silentDistance.
         public void PlayAt(SoundId id, Vector3 worldPosition)
@@ -184,7 +200,7 @@ namespace Audio
 
         #endregion
 
-        private void PlayInternal(SoundId id, float volumeScale, float pan)
+        private void PlayInternal(SoundId id, float volumeScale, float pan, float pitch = 1f)
         {
             if (!library.TryGet(id, out var entry)) return;
 
@@ -196,7 +212,7 @@ namespace Audio
             var voice = NextVoice();
             voice.clip = clip;
             voice.volume = entry.Volume * volumeScale * SfxVolume;
-            voice.pitch = 1f + Random.Range(-entry.PitchVariance, entry.PitchVariance);
+            voice.pitch = pitch * (1f + Random.Range(-entry.PitchVariance, entry.PitchVariance));
             voice.panStereo = pan;
             voice.Play();
         }
@@ -302,15 +318,29 @@ namespace Audio
 
         // Player mining only (see BlockMinedEvent). Hazards get their sound from
         // CustomBlockTriggeredEvent instead, which also covers automatons setting them off.
+        // Dirt and ore breaks climb in pitch while the player keeps breaking blocks in quick
+        // succession (see the Mining streak settings), so a good run of digging sounds like one.
         private void OnBlockMined(BlockMinedEvent e)
         {
             switch (e.BlockType.Category)
             {
-                case BlockCategory.Dirt: PlayEvent(SoundId.MineDirt); break;
-                case BlockCategory.Ore: PlayEvent(SoundId.MineOre); break;
+                case BlockCategory.Dirt: PlayStreakBreak(SoundId.MineDirt); break;
+                case BlockCategory.Ore: PlayStreakBreak(SoundId.MineOre); break;
                 case BlockCategory.Artifact: PlayEvent(SoundId.ArtifactFound); break;
                 case BlockCategory.PowerUp: PlayEvent(SoundId.PowerUpCollected); break;
             }
+        }
+
+        private void PlayStreakBreak(SoundId id)
+        {
+            if (!hasLoaded) return;
+
+            float now = Time.unscaledTime;
+            // A vein-mined burst breaks several blocks in one frame - that's one step, not several.
+            if (now == lastBreakTime) return;
+            miningStreak = now - lastBreakTime <= streakWindowSeconds ? miningStreak + 1 : 0;
+            lastBreakTime = now;
+            PlayPitched(id, 1f + Mathf.Min(miningStreak, streakMaxSteps) * streakPitchStep);
         }
 
         private void OnCustomBlockTriggered(CustomBlockTriggeredEvent e)

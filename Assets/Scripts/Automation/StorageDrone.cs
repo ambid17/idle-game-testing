@@ -235,7 +235,7 @@ namespace Automation
         private void Deposit()
         {
             var withdrawn = oreInventory.WithdrawAllOre();
-            AutomationDepositService.Deposit($"Storage Drone #{DisplayIndex}", withdrawn);
+            AutomationDepositService.Deposit($"Storage Drone #{DisplayIndex}", withdrawn, transform);
 
             // GameDesignDoc "Automation > Drone delivery > Market Sense" capstone. Sells exactly
             // what this delivery just added (fraction of the now-current total), not any ore

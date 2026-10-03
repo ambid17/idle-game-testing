@@ -55,6 +55,22 @@ namespace Effects
         // Cells are square, so the sheet's height gives their size.
         public int OreChunkColumns => oreChunkSheet.width / (oreChunkSheet.height / oreChunkVariants);
 
+        // The sparkle sheet's rows as sprites, for UI effects (UI.UiFx) that want the same art.
+        private Sprite[] sparkleSprites;
+        public Sprite SparkleSprite(int index)
+        {
+            if (sparkleSprites == null)
+            {
+                int cell = sparkleSheet.height / sparkleSheetRows;
+                sparkleSprites = new Sprite[sparkleSheetRows];
+                for (int i = 0; i < sparkleSheetRows; i++)
+                {
+                    sparkleSprites[i] = Sprite.Create(sparkleSheet, new Rect(0, i * cell, sparkleSheet.width, cell), new Vector2(0.5f, 0.5f), cell);
+                }
+            }
+            return sparkleSprites[Mathf.Abs(index) % sparkleSprites.Length];
+        }
+
         public bool HasOreChunks(BlockType block) => block.Category == BlockCategory.Ore && (int)block.Id < OreChunkColumns;
 
         // A random loose chunk of this ore, or null for blocks that have none (non-ores).

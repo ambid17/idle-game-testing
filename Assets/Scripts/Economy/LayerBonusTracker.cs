@@ -27,12 +27,19 @@ namespace Economy
 
         private void NotifyIfNewTier(int layerIndex, float tier)
         {
-            lastNotifiedTierByLayer.TryGetValue(layerIndex, out float lastNotified);
-            if (tier <= lastNotified) return;
+            // The first check of a layer this session only records it: a tier already reached then
+            // was reached (and announced) in an earlier session, before a save/load.
+            bool firstCheck = !lastNotifiedTierByLayer.TryGetValue(layerIndex, out float lastNotified);
+            if (!firstCheck && tier <= lastNotified) return;
 
             lastNotifiedTierByLayer[layerIndex] = tier;
-            if (tier > 1f) GameManager.EventService.Dispatch(new NotificationEvent($"Layer bonus: {tier:0.##}x!", NotificationUrgency.TimeSensitive));
+            if (!firstCheck && tier > 1f)
+            {
+                GameManager.EventService.Dispatch(new MilestoneBannerRequestedEvent($"Layer Bonus {tier:0.##}x", $"Layer {layerIndex + 1} ore is worth more", LayerBonusColor));
+            }
         }
+
+        private static readonly Color LayerBonusColor = new(1f, 0.85f, 0.3f, 1f);
 
         private float LiveTierMultiplier(int layerIndex)
         {

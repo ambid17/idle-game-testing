@@ -16,6 +16,7 @@ namespace Audio
         PowerUpCollected = 5,
         ChestPoof = 6,
         OreCollect = 7,
+        RareOre = 8,
 
         // Player
         PlayerHurt = 20,
@@ -42,6 +43,7 @@ namespace Audio
         ProcessingStarted = 64,
         ProcessingCompleted = 65,
         Deposit = 66,
+        Milestone = 67,
 
         // UI
         UIClick = 80,

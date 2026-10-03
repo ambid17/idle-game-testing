@@ -730,6 +730,7 @@ GameObject:
   - component: {fileID: 8622665111248143115}
   - component: {fileID: 2275921255066561474}
   - component: {fileID: 68029932921514515}
+  - component: {fileID: 7710432665162819062}
   m_Layer: 0
   m_Name: SkillTreeNode
   m_TagString: Untagged
@@ -869,4 +870,24 @@ MonoBehaviour:
   maxedColor: {r: 1, g: 0.84, b: 0, a: 1}
   affordableColor: {r: 1, g: 1, b: 1, a: 1}
   unaffordableColor: {r: 1, g: 0, b: 0, a: 1}
+  affordableGlowColor: {r: 0.45, g: 1, b: 1, a: 1}
+  affordableBreatheSpeed: 3
+  purchasePunchScale: 1.35
+  punchSeconds: 0.35
   upgradeDefinition: {fileID: 0}
+--- !u!114 &7710432665162819062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6632313400645007303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8278600401953109244}
   - component: {fileID: 5518217252948979940}
   - component: {fileID: 4217462040744216857}
+  - component: {fileID: 315687724664567646}
   m_Layer: 5
   m_Name: PrimaryButton
   m_TagString: Untagged
@@ -121,6 +122,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &315687724664567646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2381421233511709985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &6996081703547731048
 GameObject:
   m_ObjectHideFlags: 0

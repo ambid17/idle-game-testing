@@ -862,6 +862,7 @@ GameObject:
   - component: {fileID: 4754401495643223909}
   - component: {fileID: 7041325632171667245}
   - component: {fileID: 334645973301158931}
+  - component: {fileID: 5011443749520861693}
   m_Layer: 5
   m_Name: GoodsExchangeRow
   m_TagString: Untagged
@@ -1041,3 +1042,19 @@ MonoBehaviour:
   changeLabel: {fileID: 3353445322286369667}
   button: {fileID: 4754401495643223909}
   selectedHighlight: {fileID: 237374409580600583}
+--- !u!114 &5011443749520861693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8870067858356910004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55

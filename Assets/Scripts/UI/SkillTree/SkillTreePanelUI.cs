@@ -19,8 +19,12 @@ namespace UI.SkillTree
         [SerializeField] private SkillTreeConnectorUI connectorPrefab;
         [SerializeField] private SkillTreeTooltipUI tooltip;
         [SerializeField] private SkillTreeLayoutConfig layoutConfig;
+        [Tooltip("Seconds the unlock dot takes to run down a connector to the node it unlocked.")]
+        [SerializeField] private float unlockTravelSeconds = 0.35f;
 
         private ISkillTreeSource source;
+        // Each upgrade's state at the last RefreshAll, for PlayChangeEffects.
+        private readonly Dictionary<UpgradeDefinitionBase, NodeState> lastStates = new();
         private readonly List<SkillTreeNodeUI> nodes = new();
         private readonly List<SkillTreeConnectorUI> connectors = new();
         private SkillTreeNodeUI hoveredNode;
@@ -70,6 +74,7 @@ namespace UI.SkillTree
             panZoom.ResetView();
             tooltip?.Hide();
             hoveredNode = null;
+            lastStates.Clear();
             RefreshAll();
             isOpen = true;
             pendingFocusRestore = true;
@@ -149,9 +154,68 @@ namespace UI.SkillTree
                 AddConnectors(viewModels, positions);
             }
 
+            PlayChangeEffects(viewModels);
+
             // The visible tooltip (if any) holds the definition itself, not a view model, so it
             // just re-queries the source for fresh data - no need to look anything up here.
             tooltip.Refresh();
+        }
+
+        // Compares against the state at the last refresh: a level bought (or queued) punches its
+        // node, a node it unlocked gets a dot travelling down the connector and pops when it
+        // arrives, and a node that just became affordable pings. Only while the tree is open -
+        // Open() starts a fresh snapshot, so whatever changed while it was closed stays quiet.
+        private void PlayChangeEffects(IReadOnlyList<SkillTreeNodeViewModel> viewModels)
+        {
+            bool animate = isOpen && isActiveAndEnabled;
+            foreach (var vm in viewModels)
+            {
+                var state = new NodeState(vm);
+                if (animate && lastStates.TryGetValue(vm.UpgradeDefinition, out var previous))
+                {
+                    var node = FindNode(vm.UpgradeDefinition);
+                    if (node != null && node.isActiveAndEnabled)
+                    {
+                        if (state.Level > previous.Level) node.PlayPurchased(content);
+                        else if (state.Unlocked && !previous.Unlocked) PlayUnlockTravel(vm, node);
+                        else if (state.CanPurchase && !previous.CanPurchase) node.PlayBecameAffordable();
+                    }
+                }
+                lastStates[vm.UpgradeDefinition] = state;
+            }
+        }
+
+        private void PlayUnlockTravel(SkillTreeNodeViewModel vm, SkillTreeNodeUI node)
+        {
+            var parentVm = vm.Prerequisite as SkillTreeNodeViewModel;
+            var parent = parentVm != null ? FindNode(parentVm.UpgradeDefinition) : null;
+            if (parent == null)
+            {
+                node.PlayUnlocked(content);
+                return;
+            }
+
+            Vector2 from = content.InverseTransformPoint(parent.transform.position);
+            Vector2 to = content.InverseTransformPoint(node.transform.position);
+            float size = ((RectTransform)node.transform).rect.width * 0.45f;
+            UiFx.Travel(content, from, to, size, new Color(0.45f, 1f, 1f, 0.9f), unlockTravelSeconds, () =>
+            {
+                if (node != null && node.isActiveAndEnabled) node.PlayUnlocked(content);
+            });
+        }
+
+        private readonly struct NodeState
+        {
+            public readonly int Level;
+            public readonly bool Unlocked;
+            public readonly bool CanPurchase;
+
+            public NodeState(SkillTreeNodeViewModel vm)
+            {
+                Level = vm.Level + vm.QueuedLevel;
+                Unlocked = vm.IsUnlocked;
+                CanPurchase = vm.CanPurchase;
+            }
         }
 
         private void BindPreplacedNodes(SkillTreeNodeUI[] preplacedNodes, IReadOnlyList<SkillTreeNodeViewModel> viewModels)

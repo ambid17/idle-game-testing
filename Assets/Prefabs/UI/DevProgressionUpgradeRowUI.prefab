@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5679506068019912375}
   - component: {fileID: 2971475407332782819}
   - component: {fileID: 8337975532544306549}
+  - component: {fileID: 4898583820712500362}
   m_Layer: 0
   m_Name: MaxButton
   m_TagString: Untagged
@@ -142,6 +143,22 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &4898583820712500362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2392494307482211234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &3688249471221795515
 GameObject:
   m_ObjectHideFlags: 0
@@ -452,7 +469,7 @@ MonoBehaviour:
   m_text: Upgrade Name
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 0}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials:
   - {fileID: 0}
   m_fontMaterial: {fileID: 0}
@@ -693,6 +710,7 @@ GameObject:
   - component: {fileID: 3241162548825772740}
   - component: {fileID: 7707089819247496425}
   - component: {fileID: 3109420497178927013}
+  - component: {fileID: 6353946489867216937}
   m_Layer: 0
   m_Name: DecrementButton
   m_TagString: Untagged
@@ -822,6 +840,22 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &6353946489867216937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7140931485518467618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &7187744520740140803
 GameObject:
   m_ObjectHideFlags: 0
@@ -835,6 +869,7 @@ GameObject:
   - component: {fileID: 2960214578123666020}
   - component: {fileID: 5440453247852142550}
   - component: {fileID: 8689868411839561058}
+  - component: {fileID: 4090410200348983292}
   m_Layer: 0
   m_Name: IncrementButton
   m_TagString: Untagged
@@ -964,6 +999,22 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &4090410200348983292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7187744520740140803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &9022569079137972237
 GameObject:
   m_ObjectHideFlags: 0

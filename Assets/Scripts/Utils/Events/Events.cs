@@ -111,6 +111,22 @@ namespace Events
         }
     }
 
+    // A big centred title card (UI.MilestoneBannerUI) for moments worth more than a toast - a new
+    // biome reached, a layer bonus tier hit. Queued if one is already showing.
+    public class MilestoneBannerRequestedEvent : IEvent
+    {
+        public string Title;
+        public string Subtitle;
+        public Color Color;
+
+        public MilestoneBannerRequestedEvent(string title, string subtitle, Color color)
+        {
+            Title = title;
+            Subtitle = subtitle;
+            Color = color;
+        }
+    }
+
     // Dispatched by PlayerInventory.HandleDeath with the ore that was just withdrawn on death, so
     // Economy.ChestSpawner can drop it into a chest instead of it just being discarded.
     public class PlayerInventoryDroppedEvent : IEvent
@@ -490,11 +506,15 @@ namespace Events
     {
         public string EntityDisplayName;
         public IReadOnlyDictionary<BlockTypeId, int> Deposited;
+        // The automaton/drone that made the deposit (Buildings.DepotDepositEffect throws its ore
+        // into the doorway from here).
+        public Transform Source;
 
-        public OreDepositedByAutomationEvent(string entityDisplayName, IReadOnlyDictionary<BlockTypeId, int> deposited)
+        public OreDepositedByAutomationEvent(string entityDisplayName, IReadOnlyDictionary<BlockTypeId, int> deposited, Transform source)
         {
             EntityDisplayName = entityDisplayName;
             Deposited = deposited;
+            Source = source;
         }
     }
 

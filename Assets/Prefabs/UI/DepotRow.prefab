@@ -631,6 +631,7 @@ GameObject:
   - component: {fileID: 5604691022810811814}
   - component: {fileID: 1620198349520810958}
   - component: {fileID: 7137656287577810409}
+  - component: {fileID: 1066422081446091088}
   m_Layer: 5
   m_Name: LockButton
   m_TagString: Untagged
@@ -773,6 +774,22 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &1066422081446091088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5321707652315369792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &8870067858356910004
 GameObject:
   m_ObjectHideFlags: 0

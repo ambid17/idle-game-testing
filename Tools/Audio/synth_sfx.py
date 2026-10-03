@@ -482,6 +482,32 @@ def prestige():
     return buf
 
 
+def rare_ore():
+    # A rare ore landing in the bag: a quick sparkly rising arpeggio over a soft low "bloom".
+    # Played an octave-ish higher for the merely rare tier (AudioService.PlayPitched).
+    d = 0.9
+    buf = np.zeros(int(SR * d))
+    place(buf, bloop(196, 392, 0.3, attack=0.01) * 0.35, 0.0)
+    for k, f in enumerate([392.0, 493.88, 587.33, 783.99]):
+        place(buf, chime(f, 0.5, 0.14) * 0.5, 0.03 + k * 0.055)
+    place(buf, chime(587.33, 0.6, 0.25) * 0.25, 0.25)
+    return buf
+
+
+def milestone():
+    # Title card sting (new biome, layer bonus): a warm two-chord swell that resolves upward,
+    # topped with a soft held chime.
+    d = 1.8
+    buf = np.zeros(int(SR * d))
+    for chord, at in (([196.0, 246.94, 293.66], 0.0), ([261.63, 329.63, 392.0], 0.32)):
+        for f in chord:
+            tone = mix(osc(f, 1.3, "tri"), osc(f * 1.004, 1.3))
+            place(buf, soft(tone, 1600) * env_adsr(1.3, 0.06, 0.3, 0.55, 0.7) * 0.2, at)
+    place(buf, chime(523.25, 1.1, 0.4) * 0.45, 0.34)
+    place(buf, chime(783.99, 0.9, 0.3) * 0.25, 0.42)
+    return buf
+
+
 def processing_started():
     # A little machine happily switching on: two rising soft bloops ("bwoop-bwip") over a brief,
     # warm hum swell.
@@ -731,6 +757,7 @@ SOUNDS = {
     "PowerUpCollected": powerup,
     "ChestPoof": chest_poof,
     **{f"OreCollect_{i + 1}": (lambda i=i: ore_collect(i)) for i in range(3)},
+    "RareOre": rare_ore,
     "PlayerHurt": player_hurt,
     "ShieldBlock": shield_block,
     "PlayerDeath": player_death,
@@ -745,6 +772,7 @@ SOUNDS = {
     "LavaSizzle": lava_sizzle,
     "Sell": sell,
     "Deposit": deposit,
+    "Milestone": milestone,
     "UpgradePurchased": soft_click,
     "PrestigeUpgradeQueued": soft_click,
     "Prestige": prestige,

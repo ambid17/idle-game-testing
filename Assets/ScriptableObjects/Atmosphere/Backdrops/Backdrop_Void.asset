@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3f313334e4c25d499ea892bab50db58, type: 3}
   m_Name: Backdrop_Void
   m_EditorClassIdentifier: Assembly-CSharp::Atmosphere.BiomeBackdrop
+  DisplayName: The Void
+  TitleColor: {r: 0.8, g: 0.5, b: 1, a: 1}
   Planes:
   - Sprite: {fileID: 21300000, guid: 3a652a44e034a2d47b9d36cf3592f706, type: 3}
     Depth: 20

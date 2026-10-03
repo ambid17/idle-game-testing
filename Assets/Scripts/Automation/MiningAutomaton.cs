@@ -568,7 +568,7 @@ namespace Automation
         private void Deposit()
         {
             var withdrawn = oreInventory.WithdrawAllOre();
-            AutomationDepositService.Deposit($"Automaton #{DisplayIndex}", withdrawn);
+            AutomationDepositService.Deposit($"Automaton #{DisplayIndex}", withdrawn, transform);
         }
 
         // Reuses _depotLocation (the Control Center's deposit point, same spot Fuel Drones idle at)

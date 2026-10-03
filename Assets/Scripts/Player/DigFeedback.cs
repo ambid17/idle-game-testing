@@ -95,6 +95,12 @@ namespace Player
         [SerializeField, Min(0.05f)] private float artifactRiseSeconds = 0.75f;
         [SerializeField] private float artifactBeamHeight = 6f;
 
+        [Header("Rare ore (the layer's two most valuable ores, while they're a small share of its table)")]
+        [Tooltip("Largest share of the layer's ore table weight an ore can have and still count as rare.")]
+        [SerializeField, Range(0f, 1f)] private float rareMaxTableShare = 0.15f;
+        [Tooltip("Real seconds between flourishes, so mining a whole rare vein doesn't strobe.")]
+        [SerializeField, Min(0f)] private float rareCooldown = 0.5f;
+
         [Header("Treasure chest")]
         [Tooltip("The chest with its lid open - swapped in for the block's own (closed) icon when it pops.")]
         [SerializeField] private Sprite openChestSprite;
@@ -118,6 +124,9 @@ namespace Player
         private float nextHitStopTime;
         private bool slowMoActive;
         private Color dirtColor;
+        private float nextRareFlourishTime;
+        // (layer, ore) -> 0 common, 1 rare, 2 the layer's jackpot; worked out once per pair.
+        private readonly Dictionary<(int, BlockTypeId), int> rarityTiers = new();
 
         private void Awake()
         {
@@ -246,6 +255,68 @@ namespace Player
                     CollectSound = collectSound,
                 });
             }
+        }
+
+        // A rare ore was collected at cellCenter: a flash ring in the ore's colour, a sparkle burst
+        // and a chime - bigger for the layer's jackpot ore. Common ores do nothing.
+        public void RareOreFlourish(Vector3 cellCenter, BlockType block, int layerIndex)
+        {
+            int tier = RarityTier(block, layerIndex);
+            if (tier == 0 || Time.unscaledTime < nextRareFlourishTime) return;
+            nextRareFlourishTime = Time.unscaledTime + rareCooldown;
+
+            var color = Color.Lerp(block.MinimapColor, Color.white, 0.35f);
+            var glow = color;
+            glow.a = tier == 2 ? 0.9f : 0.65f;
+            StartCoroutine(RareRing(cellCenter, glow, tier == 2 ? 2.6f : 1.8f));
+            GameManager.WorldEffects.SparkleBurst(cellCenter, tier == 2 ? 18 : 10, 0.2f, tier == 2 ? 3.5f : 2.5f, color);
+            GameManager.AudioService.PlayPitched(SoundId.RareOre, tier == 2 ? 1f : 1.12f);
+            if (tier == 2) GameManager.CameraShake.Shake(Vector2.up * minShakeForce, shakeSeconds);
+        }
+
+        // The layer's most valuable ore in its table is the jackpot (2), the next one down is rare
+        // (1) - but only while they're scarce there. An ore that isn't in the layer's table at all
+        // (a set-piece room's stash) is the jackpot if it's worth more than everything in it.
+        private int RarityTier(BlockType block, int layerIndex)
+        {
+            if (rarityTiers.TryGetValue((layerIndex, block.Id), out int tier)) return tier;
+
+            var table = GameManager.LayerConfigProvider.GetConfig(layerIndex).OreTable;
+            float totalWeight = 0f;
+            float weight = -1f;
+            int moreValuable = 0;
+            foreach (var entry in table)
+            {
+                if (entry.BlockType == null) continue;
+                totalWeight += entry.Weight;
+                if (entry.BlockType == block) weight = entry.Weight;
+                else if (entry.BlockType.Value > block.Value) moreValuable++;
+            }
+
+            if (weight < 0f) tier = moreValuable == 0 ? 2 : 0;
+            else if (totalWeight <= 0f || weight / totalWeight > rareMaxTableShare) tier = 0;
+            else tier = moreValuable == 0 ? 2 : moreValuable == 1 ? 1 : 0;
+
+            rarityTiers[(layerIndex, block.Id)] = tier;
+            return tier;
+        }
+
+        // A glow that snaps open to full size and fades as it swells a little more.
+        private IEnumerator RareRing(Vector3 center, Color color, float size)
+        {
+            var ring = GlowSprites.CreateGlow(transform.parent, color, size);
+            ring.name = "Rare Ore Flash";
+            ring.sortingOrder = sortingOrder;
+            ring.transform.position = center;
+            const float seconds = 0.45f;
+            for (float t = 0f; t < seconds; t += Time.unscaledDeltaTime)
+            {
+                float k = t / seconds;
+                ring.transform.localScale = Vector3.one * (size * Mathf.Lerp(0.4f, 1.2f, Effects.Easing.OutCubic(k)));
+                ring.color = new Color(color.r, color.g, color.b, color.a * (1f - k));
+                yield return null;
+            }
+            Destroy(ring.gameObject);
         }
 
         // An artifact was dug up at cellCenter: time slows for a beat, a beam of light shoots up out

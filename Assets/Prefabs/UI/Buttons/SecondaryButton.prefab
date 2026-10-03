@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 4570856416549412076}
   - component: {fileID: 7267603289239689455}
   - component: {fileID: 8015306543515184802}
+  - component: {fileID: 773662105637551923}
   m_Layer: 5
   m_Name: SecondaryButton
   m_TagString: Untagged
@@ -258,3 +259,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &773662105637551923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5666177650123421238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55

@@ -10,7 +10,9 @@ namespace Buildings
     // (WorldEffects.OreChunk, the same ones mining sheds) hop out of the player one after another
     // and arc into the doorway, each landing with a sparkle.
     // When the trip also sold the Depot's stock, the last chunk landing sends coins from the
-    // doorway to the HUD's dollars counter (HudCoinBurstRequestedEvent). Cosmetic only - the ore
+    // doorway to the HUD's dollars counter (HudCoinBurstRequestedEvent).
+    // Automatons and storage drones banking ore (OreDepositedByAutomationEvent) throw a few smaller
+    // chunks on a lower arc the same way, so the idle income is visible. Cosmetic only - the ore
     // and dollars are credited before any of this. Lives on the Depot building.
     public class DepotDepositEffect : MonoBehaviour
     {
@@ -37,6 +39,14 @@ namespace Buildings
         [SerializeField] private int iconSortingOrder = 6;
         [SerializeField] private Color sellSparkleColor = new(1f, 0.85f, 0.3f, 1f);
 
+        [Header("Automation deposits")]
+        [Tooltip("Most chunks one automaton/drone deposit throws.")]
+        [SerializeField, Range(1, PoolSize)] private int maxDroneIcons = 4;
+        [SerializeField] private float droneChunkScale = 1.1f;
+        [SerializeField] private float droneArcHeight = 0.7f;
+        [Tooltip("Deposits made farther than this from the doorway (world units) show nothing.")]
+        [SerializeField] private float droneMaxDistance = 8f;
+
         private struct Icon
         {
             public SpriteRenderer Renderer;
@@ -45,6 +55,7 @@ namespace Buildings
             public Vector3 Target;
             public float BaseScale;
             public float Spin;
+            public float ArcHeight;
             // Negative while waiting its turn to leave.
             public float Age;
             public bool Flying;
@@ -83,16 +94,18 @@ namespace Buildings
         private void OnEnable()
         {
             GameManager.EventService.Add<PlayerDepotDropOffEvent>(OnDropOff);
+            GameManager.EventService.Add<OreDepositedByAutomationEvent>(OnAutomationDeposit);
         }
 
         private void OnDisable()
         {
             GameManager.EventService.Remove<PlayerDepotDropOffEvent>(OnDropOff);
+            GameManager.EventService.Remove<OreDepositedByAutomationEvent>(OnAutomationDeposit);
         }
 
         private void OnDropOff(PlayerDepotDropOffEvent evt)
         {
-            BuildSpawnOrder(evt.Ores);
+            BuildSpawnOrder(evt.Ores, maxIcons);
 
             // Nothing was carried, but the Depot's own stock sold: just the coins.
             if (spawnOrder.Count == 0)
@@ -116,6 +129,7 @@ namespace Buildings
                 icons[i].Target = dropPoint.position + new Vector3(Random.Range(-landExtents.x, landExtents.x), Random.Range(-landExtents.y, landExtents.y), 0f);
                 icons[i].BaseScale = chunk != null ? chunkScale : iconSize / Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y);
                 icons[i].Spin = Random.Range(-360f, 360f);
+                icons[i].ArcHeight = arcHeight;
                 icons[i].Age = -n * iconStagger;
                 icons[i].Flying = true;
                 icons[i].SoldFor = last ? evt.SoldFor : 0;
@@ -123,9 +137,36 @@ namespace Buildings
             }
         }
 
+        private void OnAutomationDeposit(OreDepositedByAutomationEvent evt)
+        {
+            if (evt.Source == null || Vector2.Distance(evt.Source.position, dropPoint.position) > droneMaxDistance) return;
+
+            BuildSpawnOrder(evt.Deposited, maxDroneIcons);
+            for (int n = 0; n < spawnOrder.Count; n++)
+            {
+                int i = FreeIconIndex();
+                if (i < 0) break;
+
+                var block = GameManager.BlockTypeDatabase.Get((byte)spawnOrder[n]);
+                var chunk = GameManager.WorldEffects.OreChunk(block);
+                var sprite = chunk != null ? chunk : block.Icon;
+
+                icons[i].Source = evt.Source;
+                icons[i].SourceOffset = new Vector3(Random.Range(-0.15f, 0.15f), Random.Range(0f, 0.2f), 0f);
+                icons[i].Target = dropPoint.position + new Vector3(Random.Range(-landExtents.x, landExtents.x), Random.Range(-landExtents.y, landExtents.y), 0f);
+                icons[i].BaseScale = chunk != null ? droneChunkScale : iconSize * 0.7f / Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y);
+                icons[i].Spin = Random.Range(-360f, 360f);
+                icons[i].ArcHeight = droneArcHeight;
+                icons[i].Age = -n * iconStagger * 1.5f;
+                icons[i].Flying = true;
+                icons[i].SoldFor = 0;
+                icons[i].Renderer.sprite = sprite;
+            }
+        }
+
         // One chunk per ore carried, taken a type at a time so every type shows up before any
-        // repeats, up to maxIcons.
-        private void BuildSpawnOrder(IReadOnlyDictionary<BlockTypeId, int> ores)
+        // repeats, up to limit.
+        private void BuildSpawnOrder(IReadOnlyDictionary<BlockTypeId, int> ores, int limit)
         {
             spawnOrder.Clear();
             remainingByType.Clear();
@@ -136,12 +177,12 @@ namespace Buildings
 
             var types = new List<BlockTypeId>(remainingByType.Keys);
             bool added = true;
-            while (added && spawnOrder.Count < maxIcons)
+            while (added && spawnOrder.Count < limit)
             {
                 added = false;
                 foreach (var type in types)
                 {
-                    if (spawnOrder.Count >= maxIcons) break;
+                    if (spawnOrder.Count >= limit) break;
                     if (remainingByType[type] <= 0) continue;
 
                     remainingByType[type]--;
@@ -181,11 +222,14 @@ namespace Buildings
 
                 // Leaves from wherever the player is now, so a chunk still waiting its turn
                 // doesn't appear behind a player who walked on.
-                Vector3 from = icons[i].Source.position + icons[i].SourceOffset;
+                // A drone can be gone before its last chunk leaves (prestige) - the chunk just
+                // lands where it was headed.
+                if (icons[i].Source == null) icons[i].Age = flySeconds;
+                Vector3 from = icons[i].Source != null ? icons[i].Source.position + icons[i].SourceOffset : icons[i].Target;
                 Vector3 to = icons[i].Target;
                 float k = Effects.Easing.InQuad(t);
                 Vector3 position = Vector3.Lerp(from, to, k);
-                position.y += arcHeight * Mathf.Sin(t * Mathf.PI);
+                position.y += icons[i].ArcHeight * Mathf.Sin(t * Mathf.PI);
 
                 // Pops out of the player, then shrinks into the doorway.
                 float scale = Mathf.Min(1f, t * 6f) * Mathf.Lerp(1f, 0.45f, k);

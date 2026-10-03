@@ -424,6 +424,7 @@ namespace Player
             int amount = playerPowerUps.ConsumeLuckyStrikeMultiplier() * GameManager.RunModifierService.OreYieldMultiplier(layerIndex);
             // No toast - HudInventoryUI shows the pickup as a "+N" tally beside the ore's row.
             digFeedback.Pickup(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, amount);
+            digFeedback.RareOreFlourish(mapGenerationService.CellToWorldCenter(layerIndex, x, y), blockType, layerIndex);
 
             for (int i = 0; i < amount; i++) ApplyLayerBonus(blockType, layerIndex);
 

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8272237763341006134}
   - component: {fileID: 9084052151313431804}
   - component: {fileID: 8454007634679568958}
+  - component: {fileID: 285914093309100278}
   m_Layer: 0
   m_Name: GiveButton
   m_TagString: Untagged
@@ -142,6 +143,22 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &285914093309100278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3090172738494147704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &4026568575072874210
 GameObject:
   m_ObjectHideFlags: 0

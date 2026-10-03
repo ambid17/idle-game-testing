@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2758535408899860647}
   - component: {fileID: 7225243494875939733}
   - component: {fileID: 7564540387397462850}
+  - component: {fileID: 6948262156518840309}
   m_Layer: 5
   m_Name: ProcessingRecipeRow
   m_TagString: Untagged
@@ -197,6 +198,22 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &6948262156518840309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280089978157019430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &1920276453598371176
 GameObject:
   m_ObjectHideFlags: 0

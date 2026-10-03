@@ -21,6 +21,11 @@ namespace UI.Notifications
         // Longer Queued messages (e.g. power-up explanations) stay up longer so they can be read;
         // short ones (deposit reports) still take the base HoldSeconds.
         private const float QueuedSecondsPerCharacter = 0.06f;
+        // Entrance: TimeSensitive drops in from above with a slight overshoot, Queued slides in
+        // from the right edge.
+        private const float EnterSeconds = 0.28f;
+        private const float TimeSensitiveDropDistance = 70f;
+        private const float QueuedSlideDistance = 120f;
 
         private static readonly Vector2 TimeSensitiveAnchor = new(0.5f, 1f);
         private static readonly Vector2 TimeSensitivePosition = new(0f, -40f);
@@ -58,15 +63,30 @@ namespace UI.Notifications
             bool timeSensitive = urgency == NotificationUrgency.TimeSensitive;
             rectTransform.anchorMin = rectTransform.anchorMax = rectTransform.pivot = timeSensitive ? TimeSensitiveAnchor : QueuedAnchor;
             rectTransform.anchoredPosition = timeSensitive ? TimeSensitivePosition : QueuedPosition;
-            canvasGroup.alpha = 1f;
+            canvasGroup.alpha = 0f;
 
             float queuedSeconds = Mathf.Max(HoldSeconds, message.Length * QueuedSecondsPerCharacter) * durationMultiplier;
             StartCoroutine(timeSensitive ? PlayTimeSensitive(HoldSeconds * durationMultiplier, onComplete) : PlayQueued(queuedSeconds, onComplete));
         }
 
-        // Solid display for holdSeconds, then a quick fade-out - no movement.
+        private IEnumerator Enter(Vector2 offset)
+        {
+            Vector2 restPosition = rectTransform.anchoredPosition;
+            for (float elapsed = 0f; elapsed < EnterSeconds; elapsed += Time.deltaTime)
+            {
+                float t = elapsed / EnterSeconds;
+                rectTransform.anchoredPosition = restPosition + offset * (1f - Effects.Easing.OutBack(t));
+                canvasGroup.alpha = Mathf.Clamp01(t * 2.5f);
+                yield return null;
+            }
+            rectTransform.anchoredPosition = restPosition;
+            canvasGroup.alpha = 1f;
+        }
+
+        // Drops in, holds for holdSeconds, then a quick fade-out.
         private IEnumerator PlayTimeSensitive(float holdSeconds, Action onComplete)
         {
+            yield return Enter(Vector2.up * TimeSensitiveDropDistance);
             yield return new WaitForSeconds(holdSeconds);
 
             float elapsed = 0f;
@@ -80,9 +100,10 @@ namespace UI.Notifications
             Finish(onComplete);
         }
 
-        // Rises and fades together across the full duration - no separate static phase.
+        // Slides in, then rises and fades together across the full duration.
         private IEnumerator PlayQueued(float duration, Action onComplete)
         {
+            yield return Enter(Vector2.right * QueuedSlideDistance);
             Vector2 startPosition = rectTransform.anchoredPosition;
             float elapsed = 0f;
             while (elapsed < duration)

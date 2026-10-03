@@ -637,6 +637,7 @@ GameObject:
   - component: {fileID: 6801961997606273847}
   - component: {fileID: 4075797052128306185}
   - component: {fileID: 2554326418137553490}
+  - component: {fileID: 8347505780406619301}
   m_Layer: 5
   m_Name: CritterCollectionSlot
   m_TagString: Untagged
@@ -769,6 +770,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8347505780406619301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7578521656773951877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7fe69ded6be57c4ebae7197024b2248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.UIButtonJuice
+  hoverScale: 1.05
+  pressScale: 0.93
+  stiffness: 400
+  damping: 0.55
 --- !u!1 &8773715371806266705
 GameObject:
   m_ObjectHideFlags: 0

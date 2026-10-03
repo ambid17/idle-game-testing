@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Effects
 {
     // Easing curves shared by the code-driven animations (0..1 in, roughly 0..1 out).
@@ -10,6 +12,8 @@ namespace Effects
             float u = 1f - t;
             return 1f - u * u * u;
         }
+
+        public static float InOutSine(float t) => 0.5f - 0.5f * Mathf.Cos(t * Mathf.PI);
 
         // Overshoots past 1 before settling - the "pop".
         public static float OutBack(float t)
