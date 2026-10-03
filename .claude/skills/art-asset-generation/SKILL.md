@@ -28,6 +28,7 @@ Prompt opener for UI art:
 Workflow that produced the power-up icons and badges (2026-10-02):
 - Batch every icon into one request on flat pure magenta (#FF00FF). The model ignores the requested grid and may draw extras, so don't rely on cell positions: `python Tools/UI/slice_icon_sheet.py <sheet.png>` lists the blobs it finds, then `... <sheet.png> 3=Assets/path/Icon.png` writes the chosen ones as 64x64 transparent sprites (keeps purple accents, cuts enclosed handle holes).
 - A 2x2 sheet of the lock, heart, fuel and backpack HUD icons as the reference held the style better than one icon. For a redo of a weak icon, attach the first generated sheet (`Tools/UI/icon_sheet_raw_a.png`) as the reference and ask for just one or two large icons.
+- Upgrade icons (2026-10-02, sheets in `Tools/UI/upgrade_icon_sheets/`): with the first good sheet as the reference, a 3x3 grid was honoured every time, so `python Tools/UI/slice_icon_grid.py <sheet.png> 3x3 1=… 5=…` cuts by cell and keeps multi-piece icons (robot + "+", drill + speed lines) whole, which the blob slicer splits. Expect ~1 in 8 icons to miss its brief (arrows pointing the wrong way, chevrons drawn as hearts); put the misses on one redo sheet, and fix simple ones (flipping arrows) in post.
 - The reference image must be under `Assets/` for `generate_image`; use a temporary `Assets/_Concepts` folder and delete it afterwards.
 - Overwrite the existing PNG in place so the `.meta` and every reference survive.
 

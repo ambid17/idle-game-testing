@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Chain Vein Mining
   Description: Vein miner chains through every kind of ore connected to the one you
     mined, instead of only ore of the same type.
-  Icon: {fileID: 21300000, guid: 701d1cd338a2cc0459e885559bda2a95, type: 3}
+  Icon: {fileID: 21300000, guid: baa9e1c2cea47bc42bd08e65ecf4132f, type: 3}
   EffectValuePerLevel: 0
   MaxLevel: 1
   BaseCost: 15

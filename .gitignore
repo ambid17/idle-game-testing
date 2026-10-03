@@ -106,3 +106,6 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ss]ceneDependencyCache*
 Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF - Fallback.asset
 *.zip
+
+# Python bytecode from Tools/ scripts
+__pycache__/

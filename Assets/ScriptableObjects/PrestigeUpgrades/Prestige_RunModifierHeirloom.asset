@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Heirloom
   Description: The Aftershock you're currently using is always one of the choices
     offered at your next Resonance.
-  Icon: {fileID: 21300000, guid: ecda2083f5b40aa44a27107226c97170, type: 3}
+  Icon: {fileID: 21300000, guid: b481ff58f6ff42245864f47006238d68, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 40

@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Rock Breaker
   Description: Lets you mine Falling Rock blocks directly, instead of only knocking
     them loose by mining the block underneath, and drill through Hardpan.
-  Icon: {fileID: 21300000, guid: 9c01699f25c33e5478d61df96980102a, type: 3}
+  Icon: {fileID: 21300000, guid: f00e6e42f9ea3dc4c96d4ce2a2eb9b4e, type: 3}
   EffectValuePerLevel: 0
   MaxLevel: 1
   BaseCost: 15
