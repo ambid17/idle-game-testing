@@ -51,7 +51,7 @@ namespace MapGeneration
         // force chunks into existence just by looking at them.
         public bool TryGetLoadedChunk(int layerIndex, out ChunkData chunk) => chunksByLayer.TryGetValue(layerIndex, out chunk);
 
-        public bool TryMineCell(int layerIndex, int x, int y, bool minedByPlayer, out BlockType minedBlock, bool canMineFallingRock = false, bool byExplosion = false)
+        public bool TryMineCell(int layerIndex, int x, int y, bool minedByPlayer, out BlockType minedBlock, bool rockBreaker = false, bool byExplosion = false)
         {
             minedBlock = null;
 
@@ -69,7 +69,7 @@ namespace MapGeneration
                 //Debug.LogWarning($"TryMineCell: can't mine grassy dirt tiles, they support buildings");
                 return false;
             }
-            if (cell.BlockTypeId == (byte)BlockTypeId.FallingRock && !canMineFallingRock)
+            if (cell.BlockTypeId == (byte)BlockTypeId.FallingRock && !rockBreaker)
             {
                 // Not directly mineable (except by the player with the Rock Breaker upgrade) - it
                 // otherwise only comes loose once the block beneath it is
@@ -77,9 +77,10 @@ namespace MapGeneration
                 // MapGeneration.FallingRockHazardEffect).
                 return false;
             }
-            if (blockTypes != null && blockTypes.Get(cell.BlockTypeId) is { Unmineable: true })
+            bool rockBreakerHardpan = rockBreaker && cell.BlockTypeId == (byte)BlockTypeId.Hardpan;
+            if (!rockBreakerHardpan && blockTypes != null && blockTypes.Get(cell.BlockTypeId) is { Unmineable: true })
             {
-                // Structure blocks (e.g. Hardpan) - see BlockType.Unmineable.
+                // Structure blocks (e.g. Hardpan, except to the player with Rock Breaker) - see BlockType.Unmineable.
                 return false;
             }
             if (!byExplosion && blockTypes != null && blockTypes.Get(cell.BlockTypeId) is { BlastOnly: true })

@@ -25,5 +25,5 @@ MonoBehaviour:
   Tint: {r: 1, g: 1, b: 1, a: 1}
   MinimapColor: {r: 0.22, g: 0.21, b: 0.26, a: 1}
   AnalyzerLines:
-  - Compacted hardpan. No drill made can scratch it - look for a gap. The ground
-    just beneath is usually richer for it.
+  - Compacted hardpan. Only a Rock Breaker can get through it - otherwise, look
+    for a gap. The ground just beneath is usually richer for it.

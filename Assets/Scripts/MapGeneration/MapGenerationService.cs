@@ -222,13 +222,13 @@ namespace MapGeneration
         /// <param name="y"></param>
         /// <param name="visionRadiusOverride"></param>
         /// <param name="minedByPlayer">PowerUp blocks are player-only - every other caller (automatons, explosions) is refused them.</param>
-        /// <param name="canMineFallingRock">Player with the Rock Breaker upgrade - FallingRock is otherwise refused.</param>
+        /// <param name="rockBreaker">Player with the Rock Breaker upgrade - FallingRock and Hardpan are otherwise refused.</param>
         /// <param name="byExplosion">A blast, not a drill - the only thing that breaks BlastOnly blocks.</param>
         /// <returns>True if the cell was able to be mined.</returns>
-        public bool MineCell(int layerIndex, int x, int y, int visionRadiusOverride = -1, bool minedByPlayer = false, bool canMineFallingRock = false, bool byExplosion = false)
+        public bool MineCell(int layerIndex, int x, int y, int visionRadiusOverride = -1, bool minedByPlayer = false, bool rockBreaker = false, bool byExplosion = false)
         {
             // Can't mine if: already mined, target is a building support, or a PowerUp not mined by the player
-            if (!World.TryMineCell(layerIndex, x, y, minedByPlayer, out var block, canMineFallingRock, byExplosion)) return false;
+            if (!World.TryMineCell(layerIndex, x, y, minedByPlayer, out var block, rockBreaker, byExplosion)) return false;
 
             // Digging out row 1 (the tile beneath the surface) is what actually opens a fall-
             // through gap at that column - see the SurfaceFloor* fields' comment above.

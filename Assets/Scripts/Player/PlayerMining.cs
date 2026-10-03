@@ -171,10 +171,13 @@ namespace Player
             // Same edge-trigger + cooldown as the inventory notification above: fires when the
             // player starts drilling into Grassy Dirt, Hardpan or a Rock they can't break, not every
             // frame they keep pushing, and not again for a few seconds if they let go and retry.
+            // Rock Breaker lets the player through both FallingRock and Hardpan.
+            bool rockBreaker = PrestigeUpgradeManager.Instance.Mining_CanMineRocks;
             bool isGrassyDirt = blockType != null && blockType.Id == BlockTypeId.GrassyDirt;
-            bool isHardpan = blockType != null && blockType.Id == BlockTypeId.Hardpan;
-            bool isUnbreakableRock = blockType != null && blockType.Id == BlockTypeId.FallingRock && !PrestigeUpgradeManager.Instance.Mining_CanMineRocks;
-            bool isPushingUnmineable = isGrassyDirt || isHardpan || isUnbreakableRock;
+            bool isRockBreakerHardpan = rockBreaker && blockType != null && blockType.Id == BlockTypeId.Hardpan;
+            bool isUnbreakableHardpan = !rockBreaker && blockType != null && blockType.Id == BlockTypeId.Hardpan;
+            bool isUnbreakableRock = !rockBreaker && blockType != null && blockType.Id == BlockTypeId.FallingRock;
+            bool isPushingUnmineable = isGrassyDirt || isUnbreakableHardpan || isUnbreakableRock;
             // Capped per block type on top of that - past the first few the player knows, and it's just noise.
             if (canNotifyBlocked && isPushingUnmineable && !wasPushingUnmineable && Time.time >= nextUnmineableNotifyTime
                 && unmineableNotifyCounts.GetValueOrDefault(blockType.Id) < maxUnmineableNotifiesPerBlockType)
@@ -183,6 +186,8 @@ namespace Player
                 unmineableNotifyCounts[blockType.Id] = unmineableNotifyCounts.GetValueOrDefault(blockType.Id) + 1;
                 string message = isUnbreakableRock
                     ? $"Your drill can't break {blockType.DisplayName}! Mine out what's holding it up instead."
+                    : isUnbreakableHardpan
+                    ? $"{blockType.DisplayName} can't be mined! Look for a gap, or unlock Rock Breaker in the Museum."
                     : $"{blockType.DisplayName} can't be mined!";
                 GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.TimeSensitive, blockType.Icon));
                 GameManager.AudioService.Play(SoundId.Warning);
@@ -192,7 +197,7 @@ namespace Player
             if (blockType == null
                 || isGrassyDirt
                 || isUnbreakableRock
-                || blockType.DrillProof
+                || (blockType.DrillProof && !isRockBreakerHardpan)
                 || blockedByFullInventory
                 )
             {
@@ -285,7 +290,7 @@ namespace Player
 
         private void MineTarget(int layerIndex, int x, int y, BlockType blockType, Vector2Int direction, float effectiveHealth)
         {
-            if (!mapGenerationService.MineCell(layerIndex, x, y, minedByPlayer: true, canMineFallingRock: PrestigeUpgradeManager.Instance.Mining_CanMineRocks)) return;
+            if (!mapGenerationService.MineCell(layerIndex, x, y, minedByPlayer: true, rockBreaker: PrestigeUpgradeManager.Instance.Mining_CanMineRocks)) return;
 
             var rune = blockType.Category == BlockCategory.Artifact ? GameManager.MuseumCollectionDatabase.GetRuneAt(layerIndex, x, y) : null;
             digFeedback.Break(mapGenerationService.CellToWorldCenter(layerIndex, x, y), direction, blockType, effectiveHealth, primary: true, rune);
