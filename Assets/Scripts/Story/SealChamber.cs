@@ -12,7 +12,8 @@ namespace Story
     // chamber's layer, regenerated with every Dig; this object finds where it was stamped and
     // stands on its floor. Examining it reads the room's mural once, then offers the choice:
     // take the Keystone or leave it, or - at the Vault - Release or Reseal. What it shows comes from
-    // GameManager.StoryManager, so a taken Keystone stays gone in every later Dig, and once the
+    // GameManager.StoryManager, so a taken Keystone shows only as a grey, unlit husk in every later
+    // Dig (out of reach - its trigger stays off), and once the
     // Seal is mended neither the Keystones nor the last Seal appear in their rooms again.
     //
     // Scene layout: this component sits on the trigger collider (Interactable layer) that
@@ -39,6 +40,9 @@ namespace Story
         [SerializeField] private Color glowColor = new(0.78f, 0.49f, 1f, 0.55f);
         [SerializeField] private float glowDiameter = 3f;
         [SerializeField] private float glowPulseAmount = 0.12f;
+        [Tooltip("Stands in for a Keystone taken in an earlier Dig - still, unlit and out of reach.")]
+        [SerializeField] private Sprite takenSprite;
+        [SerializeField] private Color takenColor = new(1f, 1f, 1f, 0.5f);
 
         private static MapGenerationService map => GameManager.MapGenerationService;
         private static StoryManager story => GameManager.StoryManager;
@@ -46,11 +50,15 @@ namespace Story
         private Collider2D interactTrigger;
         private SpriteRenderer glow;
         private Vector3 stoneRestPosition;
+        private Sprite stoneSprite;
+        private Color stoneColor;
         private MineWorld placedForWorld;
         private int placedForSeed;
         private bool hasRoom;
         private string pendingConversation;
         private bool broken;
+        // Taken during this Dig: the room stands empty until the next one shows the stone's husk.
+        private bool takenThisDig;
 
         public InteractableType InteractableType => InteractableType.SealChamber;
 
@@ -64,10 +72,14 @@ namespace Story
         // room stands empty.
         private bool IsStonePresent => !broken && story.Ending == StoryEnding.None && (isVault || !story.IsKeystoneTaken(keystoneIndex));
 
+        // A Keystone taken in an earlier Dig still shows, greyed out and out of reach.
+        private bool IsHuskShown => !isVault && !takenThisDig && story.Ending == StoryEnding.None && story.IsKeystoneTaken(keystoneIndex);
+
         private void Awake()
         {
             if (structure == null) Debug.LogError($"SealChamber '{name}': structure is not assigned.");
             if (stoneRenderer == null) Debug.LogError($"SealChamber '{name}': stoneRenderer is not assigned.");
+            if (!isVault && takenSprite == null) Debug.LogError($"SealChamber '{name}': takenSprite is not assigned.");
 
             interactTrigger = GetComponent<Collider2D>();
             if (interactTrigger == null) Debug.LogError($"SealChamber '{name}' needs a trigger Collider2D on the same GameObject.");
@@ -76,6 +88,8 @@ namespace Story
         private void Start()
         {
             stoneRestPosition = stoneRenderer.transform.localPosition;
+            stoneSprite = stoneRenderer.sprite;
+            stoneColor = stoneRenderer.color;
             glow = GlowSprites.CreateGlow(transform, glowColor, glowDiameter);
             glow.transform.localPosition = stoneRestPosition;
             Refresh();
@@ -107,7 +121,8 @@ namespace Story
                 Place();
             }
 
-            if (!stoneRenderer.enabled) return;
+            // Only the live stone moves - a husk sits still.
+            if (!glow.enabled) return;
 
             float t = Time.time;
             stoneRenderer.transform.localPosition = stoneRestPosition + Vector3.up * (Mathf.Sin(t * bobSpeed) * bobAmplitude);
@@ -118,6 +133,7 @@ namespace Story
         private void Place()
         {
             hasRoom = false;
+            takenThisDig = false;
             foreach (var (stamped, rect) in placedForWorld.GetOrGenerateChunk(layerIndex).StampedStructures)
             {
                 if (stamped != structure) continue;
@@ -138,7 +154,15 @@ namespace Story
             if (glow == null) return;
 
             bool present = hasRoom && IsStonePresent;
-            stoneRenderer.enabled = present;
+            bool husk = hasRoom && !present && IsHuskShown;
+            stoneRenderer.enabled = present || husk;
+            stoneRenderer.sprite = husk ? takenSprite : stoneSprite;
+            stoneRenderer.color = husk ? takenColor : stoneColor;
+            if (husk)
+            {
+                stoneRenderer.transform.localPosition = stoneRestPosition;
+                stoneRenderer.transform.localRotation = Quaternion.identity;
+            }
             glow.enabled = present;
             // Disabling the trigger fires OnTriggerExit2D, so the detector drops the prompt.
             interactTrigger.enabled = present;
@@ -197,7 +221,12 @@ namespace Story
                 content.KeystoneTitle,
                 string.Format(content.KeystoneWarning, reward, story.SealsHolding, story.SealsHolding - 1, story.ResealCost, story.ResealCostIfTaken(keystoneIndex)),
                 content.KeystoneLeaveLabel,
-                string.Format(content.KeystoneTakeLabel, reward), () => story.TakeKeystone(keystoneIndex)));
+                string.Format(content.KeystoneTakeLabel, reward), () =>
+                {
+                    // Set first: TakeKeystone's StoryProgressChangedEvent refreshes this chamber.
+                    takenThisDig = true;
+                    story.TakeKeystone(keystoneIndex);
+                }));
         }
     }
 }
