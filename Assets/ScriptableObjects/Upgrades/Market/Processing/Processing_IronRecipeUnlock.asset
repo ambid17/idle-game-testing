@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: Processing_IronRecipeUnlock
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: 'Processing: Unlock Iron Recipe'
-  Description: 'Unlocks the Swords recipe at the Processing Center: 2 Iron make Swords worth $100 (12s each).'
+  Description: 'Unlocks the Swords recipe at the Processing Center: 2 Iron make Swords
+    worth $100 (12s each).'
   Icon: {fileID: 21300000, guid: e1bf7285da0b565468280c54741c9d32, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1
   BaseCost: 4000
   CostGrowth: 1.1
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: c0d690c2ce4f5b447a7305b9c06e6b7a, type: 2}
+  Prerequisite: {fileID: 11400000, guid: d8d2ae2e42c355d4b823d901bac66e01, type: 2}
+  Direction: 2
   Branch: 4
   Effect: 506

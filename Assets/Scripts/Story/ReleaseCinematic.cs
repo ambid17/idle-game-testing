@@ -292,7 +292,7 @@ namespace Story
 
             // Back to the main menu; Continue loads the save from before the Seal broke.
             StoryManager.RewoundThisSession = true;
-            InputBlocker.SetBlocked(false);
+            InputBlocker.ResetForSceneReload();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 

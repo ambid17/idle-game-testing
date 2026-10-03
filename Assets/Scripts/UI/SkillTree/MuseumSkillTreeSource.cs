@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Economy;
 using Events;
 using UnityEngine;
@@ -15,9 +15,9 @@ namespace UI.SkillTree
         private PrestigeUpgradeDatabase database => GameManager.PrestigeUpgradeDatabase;
         private PrestigeUpgradeManager manager => PrestigeUpgradeManager.Instance;
 
-        public int BranchCount => Enum.GetValues(typeof(PrestigeUpgradeBranch)).Length;
         public SkillTreeType SkillTreeType { get { return SkillTreeType.PrestigeUpgrades; } }
-        public UpgradeDefinitionBase DefaultFocus => database.Find(PrestigeUpgradeEffect.Mining_DrillTier);
+        // The tree's root (center node).
+        public UpgradeDefinitionBase DefaultFocus => database.Upgrades.FirstOrDefault(def => def != null && def.Prerequisite == null);
 
         public IReadOnlyList<SkillTreeNodeViewModel> BuildViewModels()
         {
@@ -34,7 +34,7 @@ namespace UI.SkillTree
                     Description = def.Description,
                     Icon = def.Icon,
                     CurrencyIcon = manager.CurrencyIcon,
-                    BranchIndex = (int)def.Branch,
+                    Direction = def.Direction,
                     Level = manager.GetLevel(def),
                     QueuedLevel = manager.GetQueuedLevel(def),
                     MaxLevel = def.MaxLevel,
@@ -75,6 +75,7 @@ namespace UI.SkillTree
                 QueuedLevel = manager.GetQueuedLevel(def),
                 MaxLevel = def.MaxLevel,
                 CostLabel = manager.IsMaxed(def) ? "MAXED" : $"{Mathf.CeilToInt((float)manager.GetNextCost(def))} artifacts",
+                IsUnlocked = manager.IsUnlocked(def),
                 CanPurchase = manager.CanPurchase(def),
                 PurchaseBlockedReason = manager.GetPurchaseBlockedReason(def)
             };

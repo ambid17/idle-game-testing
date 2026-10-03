@@ -142,7 +142,7 @@ namespace UI.SkillTree
             {
                 var layoutNodes = new List<ISkillTreeLayoutNode>(viewModels.Count);
                 foreach (var vm in viewModels) layoutNodes.Add(vm);
-                var positions = SkillTreeLayout.Compute(layoutNodes, layoutConfig, source.BranchCount);
+                var positions = SkillTreeLayout.Compute(layoutNodes, layoutConfig);
 
                 ClearInstances();
                 AddNodes(viewModels, positions);

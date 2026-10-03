@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: Prestige_MuseumDividends
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Museum Dividends
-  Description: +1% sale value of ore and processed goods per level, for every unspent artifact you hold (e.g. level 2 with 30 artifacts = +60%). Spending artifacts lowers the bonus.
+  Description: +1% sale value of ore and processed goods per level, for every unspent
+    artifact you hold (e.g. level 2 with 30 artifacts = +60%). Spending artifacts
+    lowers the bonus.
   Icon: {fileID: 21300000, guid: 83d0240b29f54954f992590182b98f4c, type: 3}
   EffectValuePerLevel: 0.01
   MaxLevel: 5
   BaseCost: 50
   CostGrowth: 1.6
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: 3099549f0ef322c439fdcabf5816326a, type: 2}
+  Prerequisite: {fileID: 11400000, guid: 9f67caa1b455f9449919abe545cbac09, type: 2}
+  Direction: 0
   Branch: 3
   Effect: 404

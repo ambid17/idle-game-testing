@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: Mining_BaseInstaMineChance
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Global Insta Mine
-  Description: +1% chance per level to instantly mine any block you start digging (up to 5% at max level).
+  Description: +1% chance per level to instantly mine any block you start digging
+    (up to 5% at max level).
   Icon: {fileID: 21300000, guid: 621aa80cb9f23e9449d68c7e0a537a7b, type: 3}
   EffectValuePerLevel: 0.01
   MaxLevel: 5
   BaseCost: 1000
   CostGrowth: 1.5
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: b6234e36b72e4ed41ac0aa38eafa186e, type: 2}
+  Prerequisite: {fileID: 11400000, guid: 444cbac6d43f35942b9d27256eb74723, type: 2}
+  Direction: 1
   Branch: 0
   Effect: 301

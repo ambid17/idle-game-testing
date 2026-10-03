@@ -1,6 +1,7 @@
 using Events;
 using MapGeneration;
 using Persistence;
+using Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -50,11 +51,13 @@ namespace UI
         private void OnDeleteSaveClicked()
         {
             SaveService.Instance.DeleteSaveData();
+            InputBlocker.ResetForSceneReload();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
         private void OnReloadSceneClicked()
         {
+            InputBlocker.ResetForSceneReload();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }

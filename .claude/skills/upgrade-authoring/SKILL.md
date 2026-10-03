@@ -45,7 +45,7 @@ Open `Assets/Scripts/Economy/UpgradeDefinition.cs` (Market) or `Assets/Scripts/E
 - Reordering or deleting members is safe. **Never change an existing member's number, and never reuse a retired member's number** - either silently re-points existing assets. C# also allows duplicate values without complaint; `Validate()` catches that at startup.
 - Renaming a member is safe for the asset data, but the asset filename must be renamed to match (see Step 2).
 
-Add a branch, if this is a new category, to `UpgradeBranch` / `PrestigeUpgradeBranch` - those enums are still positional and append-only, since the skill tree UI uses `Enum.GetValues(...).Length` as the branch count and groups nodes by `BranchIndex`.
+Add a branch, if this is a new category, to `UpgradeBranch` / `PrestigeUpgradeBranch` - those enums are still positional and append-only, since `Branch` is serialized by index on every asset. (The skill tree no longer lays out by branch - see Step 4's `Direction`.)
 
 Give the new member a one-line comment naming the doc section it implements (the existing entries all cite `Assets/Docs/GameDesignDoc.md` or `Assets/Docs/UpgradeIdeas.pdf` sections) - future edits rely on that trail to know what an effect is *supposed* to do.
 
@@ -90,7 +90,7 @@ Two gating modes, both handled for you by `UpgradeManagerBase.IsUnlocked`:
 - **Normal prerequisite** (default): unlocked once the prerequisite has *any* purchased level.
 - **Capstone gate**: set `RequirePrerequisiteMaxed = true` to require the prerequisite fully maxed first - use this for the "tree branch" capstone nodes (e.g. `Mining_CameraZoom`, gated on a maxed Lantern).
 
-Leave `Prerequisite` empty for a branch's first tier. Nothing else needs to change for prerequisites - `MarketSkillTreeSource`/`MuseumSkillTreeSource` (`Assets/Scripts/UI/SkillTree/`) link the visual tree edges automatically off this field, and `CanPurchase`/`GetPurchaseBlockedReason` already enforce it.
+Each tree has exactly **one** root (the only upgrade with no `Prerequisite`), drawn in the center; every new upgrade needs a `Prerequisite`. Set `Direction` (North/East/South/West) to choose which side of its prerequisite it sits on in the grid (`SkillTreeLayout`) - pick a cell that's free, or the layout pushes it further out and logs a warning. Nothing else needs to change for prerequisites - `MarketSkillTreeSource`/`MuseumSkillTreeSource` (`Assets/Scripts/UI/SkillTree/`) link the visual tree edges automatically off this field, and `CanPurchase`/`GetPurchaseBlockedReason` already enforce it.
 
 ### Step 5 - Wire the effect into actual gameplay
 
@@ -154,7 +154,7 @@ Follow this project's [CLAUDE.md](../../CLAUDE.md) rules while doing this: dispa
 ### Step 6 - Verify
 
 There's no CLI test runner in this project. Let Unity recompile, check the Console for errors (`read_console` if using UnityMCP), then confirm in Play Mode:
-1. The upgrade appears in the Market or Museum skill tree, in the right branch, gated behind its prerequisite if one was set.
+1. The upgrade appears in the Market or Museum skill tree on the `Direction` side of its prerequisite, gated behind it, with no `SkillTreeLayout` overlap warning in the Console.
 2. Purchasing it deducts the right currency and advances its level/cost curve.
 3. The actual gameplay change is observable - not just "the UI says level 1 now," but the effect itself (faster mining, a spawned automaton, a wider grid, etc.). This is the step that catches a forgotten Step 5.
 

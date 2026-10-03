@@ -23,5 +23,6 @@ MonoBehaviour:
   CostGrowth: 2
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 0}
+  Direction: 0
   Branch: 0
   Effect: 107

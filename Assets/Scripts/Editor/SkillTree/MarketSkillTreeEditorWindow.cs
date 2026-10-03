@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Economy;
@@ -10,7 +9,7 @@ using UnityEngine;
 namespace EditorTools.SkillTree
 {
     // Bakes the Market's skill tree (nodes + connectors) into the scene at edit time, using the
-    // same SkillTreeLayout radial algorithm SkillTreePanelUI used to compute positions at
+    // same SkillTreeLayout grid algorithm SkillTreePanelUI uses to compute positions at
     // runtime. Once baked, SkillTreePanelUI.RefreshAll finds the pre-placed SkillTreeNodeUI
     // children under Content and only rebinds their view models on refresh instead of destroying
     // and re-instantiating everything on every purchase/dollar-changed event.
@@ -26,7 +25,7 @@ namespace EditorTools.SkillTree
         {
             EditorGUILayout.HelpBox(
                 "Bakes SkillTreeNodeUI/SkillTreeConnectorUI GameObjects into the target panel's " +
-                "Content, positioned via the same radial layout used at runtime. Any existing " +
+                "Content, positioned via the same direction grid layout used at runtime. Any existing " +
                 "baked nodes/connectors under Content are destroyed and rebuilt.",
                 MessageType.Info);
 
@@ -93,8 +92,7 @@ namespace EditorTools.SkillTree
                 }
             }
 
-            int branchCount = Enum.GetValues(typeof(UpgradeBranch)).Length;
-            var positions = SkillTreeLayout.Compute(layoutNodes, targetPanel.LayoutConfig, branchCount);
+            var positions = SkillTreeLayout.Compute(layoutNodes, targetPanel.LayoutConfig);
 
             ClearExisting(content);
 
@@ -149,13 +147,14 @@ namespace EditorTools.SkillTree
 
         // Wraps an UpgradeDefinition just enough to feed the shared SkillTreeLayout algorithm -
         // mirrors what MarketSkillTreeSource.BuildViewModels does at runtime, but reads only
-        // static asset data (Branch/Prerequisite) so it works in edit mode without a running
+        // static asset data (Direction/Prerequisite) so it works in edit mode without a running
         // UpgradeManager.
         private class UpgradeLayoutNode : ISkillTreeLayoutNode
         {
             private readonly UpgradeDefinition definition;
             public UpgradeLayoutNode(UpgradeDefinition definition) => this.definition = definition;
-            public int BranchIndex => (int)definition.Branch;
+            public string Name => definition.DisplayName;
+            public SkillTreeDirection Direction => definition.Direction;
             public ISkillTreeLayoutNode Prerequisite { get; set; }
         }
     }

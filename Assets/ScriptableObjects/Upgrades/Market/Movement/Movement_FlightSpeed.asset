@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Movement_FlightSpeed
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Flight Speed
-  Description: +10% flight speed per level, both sideways and upward thrust (up to +80% at max level).
+  Description: +10% flight speed per level, both sideways and upward thrust (up to
+    +80% at max level).
   Icon: {fileID: 21300000, guid: 70d68eb82b661134292f7560bbf78966, type: 3}
   EffectValuePerLevel: 0.1
   MaxLevel: 8
@@ -21,5 +22,6 @@ MonoBehaviour:
   CostGrowth: 1.3
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: e91066c7d0a0ce94d87efef6ea1ac374, type: 2}
+  Direction: 0
   Branch: 3
   Effect: 401

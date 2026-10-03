@@ -21,6 +21,7 @@ MonoBehaviour:
   BaseCost: 15
   CostGrowth: 1
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: 5c9a75090af000846b511f6d3257bf16, type: 2}
+  Prerequisite: {fileID: 11400000, guid: d30c7a3bfc4741638b045233fabe8e79, type: 2}
+  Direction: 3
   Branch: 0
   Effect: 108

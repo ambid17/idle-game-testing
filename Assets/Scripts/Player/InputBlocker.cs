@@ -27,5 +27,14 @@ namespace Player
             blockCount = blocked ? blockCount + 1 : Mathf.Max(0, blockCount - 1);
             if (wasBlocked && !IsBlocked) LastUnblockedFrame = Time.frameCount;
         }
+
+        // Call right before reloading the scene. Most blockers only release in their own Close(),
+        // so anything open at reload time (e.g. offline earnings sitting under the main menu when
+        // New Game is picked) would otherwise leak its block into the fresh scene and leave the
+        // player unable to move.
+        public static void ResetForSceneReload()
+        {
+            blockCount = 0;
+        }
     }
 }

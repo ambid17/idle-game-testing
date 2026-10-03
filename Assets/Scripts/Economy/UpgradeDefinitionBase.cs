@@ -2,6 +2,16 @@ using UnityEngine;
 
 namespace Economy
 {
+    // Which side of its Prerequisite a node sits on in the skill tree view (screen space: North is
+    // up). See UI.SkillTree.SkillTreeLayout.
+    public enum SkillTreeDirection
+    {
+        North,
+        East,
+        South,
+        West
+    }
+
     // Shared shape of the Market's UpgradeDefinition and the Museum's PrestigeUpgradeDefinition -
     // two otherwise-unrelated upgrade families that both need to be handed around generically by
     // the SkillTree UI (see SkillTreeNodeViewModel.Source) without boxing to object. Branch/Effect
@@ -26,6 +36,8 @@ namespace Economy
         public bool RequirePrerequisiteMaxed;
         [Tooltip("Must be unlocked (or maxed, if Require Prerequisite Maxed) before this can be purchased. Leave empty for a branch's first tier.")]
         public UpgradeDefinitionBase Prerequisite;
+        [Tooltip("Which side of its Prerequisite this node is placed on in the skill tree. Ignored for the tree's root (the one upgrade with no Prerequisite), which sits in the center.")]
+        public SkillTreeDirection Direction;
 
         public double GetCost(int currentLevel) => BaseCost * System.Math.Pow(CostGrowth, currentLevel);
     }

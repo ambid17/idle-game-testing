@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: Automation_FuelDroneCount
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Additional Fuel Drone
-  Description: Adds 1 Fuel Drone that flies out and refuels you (or your neediest Automaton). +1 drone per level (up to 3 at max level).
+  Description: Adds 1 Fuel Drone that flies out and refuels you (or your neediest
+    Automaton). +1 drone per level (up to 3 at max level).
   Icon: {fileID: 21300000, guid: 1bd9ce7314866a94cb3f21dbdf9d66bd, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 3
   BaseCost: 500
   CostGrowth: 1.5
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: fae3e5a0bdaa417409887c7d197d852d, type: 2}
+  Prerequisite: {fileID: 11400000, guid: bb7b5896c9d169848b273e8cc848f4d3, type: 2}
+  Direction: 3
   Branch: 2
   Effect: 105

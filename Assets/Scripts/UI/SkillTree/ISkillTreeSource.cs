@@ -13,7 +13,6 @@ namespace UI.SkillTree
     }
     public interface ISkillTreeSource
     {
-        int BranchCount { get; }
         SkillTreeType SkillTreeType { get; }
         // The upgrade the tree opens on before the player has hovered/selected one this session.
         // Null leaves it to the default view and GamepadFocus's first node.

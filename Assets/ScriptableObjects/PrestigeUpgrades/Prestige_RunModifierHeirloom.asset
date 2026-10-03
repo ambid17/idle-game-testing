@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Prestige_RunModifierHeirloom
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Heirloom
-  Description: The Aftershock you're currently using is always one of the choices offered at your next Resonance.
+  Description: The Aftershock you're currently using is always one of the choices
+    offered at your next Resonance.
   Icon: {fileID: 21300000, guid: ecda2083f5b40aa44a27107226c97170, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1
@@ -21,5 +22,6 @@ MonoBehaviour:
   CostGrowth: 1
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: fe940e8bf0dce50429746696ef9c26f9, type: 2}
+  Direction: 0
   Branch: 3
   Effect: 409

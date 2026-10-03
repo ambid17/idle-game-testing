@@ -13,6 +13,9 @@ namespace UI.SkillTree
         public int QueuedLevel;
         public int MaxLevel;
         public string CostLabel;
+        // Prerequisite met. While false the tooltip hides the name/description, matching the
+        // node's lock icon.
+        public bool IsUnlocked;
         public bool CanPurchase;
         public string PurchaseBlockedReason;
     }

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Automation_StorageDroneAutoSellUnlock
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Auto Sell
-  Description: Storage Drones instantly sell the ore they deliver to the Depot for Dollars, instead of leaving it in Depot storage.
+  Description: Storage Drones instantly sell the ore they deliver to the Depot for
+    Dollars, instead of leaving it in Depot storage.
   Icon: {fileID: 21300000, guid: 8b89f394ea8de8b47b81e659810f9466, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 1
@@ -21,5 +22,6 @@ MonoBehaviour:
   CostGrowth: 1
   RequirePrerequisiteMaxed: 0
   Prerequisite: {fileID: 11400000, guid: a320841f2c6a444418b30f6b85343069, type: 2}
+  Direction: 3
   Branch: 2
   Effect: 108

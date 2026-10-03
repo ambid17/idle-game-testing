@@ -1,7 +1,7 @@
 using Economy;
 using Events;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UI.SkillTree
 {
@@ -12,9 +12,9 @@ namespace UI.SkillTree
         private UpgradeDatabase database => GameManager.UpgradeDatabase;
         private UpgradeManager manager => UpgradeManager.Instance;
 
-        public int BranchCount => Enum.GetValues(typeof(UpgradeBranch)).Length;
         public SkillTreeType SkillTreeType { get { return SkillTreeType.Upgrades; } }
-        public UpgradeDefinitionBase DefaultFocus => database.Find(UpgradeEffect.Economy_InventoryCapacity);
+        // The tree's root (center node).
+        public UpgradeDefinitionBase DefaultFocus => database.Upgrades.FirstOrDefault(def => def != null && def.Prerequisite == null);
 
         public IReadOnlyList<SkillTreeNodeViewModel> BuildViewModels()
         {
@@ -29,7 +29,7 @@ namespace UI.SkillTree
                     Description = def.Description,
                     Icon = def.Icon,
                     CurrencyIcon = manager.CurrencyIcon,
-                    BranchIndex = (int)def.Branch,
+                    Direction = def.Direction,
                     Level = manager.GetLevelIncludingPrestige(def),
                     MaxLevel = def.MaxLevel,
                     IsUnlocked = manager.IsUnlocked(def),
@@ -74,6 +74,7 @@ namespace UI.SkillTree
                 Level = manager.GetLevelIncludingPrestige(def),
                 MaxLevel = def.MaxLevel,
                 CostLabel = manager.IsMaxed(def) ? "MAXED" : $"{manager.GetNextCost(def):0}",
+                IsUnlocked = manager.IsUnlocked(def),
                 CanPurchase = manager.CanPurchase(def),
                 PurchaseBlockedReason = manager.GetPurchaseBlockedReason(def)
             };

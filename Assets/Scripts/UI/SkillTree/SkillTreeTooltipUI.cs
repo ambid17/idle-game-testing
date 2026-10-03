@@ -67,8 +67,8 @@ namespace UI.SkillTree
             if (upgradeDefinition == null || skillTreeSource == null || !root.activeSelf) return;
 
             var details = skillTreeSource.GetDetails(upgradeDefinition);
-            nameLabel.text = details.DisplayName;
-            descriptionLabel.text = details.Description;
+            nameLabel.text = details.IsUnlocked ? details.DisplayName : "Locked";
+            descriptionLabel.text = details.IsUnlocked ? details.Description : "";
             levelLabel.text = details.QueuedLevel > 0
                 ? $"{details.Level}+{details.QueuedLevel}/{details.MaxLevel}"
                 : $"{details.Level}/{details.MaxLevel}";

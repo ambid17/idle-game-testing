@@ -157,6 +157,7 @@ namespace UI
 
             SaveService.Instance.DeleteSaveData();
             skipNextOpen = true;
+            InputBlocker.ResetForSceneReload();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 

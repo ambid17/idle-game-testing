@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: Mining_Minimap
   m_EditorClassIdentifier: Assembly-CSharp::Economy.UpgradeDefinition
   DisplayName: Minimap
-  Description: Adds a minimap to the HUD showing explored tunnels, ores, artifacts, buildings, automatons and lost-ore chests. Shows 20 blocks across at level 1, +8 blocks per additional level (up to 44 at max level).
+  Description: Adds a minimap to the HUD showing explored tunnels, ores, artifacts,
+    buildings, automatons and lost-ore chests. Shows 20 blocks across at level 1,
+    +8 blocks per additional level (up to 44 at max level).
   Icon: {fileID: 21300000, guid: 1d7d929c0e9d7704ba3d2b1ac1e30ab1, type: 3}
   EffectValuePerLevel: 8
   MaxLevel: 4
   BaseCost: 500
   CostGrowth: 1.8
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: eb6a7263731ab1842827c642d624a422, type: 2}
+  Prerequisite: {fileID: 11400000, guid: c79681fc2787e9745988d2e749d8388d, type: 2}
+  Direction: 3
   Branch: 0
   Effect: 308

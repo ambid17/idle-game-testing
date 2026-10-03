@@ -862,10 +862,11 @@ MonoBehaviour:
   displayNameLabel: {fileID: 6865281339703362782}
   currencyIcon: {fileID: 8201845612035505942}
   costLabel: {fileID: 8000189619950438083}
+  lockedIcon: {fileID: 21300000, guid: 5bb996cafb57cd74ca0b730cc8e1616a, type: 3}
   lockedColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   unlockedColor: {r: 1, g: 1, b: 1, a: 1}
   partialColor: {r: 0, g: 1, b: 0, a: 1}
   maxedColor: {r: 1, g: 0.84, b: 0, a: 1}
   affordableColor: {r: 1, g: 1, b: 1, a: 1}
   unaffordableColor: {r: 1, g: 0, b: 0, a: 1}
-  boundAsset: {fileID: 0}
+  upgradeDefinition: {fileID: 0}

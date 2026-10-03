@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: Prestige_ArtifactValueMultiplier
   m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
   DisplayName: Curator's Eye
-  Description: +1 artifact from every artifact block you mine per level (up to 11 per block at max level).
+  Description: +1 artifact from every artifact block you mine per level (up to 11
+    per block at max level).
   Icon: {fileID: 21300000, guid: 16e74fa692ba16c42bc519cfa7e16396, type: 3}
   EffectValuePerLevel: 1
   MaxLevel: 10
   BaseCost: 10
   CostGrowth: 1.5
   RequirePrerequisiteMaxed: 0
-  Prerequisite: {fileID: 11400000, guid: 5ad109ea1d47ac3409843c9ad360c66e, type: 2}
+  Prerequisite: {fileID: 11400000, guid: 728996ef13bccd240bd1e2e6ee2b7221, type: 2}
+  Direction: 1
   Branch: 3
   Effect: 401

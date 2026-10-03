@@ -26,6 +26,9 @@ namespace UI.SkillTree
         [SerializeField] private TMP_Text displayNameLabel;
         [SerializeField] private Image currencyIcon;
         [SerializeField] private TMP_Text costLabel;
+        // Replaces the upgrade's own icon until its prerequisite is met, so the tree doesn't
+        // reveal what an upgrade is (or costs) before it can actually be bought.
+        [SerializeField] private Sprite lockedIcon;
 
         [Header("Border Colors")]
         [SerializeField] private Color lockedColor = Color.gray;
@@ -65,6 +68,7 @@ namespace UI.SkillTree
             if (displayNameLabel == null) Debug.LogError($"{nameof(SkillTreeNodeUI)}.{nameof(displayNameLabel)} is not assigned in the inspector.");
             if (currencyIcon == null) Debug.LogError($"{nameof(SkillTreeNodeUI)}.{nameof(currencyIcon)} is not assigned in the inspector.");
             if (costLabel == null) Debug.LogError($"{nameof(SkillTreeNodeUI)}.{nameof(costLabel)} is not assigned in the inspector.");
+            if (lockedIcon == null) Debug.LogError($"{nameof(SkillTreeNodeUI)}.{nameof(lockedIcon)} is not assigned in the inspector.");
         }
 
         public void Bind(
@@ -132,7 +136,8 @@ namespace UI.SkillTree
                 return;
             }
 
-            icon.sprite = viewModel.Icon;
+            icon.sprite = viewModel.IsUnlocked ? viewModel.Icon : lockedIcon;
+            displayNameLabel.gameObject.SetActive(viewModel.IsUnlocked);
             levelBadge.text = viewModel.QueuedLevel > 0
                 ? $"{viewModel.Level}+{viewModel.QueuedLevel}/{viewModel.MaxLevel}"
                 : $"{viewModel.Level}/{viewModel.MaxLevel}";
@@ -158,8 +163,9 @@ namespace UI.SkillTree
                 levelBadge.color = unlockedColor;
             }
 
-            costLabel.gameObject.SetActive(!viewModel.IsMaxed);
-            currencyIcon.gameObject.SetActive(!viewModel.IsMaxed);
+            bool showCost = viewModel.IsUnlocked && !viewModel.IsMaxed;
+            costLabel.gameObject.SetActive(showCost);
+            currencyIcon.gameObject.SetActive(showCost);
 
             costLabel.color = viewModel.CanPurchase ? affordableColor : unaffordableColor;
             costLabel.text = viewModel.CostLabel;
