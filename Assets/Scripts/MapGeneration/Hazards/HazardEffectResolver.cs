@@ -48,7 +48,14 @@ namespace MapGeneration
             }
         }
 
-        private void OnExplosiveDetonated(ExplosiveDetonatedEvent evt) => ResolveExplosive(evt.LayerIndex, evt.X, evt.Y);
+        // Explosive blocks and ignited gas pockets both detonate through this event, so the blast
+        // visual lives here rather than on either effect.
+        private void OnExplosiveDetonated(ExplosiveDetonatedEvent evt)
+        {
+            Vector3 center = mapGenerationService.CellToWorldCenter(evt.LayerIndex, evt.X, evt.Y);
+            GameManager.WorldEffects.Explosion(center, (explosiveBlastRadius + 0.5f) * mapGenerationService.CellSize);
+            ResolveExplosive(evt.LayerIndex, evt.X, evt.Y);
+        }
 
         // GameDesignDoc "explosive: destroys blocks in a radius... you get to collect the minerals
         // destroyed by the explosion" - destroying a cell reuses MapGenerationService.MineCell, so

@@ -1,12 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
 using MapGeneration;
 using UnityEngine;
 
 namespace Effects
 {
-    // Shared world-space particle bursts (GameManager.WorldEffects): pixel-art dust puffs and
-    // sparkles, used by the building reveal and prestige cinematics, the player's fall landing,
-    // critter catches, artifact finds and treasure chests. Emission is driven by hand (Emit), like
+    // Shared world-space particle bursts (GameManager.WorldEffects): pixel-art dust puffs,
+    // sparkles and explosions, used by the building reveal and prestige cinematics, the player's
+    // fall landing, critter catches, artifact finds, treasure chests and Explosive blocks. Emission is driven by hand (Emit), like
     // Player.DigFeedback; each particle shows one random row of its vertical sheet.
     // Also hands out the loose ore chunks that mining debris, pickups and Depot deposits show.
     public class WorldEffects : MonoBehaviour
@@ -25,6 +26,16 @@ namespace Effects
         [Tooltip("Tint of sparkles that don't ask for a colour of their own (the sparkle sheet is white).")]
         [SerializeField] private Color defaultSparkleColor = new(0.45f, 1f, 1f, 1f);
 
+        [Header("Explosion")]
+        [Tooltip("Fireball puffs stacked vertically, one per row (Tools/Effects/make_explosion_fx.py).")]
+        [SerializeField] private Texture2D fireSheet;
+        [SerializeField, Min(1)] private int fireSheetRows = 4;
+        [Tooltip("Spiky blast flashes stacked vertically: row 0 the big main flash, row 1 a small pop (Tools/Effects/make_explosion_fx.py).")]
+        [SerializeField] private Texture2D flashSheet;
+        [SerializeField] private Color explosionSparkColor = new(1f, 0.75f, 0.3f, 1f);
+        [Tooltip("Dark tint over the pale dust art for the smoke an explosion leaves behind.")]
+        [SerializeField] private Color explosionSmokeColor = new(0.3f, 0.27f, 0.33f, 0.9f);
+
         [Header("Ore chunks")]
         [Tooltip("Loose chunks cut out of each ore's tile art: column = BlockTypeId, one row per variant (Tools/Effects/make_ore_chunks.py).")]
         [SerializeField] private Texture2D oreChunkSheet;
@@ -34,6 +45,9 @@ namespace Effects
 
         private ParticleSystem dustSystem;
         private ParticleSystem sparkleSystem;
+        private ParticleSystem fireSystem;
+        private ParticleSystem flashSystem;
+        private ParticleSystem popSystem;
         private readonly Dictionary<BlockTypeId, Sprite[]> oreChunkSprites = new();
 
         public Texture2D OreChunkSheet => oreChunkSheet;
@@ -68,6 +82,8 @@ namespace Effects
             if (particleMaterial == null) Debug.LogError($"{nameof(WorldEffects)}.particleMaterial is not assigned.");
             if (dustSheet == null) Debug.LogError($"{nameof(WorldEffects)}.dustSheet is not assigned.");
             if (sparkleSheet == null) Debug.LogError($"{nameof(WorldEffects)}.sparkleSheet is not assigned.");
+            if (fireSheet == null) Debug.LogError($"{nameof(WorldEffects)}.fireSheet is not assigned.");
+            if (flashSheet == null) Debug.LogError($"{nameof(WorldEffects)}.flashSheet is not assigned.");
 
             var dustMaterial = new Material(particleMaterial) { name = "World Dust", mainTexture = dustSheet };
             dustSystem = CreateSystem("World Dust", dustMaterial, dustSheetRows, 200, gravity: -0.03f);
@@ -84,6 +100,114 @@ namespace Effects
             var sparkleMaterial = new Material(particleMaterial) { name = "World Sparkles", mainTexture = sparkleSheet };
             sparkleSystem = CreateSystem("World Sparkles", sparkleMaterial, sparkleSheetRows, 400, gravity: 0f);
             FadeOutAtEnd(sparkleSystem, 0.6f);
+
+            // Fire draws over the smoke (dust) it leaves behind, the flash over both.
+            var fireMaterial = new Material(particleMaterial) { name = "World Fire", mainTexture = fireSheet };
+            fireSystem = CreateSystem("World Fire", fireMaterial, fireSheetRows, 100, gravity: -0.06f);
+            fireSystem.GetComponent<ParticleSystemRenderer>().sortingOrder = sortingOrder + 1;
+            var fireSize = fireSystem.sizeOverLifetime;
+            fireSize.enabled = true;
+            fireSize.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.4f), new Keyframe(0.2f, 1f), new Keyframe(1f, 0.75f)));
+            var fireDrag = fireSystem.limitVelocityOverLifetime;
+            fireDrag.enabled = true;
+            fireDrag.limit = 0.4f;
+            fireDrag.dampen = 0.12f;
+            // Burns down: full colour, then darkens towards smoke as it fades.
+            var fireColor = fireSystem.colorOverLifetime;
+            fireColor.enabled = true;
+            var burnDown = new Gradient();
+            burnDown.SetKeys(
+                new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 0.45f), new GradientColorKey(new Color(0.55f, 0.42f, 0.45f), 1f) },
+                new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 0.6f), new GradientAlphaKey(0f, 1f) });
+            fireColor.color = burnDown;
+
+            var flashMaterial = new Material(particleMaterial) { name = "World Flash", mainTexture = flashSheet };
+            flashSystem = CreateFlashSystem("World Flash", flashMaterial, 0);
+            popSystem = CreateFlashSystem("World Flash Pops", flashMaterial, 1);
+        }
+
+        // One system per flash sheet row: Emit can't choose a row per particle.
+        private ParticleSystem CreateFlashSystem(string systemName, Material material, int row)
+        {
+            var system = CreateSystem(systemName, material, 2, 20, gravity: 0f);
+            system.GetComponent<ParticleSystemRenderer>().sortingOrder = sortingOrder + 2;
+            var sheet = system.textureSheetAnimation;
+            sheet.rowMode = ParticleSystemAnimationRowMode.Custom;
+            sheet.rowIndex = row;
+            // Pops open, then shrinks back as it fades.
+            var size = system.sizeOverLifetime;
+            size.enabled = true;
+            size.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.5f), new Keyframe(0.25f, 1f), new Keyframe(1f, 0.7f)));
+            FadeOutAtEnd(system, 0.4f);
+            return system;
+        }
+
+        // A blast filling a circle of the given world radius: a spiky flash, a fireball core and a
+        // ring of fireballs thrown to the edge, sparks, a few small follow-up pops, then dark smoke
+        // billowing up - drawn with the same chunky outlined art as the dust and sparkles.
+        public void Explosion(Vector3 center, float radius) => StartCoroutine(PlayExplosion(center, radius));
+
+        private IEnumerator PlayExplosion(Vector3 center, float radius)
+        {
+            EmitFlash(center, radius * 1.9f, 0.22f, small: false);
+            for (int i = 0; i < 5; i++)
+            {
+                Vector2 direction = Random.insideUnitCircle;
+                EmitFire(center + (Vector3)(direction * (radius * 0.25f)), direction * (radius * 1.5f), radius * Random.Range(0.75f, 1f), Random.Range(0.45f, 0.6f));
+            }
+            SparkleBurst(center, 22, radius * 0.2f, radius * 5f, explosionSparkColor);
+
+            yield return new WaitForSeconds(0.05f);
+
+            const int ringPuffs = 9;
+            float startAngle = Random.Range(0f, Mathf.PI * 2f);
+            for (int i = 0; i < ringPuffs; i++)
+            {
+                float angle = startAngle + (i + Random.Range(-0.3f, 0.3f)) * (Mathf.PI * 2f / ringPuffs);
+                var direction = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f);
+                EmitFire(center + direction * (radius * 0.3f), direction * (radius * Random.Range(2f, 3f)), radius * Random.Range(0.6f, 0.8f), Random.Range(0.35f, 0.5f));
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                yield return new WaitForSeconds(Random.Range(0.04f, 0.08f));
+                EmitFlash(center + (Vector3)(Random.insideUnitCircle * (radius * 0.7f)), radius * Random.Range(0.5f, 0.75f), 0.14f, small: true);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                Vector2 direction = Random.insideUnitCircle;
+                Vector3 velocity = (Vector3)(direction * (radius * 1.2f)) + Vector3.up * Random.Range(0.8f, 1.6f);
+                EmitDust(center + (Vector3)(direction * (radius * 0.5f)), velocity, radius * Random.Range(0.55f, 0.8f), Random.Range(0.9f, 1.4f), Mathf.Sign(direction.x), explosionSmokeColor);
+            }
+        }
+
+        private void EmitFire(Vector3 position, Vector3 velocity, float size, float lifetime)
+        {
+            var emitParams = new ParticleSystem.EmitParams
+            {
+                position = position,
+                velocity = velocity,
+                startSize = size,
+                startLifetime = lifetime,
+                rotation = Random.Range(-25f, 25f),
+                angularVelocity = Random.Range(-60f, 60f),
+                applyShapeToPosition = false,
+            };
+            fireSystem.Emit(emitParams, 1);
+        }
+
+        private void EmitFlash(Vector3 position, float size, float lifetime, bool small)
+        {
+            var emitParams = new ParticleSystem.EmitParams
+            {
+                position = position,
+                startSize = size,
+                startLifetime = lifetime,
+                rotation = Random.Range(0f, 360f),
+                applyShapeToPosition = false,
+            };
+            (small ? popSystem : flashSystem).Emit(emitParams, 1);
         }
 
         // A ring of puffs thrown out sideways along the ground from under something that just

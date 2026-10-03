@@ -43181,6 +43181,11 @@ MonoBehaviour:
   sparkleSheetRows: 2
   sortingOrder: 5
   defaultSparkleColor: {r: 0.45, g: 1, b: 1, a: 1}
+  fireSheet: {fileID: 2800000, guid: 7e5be8aa20478cf428c6b2f311cb0c81, type: 3}
+  fireSheetRows: 4
+  flashSheet: {fileID: 2800000, guid: adfba9530ef0dcf4187047d5d3ee4673, type: 3}
+  explosionSparkColor: {r: 1, g: 0.75, b: 0.3, a: 1}
+  explosionSmokeColor: {r: 0.3, g: 0.27, b: 0.33, a: 0.9}
   oreChunkSheet: {fileID: 2800000, guid: 764b2475f9ea26644804659f8fdcf3d3, type: 3}
   oreChunkVariants: 4
   oreChunkPixelsPerUnit: 128
