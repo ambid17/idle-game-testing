@@ -20,7 +20,7 @@ namespace UI.Notifications
         private const float QueuedRiseDistance = 60f;
         // Longer Queued messages (e.g. power-up explanations) stay up longer so they can be read;
         // short ones (deposit reports) still take the base HoldSeconds.
-        private const float QueuedSecondsPerCharacter = 0.04f;
+        private const float QueuedSecondsPerCharacter = 0.06f;
 
         private static readonly Vector2 TimeSensitiveAnchor = new(0.5f, 1f);
         private static readonly Vector2 TimeSensitivePosition = new(0f, -40f);

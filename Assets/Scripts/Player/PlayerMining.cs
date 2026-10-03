@@ -37,6 +37,12 @@ namespace Player
         [SerializeField] private float unmineableNotifyCooldown = 4f;
         [Tooltip("How many times the \"this block can't be mined\" notification shows per block type before it stops for good.")]
         [SerializeField] private int maxUnmineableNotifiesPerBlockType = 3;
+        [Tooltip("Seconds the player must keep pushing into a block mid-air (or jetpacking into a ceiling without Upward Drill) before the \"you can't dig like that\" hint shows.")]
+        [SerializeField] private float airDigHintPushSeconds = 0.75f;
+        [Tooltip("Minimum seconds between \"you can't dig like that\" hints, so the few allowed showings are spread out.")]
+        [SerializeField] private float airDigHintCooldown = 45f;
+        [Tooltip("How many times each \"you can't dig like that\" hint (mid-air, upward) shows before it stops for good.")]
+        [SerializeField] private int maxAirDigHints = 3;
         [SerializeField] private bool debug;
 
         private PlayerController playerController;
@@ -56,6 +62,9 @@ namespace Player
         private bool wasPushingUnmineable;
         private float nextUnmineableNotifyTime;
         private readonly Dictionary<BlockTypeId, int> unmineableNotifyCounts = new Dictionary<BlockTypeId, int>();
+        private float airDigPushTime;
+        private bool airDigHintShownThisPush;
+        private float nextAirDigHintTime;
         private UpgradeManager upgradeManager => UpgradeManager.Instance;
 
         // True only while actually working on a mineable block - PlayerAnimation plays the drill
@@ -68,11 +77,15 @@ namespace Player
 
         // Persisted by SaveService so the per-block-type notification cap is per save, not per session.
         public IReadOnlyDictionary<BlockTypeId, int> UnmineableNotifyCounts => unmineableNotifyCounts;
+        public int AirDigHintCount { get; private set; }
+        public int DigUpHintCount { get; private set; }
 
-        public void RestoreFromSaveData(Dictionary<BlockTypeId, int> savedUnmineableNotifyCounts)
+        public void RestoreFromSaveData(Dictionary<BlockTypeId, int> savedUnmineableNotifyCounts, int savedAirDigHintCount, int savedDigUpHintCount)
         {
             unmineableNotifyCounts.Clear();
             foreach (var kvp in savedUnmineableNotifyCounts) unmineableNotifyCounts[kvp.Key] = kvp.Value;
+            AirDigHintCount = savedAirDigHintCount;
+            DigUpHintCount = savedDigUpHintCount;
         }
 
         private bool CanOverflow => UpgradeManager.Instance != null && UpgradeManager.Instance.Economy_OverflowUnlocked;
@@ -102,6 +115,7 @@ namespace Player
             // drain - see PlayerController.ConsumeMiningFuel), so an empty tank blocks it too.
             bool isDiggingUp = direction == Vector2Int.up;
             bool canMine = (playerController.IsGrounded || isDiggingUp || PrestigeUpgradeManager.Instance.Mining_DigWhileFlyingUnlocked) && playerController.HasFuel;
+            UpdateAirDigHint(direction);
             if (!canMine || direction == null || InputBlocker.IsBlocked || playerController.IsInPortal)
             {
                 if(debug) Debug.Log($"PlayerMining: not mining because: IsGrounded={playerController.IsGrounded}, direction={direction}, InputBlocker.IsBlocked={InputBlocker.IsBlocked}");
@@ -282,6 +296,59 @@ namespace Player
             // the player is holding it against a block overhead.
             if (keybinds.IsPressed(GameAction.FlyUp) && PrestigeUpgradeManager.Instance.Mining_DigUpUnlocked) return Vector2Int.up;
             return null;
+        }
+
+        // New players keep trying to dig sideways mid-air or jetpack-drill into ceilings, neither of
+        // which works until the matching Museum perk. Once they've pushed into a real block that way
+        // for a moment, say why nothing's happening and what unlocks it - a few times per save, spread
+        // out by a cooldown, then never again.
+        private void UpdateAirDigHint(Vector2Int? direction)
+        {
+            var perks = PrestigeUpgradeManager.Instance;
+            // ResolveDirection only reports "up" once Upward Drill is owned, so read FlyUp directly.
+            Vector2Int? attempted = direction ?? (GameManager.KeybindService.IsPressed(GameAction.FlyUp) ? (Vector2Int?)Vector2Int.up : null);
+            bool isDigUpAttempt = attempted == Vector2Int.up && !perks.Mining_DigUpUnlocked;
+            bool isAirDigAttempt = attempted.HasValue && attempted.Value.x != 0 && !playerController.IsGrounded && !perks.Mining_DigWhileFlyingUnlocked;
+
+            bool isPushing = (isDigUpAttempt || isAirDigAttempt)
+                && playerController.HasFuel
+                && !InputBlocker.IsBlocked
+                && !playerController.IsInPortal
+                && IsDiggableBlockAt(attempted.Value);
+            if (!isPushing)
+            {
+                airDigPushTime = 0f;
+                airDigHintShownThisPush = false;
+                return;
+            }
+
+            airDigPushTime += Time.deltaTime;
+            if (airDigHintShownThisPush || airDigPushTime < airDigHintPushSeconds || Time.time < nextAirDigHintTime) return;
+
+            int shownCount = isDigUpAttempt ? DigUpHintCount : AirDigHintCount;
+            if (shownCount >= maxAirDigHints) return;
+
+            airDigHintShownThisPush = true;
+            nextAirDigHintTime = Time.time + airDigHintCooldown;
+            string message;
+            if (isDigUpAttempt)
+            {
+                DigUpHintCount++;
+                message = "You can't drill upward yet! Dig around it, or unlock Upward Drill in the Museum.";
+            }
+            else
+            {
+                AirDigHintCount++;
+                message = "You can only dig while standing on something! Land first, or unlock Aerial Prospecting in the Museum.";
+            }
+            GameManager.EventService.Dispatch(new NotificationEvent(message, NotificationUrgency.TimeSensitive));
+        }
+
+        private bool IsDiggableBlockAt(Vector2Int direction)
+        {
+            if (!TryResolveTargetCell(direction, out int layerIndex, out int x, out int y)) return false;
+            var block = mapGenerationService.GetBlockTypeAt(layerIndex, x, y);
+            return block != null && !block.DrillProof && block.Id != BlockTypeId.GrassyDirt;
         }
 
         private void ResetTarget()

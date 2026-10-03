@@ -77,6 +77,10 @@ namespace Persistence
         // PlayerMining's "this block can't be mined" notification tally per block type, so its
         // show-N-times cap holds across reloads. Not reset by prestige. Empty on older saves.
         public List<OreCountEntry> UnmineableNotifyCounts = new();
+        // PlayerMining's "can't dig while flying" / "can't dig up" hint tallies, same show-N-times
+        // cap. 0 on older saves.
+        public int AirDigHintCount;
+        public int DigUpHintCount;
     }
 
     // A Chest that was still active (unlooted) at save time - see Economy.Chest/ChestSpawner.

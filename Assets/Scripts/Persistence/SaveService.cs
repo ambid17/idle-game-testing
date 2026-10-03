@@ -187,6 +187,8 @@ namespace Persistence
                     {
                         data.Player.UnmineableNotifyCounts.Add(new OreCountEntry { Id = kvp.Key, Count = kvp.Value });
                     }
+                    data.Player.AirDigHintCount = playerMining.AirDigHintCount;
+                    data.Player.DigUpHintCount = playerMining.DigUpHintCount;
                 }
             }
 
@@ -397,7 +399,7 @@ namespace Persistence
                 }
 
                 if (playerInventory != null) playerInventory.RestoreFromSaveData(playerOres);
-                if (playerMining != null) playerMining.RestoreFromSaveData(unmineableNotifyCounts);
+                if (playerMining != null) playerMining.RestoreFromSaveData(unmineableNotifyCounts, data.Player.AirDigHintCount, data.Player.DigUpHintCount);
                 if (playerHealth != null) playerHealth.RestoreFromSaveData(data.Player.CurrentHp);
                 if (playerController != null) playerController.RestoreFromSaveData(data.Player.Fuel, data.Player.Position);
             }
