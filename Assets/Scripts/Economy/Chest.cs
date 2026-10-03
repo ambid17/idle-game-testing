@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Audio;
 using Events;
 using Interaction;
 using MapGeneration;
@@ -83,7 +84,11 @@ namespace Economy
         public void Interact()
         {
             float space = playerInventory.MaxWeight - playerInventory.CurrentWeight;
-            if (space <= 0f) return;
+            if (space <= 0f)
+            {
+                NotifyInventoryFull();
+                return;
+            }
 
             var withdrawn = oreInventory.WithdrawUpToWeight(space);
             var looted = new Dictionary<BlockType, int>();
@@ -94,7 +99,14 @@ namespace Economy
                 playerInventory.AddOre(blockType, kvp.Value);
                 looted[blockType] = kvp.Value;
             }
-            if (looted.Count > 0) digFeedback.ChestLoot(transform.position, looted);
+            // Some free space but not enough for even one of the chest's ores - same outcome for
+            // the player as a full inventory, so same message.
+            if (looted.Count == 0)
+            {
+                NotifyInventoryFull();
+                return;
+            }
+            digFeedback.ChestLoot(transform.position, looted);
 
             RefreshWeightBar();
 
@@ -103,6 +115,14 @@ namespace Economy
             {
                 Destroy(gameObject);
             }
+        }
+
+        // Interaction is a discrete press, so no edge-trigger/cooldown like PlayerMining's
+        // blocked-by-inventory toast needs - one toast per failed loot attempt.
+        private void NotifyInventoryFull()
+        {
+            GameManager.EventService.Dispatch(new NotificationEvent("Inventory is full! Deposit ore to loot the chest.", NotificationUrgency.TimeSensitive));
+            GameManager.AudioService.Play(SoundId.Warning);
         }
 
         private void RefreshWeightBar()
