@@ -120,7 +120,7 @@ namespace UI
                 var slot = Instantiate(slotPrefab, slotContainer);
                 slot.Bind(i, OnSelectRecipeClicked);
                 slot.gameObject.name = $"Slot_{i}";
-                slot.SetRecipe(GetDefaultRecipe(i));
+                slot.SetRecipe(ProcessingManager.Instance.GetChosenRecipe(i) ?? GetDefaultRecipe(i));
                 spawnedSlots.Add(slot);
             }
         }
@@ -145,7 +145,9 @@ namespace UI
         // slot itself now owns quantity selection and starting the job (no separate detail modal).
         private void OnRecipeSelected(int slotIndex, ProcessingRecipeDefinition recipe)
         {
-            if (slotIndex >= 0 && slotIndex < spawnedSlots.Count) spawnedSlots[slotIndex].SetRecipe(recipe);
+            if (slotIndex < 0 || slotIndex >= spawnedSlots.Count) return;
+            spawnedSlots[slotIndex].SetRecipe(recipe);
+            ProcessingManager.Instance.SetChosenRecipe(slotIndex, recipe);
         }
 
         private void OnStartRequested(ProcessingStartRequestedEvent evt) => ProcessingManager.Instance.StartJob(evt.SlotIndex, evt.Recipe, evt.Quantity);

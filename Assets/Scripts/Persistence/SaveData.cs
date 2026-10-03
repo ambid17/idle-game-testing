@@ -67,6 +67,14 @@ namespace Persistence
         public float TimeRemainingSeconds;
     }
 
+    // A recipe the player picked for a Processing queue slot, so the slot reopens on it.
+    [Serializable]
+    public class ProcessingSlotRecipeEntry
+    {
+        public int SlotIndex;
+        public ProcessingRecipeId RecipeId;
+    }
+
     [Serializable]
     public class PlayerSaveData
     {
@@ -149,6 +157,9 @@ namespace Persistence
         // ProcessingManager.UncollectedCompletions - jobs that finished but the player hasn't
         // opened the Processing panel since, so the completion badge survives a save/reload.
         public int ProcessingUncollectedCompletions;
+        // ProcessingManager's player-picked recipe per queue slot. Slots without an entry use the
+        // default recipe. Not reset by prestige. Empty on older saves.
+        public List<ProcessingSlotRecipeEntry> ProcessingSlotRecipes = new();
         // Processing.GoodsMarket - per-good price history. Not reset by prestige. Empty on older
         // saves, where the market just starts fresh.
         public List<GoodsMarketSaveEntry> GoodsMarket = new();

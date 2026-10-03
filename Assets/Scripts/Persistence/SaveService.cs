@@ -162,6 +162,10 @@ namespace Persistence
             }
 
             data.ProcessingUncollectedCompletions = ProcessingManager.Instance.UncollectedCompletions;
+            foreach (var kvp in ProcessingManager.Instance.ChosenRecipes)
+            {
+                data.ProcessingSlotRecipes.Add(new ProcessingSlotRecipeEntry { SlotIndex = kvp.Key, RecipeId = kvp.Value });
+            }
             data.GoodsMarket = GoodsMarket.Instance.ToSaveData();
 
             if (playerController != null)
@@ -382,6 +386,7 @@ namespace Persistence
             // completes immediately (goods deposited, no popup).
             float elapsedSeconds = ComputeMinutesAway(data.LastActiveUtcTimestamp) * 60f;
             ProcessingManager.Instance.RestoreFromSaveData(data.ProcessingJobs, elapsedSeconds, data.ProcessingUncollectedCompletions);
+            ProcessingManager.Instance.RestoreChosenRecipes(data.ProcessingSlotRecipes);
             GoodsMarket.Instance.RestoreFromSaveData(data.GoodsMarket, elapsedSeconds);
 
             if (data.Player != null)

@@ -66,6 +66,29 @@ namespace Processing
             GameManager.EventService.Dispatch(new ProcessingCompletionCountChangedEvent(uncollectedCompletions));
         }
 
+        // Recipes the player explicitly picked per slot, kept across sessions so a slot reopens on
+        // the player's choice instead of the default. Slots without an entry use the default.
+        private readonly Dictionary<int, ProcessingRecipeId> chosenRecipes = new();
+        public IReadOnlyDictionary<int, ProcessingRecipeId> ChosenRecipes => chosenRecipes;
+
+        public void SetChosenRecipe(int slotIndex, ProcessingRecipeDefinition recipe) => chosenRecipes[slotIndex] = recipe.Id;
+
+        // The player's pick for this slot, if any and it's currently unlocked (a Resonance can
+        // re-lock it - the choice is kept so it comes back once the recipe is unlocked again).
+        public ProcessingRecipeDefinition GetChosenRecipe(int slotIndex)
+        {
+            if (!chosenRecipes.TryGetValue(slotIndex, out var id)) return null;
+            var recipe = GameManager.ProcessingRecipeDatabase.Get(id);
+            return recipe != null && IsRecipeUnlocked(recipe) ? recipe : null;
+        }
+
+        public void RestoreChosenRecipes(IReadOnlyList<ProcessingSlotRecipeEntry> savedChoices)
+        {
+            chosenRecipes.Clear();
+            if (savedChoices == null) return;
+            foreach (var entry in savedChoices) chosenRecipes[entry.SlotIndex] = entry.RecipeId;
+        }
+
         public bool IsRecipeUnlocked(ProcessingRecipeDefinition recipe) =>
             recipe.RequiredUpgrade != null && UpgradeManager.Instance.IsMaxed(recipe.RequiredUpgrade);
 
