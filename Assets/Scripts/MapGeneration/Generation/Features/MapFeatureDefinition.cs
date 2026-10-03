@@ -21,9 +21,11 @@ namespace MapGeneration
         [Min(0)] public int MinLayer = 1;
         [Tooltip("Last layer this feature may appear on. -1 = no limit.")]
         public int MaxLayer = -1;
-        [Tooltip("Chance, rolled once per eligible layer, that this feature appears there at all.")]
-        [Range(0f, 1f)] public float ChancePerLayer = 1f;
-        [Tooltip("Instances placed on a layer that passes the chance roll - random in [Min, Max].")]
+        [Tooltip("LayerConfig.Features only: always takes the layer's one feature slot when eligible (story rooms). Ignores Weight.")]
+        public bool Guaranteed;
+        [Tooltip("LayerConfig.Features only: relative odds of being the one feature picked for an eligible layer. Unused by run-modifier features, which always run.")]
+        [Min(0f)] public float Weight = 1f;
+        [Tooltip("Instances placed each time this feature runs - random in [Min, Max].")]
         [Min(0)] public int CountMin = 1;
         [Min(0)] public int CountMax = 1;
 
@@ -67,12 +69,12 @@ namespace MapGeneration
         // Distinct salt per (instance, purpose) so one feature's rolls never correlate.
         protected int SaltFor(int instance, int purpose) => unchecked(Salt + instance * 7919 + purpose * 104729);
 
-        // Layer eligibility + per-layer chance + instance count, then Apply once per instance.
+        // Layer eligibility + instance count, then Apply once per instance. Whether a LayerConfig
+        // feature runs at all is decided by ChunkGenerator's one-feature-per-layer pick.
         // Override for features that span layers (see ShaftFeature).
         public virtual void Run(MapEditContext ctx)
         {
             if (!placement.AllowsLayer(ctx.LayerIndex)) return;
-            if (ctx.Value01(0, 0, SaltFor(0, 1)) >= placement.ChancePerLayer) return;
 
             int count = MapEditContext.RollRange(ctx.Value01(0, 0, SaltFor(0, 2)), placement.CountMin, placement.CountMax);
             for (int i = 0; i < count; i++) Apply(ctx, i);

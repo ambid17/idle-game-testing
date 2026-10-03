@@ -15,7 +15,7 @@ namespace MapGeneration
     [CreateAssetMenu(fileName = "ShaftFeature", menuName = "Map Generation/Features/Shaft")]
     public class ShaftFeature : MapFeatureDefinition
     {
-        [Tooltip("Shafts per world (not per layer). Placement.MinLayer/MaxLayer bound where a shaft may START; Placement's chance/count are unused.")]
+        [Tooltip("Shafts per world (not per layer). Placement.MinLayer/MaxLayer bound where a shaft may START; Placement's weight/count are unused.")]
         [Min(0)] [SerializeField] private int shaftCountMin = 2;
         [Min(0)] [SerializeField] private int shaftCountMax = 3;
         [Tooltip("How many layers one shaft runs through.")]

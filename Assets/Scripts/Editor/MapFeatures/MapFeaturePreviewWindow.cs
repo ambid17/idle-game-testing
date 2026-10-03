@@ -15,7 +15,7 @@ namespace MapGenerationEditor
     //
     // Assigning a Structure also opens a paint editor for its layout: pick a brush, left-drag to
     // paint, right-click to pick up the symbol under the cursor. The structure is force-stamped
-    // onto the preview (ignoring its feature's layer range and chance) so edits show immediately.
+    // onto the preview (ignoring its feature's layer range and weight) so edits show immediately.
     public class MapFeaturePreviewWindow : EditorWindow
     {
         private const int EditCellPixels = 22;

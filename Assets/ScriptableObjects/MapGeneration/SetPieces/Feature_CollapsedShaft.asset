@@ -17,7 +17,8 @@ MonoBehaviour:
   placement:
     MinLayer: 2
     MaxLayer: -1
-    ChancePerLayer: 0.25
+    Guaranteed: 0
+    Weight: 25
     CountMin: 1
     CountMax: 1
   structure: {fileID: 11400000, guid: a9c7554a437249e4abc3f3c71a974921, type: 2}

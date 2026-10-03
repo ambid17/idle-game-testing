@@ -72,7 +72,7 @@ namespace UI
                 var grid = structure.Grid;
                 var placement = feature.Placement;
                 string layers = placement.MaxLayer < 0 ? $"layer {placement.MinLayer}+" : $"layers {placement.MinLayer}-{placement.MaxLayer}";
-                string label = $"{DisplayName(structure)}  ({grid.GetLength(0)}x{grid.GetLength(1)}, {layers}, {placement.ChancePerLayer:P0})";
+                string label = $"{DisplayName(structure)}  ({grid.GetLength(0)}x{grid.GetLength(1)}, {layers}, {(placement.Guaranteed ? "guaranteed" : $"weight {placement.Weight:0.##}")})";
 
                 var row = Instantiate(rowPrefab, spawnRowContainer);
                 row.Bind(label, () => SpawnUnderPlayer(structure), "Spawn");

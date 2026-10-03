@@ -29,6 +29,7 @@ namespace MapGeneration
             OreTierPick = 13,
             ShopLayer = 14,
             ShopCavePosition = 15,
+            LayerFeaturePick = 16,
         }
 
         // Critter Shop cave (see CarveShopCave): lands on one layer in [ShopCaveMinLayer,
@@ -81,21 +82,45 @@ namespace MapGeneration
             var ctx = new MapEditContext(worldSeed, layerIndex, chunk, config, nextLayerConfig);
             if (!tweaks.DisableVeins) GrowVeins(ctx, tweaks);
             if (layerIndex == GetShopLayerIndex(worldSeed)) CarveShopCave(ctx);
-            RunFeatures(ctx, MapFeaturePhase.Structures, tweaks);
+            var layerFeature = PickLayerFeature(ctx);
+            RunFeatures(ctx, MapFeaturePhase.Structures, layerFeature, tweaks);
             PlaceArtifacts(ctx, artifactSpawnRateMultiplier, tweaks);
             CarveEmptyPockets(ctx, tweaks);
-            RunFeatures(ctx, MapFeaturePhase.Overlay, tweaks);
+            RunFeatures(ctx, MapFeaturePhase.Overlay, layerFeature, tweaks);
             chunk.IsFullyGenerated = true;
             return chunk;
         }
 
-        // Authored per-layer features first, then the run modifier's.
-        private static void RunFeatures(MapEditContext ctx, MapFeaturePhase phase, LayerGenerationTweaks tweaks)
+        // Exactly one of LayerConfig.Features runs per layer: the first eligible Guaranteed feature
+        // (story rooms), otherwise a weighted pick among the eligible ones. Null when none are
+        // eligible (e.g. layer 0, which hosts the surface buildings).
+        private static MapFeatureDefinition PickLayerFeature(MapEditContext ctx)
         {
+            float totalWeight = 0f;
             foreach (var feature in ctx.Config.Features)
             {
-                if (feature != null && feature.Phase == phase) feature.Run(ctx);
+                if (feature == null || !feature.Placement.AllowsLayer(ctx.LayerIndex)) continue;
+                if (feature.Placement.Guaranteed) return feature;
+                totalWeight += feature.Placement.Weight;
             }
+            if (totalWeight <= 0f) return null;
+
+            float roll = ctx.Value01(0, 0, (int)Salt.LayerFeaturePick) * totalWeight;
+            MapFeatureDefinition last = null;
+            foreach (var feature in ctx.Config.Features)
+            {
+                if (feature == null || !feature.Placement.AllowsLayer(ctx.LayerIndex) || feature.Placement.Weight <= 0f) continue;
+                last = feature;
+                roll -= feature.Placement.Weight;
+                if (roll < 0f) return feature;
+            }
+            return last;
+        }
+
+        // The layer's picked feature first, then every run-modifier feature.
+        private static void RunFeatures(MapEditContext ctx, MapFeaturePhase phase, MapFeatureDefinition layerFeature, LayerGenerationTweaks tweaks)
+        {
+            if (layerFeature != null && layerFeature.Phase == phase) layerFeature.Run(ctx);
             foreach (var feature in tweaks.Features)
             {
                 if (feature != null && feature.Phase == phase) feature.Run(ctx);
