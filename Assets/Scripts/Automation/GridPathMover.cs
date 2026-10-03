@@ -8,9 +8,9 @@ namespace Automation
     // MapGenerationService owns a plain MineWorld instance rather than everything being a component.
     public class GridPathMover
     {
-        // Straight-line "fly" movement, ignoring the grid entirely - per the design doc, both
-        // Storage/Fuel Drones always fly this way and Mining Automatons switch to it only on the
-        // return trip to the Depot. Returns true once arrived.
+        // Straight-line "fly" movement, ignoring the grid entirely - Storage/Fuel Drones always fly
+        // this way. Mining Automatons never do through the mine (they path through open cells,
+        // even home to the Depot), only for short hops in open air. Returns true once arrived.
         public bool StepDirect(Transform t, Vector3 destination, float speed, float arriveThreshold = 0.5f)
         {
             t.position = Vector3.MoveTowards(t.position, destination, speed * Time.deltaTime);
@@ -75,6 +75,16 @@ namespace Automation
             // never land within arriveThreshold of `target` itself, so also advance once we've
             // moved past it along the next segment's direction (dot product flips positive) -
             // guaranteed to happen since the blend forces movement toward nextDir as we approach.
+            // A long frame (hitch, high timeScale) would carry the unclamped blended step below
+            // well past the waypoint - off the path and, from there, straight through solid ground
+            // toward the next one. Land on the waypoint instead, like MoveTowards would.
+            if (speed * Time.deltaTime >= distanceToTarget)
+            {
+                t.position = target;
+                index++;
+                return index >= waypoints.Count;
+            }
+
             Vector3 nextDir = (waypoints[index + 1] - target).normalized;
             Vector3 currentDir = distanceToTarget > 0.0001f ? toTarget / distanceToTarget : nextDir;
             float blend = 1f - (distanceToTarget / cornerRadius);

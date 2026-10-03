@@ -22,6 +22,10 @@ namespace Automation
     // MiningAutomaton can weight target selection toward nearby tiles and toward continuing its
     // current digging direction (a "vein"), rather than picking uniformly at random - see
     // MiningAutomaton.PickWeightedTarget.
+    //
+    // Automatons only ever occupy open cells (IsWalkable): mined ground plus a short sky lane
+    // above the surface. Every path - to a dig target or home to the Depot - is built through
+    // those, never through solid ground.
     public static class AutomatonReachability
     {
         private static readonly Vector2Int GridUp = new(0, -1);
@@ -31,6 +35,10 @@ namespace Automation
 
         private static readonly Vector2Int[] WalkDirections = { GridUp, GridDown, GridLeft, GridRight };
         private static readonly Vector2Int[] DigDirections = { GridDown, GridLeft, GridRight };
+
+        // How many rows of open sky above the surface count as walkable - enough for the lane
+        // automatons travel along between shafts and the Depot, while keeping searches finite.
+        private const int SkyLaneRows = 3;
 
         // Returns unmined, diggable cells (down/left/right of some reachable mined cell) within
         // `radius` walking hops from (originX, originY), each tagged with its own hop-distance
@@ -47,22 +55,14 @@ namespace Automation
             var chunk = mapGen.World.GetOrGenerateChunk(layerIndex);
             var origin = new Vector2Int(originX, originY);
 
-            // 0-1 BFS (deque instead of a plain FIFO queue): walking a mined cell costs 1 hop of
-            // the wander budget, but crossing a building-support tile costs 0 - it's fixed, always-
-            // passable ground, not newly explored territory. A plain FIFO queue can't mix those two
-            // edge weights correctly (a cell could get settled via a longer path before a cheaper
-            // one - e.g. reaching a support tile by walking under and up costs more than reaching it
-            // sideways along the same free row - which would then block the cheaper route from ever
-            // improving it), so we track best-known depth per cell and use front/back pushes instead.
-            var bestDepth = new Dictionary<Vector2Int, int> { [origin] = 0 };
-            var deque = new LinkedList<(Vector2Int cell, int depth)>();
-            deque.AddFirst((origin, 0));
+            var depthOf = new Dictionary<Vector2Int, int> { [origin] = 0 };
+            var queue = new Queue<Vector2Int>();
+            queue.Enqueue(origin);
 
-            while (deque.Count > 0)
+            while (queue.Count > 0)
             {
-                var (cell, depth) = deque.First.Value;
-                deque.RemoveFirst();
-                if (depth > bestDepth[cell]) continue; // stale entry, already improved upon
+                var cell = queue.Dequeue();
+                int depth = depthOf[cell];
 
                 foreach (var dir in DigDirections)
                 {
@@ -79,17 +79,10 @@ namespace Automation
                 foreach (var dir in WalkDirections)
                 {
                     var neighbor = cell + dir;
-                    if (!InBounds(chunk, neighbor)) continue;
+                    if (depthOf.ContainsKey(neighbor) || !IsWalkable(chunk, layerIndex, neighbor)) continue;
 
-                    bool supported = IsBuildingSupported(chunk, neighbor);
-                    if (!IsMined(chunk, neighbor) && !supported) continue;
-
-                    int neighborDepth = supported ? depth : depth + 1;
-                    if (bestDepth.TryGetValue(neighbor, out var known) && known <= neighborDepth) continue;
-
-                    bestDepth[neighbor] = neighborDepth;
-                    if (supported) deque.AddFirst((neighbor, neighborDepth));
-                    else deque.AddLast((neighbor, neighborDepth));
+                    depthOf[neighbor] = depth + 1;
+                    queue.Enqueue(neighbor);
                 }
             }
 
@@ -100,8 +93,8 @@ namespace Automation
 
         // Fallback for when the radius-limited wander above finds nothing. That can happen even
         // with plenty of unmined ground left in the mine - e.g. everything within the normal
-        // wander radius is exhausted and the only way onward is walking around a building-support
-        // run wider than the radius, reaching a pocket that's simply farther than `radius` hops
+        // wander radius is exhausted and the only way onward is along the sky lane past a
+        // building's unmineable footing, reaching a pocket that's simply farther than `radius` hops
         // away, or the whole current layer being fully mined out so the only ground left is past
         // its floor. Unlike the bounded wander, this crosses layer boundaries (via TryStep) rather
         // than stopping at the origin layer's chunk edge, so results are tagged with the layer they
@@ -139,9 +132,7 @@ namespace Automation
                     var key = (wLayer, wCell);
                     if (visited.Contains(key)) continue;
 
-                    var wChunk = mapGen.World.GetOrGenerateChunk(wLayer);
-                    if (!InBounds(wChunk, wCell)) continue;
-                    if (!IsMined(wChunk, wCell) && !IsBuildingSupported(wChunk, wCell)) continue;
+                    if (!IsWalkable(mapGen.World.GetOrGenerateChunk(wLayer), wLayer, wCell)) continue;
 
                     visited.Add(key);
                     queue.Enqueue(key);
@@ -181,12 +172,7 @@ namespace Automation
                     if (visited.Contains(neighbor)) continue;
 
                     bool isTarget = neighbor.Equals(targetNode);
-                    if (!isTarget)
-                    {
-                        var chunk = mapGen.World.GetOrGenerateChunk(nLayer);
-                        if (!InBounds(chunk, nCell)) continue;
-                        if (!IsMined(chunk, nCell) && !IsBuildingSupported(chunk, nCell)) continue;
-                    }
+                    if (!isTarget && !IsWalkable(mapGen.World.GetOrGenerateChunk(nLayer), nLayer, nCell)) continue;
 
                     visited.Add(neighbor);
                     cameFrom[neighbor] = current;
@@ -236,7 +222,8 @@ namespace Automation
             {
                 newLayer = layer;
                 newCell = next;
-                if (layer <= 0) return false;
+                // Above layer 0 is the sky - a valid step, IsWalkable decides how high it may go.
+                if (layer <= 0) return true;
 
                 var above = mapGen.World.GetOrGenerateChunk(layer - 1);
                 newLayer = layer - 1;
@@ -258,6 +245,19 @@ namespace Automation
 
         private static bool InBounds(ChunkData chunk, Vector2Int cell) =>
             cell.x >= 0 && cell.x < chunk.Width && cell.y >= 0 && cell.y < chunk.Height;
+
+        // What an automaton may occupy: dug-out ground, or the open sky lane just above the surface
+        // (layer 0, negative rows) that links the mine's shafts to each other and to the Depot.
+        // Solid cells - including the unmineable GrassyDirt under buildings - never are.
+        public static bool IsWalkable(MapGenerationService mapGen, int layer, Vector2Int cell) =>
+            IsWalkable(mapGen.World.GetOrGenerateChunk(layer), layer, cell);
+
+        private static bool IsWalkable(ChunkData chunk, int layer, Vector2Int cell)
+        {
+            if (layer == 0 && cell.y < 0)
+                return cell.y >= -SkyLaneRows && cell.x >= 0 && cell.x < chunk.Width;
+            return InBounds(chunk, cell) && IsMined(chunk, cell);
+        }
 
         private static bool IsMined(ChunkData chunk, Vector2Int cell) =>
             chunk.Cells[chunk.Index(cell.x, cell.y)].Mined;

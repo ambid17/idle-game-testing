@@ -13,8 +13,9 @@ namespace Automation
 {
     // GameDesignDoc "Automation > Mining Automatons": autonomous entity that wanders the mine,
     // digs like the player (down/left/right, through MapGenerationService.MineCell - the same
-    // single mining codepath PlayerMining uses), fills its own OreInventory, and flies to the
-    // Depot to deposit once full. No health per the doc; hazard interactions are handled
+    // single mining codepath PlayerMining uses), fills its own OreInventory, and travels back to
+    // the Depot to deposit once full - always through open cells (AutomatonReachability.IsWalkable),
+    // never through solid ground. No health per the doc; hazard interactions are handled
     // generically by Player.HazardDamageHandler listening for HazardTriggeredEvent regardless of
     // who mined the cell, so this script needs no hazard-specific code.
     //
@@ -29,7 +30,7 @@ namespace Automation
     [RequireComponent(typeof(OreInventory))]
     public class MiningAutomaton : MonoBehaviour, IOreCarrier, IFuelConsumer
     {
-        private enum State { PickingTarget, MovingAndDigging, Descending, FlyingToDepot, ReturningToRefuel }
+        private enum State { PickingTarget, MovingAndDigging, Descending, FlyingToDepot, ReturningToRefuel, LeavingDepot }
 
         private static MapGenerationService mapGenerationService => GameManager.MapGenerationService;
         private static AutomationConfig config => GameManager.AutomationConfig;
@@ -75,7 +76,7 @@ namespace Automation
         // progress (reset at the top of every Update), MiningTargetPosition is that block's center.
         public bool IsMining { get; private set; }
         public Vector3 MiningTargetPosition { get; private set; }
-        public bool IsFlying => state is State.FlyingToDepot or State.ReturningToRefuel;
+        public bool IsFlying => state is State.FlyingToDepot or State.ReturningToRefuel or State.LeavingDepot;
 
         // IFuelConsumer - lets Fuel Drones find and refuel this automaton.
         public Transform FuelTransform => transform;
@@ -252,8 +253,7 @@ namespace Automation
             // 0 fuel, so the trip home costs nothing further - it's running on fumes.
             if (fuelSystem.IsEmpty && state != State.ReturningToRefuel)
             {
-                crackIndicator.Hide();
-                state = State.ReturningToRefuel;
+                BeginTripToDepot(State.ReturningToRefuel);
             }
 
             switch (state)
@@ -273,6 +273,9 @@ namespace Automation
                 case State.ReturningToRefuel:
                     UpdateReturningToRefuel();
                     break;
+                case State.LeavingDepot:
+                    UpdateLeavingDepot();
+                    break;
             }
 
             RefreshCurrentCell();
@@ -282,7 +285,7 @@ namespace Automation
         {
             if (oreInventory.IsFull)
             {
-                state = State.FlyingToDepot;
+                BeginTripToDepot(State.FlyingToDepot);
                 return;
             }
 
@@ -299,8 +302,8 @@ namespace Automation
             {
                 // Nothing within the normal wander radius - before giving up and drilling blind
                 // straight down, try the whole reachable region instead. Local exhaustion often
-                // means the only unmined ground left is past a building-support run wider than the
-                // wander radius, or the current layer is fully mined out and the only way onward is
+                // means the only unmined ground left is along the sky lane past a building's
+                // unmineable footing, or the current layer is fully mined out and the only way onward is
                 // through the next layer down - either way this can cross into a deeper chunk.
                 var unbounded = AutomatonReachability.GetAccessibleTilesUnbounded(mapGenerationService, currentLayer, currentCell.x, currentCell.y);
                 if (unbounded.Count == 0)
@@ -501,22 +504,64 @@ namespace Automation
             }
         }
 
+        // The open sky cell just above the surface over the deposit point - where every trip home
+        // leaves the grid and every departure rejoins it. _depotLocation itself sits a touch into
+        // the building's unmineable footing (it's the doorway), so it can't be a path node.
+        private Vector2Int DepotLaneCell()
+        {
+            mapGenerationService.TryWorldToCellInBounds(_depotLocation, out _, out int x, out _);
+            return new Vector2Int(x, -1);
+        }
+
+        // Depot and refuel trips share a destination, so switching between them mid-trip (tank
+        // runs dry on the way to deposit) keeps the route already being followed. The route goes
+        // up through dug-out ground to the sky lane and along it to the Depot - never through
+        // solid cells - then drops the last bit straight into the doorway.
+        private void BeginTripToDepot(State tripState)
+        {
+            crackIndicator.Hide();
+            bool alreadyHeadingHome = state is State.FlyingToDepot or State.ReturningToRefuel;
+            state = tripState;
+            if (alreadyHeadingHome) return;
+
+            path = AutomatonReachability.BuildWorldPath(mapGenerationService, currentLayer, currentCell, 0, DepotLaneCell());
+            if (path.Count == 0)
+            {
+                // Open cells never close back up, so the way it came in should always lead out.
+                Debug.LogError($"{name} found no open route from layer {currentLayer} cell {currentCell} to the Depot - flying straight there instead.");
+            }
+            path.Add(_depotLocation);
+            pathIndex = 0;
+        }
+
+        private bool StepTripToDepot()
+        {
+            float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
+            bool arrived = mover.StepAlongPath(transform, path, ref pathIndex, speed, cornerRadius: config.AutomatonCornerRadius);
+            depotDoor.NotifyApproach(transform.position);
+            return arrived;
+        }
+
         private void UpdateFlyingToDepot()
         {
             fuelSystem.ConsumeFlying(Time.deltaTime);
-
-            float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, _depotLocation, speed);
-            depotDoor.NotifyApproach(transform.position);
-            if (!arrived) return;
+            if (!StepTripToDepot()) return;
 
             Deposit();
+            // Refueling happens at this same spot, so top up now rather than making a second trip.
+            if (fuelSystem.FuelFraction < 0.5f) fuelSystem.FillFull();
+            state = State.LeavingDepot;
+        }
 
-            if(fuelSystem.FuelFraction < 0.5f)
-            {
-                state = State.ReturningToRefuel;
-                return;
-            }
+        // Back up out of the doorway onto the sky lane before picking the next dig target, so the
+        // search starts from an open cell instead of the building's footing.
+        private void UpdateLeavingDepot()
+        {
+            fuelSystem.ConsumeFlying(Time.deltaTime);
+
+            var lane = DepotLaneCell();
+            float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
+            if (!mover.StepDirect(transform, mapGenerationService.CellToWorldCenter(0, lane.x, lane.y), speed, arriveThreshold: 0.05f)) return;
             state = State.PickingTarget;
         }
 
@@ -530,14 +575,13 @@ namespace Automation
         // rather than a separate refuel destination - there's only the one Control Center.
         private void UpdateReturningToRefuel()
         {
-            float speed = config.AutomatonBaseMoveSpeed * upgrades.Automation_AutomatonMoveSpeedMultiplier;
-            bool arrived = mover.StepDirect(transform, _depotLocation, speed);
-            depotDoor.NotifyApproach(transform.position);
-            if (!arrived) return;
+            if (!StepTripToDepot()) return;
 
-            // Fuel is free, so this always fills the tank.
+            // Fuel is free, so this always fills the tank. Depositing happens at this same spot,
+            // so drop off whatever it was carrying while it's here.
             fuelSystem.FillFull();
-            state = oreInventory.CurrentWeight > 0f ? State.FlyingToDepot : State.PickingTarget;
+            if (oreInventory.CurrentWeight > 0f) Deposit();
+            state = State.LeavingDepot;
         }
 
 #if UNITY_EDITOR
