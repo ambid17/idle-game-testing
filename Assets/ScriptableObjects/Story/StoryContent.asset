@@ -105,10 +105,6 @@ MonoBehaviour:
     ways.
   - Here. The Halo of the Makers. I think they'd want someone to have it who's still
     going down.
-  CuratorGreetingsAfterRelease:
-  - The sky was a different colour this morning. Nobody else seems to mind. I mind
-    a little.
-  - It hasn't eaten anyone. I keep checking. Still no one.
   CuratorGreetingsAfterReseal:
   - Quiet, isn't it? I'd forgotten what quiet sounded like. Tea?
   - The Resonator hasn't hummed since. I've put a doily on it.
@@ -123,9 +119,6 @@ MonoBehaviour:
   - Lines:
     - Somethin' down there's been singin' to my critters.|They ain't scared of it.|Critters
       is scared of everything. Make of that what you like.
-  ShopkeeperChatterAfterRelease:
-  - Critters all went quiet the day the light left.|Then they went back to bein'
-    critters.|Reckon it said goodbye.
   ShopkeeperChatterAfterReseal:
   - Deep ones stopped hummin'.|Jar's gone awful quiet.|Reckon they miss it. Don't
     tell the Professor.
@@ -181,45 +174,77 @@ MonoBehaviour:
   VaultResealLabel: Reseal ({0})
   VaultLeaveLabel: Not yet
   ResealTooExpensive: The Seal needs {0} Artifacts to mend. You have {1}.
-  ReleaseEpilogue:
-  - You break the last Seal. The note the Resonator has been humming all this time
-    finally stops.
-  - The mine does not collapse. The light in the ore goes out, vein by vein, and
-    climbs past you up the shaft.
-  - '{voice}Oh. Oh, I had forgotten the sky.'
-  - It does not thank you. It does not harm you. By the time you reach the surface
-    it is a brightness on the horizon, getting smaller.
+  ReleaseAwakening:
+  - The Seal comes apart under your drill like wet paper. The humming stops.
+  - '{voice}Oh.|I am standing. I am STANDING.'
+  - '{voice}No. No - it is coming out of me. All of it. I cannot close my hands.'
+  - '{voice}This is why they buried me. Not for what I wanted. For what I AM.'
+  - '{voice}Not you. You opened the door. Let me do one kind thing first.|UP. Go
+    UP.'
+  ReleaseLament:
+  - '{voice}I did not want this. I told you I did not know what I would do. I did
+    not lie.'
+  - '{voice}I cannot stop. You are the one thing left that I can choose not to break.|So
+    I will not. Watch, little engine. Somebody should.'
+  ReleaseEndTitle: THE BOUND IS FREE
+  ReleaseEndLines:
+  - Nothing was left of the surface. Not the Museum, not the Market, not the mine
+    beneath them.
   - '{keystones}'
-  - '{curator}Well. We''re all still here. I''ve checked twice. ...I''m going to
-    need a new label for the Resonator. ''Door, Formerly.'''
-  - 'THE BOUND IS FREE.
-
-    Thank you for playing. The mine is still yours to dig
-    - and ore sells for more, now that its light has somewhere to go.'
-  ResealEpilogue:
-  - You press the Artifacts back into the Seal, one by one. Each takes its place
-    as if it had only been waiting.
-  - '{voice}...I see. No. I understand. You have only ever known me as a noise in
-    the dark.'
-  - '{voice}Dig carefully, little engine. I will still be here.'
-  - The humming drops below hearing. The tremors stop.
+  - You were set down gently in the middle of it, and left alone.
+  ReleaseKeystoneOutcomes:
+  - Every Keystone was still in its socket. They broke with everything else.
+  - One Keystone was in a Museum drawer. The drawer is gone too.
+  - Two Keystones were in a Museum drawer. The drawer is gone too.
+  - Three Keystones were in a Museum drawer. The drawer is gone too.
+  ReleaseEndClosing: THE END
+  ReleaseEndThanks: Thank you for playing.
+  ReleaseEndContinuePrompt: Press any key
+  RewindLines:
+  - You are standing in front of the last Seal. It is whole. It hums the same note
+    it always has.
+  - '{voice}You saw. That is what happens when I stand.|I showed you the only way
+    I could. I am sorry it had to be like that.'
+  - '{voice}The door is still shut. You know what is behind it now. Choose.'
+  VoidCaveSpeech:
+  - 'Dark, and then not dark. Gold to the horizon: coin, crowns and cut stones, heaped
+    like slag.|In the middle of it, something very large is sitting very still.'
+  - '{voice}Do not be afraid. I brought you here myself. I wanted to see you once,
+    up close.|So. That is what a little engine looks like.'
+  - '{voice}Thank you. I mean it. You have let me rest.'
+  - '{voice}I asked you to open the door. Every day, I asked. I could not help asking,
+    any more than I can help the rest of it.'
+  - '{voice}I cannot hold my own power. It comes out of me like breath.|If I had
+    stood up, there would be no surface for you to go home to.'
+  - '{voice}I did not want to destroy your world. I only wanted to stop being alone
+    in the dark.'
+  - '{voice}All this was theirs. The Makers paid me to stay down, as if I had a choice.
+    It is no use to me. It never was.'
+  - '{voice}The Seal will hold now. The Keystones are part of the wall again, and
+    the door will not open for anyone.|That is right. That is how it should be.'
+  - '{voice}Go home, little engine. Dig as much as you like. I will sleep through
+    all of it.|The way back is there, when you are ready.'
+  VoidCaveRepeatLines:
+  - Still here? I do not mind. It is nice, having someone sit with me.
+  - Take nothing. It is all cursed with being mine.|...That was a joke. I am out
+    of practice.
+  - Go on. The sun is still up there because of you. Go and stand in it.
+  ResealHomecoming:
+  - The portal sets you down in front of the Depot and folds shut behind you. It
+    does not open again.
   - '{keystones}'
-  - '{curator}It''s holding. It''s HOLDING! I''ve put a doily on the Resonator. Nobody
-    is to touch it. Especially me.'
+  - '{curator}It''s holding. It''s HOLDING! ...You look like you''ve seen something.
+    No, don''t tell me. I''d only try to label it.'
   - 'THE SEAL HOLDS.
 
     Thank you for playing. The mine is still yours to dig -
     and it is gentler, now that nothing below is pushing back.'
-  ReleaseKeystoneLines:
-  - You never took a Keystone. It left every one of them where it lay, as if out
-    of manners.
-  - One socket stands empty on the way up. It pauses there a moment, and goes on.
-  - Two sockets stand empty on the way up. It does not look at them.
-  - The sockets where the Keystones sat are warm for days.
-  ResealKeystoneLines:
+  ResealKeystoneOutcomes:
   - You never took a Keystone. The Seal asked almost nothing of you, and closed like
     a held breath let go.
-  - Somewhere above, one Keystone settles back into its socket.
-  - Somewhere above, two Keystones settle back into their sockets.
-  - Somewhere above, three Keystones settle back into their sockets, one after another,
-    like a lock turning.
+  - Somewhere below, one Keystone has sunk back into its wall for good. The chambers
+    stand empty now.
+  - Somewhere below, two Keystones have sunk back into their walls for good. The
+    chambers stand empty now.
+  - Somewhere below, three Keystones have sunk back into their walls for good, one
+    after another, like a lock turning.

@@ -24,7 +24,8 @@ namespace Story
         Vault = 3,
     }
 
-    // Saved as an int - append-only.
+    // Saved as an int - append-only. Release is never stored as the ending: the world it ends in
+    // is gone, so the save stays at the Vault with the choice un-made (see ReleaseWitnessed).
     public enum StoryEnding
     {
         None = 0,
@@ -42,13 +43,19 @@ namespace Story
         public List<int> ExaminedChambers = new();
         public bool RetranslationSeen;
         public StoryEnding Ending;
+        // The Release ending has been played through at least once.
+        public bool ReleaseWitnessed;
+        // Reseal: the Bound has said his thanks in the void cave / the player has gone home from it.
+        public bool VoidCaveSpeechHeard;
+        public bool VoidCaveLeft;
     }
 
     // The Seals story's state (GameDesignDoc "# Story & Endgame: The Seals"): which stage the
     // player has dug down to, which Keystones they pried loose, and how it ended. Nothing here
     // resets on prestige. Opens a dialog with the Bound the first time each layer is reached, shakes
     // the mine with ambient tremors that grow with the stage and Resonance count, hands the
-    // curator / critter keeper / Resonance prompt their stage lines, and runs the ending sequence.
+    // curator / critter keeper / Resonance prompt their stage lines, and starts the two endings:
+    // ReleaseCinematic (the world is destroyed; the save stays at the Vault) and VoidCave (Reseal).
     // Child of the GameManager object, accessed via GameManager.StoryManager.
     public class StoryManager : MonoBehaviour
     {
@@ -56,12 +63,19 @@ namespace Story
         private static readonly int[] StageFirstLayers = { 3, 6, 9 };
         private const int TotalSeals = 4;
         private const string EpilogueConversation = "Story.Epilogue";
+        private const string RewindConversation = "Story.Rewind";
         private const string WhisperConversation = "Story.Whisper";
         private const string VoiceTag = "{voice}";
         private const string CuratorTag = "{curator}";
         private const string KeystonesTag = "{keystones}";
 
+        // Set by ReleaseCinematic right before it reloads the scene, so the Bound speaks once the
+        // player is back in front of the Seal.
+        public static bool RewoundThisSession;
+
         [SerializeField] private StoryContent content;
+        [SerializeField] private ReleaseCinematic releaseCinematic;
+        [SerializeField] private VoidCave voidCave;
 
         [Header("Keystones")]
         [Tooltip("Artifact payout for taking each Keystone, top chamber first.")]
@@ -71,7 +85,6 @@ namespace Story
         [SerializeField, Min(0f)] private float resealCostPerTakenArtifact = 2f;
 
         [Header("Post-game")]
-        [SerializeField, Min(1f)] private float releaseSaleValueMultiplier = 1.25f;
         [SerializeField, Range(0f, 1f)] private float resealDamageTakenMultiplier = 0.75f;
 
         [Header("Character lines")]
@@ -92,15 +105,10 @@ namespace Story
         [Tooltip("Resonances that count toward tremor intensity.")]
         [SerializeField, Min(1)] private int tremorResonanceCap = 6;
 
-        [Header("Ending sequence")]
-        [SerializeField, Min(0f)] private float endingRumbleSeconds = 1.2f;
-        [SerializeField, Min(0f)] private float endingFlashInSeconds = 0.5f;
-        [SerializeField, Min(0f)] private float endingFlashHoldSeconds = 0.6f;
-        [SerializeField, Min(0f)] private float endingFlashOutSeconds = 0.9f;
-
         private readonly HashSet<int> takenKeystones = new();
         private readonly HashSet<int> examinedChambers = new();
         private readonly Queue<string> pendingWhispers = new();
+        private readonly Queue<(string Id, List<DialogLine> Lines)> pendingConversations = new();
         private int deepestLayerIndex = -1;
         private float whisperTimer;
         private float tremorTimer;
@@ -109,13 +117,20 @@ namespace Story
         public StoryContent Content => content;
         public StoryEnding Ending { get; private set; }
         public bool RetranslationSeen { get; private set; }
+        public bool ReleaseWitnessed { get; private set; }
+        public bool VoidCaveSpeechHeard { get; private set; }
+        public bool VoidCaveLeft { get; private set; }
+        // Reseal chosen and the player hasn't gone home from the Bound's cave yet.
+        public bool IsInVoidCave => Ending == StoryEnding.Reseal && !VoidCaveLeft;
         public bool IsEndingPlaying { get; private set; }
+        public float TremorForce => tremorForceRestless;
+        public float TremorSeconds => tremorSeconds;
 
         public int KeystoneCount => keystoneRewards.Length;
         // ExaminedChambers index for the Vault - one past the last Keystone chamber.
         public int VaultChamberIndex => keystoneRewards.Length;
         public int KeystonesTaken => takenKeystones.Count;
-        public int SealsHolding => Ending == StoryEnding.Release ? 0 : TotalSeals - takenKeystones.Count;
+        public int SealsHolding => TotalSeals - takenKeystones.Count;
 
         public StoryStage Stage
         {
@@ -138,14 +153,14 @@ namespace Story
             }
         }
 
-        // Release: the light has somewhere to go - folded into PrestigeUpgradeManager.Prestige_IncomeMultiplier.
-        public float SaleValueMultiplier => Ending == StoryEnding.Release ? releaseSaleValueMultiplier : 1f;
         // Reseal: nothing below is pushing back - applied in PlayerHealth.TakeDamage.
         public float DamageTakenMultiplier => Ending == StoryEnding.Reseal ? resealDamageTakenMultiplier : 1f;
 
         private void Awake()
         {
             if (content == null) Debug.LogError("StoryManager.content is not assigned.");
+            if (releaseCinematic == null) Debug.LogError("StoryManager.releaseCinematic is not assigned.");
+            if (voidCave == null) Debug.LogError("StoryManager.voidCave is not assigned.");
         }
 
         private void Start()
@@ -163,7 +178,7 @@ namespace Story
             flashRect.anchorMax = Vector2.one;
             flashRect.offsetMin = Vector2.zero;
             flashRect.offsetMax = Vector2.zero;
-            SetFlash(0f);
+            SetFlash(Color.white, 0f);
 
             tremorTimer = tremorIntervalCalm;
         }
@@ -195,7 +210,7 @@ namespace Story
             GameManager.CameraShake.Shake(Vector2.up * Mathf.Lerp(tremorForceCalm, tremorForceRestless, intensity), tremorSeconds);
         }
 
-        // 0 = still (a fresh mine, or after either ending); 1 = the Vault stage with several Resonances behind it.
+        // 0 = still (a fresh mine, or once the Seal is mended); 1 = the Vault stage with several Resonances behind it.
         private float TremorIntensity
         {
             get
@@ -225,14 +240,31 @@ namespace Story
             pendingWhispers.Enqueue(line);
         }
 
+        // Opens a conversation once nothing else has the screen, like a whisper.
+        public void QueueConversation(string conversationId, List<DialogLine> lines)
+        {
+            if (lines.Count == 0) return;
+
+            if (pendingConversations.Count == 0 && pendingWhispers.Count == 0) whisperTimer = whisperDelay;
+            pendingConversations.Enqueue((conversationId, lines));
+        }
+
         // The Bound speaks in the dialog box, like the curator - but only once nothing else has
         // the screen, so it never talks over a shop panel or the choice it is reacting to.
         private void UpdateWhispers()
         {
-            if (pendingWhispers.Count == 0 || ModalTracker.IsAnyModalOpen) return;
+            if ((pendingWhispers.Count == 0 && pendingConversations.Count == 0) || ModalTracker.IsAnyModalOpen) return;
 
             whisperTimer -= Time.deltaTime;
             if (whisperTimer > 0f) return;
+
+            if (pendingConversations.Count > 0)
+            {
+                var (id, queued) = pendingConversations.Dequeue();
+                whisperTimer = whisperDelay;
+                GameManager.EventService.Dispatch(new DialogRequestedEvent(id, queued));
+                return;
+            }
 
             var lines = new List<DialogLine>();
             while (pendingWhispers.Count > 0) AddVoicePages(lines, pendingWhispers.Dequeue());
@@ -250,21 +282,15 @@ namespace Story
         // ---- Character lines ----
 
         // Null when the character should use one of their ordinary lines instead.
-        public string CuratorGreeting() => PickStoryLine(Ending switch
-        {
-            StoryEnding.Release => content.CuratorGreetingsAfterRelease,
-            StoryEnding.Reseal => content.CuratorGreetingsAfterReseal,
-            _ => content.StageLinesFor(content.CuratorGreetings, SpokenStage),
-        });
+        public string CuratorGreeting() => PickStoryLine(Ending == StoryEnding.Reseal
+            ? content.CuratorGreetingsAfterReseal
+            : content.StageLinesFor(content.CuratorGreetings, SpokenStage));
 
         public string CuratorChatter() => Ending != StoryEnding.None ? null : PickStoryLine(content.StageLinesFor(content.CuratorChatter, SpokenStage));
 
-        public string ShopkeeperChatter() => PickStoryLine(Ending switch
-        {
-            StoryEnding.Release => content.ShopkeeperChatterAfterRelease,
-            StoryEnding.Reseal => content.ShopkeeperChatterAfterReseal,
-            _ => content.StageLinesFor(content.ShopkeeperChatter, SpokenStage),
-        });
+        public string ShopkeeperChatter() => PickStoryLine(Ending == StoryEnding.Reseal
+            ? content.ShopkeeperChatterAfterReseal
+            : content.StageLinesFor(content.ShopkeeperChatter, SpokenStage));
 
         private string PickStoryLine(string[] pool)
         {
@@ -343,52 +369,66 @@ namespace Story
                     string.Format(content.ResealTooExpensive, ResealCost, Wallet.Instance.ArtifactCount), NotificationUrgency.TimeSensitive));
                 return;
             }
-            StartCoroutine(EndingSequence(ending));
+
+            if (ending == StoryEnding.Release) releaseCinematic.Play();
+            else voidCave.PlayReseal();
         }
 
-        // The mine shakes, the screen goes white, the choice is applied under the flash, and the
-        // epilogue plays once it clears.
-        private IEnumerator EndingSequence(StoryEnding ending)
+        // Held by ReleaseCinematic / VoidCave for as long as their sequence runs: no whispers or
+        // tremors, and the chambers ignore Interact.
+        public void SetEndingPlaying(bool playing) => IsEndingPlaying = playing;
+
+        // Release: the save written here - still at the Vault, the choice un-made - is the one the
+        // player continues from, and nothing after it is saved.
+        public void BeginRelease()
         {
-            IsEndingPlaying = true;
-            InputBlocker.SetBlocked(true);
-
-            GameManager.AudioService.Play(SoundId.RockRumble);
-            GameManager.CameraShake.Shake(Vector2.up * tremorForceRestless * 1.5f, endingRumbleSeconds);
-            yield return new WaitForSeconds(endingRumbleSeconds);
-
-            GameManager.AudioService.Play(SoundId.Prestige);
-            yield return Flash(0f, 1f, endingFlashInSeconds);
-
-            if (ending == StoryEnding.Reseal) Wallet.Instance.TrySpendArtifacts(ResealCost);
-            Ending = ending;
+            ReleaseWitnessed = true;
             GameManager.EventService.Dispatch<StoryProgressChangedEvent>();
             SaveService.Instance.Save();
-
-            yield return new WaitForSecondsRealtime(endingFlashHoldSeconds);
-            yield return Flash(1f, 0f, endingFlashOutSeconds);
-
-            InputBlocker.SetBlocked(false);
-            IsEndingPlaying = false;
-            GameManager.EventService.Dispatch(new DialogRequestedEvent(EpilogueConversation, BuildEpilogue(ending)));
+            SaveService.Instance.SavingSuspended = true;
         }
 
-        private List<DialogLine> BuildEpilogue(StoryEnding ending)
+        // Reseal: the Seal takes back what was taken and the story is over.
+        public void CompleteReseal()
         {
-            bool release = ending == StoryEnding.Release;
-            var keystoneLines = release ? content.ReleaseKeystoneLines : content.ResealKeystoneLines;
+            Wallet.Instance.TrySpendArtifacts(ResealCost);
+            Ending = StoryEnding.Reseal;
+            GameManager.EventService.Dispatch<StoryProgressChangedEvent>();
+        }
+
+        public void MarkVoidCaveSpeechHeard() => VoidCaveSpeechHeard = true;
+
+        // The player is home (by the cave's portal, or by any other way out of it): the epilogue
+        // plays once the screen is free.
+        public void MarkVoidCaveLeft()
+        {
+            if (VoidCaveLeft) return;
+
+            VoidCaveLeft = true;
+            GameManager.EventService.Dispatch<StoryProgressChangedEvent>();
+            QueueConversation(EpilogueConversation, BuildLines(content.ResealHomecoming, content.ResealKeystoneOutcomes));
+            SaveService.Instance.Save();
+        }
+
+        // Entries are narration unless they start with {voice} or {curator}; a {keystones} entry is
+        // replaced by the keystoneLines entry for the number of Keystones taken.
+        public List<DialogLine> BuildLines(string[] entries, string[] keystoneLines = null)
+        {
             var curator = MuseumCuratorController.Instance.Dialog;
 
             var lines = new List<DialogLine>();
-            foreach (string entry in release ? content.ReleaseEpilogue : content.ResealEpilogue)
+            foreach (string entry in entries)
             {
-                if (entry == KeystonesTag) AddPages(lines, string.Empty, null, keystoneLines[Mathf.Min(KeystonesTaken, keystoneLines.Length - 1)]);
+                if (entry == KeystonesTag) AddPages(lines, string.Empty, null, KeystoneLine(keystoneLines));
                 else if (entry.StartsWith(VoiceTag)) AddVoicePages(lines, entry.Substring(VoiceTag.Length));
                 else if (entry.StartsWith(CuratorTag)) AddPages(lines, curator.SpeakerName, curator.Portrait, entry.Substring(CuratorTag.Length));
                 else AddPages(lines, string.Empty, null, entry);
             }
             return lines;
         }
+
+        public string KeystoneLine(string[] keystoneLines) =>
+            keystoneLines == null || keystoneLines.Length == 0 ? string.Empty : keystoneLines[Mathf.Min(KeystonesTaken, keystoneLines.Length - 1)];
 
         private static void AddPages(List<DialogLine> lines, string speaker, Sprite portrait, string entry, SoundId voice = SoundId.DialogBlip)
         {
@@ -401,20 +441,21 @@ namespace Story
             }
         }
 
-        // Unscaled time: it must still fade if something froze the clock.
-        private IEnumerator Flash(float from, float to, float seconds)
+        // A full-screen colour over everything, for the endings. Unscaled time: it must still
+        // fade if something froze the clock.
+        public IEnumerator Flash(Color color, float from, float to, float seconds)
         {
             for (float t = 0f; t < seconds; t += Time.unscaledDeltaTime)
             {
-                SetFlash(Mathf.Lerp(from, to, t / seconds));
+                SetFlash(color, Mathf.Lerp(from, to, t / seconds));
                 yield return null;
             }
-            SetFlash(to);
+            SetFlash(color, to);
         }
 
-        private void SetFlash(float alpha)
+        public void SetFlash(Color color, float alpha)
         {
-            flash.color = new Color(1f, 1f, 1f, alpha);
+            flash.color = new Color(color.r, color.g, color.b, alpha);
             flash.gameObject.SetActive(alpha > 0f);
         }
 
@@ -427,6 +468,9 @@ namespace Story
                 DeepestLayerIndex = deepestLayerIndex,
                 RetranslationSeen = RetranslationSeen,
                 Ending = Ending,
+                ReleaseWitnessed = ReleaseWitnessed,
+                VoidCaveSpeechHeard = VoidCaveSpeechHeard,
+                VoidCaveLeft = VoidCaveLeft,
             };
             data.TakenKeystones.AddRange(takenKeystones);
             data.ExaminedChambers.AddRange(examinedChambers);
@@ -441,17 +485,30 @@ namespace Story
             deepestLayerIndex = lifetimeDeepestLayerIndex;
             RetranslationSeen = false;
             Ending = StoryEnding.None;
+            ReleaseWitnessed = false;
+            VoidCaveSpeechHeard = false;
+            VoidCaveLeft = false;
 
             if (data != null)
             {
                 deepestLayerIndex = Mathf.Max(deepestLayerIndex, data.DeepestLayerIndex);
                 RetranslationSeen = data.RetranslationSeen;
-                Ending = data.Ending;
+                // Saves from when Release was a stored ending: it is un-made, like every Release now.
+                Ending = data.Ending == StoryEnding.Reseal ? StoryEnding.Reseal : StoryEnding.None;
+                ReleaseWitnessed = data.ReleaseWitnessed || data.Ending == StoryEnding.Release;
+                VoidCaveSpeechHeard = data.VoidCaveSpeechHeard;
+                VoidCaveLeft = data.VoidCaveLeft;
                 foreach (int index in data.TakenKeystones)
                 {
                     if (index >= 0 && index < keystoneRewards.Length) takenKeystones.Add(index);
                 }
                 foreach (int index in data.ExaminedChambers) examinedChambers.Add(index);
+            }
+
+            if (RewoundThisSession)
+            {
+                RewoundThisSession = false;
+                if (Ending == StoryEnding.None) QueueConversation(RewindConversation, BuildLines(content.RewindLines));
             }
 
             GameManager.EventService.Dispatch<StoryProgressChangedEvent>();

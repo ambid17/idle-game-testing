@@ -98,11 +98,20 @@ namespace Player
         public bool TryTravelToDepot()
         {
             if (IsTraveling) return false;
-            travelRoutine = StartCoroutine(TravelRoutine(depotArrivalPoint.position));
+            travelRoutine = StartCoroutine(TravelRoutine(depotArrivalPoint.position, null));
             return true;
         }
 
-        private IEnumerator TravelRoutine(Vector3 destination)
+        // The same trip to anywhere (the story's endings). onTeleported runs the moment the player
+        // has been moved, while both portals are shut - the place to cut the camera over.
+        public bool TryTravelTo(Vector3 destination, System.Action onTeleported)
+        {
+            if (IsTraveling) return false;
+            travelRoutine = StartCoroutine(TravelRoutine(destination, onTeleported));
+            return true;
+        }
+
+        private IEnumerator TravelRoutine(Vector3 destination, System.Action onTeleported)
         {
             Vector3 origin = transform.position;
             playerController.SetInPortal(true);
@@ -112,6 +121,7 @@ namespace Player
             yield return AnimatePortal(origin, 1f, 0f, portalCloseSeconds, EaseInQuad);
 
             playerController.TeleportTo(destination);
+            onTeleported?.Invoke();
             yield return new WaitForSeconds(transitSeconds);
 
             yield return AnimatePortal(destination, 0f, 1f, portalOpenSeconds, EaseOutBack);

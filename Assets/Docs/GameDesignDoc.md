@@ -144,10 +144,13 @@ A real ending to dig toward, with no combat: resonating means "getting strong en
 - Earlier choices set the price of Reseal; they never lock an ending out.
 
 ## Endings
-- Both play a short sequence (quake, white flash, epilogue with the Keystone count reflected in it), unlock an achievement, and leave the game playable.
-- Release: "The Bound is free." The light leaves the ore and goes up the shaft. Post-game: +25% to all ore and goods sale value. Tremors stop.
-- Reseal: "The Seal holds." Taken Keystones are back in their sockets. Post-game: -25% to all damage taken. Tremors stop.
-- The curator, the critter keeper and the Resonance prompt all have post-ending lines for each.
+- The Bound never wanted to destroy anything: he cannot hold his own power. Release shows what that means; Reseal lets him say it.
+- Release: the game ends. The last Seal shatters, the Bound wakes and cannot hold it in, and he throws the player up to the surface through a portal before it all comes out of him. The sky darkens, he rises over the horizon, bolts rain down and every building is blown away. White flash, then an end card ("THE BOUND IS FREE", the Keystone count, THE END) and back to the main menu.
+	- Nothing of it is saved. Continue puts the player back in front of the whole Seal with the choice un-made, and the Bound says so ("You saw. That is what happens when I stand."). The Release achievement is still earned.
+- Reseal: the artifacts stream back into the Seal and the Bound pulls the player through a portal into his cave in the void, heaped with the Makers' riches. He thanks them for letting him rest: he can't control his power and didn't want to destroy the world.
+	- The cave is a walkable room. The player can speak to him again, then take the portal home (one-way; the cave is gone afterwards). The epilogue plays at the Depot.
+	- Afterwards the game stays playable: -25% to all damage taken, tremors stop, and the Keystones and the last Seal never appear in their rooms again (the rooms still generate, empty).
+- The curator, the critter keeper and the Resonance prompt have post-Reseal lines.
 
 ## Dropping hints by depth
 Each beat fires the first time the player sets a depth record inside its layer range. Drill tier Attunements gate those layers, so depth reached and Resonances completed both drive the story. Story progress is permanent and survives Resonance.
@@ -170,6 +173,7 @@ Delivery channels:
 ## Open questions
 - the sky relic (hidden Seal at y=200): the one Seal the Makers hid up instead of down - give it a role in the Reseal ending?
 - credits: the endings close on a "thank you for playing" page, not a real credits roll
+- the HUD's depth / biome banner read nonsense inside the void cave (it sits 400m above the surface)
 - chamber and Vault art: the Keystone and Seal use placeholder sprites; murals are text only
 - post-game: is a flat bonus enough, or should each ending change the world (sky, ore glow, music)?
 - how many Resonances should reaching the Vault take? Target an 8-15 hour total playtime

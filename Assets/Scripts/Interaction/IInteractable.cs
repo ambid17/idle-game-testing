@@ -17,6 +17,9 @@ namespace Interaction
         SkyArtifact,
         // A Keystone or the Vault's last Seal (Story.SealChamber).
         SealChamber,
+        // The Bound's cave after Reseal (Story.VoidCave): the way home, and the Bound himself.
+        VoidCavePortal,
+        TheBound,
     }
 
     public enum InteractionType

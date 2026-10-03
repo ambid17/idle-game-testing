@@ -3,12 +3,57 @@ todo
 button size in "got it" tutorial prompt
 museum collection UI scaling
 
-the grand finale ending, if you release the Bound should show him on screen. 
-if you keep him sealed, he teleports you into his cave to thank you for letting him rest and telling you he can't control his power and didn't want to destroy the world
+add warnings when taking keystones
 
+game ending rework:
+- releasing the bound unleashes destruction, ending the game completely
+	- this should be a cinematic complete with animations with destruction raining down and the Bound teleporting the player to the surface as he destroys it all
+- sealing the chamber
+	- this should have the bound teleport him to his void cave where he resides, covered in boundless riches
+	- the Bound should thank you for letting him rest and telling you he can't control his power and didn't want to destroy the world
+	- you can then teleport home and continue mining, but the teleporter and keystones are disabled and no longer spawn on future resonances
+
+increase layer heights and structure spawn rates
+
+add digging while flying/up tutorial
+
+overflow upgrade needs an animation to show the money made
 
 new animation ideas, need more fluff
 
+rock breaker should allow mining hardpan
+
+add a portal to the critter shop to take you home
+
+redo upgrade icons to match new styling
+
+some edge tiles dont spawn
+
+add depot repair/refuel to critter shop
+
+crusher sfx are annoying and randomly showing up?
+
+automaton can go through the ground
+
+if you unlock the automaton kept through prestige, it doesn't do the control center reveal
+
+drill tier prestige upgrade should increase all drill speed, including artifacts
+
+explosion block vfx rework
+
+sometimes the fog doesnt update for ancient shafts style openings. may need to do fog generation after all map updates are applied
+
+falling rocks need to only be spawned when something is below them
+
+notification when trying to loot and chest and youre too full
+
+if you collect keystones, show them on future runs but greyed out and uninteractable
+
+out of fuel death animation has long waits
+
+museum shouldn't let you resonate without any queued upgrades
+
+test critter inventory persists through prestige and after quit
 
 
 - player 

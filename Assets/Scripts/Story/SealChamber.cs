@@ -12,7 +12,8 @@ namespace Story
     // chamber's layer, regenerated with every Dig; this object finds where it was stamped and
     // stands on its floor. Examining it reads the room's mural once, then offers the choice:
     // take the Keystone or leave it, or - at the Vault - Release or Reseal. What it shows comes from
-    // GameManager.StoryManager, so a taken Keystone stays gone in every later Dig.
+    // GameManager.StoryManager, so a taken Keystone stays gone in every later Dig, and once the
+    // Seal is mended neither the Keystones nor the last Seal appear in their rooms again.
     //
     // Scene layout: this component sits on the trigger collider (Interactable layer) that
     // PlayerInteractionDetector picks up; the stone's sprite is a child so it can bob while the
@@ -49,17 +50,19 @@ namespace Story
         private int placedForSeed;
         private bool hasRoom;
         private string pendingConversation;
+        private bool broken;
 
         public InteractableType InteractableType => InteractableType.SealChamber;
 
         private int ChamberIndex => isVault ? story.VaultChamberIndex : keystoneIndex;
         private string ConversationId => $"Story.Chamber.{ChamberIndex}";
 
-        // A Keystone is there until taken (and back in its socket once the Seal is mended); the last
-        // Seal is there until it's broken.
-        private bool IsStonePresent => isVault
-            ? story.Ending != StoryEnding.Release
-            : story.Ending == StoryEnding.Reseal || (story.Ending == StoryEnding.None && !story.IsKeystoneTaken(keystoneIndex));
+        // Where the stone floats - the endings play their effects on the last Seal here.
+        public Vector3 StonePosition => transform.position + stoneRestPosition;
+
+        // A Keystone is there until taken, the last Seal until it's broken - and after Reseal every
+        // room stands empty.
+        private bool IsStonePresent => !broken && story.Ending == StoryEnding.None && (isVault || !story.IsKeystoneTaken(keystoneIndex));
 
         private void Awake()
         {
@@ -138,7 +141,14 @@ namespace Story
             stoneRenderer.enabled = present;
             glow.enabled = present;
             // Disabling the trigger fires OnTriggerExit2D, so the detector drops the prompt.
-            interactTrigger.enabled = present && story.Ending == StoryEnding.None;
+            interactTrigger.enabled = present;
+        }
+
+        // Story.ReleaseCinematic: the last Seal is gone for the rest of this scene's life.
+        public void Break()
+        {
+            broken = true;
+            Refresh();
         }
 
         private void OnPlayerInteracted(PlayerInteractedEvent e)

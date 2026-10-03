@@ -85,8 +85,15 @@ namespace Persistence
         }
         private void OnApplicationPause(bool paused) { if (paused) Save(); }
 
+        // Set by Story.StoryManager.BeginRelease: the Release ending destroys the world for show
+        // only, so nothing after its opening save may reach the disk (autosave, quit, pause).
+        // Clears itself when the scene reloads.
+        public bool SavingSuspended { get; set; }
+
         public void Save()
         {
+            if (SavingSuspended) return;
+
             Debug.Log($"SaveService.Save: writing save file to {SavePath} and map file to {MapSavePath}");
             var data = new GameSaveData
             {

@@ -212,9 +212,9 @@ namespace Platform
 
         private void EvaluateStoryAchievements()
         {
-            var ending = GameManager.StoryManager.Ending;
-            if (ending == StoryEnding.Release) Unlock(AchievementId.EndingRelease);
-            if (ending == StoryEnding.Reseal) Unlock(AchievementId.EndingReseal);
+            var story = GameManager.StoryManager;
+            if (story.ReleaseWitnessed) Unlock(AchievementId.EndingRelease);
+            if (story.Ending == StoryEnding.Reseal) Unlock(AchievementId.EndingReseal);
         }
 
         private static int CountBlockTypes(BlockCategory category)

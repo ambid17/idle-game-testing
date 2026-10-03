@@ -37,7 +37,8 @@ namespace Interaction
             // Out of fuel waiting on a Fuel Drone: the respawn prompt takes over from any nearby
             // interactable, so its key can't also fire a building interaction.
             bool stranded = playerController.IsStrandedWithoutFuel;
-            var closest = stranded ? null : GetClosest();
+            // No prompts over the story's ending sequences either.
+            var closest = stranded || GameManager.StoryManager.IsEndingPlaying ? null : GetClosest();
             if (closest != current || stranded != showingStrandedPrompt)
             {
                 current = closest;

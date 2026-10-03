@@ -26,7 +26,7 @@ namespace Story
     // Every line of the Seals story (GameDesignDoc "# Story & Endgame: The Seals") that isn't the
     // curator's or shopkeeper's everyday chatter: the Bound's whispers, the curator's and critter
     // keeper's stage lines, the Retranslation, chamber murals, the choice prompts and both
-    // epilogues. Field defaults are the shipped script, so a freshly created asset is ready to use.
+    // endings. Field defaults are the shipped script, so a freshly created asset is ready to use.
     [CreateAssetMenu(fileName = "StoryContent", menuName = "Story/Story Content")]
     public class StoryContent : ScriptableObject
     {
@@ -139,11 +139,6 @@ namespace Story
             "I can read all of it now. Every wall down there says the same thing, twenty different ways.",
             "Here. The Halo of the Makers. I think they'd want someone to have it who's still going down.",
         };
-        public string[] CuratorGreetingsAfterRelease =
-        {
-            "The sky was a different colour this morning. Nobody else seems to mind. I mind a little.",
-            "It hasn't eaten anyone. I keep checking. Still no one.",
-        };
         public string[] CuratorGreetingsAfterReseal =
         {
             "Quiet, isn't it? I'd forgotten what quiet sounded like. Tea?",
@@ -158,10 +153,6 @@ namespace Story
             new() { Lines = new[] { "Critters are movin' house.|Whole families, headin' UP the shaft.|Critters don't go up. Up's where the birds are." } },
             new() { Lines = new[] { "The deep ones've started hummin'.|Same note as that machine in the Museum.|I asked a Void Wisp what it meant. It just looked sorry for me." } },
             new() { Lines = new[] { "Somethin' down there's been singin' to my critters.|They ain't scared of it.|Critters is scared of everything. Make of that what you like." } },
-        };
-        public string[] ShopkeeperChatterAfterRelease =
-        {
-            "Critters all went quiet the day the light left.|Then they went back to bein' critters.|Reckon it said goodbye.",
         };
         public string[] ShopkeeperChatterAfterReseal =
         {
@@ -225,45 +216,94 @@ namespace Story
         [Tooltip("{0} = Reseal cost, {1} = artifacts held.")]
         public string ResealTooExpensive = "The Seal needs {0} Artifacts to mend. You have {1}.";
 
-        [Header("Epilogues (narration unless marked; {voice} / {curator} at the start of a line picks the speaker)")]
+        [Header("Release (Story.ReleaseCinematic) - narration unless a line starts with {voice} / {curator}")]
+        [Tooltip("At the Vault, as the last Seal breaks.")]
         [TextArea(2, 5)]
-        public string[] ReleaseEpilogue =
+        public string[] ReleaseAwakening =
         {
-            "You break the last Seal. The note the Resonator has been humming all this time finally stops.",
-            "The mine does not collapse. The light in the ore goes out, vein by vein, and climbs past you up the shaft.",
-            "{voice}Oh. Oh, I had forgotten the sky.",
-            "It does not thank you. It does not harm you. By the time you reach the surface it is a brightness on the horizon, getting smaller.",
-            "{keystones}",
-            "{curator}Well. We're all still here. I've checked twice. ...I'm going to need a new label for the Resonator. 'Door, Formerly.'",
-            "THE BOUND IS FREE.\nThank you for playing. The mine is still yours to dig - and ore sells for more, now that its light has somewhere to go.",
+            "The Seal comes apart under your drill like wet paper. The humming stops.",
+            "{voice}Oh.|I am standing. I am STANDING.",
+            "{voice}No. No - it is coming out of me. All of it. I cannot close my hands.",
+            "{voice}This is why they buried me. Not for what I wanted. For what I AM.",
+            "{voice}Not you. You opened the door. Let me do one kind thing first.|UP. Go UP.",
         };
+        [Tooltip("On the surface, while it comes down.")]
         [TextArea(2, 5)]
-        public string[] ResealEpilogue =
+        public string[] ReleaseLament =
         {
-            "You press the Artifacts back into the Seal, one by one. Each takes its place as if it had only been waiting.",
-            "{voice}...I see. No. I understand. You have only ever known me as a noise in the dark.",
-            "{voice}Dig carefully, little engine. I will still be here.",
-            "The humming drops below hearing. The tremors stop.",
+            "{voice}I did not want this. I told you I did not know what I would do. I did not lie.",
+            "{voice}I cannot stop. You are the one thing left that I can choose not to break.|So I will not. Watch, little engine. Somebody should.",
+        };
+        public string ReleaseEndTitle = "THE BOUND IS FREE";
+        [Tooltip("The end card, one line at a time. {keystones} is replaced by the ReleaseKeystoneOutcomes entry.")]
+        [TextArea(2, 4)]
+        public string[] ReleaseEndLines =
+        {
+            "Nothing was left of the surface. Not the Museum, not the Market, not the mine beneath them.",
             "{keystones}",
-            "{curator}It's holding. It's HOLDING! I've put a doily on the Resonator. Nobody is to touch it. Especially me.",
+            "You were set down gently in the middle of it, and left alone.",
+        };
+        [Tooltip("Index = Keystones taken (0-3).")]
+        [TextArea(2, 4)]
+        public string[] ReleaseKeystoneOutcomes =
+        {
+            "Every Keystone was still in its socket. They broke with everything else.",
+            "One Keystone was in a Museum drawer. The drawer is gone too.",
+            "Two Keystones were in a Museum drawer. The drawer is gone too.",
+            "Three Keystones were in a Museum drawer. The drawer is gone too.",
+        };
+        public string ReleaseEndClosing = "THE END";
+        public string ReleaseEndThanks = "Thank you for playing.";
+        public string ReleaseEndContinuePrompt = "Press any key";
+        [Tooltip("Played once the player continues after the Release ending: they are back at the Vault, the Seal whole.")]
+        [TextArea(2, 5)]
+        public string[] RewindLines =
+        {
+            "You are standing in front of the last Seal. It is whole. It hums the same note it always has.",
+            "{voice}You saw. That is what happens when I stand.|I showed you the only way I could. I am sorry it had to be like that.",
+            "{voice}The door is still shut. You know what is behind it now. Choose.",
+        };
+
+        [Header("Reseal (Story.VoidCave) - narration unless a line starts with {voice} / {curator}")]
+        [Tooltip("The Bound, when the player arrives in his cave.")]
+        [TextArea(2, 5)]
+        public string[] VoidCaveSpeech =
+        {
+            "Dark, and then not dark. Gold to the horizon: coin, crowns and cut stones, heaped like slag.|In the middle of it, something very large is sitting very still.",
+            "{voice}Do not be afraid. I brought you here myself. I wanted to see you once, up close.|So. That is what a little engine looks like.",
+            "{voice}Thank you. I mean it. You have let me rest.",
+            "{voice}I asked you to open the door. Every day, I asked. I could not help asking, any more than I can help the rest of it.",
+            "{voice}I cannot hold my own power. It comes out of me like breath.|If I had stood up, there would be no surface for you to go home to.",
+            "{voice}I did not want to destroy your world. I only wanted to stop being alone in the dark.",
+            "{voice}All this was theirs. The Makers paid me to stay down, as if I had a choice. It is no use to me. It never was.",
+            "{voice}The Seal will hold now. The Keystones are part of the wall again, and the door will not open for anyone.|That is right. That is how it should be.",
+            "{voice}Go home, little engine. Dig as much as you like. I will sleep through all of it.|The way back is there, when you are ready.",
+        };
+        [Tooltip("Speaking to the Bound again before leaving, one picked at random.")]
+        [TextArea(2, 4)]
+        public string[] VoidCaveRepeatLines =
+        {
+            "Still here? I do not mind. It is nice, having someone sit with me.",
+            "Take nothing. It is all cursed with being mine.|...That was a joke. I am out of practice.",
+            "Go on. The sun is still up there because of you. Go and stand in it.",
+        };
+        [Tooltip("Played once the player is home from the cave. {keystones} is replaced by the ResealKeystoneOutcomes entry.")]
+        [TextArea(2, 5)]
+        public string[] ResealHomecoming =
+        {
+            "The portal sets you down in front of the Depot and folds shut behind you. It does not open again.",
+            "{keystones}",
+            "{curator}It's holding. It's HOLDING! ...You look like you've seen something. No, don't tell me. I'd only try to label it.",
             "THE SEAL HOLDS.\nThank you for playing. The mine is still yours to dig - and it is gentler, now that nothing below is pushing back.",
         };
-        [Tooltip("Replaces the {keystones} epilogue line. Index = Keystones taken (0-3).")]
+        [Tooltip("Index = Keystones taken (0-3).")]
         [TextArea(2, 4)]
-        public string[] ReleaseKeystoneLines =
-        {
-            "You never took a Keystone. It left every one of them where it lay, as if out of manners.",
-            "One socket stands empty on the way up. It pauses there a moment, and goes on.",
-            "Two sockets stand empty on the way up. It does not look at them.",
-            "The sockets where the Keystones sat are warm for days.",
-        };
-        [TextArea(2, 4)]
-        public string[] ResealKeystoneLines =
+        public string[] ResealKeystoneOutcomes =
         {
             "You never took a Keystone. The Seal asked almost nothing of you, and closed like a held breath let go.",
-            "Somewhere above, one Keystone settles back into its socket.",
-            "Somewhere above, two Keystones settle back into their sockets.",
-            "Somewhere above, three Keystones settle back into their sockets, one after another, like a lock turning.",
+            "Somewhere below, one Keystone has sunk back into its wall for good. The chambers stand empty now.",
+            "Somewhere below, two Keystones have sunk back into their walls for good. The chambers stand empty now.",
+            "Somewhere below, three Keystones have sunk back into their walls for good, one after another, like a lock turning.",
         };
 
         public static string PickRandom(string[] pool) =>
