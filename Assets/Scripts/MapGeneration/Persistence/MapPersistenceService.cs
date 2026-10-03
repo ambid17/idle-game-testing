@@ -34,6 +34,8 @@ namespace MapGeneration
                 ChunkSerializer.ApplyToChunk(chunk, chunkSave);
             }
 
+            // After every chunk's saved state is in, so the flood sees each seam from both sides.
+            world.SettleFog();
             return world;
         }
 

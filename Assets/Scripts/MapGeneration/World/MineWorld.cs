@@ -177,9 +177,8 @@ namespace MapGeneration
         private void RevealFogInLayer(int layerIndex, int centerX, int centerY, int radius, Dictionary<int, List<Vector2Int>> revealedByLayer)
         {
             var chunk = GetOrGenerateChunk(layerIndex);
-            List<Vector2Int> revealed = null;
-            List<Vector2Int> openSeeds = null;
-            HashSet<Vector2Int> hiddenOpenSeeds = null;
+            List<Vector3Int> openSeeds = null;
+            HashSet<Vector3Int> hiddenOpenSeeds = null;
 
             for (int dy = -radius; dy <= radius; dy++)
             {
@@ -193,26 +192,28 @@ namespace MapGeneration
 
                     int idx = chunk.Index(x, y);
                     var cell = chunk.Cells[idx];
+                    var node = new Vector3Int(x, y, layerIndex);
                     // Every open cell in reach seeds the pocket flood below, revealed or not, so a
                     // pocket only partly uncovered by an earlier reveal still opens up fully.
-                    if (cell.Mined) (openSeeds ??= new List<Vector2Int>()).Add(new Vector2Int(x, y));
+                    if (cell.Mined) (openSeeds ??= new List<Vector3Int>()).Add(node);
                     if (cell.Revealed) continue;
 
                     // Freshly uncovered open ground is pocket interior, so it gets the pocket's wall ring too.
-                    if (cell.Mined) (hiddenOpenSeeds ??= new HashSet<Vector2Int>()).Add(new Vector2Int(x, y));
+                    if (cell.Mined) (hiddenOpenSeeds ??= new HashSet<Vector3Int>()).Add(node);
 
                     cell.Revealed = true;
                     chunk.Cells[idx] = cell;
-                    (revealed ??= new List<Vector2Int>()).Add(new Vector2Int(x, y));
+                    AddRevealed(revealedByLayer, layerIndex, x, y);
                 }
             }
 
-            if (openSeeds != null) RevealConnectedOpenGround(chunk, openSeeds, hiddenOpenSeeds, ref revealed);
+            if (openSeeds != null) RevealConnectedOpenGround(openSeeds, hiddenOpenSeeds, revealedByLayer);
+        }
 
-            if (revealed == null) return;
-
-            if (revealedByLayer.TryGetValue(layerIndex, out var existing)) existing.AddRange(revealed);
-            else revealedByLayer[layerIndex] = revealed;
+        private static void AddRevealed(Dictionary<int, List<Vector2Int>> revealedByLayer, int layerIndex, int x, int y)
+        {
+            if (!revealedByLayer.TryGetValue(layerIndex, out var list)) revealedByLayer[layerIndex] = list = new List<Vector2Int>();
+            list.Add(new Vector2Int(x, y));
         }
 
         // Pre-carved open ground (empty pockets, the Critter Shop cave, feature tunnels) is generated
@@ -224,11 +225,14 @@ namespace MapGeneration
         // are never re-walked. Seeds that were already revealed (the player's tunnel, or pocket
         // cells from an earlier reveal) only spread; they don't ring their walls, which would
         // push the reveal a cell past the lantern radius.
-        private static void RevealConnectedOpenGround(ChunkData chunk, List<Vector2Int> seeds, HashSet<Vector2Int> hiddenSeeds, ref List<Vector2Int> revealed)
+        // Nodes are (x, y, layer): the flood follows open ground across layer seams (generating
+        // the neighboring chunk if needed), since features like ShaftFeature carve one connected
+        // tunnel through several layers.
+        private void RevealConnectedOpenGround(List<Vector3Int> seeds, HashSet<Vector3Int> hiddenSeeds, Dictionary<int, List<Vector2Int>> revealedByLayer)
         {
-            var frontier = new Queue<Vector2Int>(seeds);
-            var visited = new HashSet<Vector2Int>(seeds);
-            var ringable = hiddenSeeds ?? new HashSet<Vector2Int>();
+            var frontier = new Queue<Vector3Int>(seeds);
+            var visited = new HashSet<Vector3Int>(seeds);
+            var ringable = hiddenSeeds ?? new HashSet<Vector3Int>();
 
             while (frontier.Count > 0)
             {
@@ -240,12 +244,9 @@ namespace MapGeneration
                     for (int dx = -1; dx <= 1; dx++)
                     {
                         if (dx == 0 && dy == 0) continue;
+                        if (!TryResolveNeighbor(current, dx, dy, out var chunk, out var pos)) continue;
 
-                        int x = current.x + dx;
-                        int y = current.y + dy;
-                        if (x < 0 || x >= chunk.Width || y < 0 || y >= chunk.Height) continue;
-
-                        int idx = chunk.Index(x, y);
+                        int idx = chunk.Index(pos.x, pos.y);
                         var cell = chunk.Cells[idx];
                         if (cell.Revealed) continue;
 
@@ -257,8 +258,7 @@ namespace MapGeneration
 
                         cell.Revealed = true;
                         chunk.Cells[idx] = cell;
-                        var pos = new Vector2Int(x, y);
-                        (revealed ??= new List<Vector2Int>()).Add(pos);
+                        AddRevealed(revealedByLayer, pos.z, pos.x, pos.y);
 
                         if (spreads && visited.Add(pos))
                         {
@@ -268,6 +268,55 @@ namespace MapGeneration
                     }
                 }
             }
+        }
+
+        // Steps (dx, dy) from a flood node, carrying over into the layer above/below when the step
+        // leaves the chunk's top/bottom row (layers stack with no gap - see RevealFog).
+        private bool TryResolveNeighbor(Vector3Int from, int dx, int dy, out ChunkData chunk, out Vector3Int pos)
+        {
+            int layerIndex = from.z;
+            int x = from.x + dx;
+            int y = from.y + dy;
+            chunk = GetOrGenerateChunk(layerIndex);
+
+            if (y < 0)
+            {
+                if (layerIndex == 0) { pos = default; return false; }
+                layerIndex--;
+                chunk = GetOrGenerateChunk(layerIndex);
+                y += chunk.Height;
+            }
+            else if (y >= chunk.Height)
+            {
+                y -= chunk.Height;
+                layerIndex++;
+                chunk = GetOrGenerateChunk(layerIndex);
+            }
+
+            pos = new Vector3Int(x, y, layerIndex);
+            return x >= 0 && x < chunk.Width && y >= 0 && y < chunk.Height;
+        }
+
+        // Last step of building a world from saved chunks: re-runs the open-ground flood from every
+        // revealed open cell, so pre-carved ground connected to it is revealed even if it was
+        // saved fogged (e.g. a shaft continuing past a layer seam, from before the flood crossed
+        // seams). A no-op for a world whose fog is already settled.
+        public void SettleFog()
+        {
+            var seeds = new List<Vector3Int>();
+            foreach (var chunk in chunksByLayer.Values)
+            {
+                for (int y = 0; y < chunk.Height; y++)
+                {
+                    for (int x = 0; x < chunk.Width; x++)
+                    {
+                        var cell = chunk.Cells[chunk.Index(x, y)];
+                        if (cell.Mined && cell.Revealed) seeds.Add(new Vector3Int(x, y, chunk.LayerIndex));
+                    }
+                }
+            }
+
+            if (seeds.Count > 0) RevealConnectedOpenGround(seeds, null, new Dictionary<int, List<Vector2Int>>());
         }
 
 

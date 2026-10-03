@@ -29,7 +29,7 @@ namespace Audio
         [Tooltip("How many sound effects can overlap before the oldest gets cut off.")]
         [SerializeField] private int sfxVoiceCount = 16;
         [Tooltip("PlayAt sounds within this world distance of the listener play at full volume...")]
-        [SerializeField] private float fullVolumeDistance = 8f;
+        [SerializeField] private float fullVolumeDistance = 5f;
         [Tooltip("...and fade to silent by this distance.")]
         [SerializeField] private float silentDistance = 20f;
         [Range(0f, 1f)]
