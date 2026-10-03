@@ -195,7 +195,7 @@ namespace Story
             int reward = story.KeystoneReward(keystoneIndex);
             GameManager.EventService.Dispatch(new StoryChoiceRequestedEvent(
                 content.KeystoneTitle,
-                string.Format(content.KeystoneBody, reward),
+                string.Format(content.KeystoneWarning, reward, story.SealsHolding, story.SealsHolding - 1, story.ResealCost, story.ResealCostIfTaken(keystoneIndex)),
                 content.KeystoneLeaveLabel,
                 string.Format(content.KeystoneTakeLabel, reward), () => story.TakeKeystone(keystoneIndex)));
         }

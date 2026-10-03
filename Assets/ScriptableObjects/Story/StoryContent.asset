@@ -154,11 +154,6 @@ MonoBehaviour:
     Voice: 'You came all this way. I will not lie to you now: I do not know what
       I will do when I stand up.|I have not stood in so long.'
   KeystoneTitle: The Keystone
-  KeystoneBody: 'Pry it loose and the Seal it anchors breaks for good. The Museum
-    would pay {0} Artifacts for it.
-
-
-    This cannot be undone.'
   KeystoneTakeLabel: Take it (+{0})
   KeystoneLeaveLabel: Leave it
   VaultTitle: The Last Seal

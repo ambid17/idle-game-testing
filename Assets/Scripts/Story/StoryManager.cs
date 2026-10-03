@@ -346,14 +346,17 @@ namespace Story
         }
 
         // What mending the last Seal takes back: a base price plus a multiple of every Keystone payout taken.
-        public int ResealCost
+        public int ResealCost => ResealCostFor(0);
+
+        // The Reseal price once this Keystone is taken too - the Keystone prompt warns with it.
+        public int ResealCostIfTaken(int keystoneIndex) =>
+            IsKeystoneTaken(keystoneIndex) ? ResealCost : ResealCostFor(keystoneRewards[keystoneIndex]);
+
+        private int ResealCostFor(int extraTakenArtifacts)
         {
-            get
-            {
-                int taken = 0;
-                foreach (int index in takenKeystones) taken += keystoneRewards[index];
-                return resealBaseCost + Mathf.RoundToInt(taken * resealCostPerTakenArtifact);
-            }
+            int taken = extraTakenArtifacts;
+            foreach (int index in takenKeystones) taken += keystoneRewards[index];
+            return resealBaseCost + Mathf.RoundToInt(taken * resealCostPerTakenArtifact);
         }
 
         public bool CanAffordReseal => Wallet.Instance.ArtifactCount >= ResealCost;

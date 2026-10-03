@@ -199,9 +199,12 @@ namespace Story
 
         [Header("Choice prompts (UI.StoryChoiceUI)")]
         public string KeystoneTitle = "The Keystone";
-        [Tooltip("{0} = artifact payout.")]
-        [TextArea(2, 5)]
-        public string KeystoneBody = "Pry it loose and the Seal it anchors breaks for good. The Museum would pay {0} Artifacts for it.\n\nThis cannot be undone.";
+        [Tooltip("{0} = artifact payout, {1} / {2} = Seals holding now / after, {3} / {4} = Reseal cost now / after.")]
+        [TextArea(4, 8)]
+        public string KeystoneWarning = "Pry it loose and the Seal it anchors breaks for good. The Museum will pay <color=purple>+{0} Artifacts</color>.\n\n"
+            + "<color=#FF6060>Seals holding: {1} of 4 now, {2} of 4 after.</color>\n"
+            + "<color=#FF6060>Mending the last Seal (the Reseal ending) will cost {4} Artifacts instead of {3}.</color>\n\n"
+            + "<b>Permanent.</b> Resonance won't bring it back.";
         [Tooltip("{0} = artifact payout.")]
         public string KeystoneTakeLabel = "Take it (+{0})";
         public string KeystoneLeaveLabel = "Leave it";
