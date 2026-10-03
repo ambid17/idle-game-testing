@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: 9 LayerConfig
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration.LayerConfig
   LayerIndex: 9
-  LayerHeight: 30
+  LayerHeight: 35
   LayerDirtTint: {r: 0.6, g: 0.55, b: 1, a: 1}
   BlockHealth: 5
   RequiredDrillTier: 3
