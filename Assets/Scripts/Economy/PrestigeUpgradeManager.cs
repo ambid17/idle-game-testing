@@ -237,6 +237,9 @@ namespace Economy
         public bool Survival_DepotRecallUnlocked => LevelOf(PrestigeUpgradeEffect.Survival_DepotRecall) > 0;
         public float Survival_DepotRecallCooldownMultiplier => Mathf.Pow(EffectValuePerLevelOf(PrestigeUpgradeEffect.Survival_DepotRecall), Mathf.Max(0, LevelOf(PrestigeUpgradeEffect.Survival_DepotRecall) - 1));
 
+        // Critter Shop portal: owning it opens a portal to the Depot beside the shop (Critters.CritterShopPortal).
+        public bool Survival_CritterShopPortalUnlocked => LevelOf(PrestigeUpgradeEffect.Survival_CritterShopPortal) > 0;
+
         // Gameplay-effect flag for a capstone: applied (post-prestige) level only. Distinct from the
         // base class's IsMaxed, which now also counts not-yet-applied queued levels for
         // purchase-gating/UI purposes (see PurchaseLevel override above) - a queued-but-uncommitted

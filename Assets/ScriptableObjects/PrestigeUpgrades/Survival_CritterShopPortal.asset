@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd6eb465016d7724f9911a9b5458ff99, type: 3}
+  m_Name: Survival_CritterShopPortal
+  m_EditorClassIdentifier: Assembly-CSharp::Economy.PrestigeUpgradeDefinition
+  DisplayName: Critter Shop Portal
+  Description: 'Opens a portal beside the Critter Shop: step in to be whisked back
+    to the Depot, just like Depot Recall but with no cooldown.'
+  Icon: {fileID: 21300000, guid: 68dc96877c267c3489553ae1e972626c, type: 3}
+  EffectValuePerLevel: 1
+  MaxLevel: 1
+  BaseCost: 15
+  CostGrowth: 1.5
+  RequirePrerequisiteMaxed: 0
+  Prerequisite: {fileID: 11400000, guid: f13ca7fd5e194494d905917c2e5cee7e, type: 2}
+  Direction: 2
+  Branch: 5
+  Effect: 609

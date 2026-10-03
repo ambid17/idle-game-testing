@@ -104,6 +104,9 @@ namespace Economy
         // GameDesignDoc "Survival > fuel efficiency" (moved from the Market's Movement_FuelEfficiency,
         // retired 402): reduces all player fuel drain - see PlayerController's FuelSystem.Initialize.
         Survival_FuelEfficiency = 608,
+        // Opens a portal beside the Critter Shop (Critters.CritterShopPortal) that takes the player
+        // to the Depot, the same trip as Depot Recall with no cooldown.
+        Survival_CritterShopPortal = 609,
 
         // Hazard 700-799
         // Active ability: scans the block in front of the player (Player.PlayerAnalyzer) and

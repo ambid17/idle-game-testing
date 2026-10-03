@@ -20,6 +20,8 @@ namespace Interaction
         // The Bound's cave after Reseal (Story.VoidCave): the way home, and the Bound himself.
         VoidCavePortal,
         TheBound,
+        // Portal to the Depot beside the Critter Shop (Critters.CritterShopPortal).
+        CritterShopPortal,
     }
 
     public enum InteractionType
