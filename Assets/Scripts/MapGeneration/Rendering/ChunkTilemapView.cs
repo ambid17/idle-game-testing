@@ -196,15 +196,13 @@ namespace MapGeneration
         }
 
         // Re-evaluates this chunk's own boundary row's RuleTiles (e.g. after PaintGhostRow just
-        // updated the neighbor cell they read) - re-setting the same tile reference still forces
-        // the RuleTile to recompute which sprite matches, which is what actually shows the fix.
+        // updated the neighbor cell they read). Must be an explicit RefreshTile: re-setting the
+        // same tile + color is a no-op, and a ghost that's a plain Tile (ore, stone) never
+        // refreshes its neighbors itself, so the row kept whatever it matched with no neighbor.
         public void RefreshBoundaryRow(bool bottomRow)
         {
-            int w = chunk.Width;
             int y = bottomRow ? chunk.Height - 1 : 0;
-            var coords = new List<Vector2Int>(w);
-            for (int x = 0; x < w; x++) coords.Add(new Vector2Int(x, y));
-            RepaintCells(coords);
+            for (int x = 0; x < chunk.Width; x++) terrainTilemap.RefreshTile(new Vector3Int(x, -y, 0));
         }
 
         public void RepaintCells(IReadOnlyList<Vector2Int> localCoords)

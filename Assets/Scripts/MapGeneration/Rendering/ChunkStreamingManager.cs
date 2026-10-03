@@ -107,6 +107,10 @@ namespace MapGeneration
             if (tilemapsByLayer.ContainsKey(layerIndex))
             {
                 tilemapsByLayer[layerIndex].gameObject.SetActive(true);
+                // A neighbor mined while this view was hidden skipped SyncBoundary (it needs both
+                // resident), so this view's ghost rows may be stale.
+                SyncBoundary(layerIndex - 1, layerIndex);
+                SyncBoundary(layerIndex, layerIndex + 1);
                 GameManager.EventService.Dispatch(new ChunkViewShownEvent(layerIndex));
                 return;
             }
