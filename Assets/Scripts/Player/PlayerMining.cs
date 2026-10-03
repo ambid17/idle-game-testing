@@ -364,7 +364,11 @@ namespace Player
             {
                 var upgrades = UpgradeManager.Instance;
                 double value = blockType.Value * excess * upgrades.Economy_OverflowSellFraction * upgrades.Economy_SellValueMultiplier(blockType) * GameManager.RunModifierService.SellValueMultiplier(blockType.Id);
-                if (value > 0 && Wallet.Instance != null) Wallet.Instance.Add(value);
+                if (value > 0 && Wallet.Instance != null)
+                {
+                    Wallet.Instance.Add(value);
+                    GameManager.EventService.Dispatch(new OverflowSoldEvent(transform.position, value));
+                }
             }
             else
             {

@@ -656,6 +656,20 @@ namespace Events
         }
     }
 
+    // Ore the player mined with a full bag was auto-sold by the Overflow upgrade
+    // (Player.PlayerMining). UI.HudFlyIconsUI trickles a coin from the player to the dollars counter.
+    public class OverflowSoldEvent : IEvent
+    {
+        public Vector3 WorldPosition;
+        public double Dollars;
+
+        public OverflowSoldEvent(Vector3 worldPosition, double dollars)
+        {
+            WorldPosition = worldPosition;
+            Dollars = dollars;
+        }
+    }
+
     // Dispatched by PlayerController on Escape, but only when nothing else was already blocking
     // input - see PlayerController.Update. PauseMenuUI is the sole listener.
     public class PauseMenuOpenRequestedEvent { }

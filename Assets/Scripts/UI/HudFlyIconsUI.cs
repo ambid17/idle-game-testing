@@ -15,6 +15,8 @@ namespace UI
     //    world (Deposit & Sell at the Depot) fountains them from there (HudCoinBurstRequestedEvent).
     //  - A found artifact's tablet flies from the world into the artifact counter
     //    (HudIconFlyRequestedEvent, from Player.DigFeedback).
+    //  - Ore auto-sold by the Overflow upgrade sends a single small coin from the player to the
+    //    dollars counter, throttled so steady mining with a full bag stays subtle (OverflowSoldEvent).
     // Each arrival bumps the counter. Cosmetic only - the wallet is credited before any of this.
     public class HudFlyIconsUI : MonoBehaviour
     {
@@ -36,6 +38,14 @@ namespace UI
         [Tooltip("Delay between one coin leaving for the counter and the next.")]
         [SerializeField] private float coinStagger = 0.035f;
 
+        [Header("Overflow trickle")]
+        [Tooltip("Overflow coin size as a fraction of the screen height - smaller than a sale's coins.")]
+        [SerializeField] private float overflowCoinSize = 0.03f;
+        [Tooltip("Seconds after an overflow sale before its coin leaves the player, so it follows the ore nugget in.")]
+        [SerializeField] private float overflowDelay = 0.35f;
+        [Tooltip("Minimum seconds between overflow coins - sales in between are folded into the next one.")]
+        [SerializeField] private float overflowInterval = 0.4f;
+
         [Header("Artifact")]
         [Tooltip("Tablet size as a fraction of the screen height.")]
         [SerializeField] private float artifactSize = 0.075f;
@@ -52,6 +62,9 @@ namespace UI
         private bool sellRequestedThisFrame;
         private double earnedThisFrame;
         private Vector2 sellScreenPosition;
+        private bool overflowPending;
+        private float nextOverflowCoinTime;
+        private Vector3 overflowWorldPosition;
 
         private void Awake()
         {
@@ -80,6 +93,7 @@ namespace UI
             GameManager.EventService.Add<CrittersTurnedInEvent>(OnCrittersTurnedIn);
             GameManager.EventService.Add<DollarsEarnedEvent>(OnDollarsEarned);
             GameManager.EventService.Add<HudIconFlyRequestedEvent>(OnIconFlyRequested);
+            GameManager.EventService.Add<OverflowSoldEvent>(OnOverflowSold);
         }
 
         private void OnDisable()
@@ -91,6 +105,7 @@ namespace UI
             GameManager.EventService.Remove<CrittersTurnedInEvent>(OnCrittersTurnedIn);
             GameManager.EventService.Remove<DollarsEarnedEvent>(OnDollarsEarned);
             GameManager.EventService.Remove<HudIconFlyRequestedEvent>(OnIconFlyRequested);
+            GameManager.EventService.Remove<OverflowSoldEvent>(OnOverflowSold);
         }
 
         private void OnDestroy()
@@ -120,7 +135,31 @@ namespace UI
             sellRequestedThisFrame = false;
             earnedThisFrame = 0;
 
+            if (overflowPending && Time.unscaledTime >= nextOverflowCoinTime)
+            {
+                overflowPending = false;
+                nextOverflowCoinTime = Time.unscaledTime + overflowInterval;
+                SpawnOverflowCoin(worldCamera.WorldToScreenPoint(overflowWorldPosition));
+            }
+
             UpdateBumps();
+        }
+
+        // Kept quiet, since it fires on every ore mined with a full bag: no fountain, just one
+        // small coin at a time, with sales in quick succession folded into the next coin.
+        private void OnOverflowSold(OverflowSoldEvent evt)
+        {
+            overflowWorldPosition = evt.WorldPosition;
+            if (overflowPending) return;
+            overflowPending = true;
+            nextOverflowCoinTime = Mathf.Max(nextOverflowCoinTime, Time.unscaledTime + overflowDelay);
+        }
+
+        private void SpawnOverflowCoin(Vector2 from)
+        {
+            // A small hop up off the player before it heads for the counter.
+            Vector2 hop = from + new Vector2(Random.Range(-0.3f, 0.3f), 1f) * (burstRadius * 0.35f * Screen.height);
+            StartCoroutine(FlyCoin(Rent(coinSprite, overflowCoinSize * Screen.height), from, hop, 0f));
         }
 
         // The focused button (mouse clicks focus what they press, too), else the pointer.
