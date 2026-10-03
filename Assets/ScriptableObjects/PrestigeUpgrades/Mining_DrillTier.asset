@@ -15,9 +15,10 @@ MonoBehaviour:
   DisplayName: Drill Tier
   Description: 'Hardens your drill for the next biome down: Crystal, then Overgrown,
     then the Void. Without the tier a biome needs, its rock takes 8x longer to mine
-    and Dirt Insta-Mine doesn''t work there.'
+    and Dirt Insta-Mine doesn''t work there. Each tier also drills dirt, ore and
+    artifacts 15% faster.'
   Icon: {fileID: 21300000, guid: 23f33f68c20f9c149be61574dde349d7, type: 3}
-  EffectValuePerLevel: 1
+  EffectValuePerLevel: 0.15
   MaxLevel: 3
   BaseCost: 3
   CostGrowth: 2

@@ -218,7 +218,10 @@ namespace Player
                     NotificationUrgency.TimeSensitive));
             }
 
-            miningProgress += Time.deltaTime * upgradeManager.Mining_SpeedMultiplierFor(blockType.Category) * playerPowerUps.MiningSpeedMultiplier;
+            miningProgress += Time.deltaTime
+                * upgradeManager.Mining_SpeedMultiplierFor(blockType.Category)
+                * PrestigeUpgradeManager.Instance.Mining_DrillTierSpeedMultiplierFor(blockType.Category)
+                * playerPowerUps.MiningSpeedMultiplier;
             playerController.ConsumeMiningFuel(Time.deltaTime);
             float targetBlockHealth = blockType.Health * mapGenerationService.GetBlockHealthMultiplier(layerIndex);
 

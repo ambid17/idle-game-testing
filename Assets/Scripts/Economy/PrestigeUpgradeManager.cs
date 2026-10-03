@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Events;
+using MapGeneration;
 using UnityEngine;
 
 namespace Economy
@@ -148,6 +149,13 @@ namespace Economy
         // Drill tier owned (applied levels only, so a tier bought in the Museum takes effect on
         // prestige) - compared against LayerConfig.RequiredDrillTier by MapGenerationService.
         public int Mining_DrillTier => LevelOf(PrestigeUpgradeEffect.Mining_DrillTier);
+
+        // Each drill tier also speeds up the player's drilling of dirt, ore and artifacts by
+        // EffectValuePerLevel (+15%) per level - read by PlayerMining, stacked with the Market speeds.
+        public float Mining_DrillTierSpeedMultiplierFor(BlockCategory category) =>
+            category is BlockCategory.Dirt or BlockCategory.Ore or BlockCategory.Artifact
+                ? 1f + Mining_DrillTier * EffectValuePerLevelOf(PrestigeUpgradeEffect.Mining_DrillTier)
+                : 1f;
 
         // GameDesignDoc "Prestige > Mining > Increase grid size": added to the base grid width in
         // MapGenerationService before every prestige's map regeneration.
